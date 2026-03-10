@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Magic Planner · Cotizador</title>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C1E3C;--navy2:#112244;--blue:#1E4080;
+  --sky:#2563EB;--sky2:#1D4ED8;
+  --amber:#F59E0B;--amber2:#D97706;
+  --white:#fff;--off:#F7F9FC;--g1:#F1F4FA;
+  --g2:#E4EAF4;--g3:#94A3B8;--g4:#64748B;--dark:#1E293B;
+  --green:#059669;--red:#DC2626;
+  --sh:0 2px 14px rgba(12,30,60,.07);
+  --sh2:0 6px 32px rgba(12,30,60,.13);
+  --r:12px;--rs:8px;
+}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--off);color:var(--dark);min-height:100vh}
+input,textarea,select,button{font-family:inherit;box-sizing:border-box}
+textarea{resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!important;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.spin{animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOGIN */
+#login-wall{position:fixed;inset:0;background:linear-gradient(145deg,var(--navy) 0%,var(--navy2) 60%,#091830 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.login-card{background:white;border-radius:20px;padding:52px 44px;width:100%;max-width:420px;box-shadow:0 30px 70px rgba(0,0,0,.45);text-align:center;animation:fadeIn .4s ease}
+.login-brand{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+.login-brand span{color:var(--amber)}
+.login-tagline{font-size:.73rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--g3);margin-bottom:40px}
+.login-btn-main{display:block;width:100%;padding:15px;background:linear-gradient(135deg,var(--sky),var(--sky2));color:white;border:none;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:14px;font-family:inherit}
+.login-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,.35)}
+#login-status{font-size:.82rem;color:var(--g4);margin-top:16px;min-height:22px}
+.login-footer{margin-top:24px;font-size:.7rem;color:var(--g3);line-height:1.6}
+
+/* HEADER */
+#hdr{background:var(--navy);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.06)}
+#hdr-right{display:flex;align-items:center;gap:10px}
+#hdr-user{color:rgba(255,255,255,.5);font-size:.74rem;font-weight:500}
+.hdr-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.75);border-radius:7px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
+.hdr-btn:hover{background:rgba(255,255,255,.15);color:white}
+.hdr-badge{background:var(--amber);color:var(--navy);font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase}
+
+/* TABS */
+#nav{background:white;border-bottom:1px solid var(--g2);display:flex;padding:0 24px;overflow-x:auto}
+.ntab{padding:14px 18px;border:none;background:none;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--g3);border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s}
+.ntab.on{color:var(--sky);border-bottom-color:var(--sky)}
+.ntab:hover:not(.on){color:var(--dark)}
+
+/* LAYOUT */
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 100px}
+.panel{display:none}.panel.on{display:block;animation:fadeIn .25s ease}
+
+/* CARDS */
+.card{background:white;border-radius:var(--r);border:1px solid var(--g2);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden}
+.card-hd{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--g1)}
+.card-ico{width:34px;height:34px;background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.card-ttl{font-size:.92rem;font-weight:700;color:var(--dark)}
+.card-sub{font-size:.75rem;color:var(--g3);margin-top:1px}
+.card-body{padding:22px}
+.intro-bar{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:20px 24px;margin-bottom:20px}
+.intro-bar h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--amber);margin-bottom:6px}
+.intro-bar p{font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.7}
+
+/* FORMS */
+.lbl{display:block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);margin-bottom:6px}
+.fg{margin-bottom:16px}
+.finput{width:100%;padding:10px 13px;border:1.5px solid var(--g2);border-radius:var(--rs);font-size:.87rem;color:var(--dark);background:#fafbfd;transition:border-color .2s}
+.fsel{width:100%;padding:10px 13px;border:1.5px solid var(--g2);border-radius:var(--rs);font-size:.87rem;color:var(--dark);background:#fafbfd;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+.ftxt{width:100%;padding:10px 13px;border:1.5px solid var(--g2);border-radius:var(--rs);font-size:.87rem;color:var(--dark);background:#fafbfd}
+.money-wrap{display:flex;border:1.5px solid var(--g2);border-radius:var(--rs);overflow:hidden;background:#fafbfd;transition:border-color .2s}
+.money-wrap:focus-within{border-color:var(--sky);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.money-cur{padding:10px 12px;background:var(--g1);border-right:1.5px solid var(--g2);min-width:52px;display:flex;align-items:center;justify-content:center}
+.money-cur select{background:transparent;border:none;outline:none;font-size:.78rem;font-weight:700;color:var(--g4);cursor:pointer;width:100%}
+.money-inp{flex:1;padding:10px 12px;border:none;background:transparent;font-size:.87rem;color:var(--dark);outline:none;font-family:inherit}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.full{grid-column:1/-1}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--rs);font-weight:600;font-size:.82rem;cursor:pointer;border:none;transition:all .2s;font-family:inherit;white-space:nowrap}
+.btn-pri{background:var(--sky);color:white}.btn-pri:hover{background:var(--sky2)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed}
+.btn-out{background:white;color:var(--dark);border:1.5px solid var(--g2)}.btn-out:hover{border-color:var(--sky);color:var(--sky)}
+.btn-del{background:transparent;color:var(--red);border:1.5px solid #FECACA}.btn-del:hover{background:#FEF2F2}
+.btn-pdf{background:var(--amber);color:white}.btn-pdf:hover{background:var(--amber2)}
+.btn-save{background:var(--green);color:white}.btn-save:hover{background:#047857}
+.btn-nav{background:transparent;color:var(--sky);border:1.5px solid var(--sky)}.btn-nav:hover{background:var(--sky);color:white}
+.btn-sm{padding:7px 13px;font-size:.76rem}
+.btn-xs{padding:5px 9px;font-size:.72rem}
+.add-row{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:2px dashed var(--g2);border-radius:10px;background:transparent;color:var(--g3);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px;font-family:inherit}
+.add-row:hover{border-color:var(--sky);color:var(--sky);background:rgba(37,99,235,.03)}
+
+/* REPEAT BLOCKS */
+.rep{border:1px solid var(--g2);border-radius:var(--r);padding:20px;margin-bottom:14px;background:#FAFBFD;position:relative}
+.rep-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.rep-ttl{font-weight:700;font-size:.88rem;display:flex;align-items:center;gap:8px}
+.rep-n{background:var(--navy);color:white;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+
+/* CHECKBOXES */
+.chk-grp{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.chk{display:flex;align-items:center;gap:6px;background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;padding:6px 11px;cursor:pointer;font-size:.79rem;font-weight:500;transition:all .2s;user-select:none}
+.chk.on{background:rgba(37,99,235,.07);border-color:var(--sky);color:var(--sky)}
+.chk input{display:none}
+.chk-dot{width:13px;height:13px;border-radius:3px;border:2px solid var(--g3);display:inline-flex;align-items:center;justify-content:center;font-size:.58rem;flex-shrink:0;transition:all .2s}
+.chk.on .chk-dot{background:var(--sky);border-color:var(--sky);color:white}
+
+/* ALERTS */
+.tip{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.15);border-radius:9px;padding:11px 14px;font-size:.78rem;color:var(--blue);line-height:1.65;margin-top:14px}
+.err{background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--red);margin-top:12px}
+.ok{background:#ECFDF5;border:1px solid #A7F3D0;border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--green);margin-top:12px}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:12px 20px;border-radius:10px;font-size:.82rem;font-weight:600;z-index:9000;opacity:0;transition:opacity .3s;pointer-events:none;display:flex;align-items:center;gap:8px}
+#toast.show{opacity:1}
+
+/* PRICE TAG */
+.ptag{display:flex;justify-content:flex-end;margin-top:16px}
+.ptag-box{background:var(--g1);border:1.5px solid var(--g2);border-radius:9px;padding:9px 16px;text-align:right;min-width:160px}
+.ptag-l{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-bottom:3px}
+.ptag-v{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--sky)}
+
+/* DISNEY */
+.disney-sec{background:rgba(0,87,168,.04);border:1px solid rgba(0,87,168,.16);border-radius:10px;padding:16px;margin-bottom:16px}
+.disney-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0057A8,#003D7A);color:white;font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.universal-badge{background:linear-gradient(135deg,#111,#2a2a2a)!important}
+
+/* HISTORIAL */
+.hist-item{background:white;border:1px solid var(--g2);border-radius:var(--rs);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.hist-item:hover{border-color:var(--sky);box-shadow:var(--sh)}
+.hist-ico{width:38px;height:38px;background:var(--g1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.hist-info{flex:1;min-width:0}
+.hist-nm{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:.74rem;color:var(--g3);margin-top:2px}
+.status-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.st-borrador{background:var(--g1);color:var(--g4)}
+.st-enviada{background:#DBEAFE;color:#1E40AF}
+.st-confirmada{background:#D1FAE5;color:#065F46}
+.st-cancelada{background:#FEE2E2;color:#991B1B}
+
+/* ADMIN TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.83rem}
+.tbl th{text-align:left;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);padding:10px 14px;border-bottom:2px solid var(--g2)}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--g1);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--off)}
+
+/* CLIENTE SEARCH */
+.cli-results{border:1px solid var(--g2);border-radius:var(--rs);margin-top:4px;overflow:hidden;box-shadow:var(--sh);display:none;position:absolute;z-index:100;background:white;width:100%}
+.cli-opt{padding:10px 14px;cursor:pointer;font-size:.84rem;transition:background .15s}
+.cli-opt:hover{background:var(--g1)}
+.cli-opt strong{display:block;font-weight:700}
+.cli-opt span{font-size:.75rem;color:var(--g3)}
+.search-wrap{position:relative}
+
+/* QUOTE DOC */
+#qwrap{background:white;border-radius:16px;overflow:hidden;box-shadow:var(--sh2);max-width:900px;margin:0 auto}
+.q-cover{position:relative;height:380px;overflow:hidden;background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.q-cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.q-cover-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,25,50,.25) 0%,rgba(10,25,50,.78) 100%)}
+.q-topbar{position:absolute;top:0;left:0;right:0;padding:22px 32px;display:flex;justify-content:space-between;align-items:flex-start}
+.q-logo-img{height:40px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.q-logo-txt{font-family:'Playfair Display',serif;color:var(--amber);font-size:.95rem;font-weight:700}
+.q-cover-bot{position:absolute;bottom:28px;left:32px;right:32px}
+.q-dest{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:700;color:white;line-height:1.05;text-shadow:0 3px 20px rgba(0,0,0,.5)}
+.q-ref{color:rgba(255,255,255,.35);font-size:.67rem;font-weight:600;letter-spacing:.06em;margin-top:4px}
+.q-bar{background:var(--navy);padding:16px 32px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;border-top:3px solid var(--amber)}
+.qb-l{font-size:.57rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px}
+.qb-v{font-size:.88rem;font-weight:600;color:rgba(255,255,255,.85);line-height:1.4}
+.q-gloss{padding:14px 32px 16px;border-bottom:1px solid var(--g1);display:flex;flex-wrap:wrap;gap:20px}
+.q-gloss-l{font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--g3);margin-right:4px}
+.qg-item{display:flex;align-items:center;gap:5px}
+.qg-n{font-weight:700;font-size:.85rem}
+.qg-l{font-size:.74rem;color:var(--g3)}
+.q-sec{padding:22px 32px;border-bottom:1px solid var(--g1)}
+.q-sec:last-child{border-bottom:none}
+.q-sec-hd{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.q-sec-ico{width:32px;height:32px;background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.q-sec-ttl{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+.q-sec-sub{font-size:.72rem;color:var(--g3);margin-top:1px}
+.desc-item{display:flex;gap:9px;margin-bottom:6px;font-size:.85rem;line-height:1.75;color:#4a5568;align-items:baseline}
+.q-bp{background:var(--g1);border-radius:var(--rs);padding:16px 20px;margin-bottom:8px}
+.q-bp-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.q-bp-time{font-family:'Playfair Display',serif;font-size:1.65rem;font-weight:700;color:var(--navy);line-height:1}
+.q-bp-code{font-size:.75rem;font-weight:700;color:var(--g4);letter-spacing:.05em;margin-top:2px}
+.q-bp-city{font-size:.7rem;color:var(--g3);margin-top:1px}
+.q-bp-mid{text-align:center}
+.q-bp-escl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-bottom:5px}
+.q-bp-line{position:relative;height:2px;background:var(--g2);margin:0 6px}
+.q-bp-line::after{content:'✈';position:absolute;left:50%;transform:translateX(-50%);top:-9px;font-size:.85rem}
+.q-bp-via{font-size:.65rem;font-weight:700;color:var(--sky);margin-top:6px;background:rgba(37,99,235,.09);padding:2px 8px;border-radius:20px}
+.q-bp-dur{font-size:.62rem;color:var(--g3);margin-top:3px}
+.q-bp-footer{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:10px;border-top:1px solid var(--g2);flex-wrap:wrap}
+.q-bp-chip{font-size:.62rem;font-weight:700;background:var(--navy);color:white;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+.q-bp-chip.ret{background:var(--amber);color:var(--dark)}
+.q-bp-meta{font-size:.74rem;color:var(--g4)}
+.am-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.am-tag{display:flex;align-items:center;gap:5px;background:var(--g1);border:1px solid var(--g2);border-radius:6px;padding:4px 10px;font-size:.76rem;font-weight:500}
+.am-tag .ck{color:var(--green);font-weight:800;font-size:.7rem}
+.ie-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.ie-ttl{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.ie-item{font-size:.78rem;margin-bottom:4px;display:flex;gap:7px;line-height:1.55}
+.tr-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--g1)}
+.tr-row:last-child{border-bottom:none}
+.seg-cards{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.seg-card{background:var(--g1);border-radius:9px;padding:12px 16px;flex:1;min-width:120px}
+.seg-card .ico{font-size:1.1rem;margin-bottom:5px}
+.seg-card .lbl2{font-size:.62rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.seg-card .val{font-weight:600;font-size:.84rem}
+.tyc-box{background:var(--g1);border-radius:10px;padding:16px 20px;margin:16px 0 6px;border-left:3px solid var(--sky)}
+.tyc-ttl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g4);margin-bottom:10px}
+.tyc-item{display:flex;gap:8px;font-size:.78rem;line-height:1.65;color:#4a5568;margin-bottom:4px;align-items:baseline}
+.tyc-cta{font-size:.82rem;color:var(--sky);font-weight:600;margin-top:10px;padding-top:10px;border-top:1px solid var(--g2)}
+.q-total{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:22px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:14px}
+.q-total-l .tl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px}
+.q-total-l .detail{font-size:.74rem;color:rgba(255,255,255,.35);margin-top:3px;line-height:1.7}
+.q-total-amt{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--amber)}
+.q-agent{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--g1);border-radius:var(--r);border:1px solid var(--g2)}
+.q-agent-av{width:44px;height:44px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;color:white;flex-shrink:0}
+.q-agent-nm{font-weight:700;font-size:.9rem}
+.q-agent-ct{font-size:.76rem;color:var(--g3);margin-top:3px}
+
+/* PRINT */
+@media print{
+  #ui{display:none!important}
+  #pz{display:block!important}
+  @page{margin:0;size:A4}
+  #pz #qwrap{border-radius:0;box-shadow:none;max-width:none}
+}
+#pz{display:none}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-wall">
+  <div class="login-card">
+    <div class="login-brand">Magic<span>Planner</span></div>
+    <div class="login-tagline">Sistema de Cotizaciones</div>
+    <button class="login-btn-main" onclick="netlifyIdentity.open('login')">🔐 Iniciar sesión</button>
+    <div id="login-status">Verificando sesión...</div>
+    <div class="login-footer">Acceso restringido · Solo agentes autorizados</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="ui" style="display:none">
+<div id="hdr">
+  <div id="hdr-logo-wrap" style="cursor:pointer" onclick="switchTab('form')">
+    <div style="font-family:'Playfair Display',serif;color:white;font-size:1rem;font-weight:700">Magic<span style="color:var(--amber)">Planner</span></div>
+  </div>
+  <div id="hdr-right">
+    <span id="hdr-user"></span>
+    <span id="hdr-role-badge" class="hdr-badge" style="display:none">ADMIN</span>
+    <button class="hdr-btn" onclick="switchTab('history')">📋 Historial</button>
+    <button class="hdr-btn" id="btn-admin" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
+    <button class="hdr-btn" onclick="netlifyIdentity.logout()">Salir →</button>
+  </div>
+</div>
+<div id="nav">
+  <button class="ntab on"  onclick="switchTab('form')">📝 Nueva cotización</button>
+  <button class="ntab"     onclick="switchTab('ia')">✨ Importar IA</button>
+  <button class="ntab"     onclick="switchTab('preview')">📄 Vista previa</button>
+  <button class="ntab"     onclick="switchTab('history')">🗂 Historial</button>
+  <button class="ntab"     onclick="switchTab('clients')">👥 Clientes</button>
+  <button class="ntab"     onclick="switchTab('admin')" id="nav-admin" style="display:none">🛠 Admin</button>
+  <button class="ntab"     onclick="switchTab('config')">⚙️ Mi perfil</button>
+</div>
+<div class="wrap">
+
+<!-- ═══ FORM ═══ -->
+<div id="tab-form" class="panel on">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">👤</div><div><div class="card-ttl">Pasajero</div></div></div>
+    <div class="card-body">
+      <div class="fg"><label class="lbl">Buscar cliente existente</label>
+        <div class="search-wrap">
+          <input class="finput" type="text" id="cli-search" placeholder="Escribí nombre o teléfono..." oninput="searchClients(this.value)" autocomplete="off">
+          <div class="cli-results" id="cli-results"></div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="fg"><label class="lbl">Nombre completo</label><input class="finput" type="text" id="m-nombre" placeholder="Hugo Martínez"></div>
+        <div class="fg"><label class="lbl">Celular / WhatsApp</label><input class="finput" type="text" id="m-cel" placeholder="+54 362 470-3040"></div>
+        <div class="fg"><label class="lbl">Email</label><input class="finput" type="text" id="m-email" placeholder="hugo@email.com"></div>
+      </div>
+      <div class="g4">
+        <div class="fg"><label class="lbl">Adultos</label><input class="finput" type="number" id="m-adu" placeholder="2" min="0"></div>
+        <div class="fg"><label class="lbl">Niños</label><input class="finput" type="number" id="m-nin" placeholder="0" min="0"></div>
+        <div class="fg"><label class="lbl">Infantes</label><input class="finput" type="number" id="m-inf" placeholder="0" min="0"></div>
+        <div class="fg"><label class="lbl">N° cotización</label><input class="finput" type="text" id="m-ref" placeholder="Auto"></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Destino</label><input class="finput" type="text" id="m-dest" placeholder="Orlando, Florida"></div>
+        <div class="fg"><label class="lbl">País</label><input class="finput" type="text" id="m-pais" placeholder="Estados Unidos"></div>
+        <div class="fg"><label class="lbl">Fecha de salida</label><input class="finput" type="date" id="m-sal"></div>
+        <div class="fg"><label class="lbl">Fecha de regreso</label><input class="finput" type="date" id="m-reg"></div>
+      </div>
+      <div class="fg"><label class="lbl">Estado</label>
+        <select class="fsel" id="m-estado" style="max-width:220px">
+          <option value="borrador">📝 Borrador</option>
+          <option value="enviada">📨 Enviada</option>
+          <option value="confirmada">✅ Confirmada</option>
+          <option value="cancelada">❌ Cancelada</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl">Notas internas</label>
+        <textarea class="ftxt" id="m-notas" rows="2" placeholder="Preferencias, observaciones (no aparecen en el PDF)..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">✈️</div><div><div class="card-ttl">Vuelos</div></div></div>
+    <div class="card-body">
+      <div id="vuelos-cont"></div>
+      <button class="add-row" onclick="addVuelo()">+ Agregar vuelo / segmento</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">🏨</div><div><div class="card-ttl">Alojamiento</div></div></div>
+    <div class="card-body">
+      <div id="hoteles-cont"></div>
+      <button class="add-row" onclick="addHotel()">+ Agregar hotel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">🚐</div><div><div class="card-ttl">Traslados</div></div></div>
+    <div class="card-body">
+      <div id="traslados-cont"></div>
+      <button class="add-row" onclick="addTraslado()">+ Agregar traslado</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">🎡</div><div><div class="card-ttl">Excursiones y Atracciones</div></div></div>
+    <div class="card-body">
+      <div id="excursiones-cont"></div>
+      <button class="add-row" onclick="addExcursion()">+ Agregar excursión</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">🛡️</div><div><div class="card-ttl">Asistencia al viajero</div></div></div>
+    <div class="card-body">
+      <div class="g3">
+        <div class="fg"><label class="lbl">Aseguradora</label><input class="finput" type="text" id="seg-nm" placeholder="PAX Assistance"></div>
+        <div class="fg"><label class="lbl">Cobertura médica</label><input class="finput" type="text" id="seg-med" placeholder="USD 2.000.000"></div>
+        <div class="fg"><label class="lbl">Equipaje</label><input class="finput" type="text" id="seg-eq" placeholder="USD 1.500"></div>
+        <div class="fg"><label class="lbl">Preexistencias</label><input class="finput" type="text" id="seg-pre" placeholder="USD 15.000"></div>
+        <div class="fg"><label class="lbl">Días</label><input class="finput" type="number" id="seg-dias" placeholder="14"></div>
+        <div class="fg"><label class="lbl">Precio</label>
+          <div class="money-wrap"><div class="money-cur"><select id="seg-cur"><option>USD</option><option>ARS</option></select></div>
+          <input class="money-inp" type="number" id="seg-precio" placeholder="0"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="seg-fin" placeholder="12 cuotas sin interés · $27.347/mes"></div>
+        <div class="fg"><label class="lbl">Otras coberturas</label><input class="finput" type="text" id="seg-extra" placeholder="Covid · PAX Cash"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">💵</div><div><div class="card-ttl">Precios y condiciones</div></div></div>
+    <div class="card-body">
+      <div class="g3">
+        <div class="fg"><label class="lbl">Precio por persona</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-pp" placeholder="2392"></div>
+        </div>
+        <div class="fg"><label class="lbl">Precio total</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur2"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-tot" placeholder="14352"></div>
+        </div>
+        <div class="fg"><label class="lbl">Reserva inicial</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur3"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-res" placeholder="300"></div>
+        </div>
+        <div class="fg"><label class="lbl">Cuotas</label><input class="finput" type="text" id="p-cuo" placeholder="12 cuotas sin interés"></div>
+        <div class="fg"><label class="lbl">Cancelación hasta</label><input class="finput" type="text" id="p-can" placeholder="01/09/2026"></div>
+        <div class="fg"><label class="lbl">Validez</label><input class="finput" type="text" id="p-val" placeholder="24 horas"></div>
+      </div>
+      <div class="fg"><label class="lbl">Términos y condiciones</label>
+        <textarea class="ftxt" id="p-tyc" rows="6">📄 Aclaraciones importantes
+• ✈️ Los pasajes son intransferibles; cambios o cancelaciones pueden tener costo según la tarifa.
+• 💳 Transferencia o depósito bancario en dólares. Pagos en sitios internacionales: solo tarjeta cuando el proveedor lo permite.
+• 💵 Valores expresados en USD (no incluyen impuestos locales del país de origen).
+• 📣 Cotización sujeta a disponibilidad y cambios al momento de reservar.
+• ⏳ Validez de la cotización: 24 horas.
+✨ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo para asegurar precio y disponibilidad.</textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">🖼️</div><div><div class="card-ttl">Foto de portada</div></div></div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <img id="cov-thumb" src="" style="display:none;height:56px;width:90px;object-fit:cover;border-radius:8px;border:2px solid var(--amber)" alt="">
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f1').click()">📁 Subir foto</button>
+        <button class="btn btn-out btn-sm" onclick="autoCover()">🔍 Buscar por destino</button>
+        <button class="btn btn-del btn-xs" id="btn-rmcov" onclick="removeCover()" style="display:none">✕ Quitar</button>
+        <input type="file" id="cov-f1" accept="image/*" style="display:none" onchange="uploadCover(this)">
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:flex-end;padding-bottom:20px">
+    <button class="btn btn-nav" onclick="buildAndPreview()">👁 Vista previa</button>
+    <button class="btn btn-save" id="btn-save-main" onclick="saveQuote()">☁️ Guardar en nube</button>
+    <button class="btn btn-pdf" onclick="buildAndPrint()">🖨️ PDF</button>
+  </div>
+</div><!-- /form -->
+
+<!-- ═══ IA ═══ -->
+<div id="tab-ia" class="panel">
+  <div class="intro-bar">
+    <h2>Importar con IA</h2>
+    <p>Pegá el texto de tu cotización (Notas, WhatsApp, Word) y la IA completa el formulario automáticamente.</p>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="fg"><label class="lbl">API Key de Anthropic</label>
+        <div style="display:flex;gap:8px">
+          <input class="finput" type="password" id="api-key" placeholder="sk-ant-api03-..." style="flex:1">
+          <button class="btn btn-out btn-sm" onclick="saveKey()">💾 Guardar</button>
+        </div>
+        <div style="font-size:.71rem;color:var(--g3);margin-top:6px"><a href="https://console.anthropic.com" target="_blank" style="color:var(--sky)">Obtener clave en console.anthropic.com →</a></div>
+      </div>
+      <div class="fg"><label class="lbl">Tu cotización en texto</label>
+        <textarea class="ftxt" id="raw-text" rows="14" placeholder="Hugo Martínez · 2 adultos&#10;Orlando · 30/09 - 13/10&#10;✈️ EZE → MCO American Airlines AA930 · USD 1985&#10;🏨 Disney All-Star Sports 01/10-07/10 · USD 2717&#10;🚐 MCO → Sports USD 65 · Orlantours&#10;🛡️ PAX Assistance · 12 cuotas $27.347"></textarea>
+      </div>
+      <div id="ia-err" class="err" style="display:none"></div>
+      <button class="btn btn-pri" id="btn-ai" onclick="processAI()">✨ Procesar con IA</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PREVIEW ═══ -->
+<div id="tab-preview" class="panel">
+  <div id="prev-empty" style="text-align:center;padding:80px 20px;color:var(--g3)">
+    <div style="font-size:3rem;margin-bottom:12px">📄</div>
+    <div style="font-weight:600">Completá el formulario y hacé click en Vista previa</div>
+    <button class="btn btn-pri" style="margin-top:20px" onclick="switchTab('form')">← Formulario</button>
+  </div>
+  <div id="prev-content" style="display:none">
+    <div style="background:white;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--g2);box-shadow:var(--sh)">
+      <img id="tb-thumb" src="" style="display:none;height:36px;width:64px;object-fit:cover;border-radius:6px;border:2px solid var(--amber)" alt="">
+      <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f2').click()">📁 Foto</button>
+      <button class="btn btn-out btn-sm" onclick="autoCover()">🔍 Destino</button>
+      <button class="btn btn-del btn-xs" id="btn-rmcov2" onclick="removeCover()" style="display:none">✕</button>
+      <input type="file" id="cov-f2" accept="image/*" style="display:none" onchange="uploadCover(this)">
+      <div style="flex:1"></div>
+      <button class="btn btn-out btn-sm" onclick="switchTab('form')">← Editar</button>
+      <button class="btn btn-save btn-sm" id="btn-save-prev" onclick="saveQuote()">☁️ Guardar</button>
+      <button class="btn btn-pdf btn-sm" onclick="doPrint()">🖨️ PDF</button>
+    </div>
+    <div id="qscreen"></div>
+  </div>
+</div>
+
+<!-- ═══ HISTORIAL ═══ -->
+<div id="tab-history" class="panel">
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">🗂</div>
+      <div style="flex:1"><div class="card-ttl">Historial de cotizaciones</div><div class="card-sub">Sincronizado en la nube · Todos los dispositivos</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="fsel btn-sm" id="hist-filter" onchange="renderHistory()" style="min-width:140px">
+          <option value="">Todos los estados</option>
+          <option value="borrador">Borradores</option>
+          <option value="enviada">Enviadas</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+        <input class="finput btn-sm" type="text" id="hist-search" placeholder="Buscar..." oninput="renderHistory()" style="width:180px">
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="hist-list"><div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLIENTES ═══ -->
+<div id="tab-clients" class="panel">
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">👥</div>
+      <div style="flex:1"><div class="card-ttl">Clientes</div><div class="card-sub">CRM básico de pasajeros</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openClientModal()">+ Nuevo cliente</button>
+    </div>
+    <div class="card-body">
+      <input class="finput" type="text" id="cli-filter" placeholder="Buscar por nombre, email o teléfono..." oninput="renderClients()" style="margin-bottom:16px">
+      <div id="cli-list"><div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ═══ -->
+<div id="tab-admin" class="panel">
+  <div class="intro-bar">
+    <h2>Panel de Administración</h2>
+    <p>Gestioná agentes, aerolíneas y proveedores del equipo.</p>
+  </div>
+
+  <!-- AGENTES -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">👨‍💼</div>
+      <div style="flex:1"><div class="card-ttl">Agentes</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
+    </div>
+    <div class="card-body">
+      <div id="admin-agentes"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span></div></div>
+    </div>
+  </div>
+
+  <!-- AEROLÍNEAS -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">✈️</div>
+      <div style="flex:1"><div class="card-ttl">Aerolíneas</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openAeroModal()">+ Agregar</button>
+    </div>
+    <div class="card-body">
+      <div id="admin-aero"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span></div></div>
+    </div>
+  </div>
+
+  <!-- PROVEEDORES -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">🏢</div>
+      <div style="flex:1"><div class="card-ttl">Proveedores</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar</button>
+    </div>
+    <div class="card-body">
+      <div id="admin-prov"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONFIG ═══ -->
+<div id="tab-config" class="panel">
+  <div class="card" style="max-width:540px">
+    <div class="card-hd"><div class="card-ico">🌴</div><div><div class="card-ttl">Mi perfil de agente</div></div></div>
+    <div class="card-body">
+      <div class="fg"><label class="lbl">Logo</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
+          <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()">📁 Subir</button>
+          <button class="btn btn-del btn-xs" id="btn-rmlogo" onclick="removeLogo()" style="display:none">✕</button>
+          <input type="file" id="logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
+        <div class="fg"><label class="lbl">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
+        <div class="fg"><label class="lbl">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com"></div>
+        <div class="fg"><label class="lbl">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040"></div>
+        <div class="fg full"><label class="lbl">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
+      </div>
+      <button class="btn btn-pri" onclick="saveCfg()">💾 Guardar perfil</button>
+      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+</div><!-- /ui -->
+
+<!-- MODALS -->
+<div id="modal-overlay" onclick="closeModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000"></div>
+<div id="modal-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:16px;padding:28px;width:90%;max-width:500px;z-index:1001;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+  <div id="modal-content"></div>
+</div>
+
+<!-- PRINT -->
+<div id="pz"><div id="qprint"></div></div>
+<div id="toast">✓ <span id="toast-msg"></span></div>
+
+<script>
+// ═══════════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════════
+const SB_URL = 'https://jsgxoygyvibredxqyinj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let coverUrl=null, logoUrl=localStorage.getItem('mp_logo')||null;
+let agCfg=JSON.parse(localStorage.getItem('mp_cfg')||'{}');
+let qData=null, currentUser=null, isAdmin=false;
+let vc=0,hc=0,tc=0,ec=0;
+let allClients=[], allQuotes=[];
+
+// ═══════════════════════════════════════════
+// AUTH — NETLIFY IDENTITY
+// ═══════════════════════════════════════════
+netlifyIdentity.init();
+netlifyIdentity.on('init', user => {
+  const s=document.getElementById('login-status');
+  if(user){ showApp(user); }
+  else{ if(s) s.textContent='Hacé click en "Iniciar sesión" para continuar.'; }
+});
+netlifyIdentity.on('login', user => { showApp(user); netlifyIdentity.close(); });
+netlifyIdentity.on('logout', () => {
+  document.getElementById('ui').style.display='none';
+  document.getElementById('login-wall').style.display='flex';
+  const s=document.getElementById('login-status');
+  if(s) s.textContent='Sesión cerrada. Ingresá nuevamente.';
+});
+
+async function showApp(user){
+  currentUser = user;
+  document.getElementById('login-wall').style.display='none';
+  document.getElementById('ui').style.display='block';
+  document.getElementById('hdr-user').textContent = user.email;
+  // Check if admin in Supabase
+  const {data} = await sb.from('agentes').select('rol,nombre,logo_url').eq('email', user.email).single();
+  if(data){
+    isAdmin = data.rol === 'admin';
+    if(data.nombre && !agCfg.nm) agCfg.nm = data.nombre;
+    if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
+  }
+  if(isAdmin){
+    document.getElementById('hdr-role-badge').style.display='';
+    document.getElementById('btn-admin').style.display='';
+    document.getElementById('nav-admin').style.display='';
+  }
+  // Ensure agent record exists
+  await sb.from('agentes').upsert({email: user.email, nombre: agCfg.nm||user.user_metadata?.full_name||''},{onConflict:'email',ignoreDuplicates:true});
+  init();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function init(){
+  loadCfg(); updateHeader();
+  const k=document.getElementById('api-key'); if(k) k.value=localStorage.getItem('mp_key')||'';
+  if(logoUrl) updateLogoPreview();
+  addVuelo(); addHotel(); addTraslado(); addExcursion();
+  loadClients();
+}
+
+// ═══════════════════════════════════════════
+// SUPABASE HELPERS
+// ═══════════════════════════════════════════
+async function dbSaveQuote(d){
+  if(!currentUser) return;
+  // Save/update client
+  let clientId = d._clientId;
+  if(!clientId && d.cliente?.nombre){
+    const {data:existing} = await sb.from('clientes').select('id').eq('nombre',d.cliente.nombre).eq('celular',d.cliente.celular||'').maybeSingle();
+    if(existing){ clientId = existing.id; }
+    else{
+      const {data:nc} = await sb.from('clientes').insert({nombre:d.cliente.nombre,celular:d.cliente.celular||'',email:d.cliente.email||''}).select().single();
+      if(nc) clientId = nc.id;
+    }
+  }
+  // Get agente id
+  const {data:ag} = await sb.from('agentes').select('id').eq('email',currentUser.email).single();
+  const agId = ag?.id;
+  const row = {
+    ref_id: String(d.refId),
+    cliente_id: clientId||null,
+    agente_id: agId||null,
+    destino: d.viaje?.destino||'',
+    fecha_sal: d.viaje?.salida ? parseDateArg(d.viaje.salida) : null,
+    fecha_reg: d.viaje?.regreso ? parseDateArg(d.viaje.regreso) : null,
+    noches: d.viaje?.noches||0,
+    pasajeros: d.cliente?.pasajeros||'',
+    estado: d.estado||'borrador',
+    datos: d,
+    cover_url: coverUrl||null,
+    precio_total: d.precios?.total||d.precios?.por_persona||null,
+    moneda: d.precios?.moneda||'USD',
+    notas_int: d.notas_int||''
+  };
+  const {error} = await sb.from('cotizaciones').upsert(row, {onConflict:'ref_id'});
+  if(error) throw error;
+  await loadClients();
+}
+
+async function dbLoadQuotes(){
+  const {data,error} = await sb.from('cotizaciones')
+    .select('*').order('creado_en',{ascending:false}).limit(200);
+  if(error){ console.error(error); return []; }
+  return data||[];
+}
+
+async function dbLoadClients(){
+  const {data} = await sb.from('clientes').select('*').order('nombre');
+  return data||[];
+}
+
+function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
+  if(!s) return null;
+  if(s.includes('-')) return s;
+  const [d,m,y] = s.split('/');
+  return y&&m&&d ? `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}` : null;
+}
+
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
+const tabMap={form:0,ia:1,preview:2,history:3,clients:4,admin:5,config:6};
+function switchTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+id)?.classList.add('on');
+  const idx=tabMap[id];
+  if(idx!==undefined) document.querySelectorAll('.ntab')[idx]?.classList.add('on');
+  if(id==='history') renderHistory();
+  if(id==='clients') renderClients();
+  if(id==='admin') renderAdmin();
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function toast(msg,ok=true){
+  const t=document.getElementById('toast'),m=document.getElementById('toast-msg');
+  t.style.background=ok?'#1E293B':'var(--red)';
+  m.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════
+// FORM HELPERS
+// ═══════════════════════════════════════════
+function gv(id){const e=document.getElementById(id);return e?e.value:'';}
+function gn(id){return parseFloat(gv(id))||0;}
+function fd(s){if(!s)return'';if(s.includes('/'))return s;const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;}
+function paxStr(){
+  const a=parseInt(gv('m-adu'))||0,n=parseInt(gv('m-nin'))||0,i=parseInt(gv('m-inf'))||0;
+  return[a&&a+' adulto'+(a>1?'s':''),n&&n+' niño'+(n>1?'s':''),i&&i+' infante'+(i>1?'s':'')].filter(Boolean).join(', ');
+}
+function tglChk(el){el.classList.toggle('on');const inp=el.querySelector('input');inp.checked=!inp.checked;el.querySelector('.chk-dot').textContent=inp.checked?'✓':'';}
+
+// ═══════════════════════════════════════════
+// CLIENT SEARCH
+// ═══════════════════════════════════════════
+async function loadClients(){
+  allClients = await dbLoadClients();
+}
+function searchClients(q){
+  const box=document.getElementById('cli-results');
+  if(!q||q.length<2){box.style.display='none';return;}
+  const res=allClients.filter(c=>(c.nombre||'').toLowerCase().includes(q.toLowerCase())||(c.celular||'').includes(q));
+  if(!res.length){box.style.display='none';return;}
+  box.style.display='block';
+  box.innerHTML=res.slice(0,6).map(c=>`<div class="cli-opt" onclick="selectClient('${c.id}')"><strong>${c.nombre}</strong><span>${c.celular||''} ${c.email?'· '+c.email:''}</span></div>`).join('');
+}
+function selectClient(id){
+  const c=allClients.find(x=>x.id===id); if(!c) return;
+  document.getElementById('m-nombre').value=c.nombre||'';
+  document.getElementById('m-cel').value=c.celular||'';
+  document.getElementById('m-email').value=c.email||'';
+  document.getElementById('cli-search').value='';
+  document.getElementById('cli-results').style.display='none';
+  document.getElementById('_clientId')?.remove();
+  const h=document.createElement('input');h.type='hidden';h.id='_clientId';h.value=id;
+  document.getElementById('tab-form').appendChild(h);
+  toast('✓ Cliente seleccionado: '+c.nombre);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap')) document.getElementById('cli-results').style.display='none';});
+
+// ═══════════════════════════════════════════
+// VUELO BLOCK
+// ═══════════════════════════════════════════
+function addVuelo(d){
+  d=d||{};const id=++vc;
+  const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3" style="margin-bottom:4px">
+    <div class="fg"><label class="lbl">Modalidad</label>
+      <select class="fsel" id="v${id}-mod" onchange="toggleRet(${id})">
+        <option value="simple">Tramo único</option>
+        <option value="idavuelta">Ida y vuelta (precio combinado)</option>
+        <option value="interno">Vuelo interno</option>
+      </select></div>
+    <div class="fg"><label class="lbl">Aerolínea IDA</label>
+      <input class="finput" list="al-list" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
+    </div>
+    <div class="fg"><label class="lbl">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
+  </div>
+  <div style="background:var(--g1);border-radius:var(--rs);padding:14px;margin-bottom:12px">
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g4);margin-bottom:12px">✈ TRAMO IDA</div>
+    <div class="g4">
+      <div class="fg"><label class="lbl">Ciudad origen</label><input class="finput" type="text" id="v${id}-or" placeholder="Buenos Aires (EZE)" value="${d.origen||''}"></div>
+      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-io" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.iata_o||''}"></div>
+      <div class="fg"><label class="lbl">Fecha salida</label><input class="finput" type="date" id="v${id}-fs" value="${d.fs||''}"></div>
+      <div class="fg"><label class="lbl">Hora salida</label><input class="finput" type="time" id="v${id}-hs" value="${d.hs||''}"></div>
+    </div>
+    <div class="g4">
+      <div class="fg"><label class="lbl">Ciudad destino</label><input class="finput" type="text" id="v${id}-de" placeholder="Orlando (MCO)" value="${d.destino||''}"></div>
+      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-id" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.iata_d||''}"></div>
+      <div class="fg"><label class="lbl">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl" value="${d.fl||''}"></div>
+      <div class="fg"><label class="lbl">Hora llegada</label><input class="finput" type="time" id="v${id}-hl" value="${d.hl||''}"></div>
+    </div>
+    <div class="g3">
+      <div class="fg"><label class="lbl">Escala (ciudad)</label><input class="finput" type="text" id="v${id}-esc" placeholder="Miami (MIA) — vacío si directo" value="${d.escala||''}"></div>
+      <div class="fg"><label class="lbl">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc" placeholder="2h 5min" value="${d.t_escala||''}"></div>
+      <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur" placeholder="17h 19min" value="${d.duracion||''}"></div>
+    </div>
+  </div>
+  <div id="v${id}-ret-sec" style="display:none;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--rs);padding:14px;margin-bottom:12px">
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:12px">↩ TRAMO VUELTA</div>
+    <div class="g3">
+      <div class="fg"><label class="lbl">Aerolínea vuelta</label><input class="finput" list="al-list" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}"></div>
+      <div class="fg"><label class="lbl">N° vuelo vuelta</label><input class="finput" type="text" id="v${id}-num2" placeholder="AV 123" value="${d.num2||''}"></div>
+      <div class="fg"></div>
+    </div>
+    <div class="g4">
+      <div class="fg"><label class="lbl">Origen vuelta</label><input class="finput" type="text" id="v${id}-or2" placeholder="Orlando (MCO)" value="${d.or2||''}"></div>
+      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-io2" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.io2||''}"></div>
+      <div class="fg"><label class="lbl">Fecha salida</label><input class="finput" type="date" id="v${id}-fs2" value="${d.fs2||''}"></div>
+      <div class="fg"><label class="lbl">Hora salida</label><input class="finput" type="time" id="v${id}-hs2" value="${d.hs2||''}"></div>
+    </div>
+    <div class="g4">
+      <div class="fg"><label class="lbl">Destino vuelta</label><input class="finput" type="text" id="v${id}-de2" placeholder="Buenos Aires (EZE)" value="${d.de2||''}"></div>
+      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-id2" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.id2||''}"></div>
+      <div class="fg"><label class="lbl">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl2" value="${d.fl2||''}"></div>
+      <div class="fg"><label class="lbl">Hora llegada</label><input class="finput" type="time" id="v${id}-hl2" value="${d.hl2||''}"></div>
+    </div>
+    <div class="g3">
+      <div class="fg"><label class="lbl">Escala vuelta</label><input class="finput" type="text" id="v${id}-esc2" placeholder="Bogotá (BOG)" value="${d.esc2||''}"></div>
+      <div class="fg"><label class="lbl">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc2" placeholder="2h" value="${d.tesc2||''}"></div>
+      <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur2" placeholder="14h 30min" value="${d.dur2||''}"></div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Tarifa / Clase</label>
+      <select class="fsel" id="v${id}-tar"><option>Economy Basic</option><option>Economy</option><option>Economy Flex</option><option>Premium Economy</option><option>Business</option><option>First Class</option></select></div>
+    <div class="fg"><label class="lbl">Precio</label>
+      <div class="money-wrap"><div class="money-cur"><select id="v${id}-cur"><option>USD</option><option>ARS</option></select></div>
+      <input class="money-inp" type="number" id="v${id}-pr" placeholder="1985" value="${d.precio||''}"></div>
+    </div>
+    <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="v${id}-fin" placeholder="Contado / cuotas" value="${d.fin||''}"></div>
+  </div>
+  <div class="fg"><label class="lbl">Equipaje</label>
+    <div class="chk-grp" id="v${id}-eq">${[['b','👜 Bolso personal'],['c','🎒 Carry-on'],['v23','🧳 Valija 23kg'],['v32','🧳 Valija 32kg'],['2v','🧳 2 valijas']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+    <input class="finput" type="text" id="v${id}-eq-x" placeholder="Detalle adicional..." style="margin-top:8px" value="${d.eq_x||''}">
+  </div>`;
+  document.getElementById('vuelos-cont').appendChild(el);
+  if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
+  if(d.mod==='idavuelta') document.getElementById('v'+id+'-ret-sec').style.display='';
+  if(d.tarifa) document.getElementById('v'+id+'-tar').value=d.tarifa;
+}
+function toggleRet(id){document.getElementById('v'+id+'-ret-sec').style.display=document.getElementById('v'+id+'-mod').value==='idavuelta'?'':'none';}
+
+// ═══════════════════════════════════════════
+// HOTEL BLOCK
+// ═══════════════════════════════════════════
+function addHotel(d){
+  d=d||{};const id=++hc;const isD=d.tipo==='disney',isU=d.tipo==='universal';
+  const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3">
+    <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
+    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">🏨 Hotel regular</option><option value="disney">🏰 Hotel Disney</option><option value="universal">🎬 Hotel Universal</option><option value="airbnb">🏠 Airbnb / Apart.</option><option value="crucero">🚢 Crucero</option></select></div>
+    <div class="fg"><label class="lbl">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="5">⭐⭐⭐⭐⭐</option></select></div>
+  </div>
+  <div class="g4">
+    <div class="fg"><label class="lbl">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
+    <div class="fg"><label class="lbl">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${d.co||''}"></div>
+    <div class="fg"><label class="lbl">Noches</label><input class="finput" type="number" id="h${id}-nc" placeholder="7" value="${d.noches||''}"></div>
+    <div class="fg"><label class="lbl">Precio base</label>
+      <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="h${id}-pr" placeholder="2717" value="${d.precio||''}"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Habitación</label><input class="finput" type="text" id="h${id}-hab" placeholder="Standard Room (4 personas)" value="${d.hab||''}"></div>
+    <div class="fg"><label class="lbl">Régimen</label><select class="fsel" id="h${id}-reg"><option value="">Sin especificar</option><option>Sin desayuno</option><option>Desayuno incluido</option><option>Media pensión</option><option>Pensión completa</option><option>Todo Incluido</option><option>Ultra Todo Incluido</option></select></div>
+  </div>
+  <div id="h${id}-pk" style="${isD||isU?'':'display:none'}">
+    <div class="disney-sec">
+      <div class="disney-badge" id="h${id}-badge">${isU?'🎬 Paquete Universal':'🏰 Paquete Disney'}</div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Tickets incluidos</label><input class="finput" type="text" id="h${id}-tkt" placeholder="4 Park Magic Ticket" value="${d.tickets||''}"></div>
+        <div class="fg"><label class="lbl">Días tickets</label><input class="finput" type="number" id="h${id}-tktd" placeholder="4" value="${d.dias_tkt||''}"></div>
+      </div>
+      <div class="fg"><label class="lbl">Parques</label>
+        <div class="chk-grp" id="h${id}-parques">${[['mk','🏰 Magic Kingdom'],['ep','🌍 EPCOT'],['ak','🦁 Animal Kingdom'],['hs','🎬 Hollywood Studios'],['us','🎥 Universal Studios'],['ia','🌴 Islands of Adventure'],['eu','✨ Epic Universe'],['vb','🌋 Volcano Bay']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+      </div>
+      <div class="fg"><label class="lbl">Beneficios</label>
+        <div class="chk-grp" id="h${id}-bens">${[['ep','⏰ Early Park Entry'],['tr','🚌 Transporte gratuito'],['mm','📸 Memory Maker'],['dl','🛍️ Entrega en hotel'],['ex','⚡ Express Pass'],['sp','🎪 Disney Springs'],['wp','🏄 Parque acuático gratis'],['me','🪄 Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+      </div>
+      <div style="background:white;border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(0,90,170,.15)">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:10px">🍽 Plan de comidas</div>
+        <div class="g3">
+          <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
+          <div class="fg"><label class="lbl">Precio con plan</label>
+            <div class="money-wrap"><div class="money-cur"><select id="h${id}-mp-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="h${id}-mp-pr" placeholder="3439" value="${d.mp_pr||''}"></div>
+          </div>
+          <div class="fg full"><label class="lbl">Descripción del plan</label>
+            <textarea class="ftxt" id="h${id}-mp-desc" rows="4" placeholder="Este plan aporta:&#10;• Comodidad total&#10;• Sin pagos en restaurantes&#10;• Abonas en CUOTAS">${d.mp_desc||''}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fg"><label class="lbl">Notas / opcionales</label>
+    <textarea class="ftxt" id="h${id}-notes" rows="3" placeholder="🎃 Opcionales especiales, notas para el cliente..." value="">${d.notes||''}</textarea>
+  </div>
+  <div class="fg"><label class="lbl">Amenities</label>
+    <div class="chk-grp" id="h${id}-am">${[['wifi','📶 WiFi'],['pool','🏊 Piscina'],['gym','💪 Gimnasio'],['spa','💆 Spa'],['bkf','🍳 Desayuno buffet'],['rest','🍽️ Restaurante'],['bar','🍹 Bar'],['beach','🏖️ Playa'],['park','🅿️ Estacionamiento'],['kids','👶 Área infantil']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+    <input class="finput" type="text" id="h${id}-am-x" placeholder="Otros amenities..." style="margin-top:8px" value="${d.am_x||''}">
+  </div>`;
+  document.getElementById('hoteles-cont').appendChild(el);
+  if(d.tipo) document.getElementById('h'+id+'-tipo').value=d.tipo;
+  if(d.regimen) document.getElementById('h'+id+'-reg').value=d.regimen;
+  if(d.mp) document.getElementById('h'+id+'-mp').value=d.mp;
+}
+function onHotelType(id){
+  const tipo=document.getElementById('h'+id+'-tipo').value;
+  const sec=document.getElementById('h'+id+'-pk');
+  const badge=document.getElementById('h'+id+'-badge');
+  if(tipo==='disney'||tipo==='universal'){sec.style.display='';badge.className='disney-badge'+(tipo==='universal'?' universal-badge':'');badge.textContent=tipo==='universal'?'🎬 Paquete Universal':'🏰 Paquete Disney';}
+  else sec.style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// TRASLADO BLOCK
+// ═══════════════════════════════════════════
+function addTraslado(d){
+  d=d||{};const id=++tc;
+  const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">✈→🏨 Aeropuerto → Hotel</option><option value="out">🏨→✈ Hotel → Aeropuerto</option><option value="hoteles">🏨↔🏨 Entre hoteles</option><option value="privado">🚗 Privado en destino</option><option value="ciudad">🏙️ A otra ciudad</option></select></div>
+    <div class="fg"><label class="lbl">Origen</label><input class="finput" type="text" id="t${id}-or" placeholder="Aeropuerto MCO" value="${d.origen||''}"></div>
+    <div class="fg"><label class="lbl">Destino</label><input class="finput" type="text" id="t${id}-de" placeholder="Disney All-Star Sports" value="${d.destino||''}"></div>
+  </div>
+  <div class="g4">
+    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="t${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora recogida</label><input class="finput" type="time" id="t${id}-ho" value="${d.hora||''}"></div>
+    <div class="fg"><label class="lbl">Vehículo</label><select class="fsel" id="t${id}-veh"><option>Van privada</option><option>Auto privado</option><option>Minibús</option><option>Shuttle compartido</option></select></div>
+    <div class="fg"><label class="lbl">Precio</label>
+      <div class="money-wrap"><div class="money-cur"><select id="t${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="t${id}-pr" placeholder="65" value="${d.precio||''}"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Proveedor</label>
+      <input class="finput" list="prov-list" type="text" id="t${id}-prov" placeholder="Orlantours · Gabriel Quezada" value="${d.prov||''}">
+    </div>
+    <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="t${id}-not" placeholder="Se abona en efectivo al finalizar" value="${d.notas||''}"></div>
+  </div>`;
+  document.getElementById('traslados-cont').appendChild(el);
+  if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
+  if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
+}
+
+// ═══════════════════════════════════════════
+// EXCURSIÓN BLOCK
+// ═══════════════════════════════════════════
+function addExcursion(d){
+  d=d||{};const id=++ec;
+  const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g2">
+    <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
+    <div class="fg"><label class="lbl">Categoría</label><select class="fsel" id="e${id}-cat"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option></select></div>
+    <div class="fg"><label class="lbl">Proveedor</label><input class="finput" list="prov-list" type="text" id="e${id}-prov" placeholder="Viator · Agencia local" value="${d.prov||''}"></div>
+  </div>
+  <div class="g4">
+    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora</label><input class="finput" type="time" id="e${id}-ho" value="${d.hora||''}"></div>
+    <div class="fg"><label class="lbl">Duración</label><input class="finput" type="text" id="e${id}-dur" placeholder="12-13 horas" value="${d.dur||''}"></div>
+    <div class="fg"><label class="lbl">Precio total</label>
+      <div class="money-wrap"><div class="money-cur"><select id="e${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="e${id}-pr" placeholder="0" value="${d.precio||''}"></div>
+    </div>
+  </div>
+  <div class="fg"><label class="lbl">Punto de encuentro</label><input class="finput" type="text" id="e${id}-punto" placeholder="Lobby del hotel 7:00 AM" value="${d.punto||''}"></div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">¿Qué incluye?</label><textarea class="ftxt" id="e${id}-inc" rows="3" placeholder="Transporte, almuerzo, guía bilingüe...">${d.inc||''}</textarea></div>
+    <div class="fg"><label class="lbl">¿Qué NO incluye?</label><textarea class="ftxt" id="e${id}-noinc" rows="3" placeholder="Impuesto arqueológico...">${d.noinc||''}</textarea></div>
+  </div>
+  <div class="fg"><label class="lbl">Descripción para el cliente</label><textarea class="ftxt" id="e${id}-desc" rows="3" placeholder="Descripción atractiva...">${d.desc||''}</textarea></div>
+  <div class="fg"><label class="lbl">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>`;
+  document.getElementById('excursiones-cont').appendChild(el);
+}
+
+// ═══════════════════════════════════════════
+// COLLECT FORM
+// ═══════════════════════════════════════════
+function collectForm(){
+  const vuelos=[],hoteles=[],traslados=[],excursiones=[];
+  const eqMap={b:'Bolso personal',c:'Carry-on',v23:'Valija 23kg',v32:'Valija 32kg','2v':'2 valijas'};
+  const pMap={mk:'Magic Kingdom',ep:'EPCOT',ak:'Animal Kingdom',hs:'Hollywood Studios',us:'Universal Studios',ia:'Islands of Adventure',eu:'Epic Universe',vb:'Volcano Bay'};
+  const bMap={ep:'Early Park Entry',tr:'Transporte gratuito',mm:'Memory Maker',dl:'Entrega en hotel',ex:'Express Pass',sp:'Disney Springs',wp:'Parque acuático gratis',me:'Magical Extras'};
+  const amMap={wifi:'WiFi',pool:'Piscina',gym:'Gimnasio',spa:'Spa',bkf:'Desayuno buffet',rest:'Restaurante',bar:'Bar',beach:'Playa',park:'Estacionamiento',kids:'Área infantil'};
+
+  document.querySelectorAll('[id^="vb-"]').forEach(blk=>{
+    const i=blk.id.replace('vb-','');const or=gv('v'+i+'-or');if(!or)return;
+    const mod=gv('v'+i+'-mod');
+    const eq=[...blk.querySelectorAll('#v'+i+'-eq input:checked')].map(x=>eqMap[x.value]||x.value);
+    const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · ')};
+    if(mod==='idavuelta'){Object.assign(base,{al2:gv('v'+i+'-al2'),num2:gv('v'+i+'-num2'),or2:gv('v'+i+'-or2'),io2:gv('v'+i+'-io2').toUpperCase(),de2:gv('v'+i+'-de2'),id2:gv('v'+i+'-id2').toUpperCase(),fs2:gv('v'+i+'-fs2'),hs2:gv('v'+i+'-hs2'),fl2:gv('v'+i+'-fl2'),hl2:gv('v'+i+'-hl2'),esc2:gv('v'+i+'-esc2'),tesc2:gv('v'+i+'-tesc2'),dur2:gv('v'+i+'-dur2')});}
+    vuelos.push(base);
+  });
+  document.querySelectorAll('[id^="hb-"]').forEach(blk=>{
+    const i=blk.id.replace('hb-','');const nm=gv('h'+i+'-nm');if(!nm)return;
+    const tipo=gv('h'+i+'-tipo');
+    const parqs=[...blk.querySelectorAll('#h'+i+'-parques input:checked')].map(x=>pMap[x.value]||x.value);
+    const bens=[...blk.querySelectorAll('#h'+i+'-bens input:checked')].map(x=>bMap[x.value]||x.value);
+    const am=[...blk.querySelectorAll('#h'+i+'-am input:checked')].map(x=>amMap[x.value]||x.value);
+    hoteles.push({nombre:nm,tipo,estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x')});
+  });
+  document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
+    const i=blk.id.replace('tb-','');const or=gv('t'+i+'-or'),de=gv('t'+i+'-de');if(!or&&!de)return;
+    traslados.push({tipo:gv('t'+i+'-tipo'),origen:or,destino:de,fecha:fd(gv('t'+i+'-fe')),hora:gv('t'+i+'-ho'),vehiculo:gv('t'+i+'-veh'),moneda:gv('t'+i+'-cur'),precio:gn('t'+i+'-pr'),prov:gv('t'+i+'-prov'),notas:gv('t'+i+'-not')});
+  });
+  document.querySelectorAll('[id^="eb-"]').forEach(blk=>{
+    const i=blk.id.replace('eb-','');const nm=gv('e'+i+'-nm');if(!nm)return;
+    excursiones.push({nombre:nm,categoria:gv('e'+i+'-cat'),prov:gv('e'+i+'-prov'),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs')});
+  });
+  const s=gv('m-sal'),e=gv('m-reg');
+  const noches=s&&e?Math.round((new Date(e)-new Date(s))/86400000):0;
+  const refId=gv('m-ref')||Math.floor(Math.random()*90000000+10000000);
+  return{refId,ts:Date.now(),_clientId:document.getElementById('_clientId')?.value||null,
+    estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
+    cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
+    viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches},
+    vuelos,hoteles,traslados,excursiones,
+    seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra')},
+    precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')}};
+}
+
+// ═══════════════════════════════════════════
+// SAVE QUOTE
+// ═══════════════════════════════════════════
+async function saveQuote(){
+  qData=collectForm();renderPreview(qData);
+  const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
+  btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span>';}});
+  try{
+    await dbSaveQuote(qData);
+    toast('✓ Guardado en la nube');
+  }catch(e){ toast('Error al guardar: '+e.message,false); }
+  finally{ btns.forEach(b=>{if(b){b.disabled=false;b.innerHTML='☁️ Guardar';}});}
+}
+
+// ═══════════════════════════════════════════
+// AI
+// ═══════════════════════════════════════════
+const SYS=`Sos experto en turismo. Extraé la info del texto y devolvé SOLO JSON válido sin backticks.
+{"cliente":{"nombre":"","celular":"","email":"","pasajeros":""},"viaje":{"destino":"","pais":"","salida":"DD/MM/YYYY","regreso":"DD/MM/YYYY","noches":0},"vuelos":[{"mod":"simple","aerolinea":"","numero":"","origen":"","iata_o":"","destino":"","iata_d":"","fs":"YYYY-MM-DD","hs":"HH:MM","fl":"YYYY-MM-DD","hl":"HH:MM","escala":"","t_escala":"","duracion":"","al2":"","num2":"","or2":"","io2":"","de2":"","id2":"","fs2":"YYYY-MM-DD","hs2":"HH:MM","fl2":"YYYY-MM-DD","hl2":"HH:MM","esc2":"","tesc2":"","dur2":"","tarifa":"Economy","moneda":"USD","precio":0,"fin":"","equipaje":""}],"hoteles":[{"nombre":"","tipo":"regular","estrellas":0,"ci":"DD/MM/YYYY","co":"DD/MM/YYYY","noches":0,"hab":"","regimen":"","moneda":"USD","precio":0,"tickets":"","parques":[],"beneficios":[],"mp":"","mp_cur":"USD","mp_pr":0,"mp_desc":"","notes":"","amenities":[]}],"traslados":[{"tipo":"in","origen":"","destino":"","fecha":"DD/MM/YYYY","hora":"","vehiculo":"Van privada","moneda":"USD","precio":0,"prov":"","notas":""}],"excursiones":[{"nombre":"","categoria":"","prov":"","fecha":"DD/MM/YYYY","hora":"","dur":"","moneda":"USD","precio":0,"punto":"","inc":"","noinc":"","desc":"","obs":""}],"seguro":{"nombre":"","cobertura_medica":"","equipaje_seg":"","preexistencias":"","moneda":"USD","precio":0,"fin":"","extra":""},"precios":{"moneda":"USD","por_persona":0,"total":0,"reserva":0,"cuotas":"","cancelacion":"","validez":"24 horas","tyc":""}}
+Si es ida y vuelta usa mod="idavuelta" y completá campos *2. Disney/Universal: tipo="disney"/"universal".`;
+
+async function processAI(){
+  const txt=document.getElementById('raw-text').value.trim();
+  if(!txt){showIAErr('Pegá tu cotización primero.');return;}
+  const key=localStorage.getItem('mp_key')||'';
+  if(!key){showIAErr('Guardá tu API Key primero.');return;}
+  const btn=document.getElementById('btn-ai');
+  btn.disabled=true;btn.innerHTML='<span class="spin">⏳</span> Procesando...';
+  document.getElementById('ia-err').style.display='none';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3500,system:SYS,messages:[{role:'user',content:txt}]})});
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    qData=JSON.parse(data.content[0].text);
+    if(qData.viaje?.destino&&!coverUrl)coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(qData.viaje.destino+' travel')}&sig=${Date.now()}`;
+    updCovers();renderPreview(qData);switchTab('preview');
+    toast('✓ Cotización estructurada correctamente');
+  }catch(e){showIAErr('Error: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='✨ Procesar con IA';}
+}
+function showIAErr(m){const e=document.getElementById('ia-err');e.textContent=m;e.style.display='';}
+function saveKey(){localStorage.setItem('mp_key',document.getElementById('api-key').value.trim());toast('✓ API Key guardada');}
+
+// ═══════════════════════════════════════════
+// COVER & LOGO
+// ═══════════════════════════════════════════
+function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;updCovers();};r.readAsDataURL(f);}
+function autoCover(){const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(dest+' travel')}&sig=${Date.now()}`;updCovers();}
+function removeCover(){coverUrl=null;updCovers();}
+function updCovers(){
+  ['cov-thumb','tb-thumb'].forEach(id=>{const e=document.getElementById(id);if(!e)return;e.src=coverUrl||'';e.style.display=coverUrl?'':'none';});
+  ['btn-rmcov','btn-rmcov2'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=coverUrl?'':'none';});
+  if(qData){renderPreview(qData);}
+}
+function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;localStorage.setItem('mp_logo',logoUrl);updateLogoPreview();};r.readAsDataURL(f);}
+function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogoPreview();}
+function updateLogoPreview(){
+  const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
+  if(logoUrl){w.innerHTML=`<img src="${logoUrl}" style="height:50px;max-width:160px;object-fit:contain;border-radius:8px;border:1px solid var(--g2);padding:5px;background:white">`;if(b)b.style.display='';}
+  else{const ini=(agCfg.nm||'M')[0].toUpperCase();w.innerHTML=`<div style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:white">${ini}</div>`;if(b)b.style.display='none';}
+  updateHeader();
+}
+function updateHeader(){
+  const lu=document.getElementById('hdr-logo-wrap');
+  if(lu){if(logoUrl)lu.innerHTML=`<img src="${logoUrl}" style="height:32px;object-fit:contain" alt="logo">`;else lu.innerHTML=`<div style="font-family:'Playfair Display',serif;color:white;font-size:1rem;font-weight:700">Magic<span style="color:var(--amber)">Planner</span></div>`;}
+}
+
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+function saveCfg(){
+  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc')};
+  localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
+  // Update in Supabase
+  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||''}).eq('email',currentUser.email);
+  updateHeader();updateLogoPreview();
+  const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
+}
+function loadCfg(){
+  [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+}
+
+// ═══════════════════════════════════════════
+// PREVIEW & PRINT
+// ═══════════════════════════════════════════
+function buildAndPreview(){qData=collectForm();renderPreview(qData);switchTab('preview');}
+function buildAndPrint(){qData=collectForm();renderPreview(qData);switchTab('preview');setTimeout(doPrint,600);}
+function doPrint(){
+  if(!qData)return;
+  const nm=(qData.cliente?.nombre||'cotizacion').toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const today=new Date();const dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yy=today.getFullYear();
+  const key='pc_'+nm+'_'+dd+mm+yy;
+  const cnt=(parseInt(localStorage.getItem(key))||0)+1;
+  localStorage.setItem(key,cnt);
+  document.title=`${nm}_${dd}${mm}${yy}_${String(cnt).padStart(2,'0')}`;
+  window.print();
+  setTimeout(()=>document.title='Magic Planner · Cotizador',1000);
+}
+function renderPreview(d){
+  document.getElementById('prev-empty').style.display='none';
+  document.getElementById('prev-content').style.display='';
+  const html=buildQuoteHTML(d);
+  document.getElementById('qscreen').innerHTML=html;
+  document.getElementById('qprint').innerHTML=html;
+  updCovers();
+}
+
+// ═══════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════
+async function renderHistory(){
+  const el=document.getElementById('hist-list');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div>';
+  const rows=await dbLoadQuotes();
+  const filt=document.getElementById('hist-filter')?.value||'';
+  const srch=(document.getElementById('hist-search')?.value||'').toLowerCase();
+  const filtered=rows.filter(r=>{
+    if(filt&&r.estado!==filt)return false;
+    if(srch&&!(r.destino||'').toLowerCase().includes(srch)&&!(r.pasajeros||'').toLowerCase().includes(srch)&&!(r.ref_id||'').includes(srch))return false;
+    return true;
+  });
+  if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)">Sin resultados.</div>';return;}
+  const stLbl={borrador:'📝 Borrador',enviada:'📨 Enviada',confirmada:'✅ Confirmada',cancelada:'❌ Cancelada'};
+  el.innerHTML=filtered.map(r=>`
+    <div class="hist-item" onclick="loadFromHistory('${r.ref_id}','${r.id}')">
+      <div class="hist-ico">✈️</div>
+      <div class="hist-info">
+        <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
+        <div class="hist-meta">Ref: ${r.ref_id} · ${r.pasajeros||''} · ${r.fecha_sal||''}</div>
+        <div class="hist-meta">${new Date(r.creado_en).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();changeStatus('${r.id}')">Estado</button>
+          <button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadFromHistory(refId, id){
+  const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
+  if(!data)return;
+  qData=data.datos;
+  if(data.cover_url) coverUrl=data.cover_url;
+  renderPreview(qData);switchTab('preview');
+}
+async function deleteQuote(id){
+  if(!confirm('¿Eliminar esta cotización?'))return;
+  await sb.from('cotizaciones').delete().eq('id',id);
+  toast('Cotización eliminada');renderHistory();
+}
+async function changeStatus(id){
+  const opts=['borrador','enviada','confirmada','cancelada'];
+  const nw=prompt('Estado:\n0=Borrador\n1=Enviada\n2=Confirmada\n3=Cancelada\n\nIngresá el número:');
+  const s=opts[parseInt(nw)];if(!s)return;
+  await sb.from('cotizaciones').update({estado:s}).eq('id',id);
+  toast('✓ Estado actualizado');renderHistory();
+}
+
+// ═══════════════════════════════════════════
+// CLIENTES
+// ═══════════════════════════════════════════
+async function renderClients(){
+  await loadClients();
+  const q=(document.getElementById('cli-filter')?.value||'').toLowerCase();
+  const filtered=allClients.filter(c=>!q||(c.nombre||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.celular||'').includes(q));
+  const el=document.getElementById('cli-list');
+  if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)">Sin clientes.</div>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Notas</th><th></th></tr></thead><tbody>
+  ${filtered.map(c=>`<tr>
+    <td><strong>${c.nombre||'—'}</strong></td>
+    <td>${c.celular||'—'}</td>
+    <td>${c.email||'—'}</td>
+    <td style="font-size:.75rem;color:var(--g3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notas||''}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')">✏️</button>
+      <button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')">🗑️</button>
+    </td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function openClientModal(id){
+  const c=allClients.find(x=>x.id===id)||{};
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">${id?'✏️ Editar cliente':'+ Nuevo cliente'}</div>
+    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="mc-nm" value="${c.nombre||''}" placeholder="Hugo Martínez"></div>
+    <div class="fg"><label class="lbl">Celular</label><input class="finput" id="mc-cel" value="${c.celular||''}" placeholder="+54 362..."></div>
+    <div class="fg"><label class="lbl">Email</label><input class="finput" id="mc-em" value="${c.email||''}" placeholder="email@..."></div>
+    <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="mc-not" rows="3">${c.notas||''}</textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveClient('${id||''}')">💾 Guardar</button>
+    </div>`;
+  openModal();
+}
+async function saveClient(id){
+  const nm=document.getElementById('mc-nm').value.trim();if(!nm){alert('Nombre requerido');return;}
+  const row={nombre:nm,celular:document.getElementById('mc-cel').value,email:document.getElementById('mc-em').value,notas:document.getElementById('mc-not').value};
+  if(id){await sb.from('clientes').update(row).eq('id',id);}
+  else{await sb.from('clientes').insert(row);}
+  closeModal();toast('✓ Cliente guardado');renderClients();
+}
+async function deleteClient(id){
+  if(!confirm('¿Eliminar cliente?'))return;
+  await sb.from('clientes').delete().eq('id',id);
+  toast('Cliente eliminado');renderClients();
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+async function renderAdmin(){
+  if(!isAdmin) return;
+  // Agentes
+  const {data:ags}=await sb.from('agentes').select('*').order('creado_en');
+  document.getElementById('admin-agentes').innerHTML=ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th><th></th></tr></thead><tbody>
+  ${ags.map(a=>`<tr>
+    <td>${a.email}</td><td>${a.nombre||'—'}</td>
+    <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':'st-borrador'}">${a.rol}</span></td>
+    <td>${a.activo?'✅':'❌'}</td>
+    <td><button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button></td>
+  </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
+
+  // Aerolíneas
+  const {data:aeros}=await sb.from('aerolineas').select('*').order('nombre');
+  document.getElementById('admin-aero').innerHTML=aeros?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>IATA</th><th>Activa</th><th></th></tr></thead><tbody>
+  ${aeros.map(a=>`<tr><td>${a.nombre}</td><td><code>${a.codigo_iata||'—'}</code></td><td>${a.activa?'✅':'❌'}</td>
+    <td><button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')">🗑️</button></td></tr>`).join('')}</tbody></table>`:'<p>Sin aerolíneas.</p>';
+
+  // Proveedores
+  const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
+  document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Contacto</th><th></th></tr></thead><tbody>
+  ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'—'}</td><td>${p.pais||'—'}</td><td style="font-size:.75rem">${p.contacto||''}</td>
+    <td><button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')">🗑️</button></td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
+
+  // Datalists for autocomplete
+  buildDataLists(aeros||[], provs||[]);
+}
+
+function buildDataLists(aeros, provs){
+  let dl=document.getElementById('al-list');
+  if(!dl){dl=document.createElement('datalist');dl.id='al-list';document.body.appendChild(dl);}
+  dl.innerHTML=aeros.map(a=>`<option value="${a.nombre}">`).join('');
+  let pl=document.getElementById('prov-list');
+  if(!pl){pl=document.createElement('datalist');pl.id='prov-list';document.body.appendChild(pl);}
+  pl.innerHTML=provs.map(p=>`<option value="${p.nombre}">`).join('');
+}
+
+async function toggleAdmin(id,rol){
+  const nw=rol==='admin'?'agente':'admin';
+  if(!confirm(`¿Cambiar rol a "${nw}"?`))return;
+  await sb.from('agentes').update({rol:nw}).eq('id',id);
+  toast('✓ Rol actualizado');renderAdmin();
+}
+
+function openAeroModal(){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Aerolínea</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ma-nm" placeholder="American Airlines"></div>
+      <div class="fg"><label class="lbl">Código IATA</label><input class="finput" id="ma-iata" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveAero()">💾 Guardar</button>
+    </div>`;openModal();
+}
+async function saveAero(){
+  const nm=document.getElementById('ma-nm').value.trim();if(!nm)return;
+  await sb.from('aerolineas').insert({nombre:nm,codigo_iata:document.getElementById('ma-iata').value.toUpperCase()});
+  closeModal();toast('✓ Aerolínea agregada');renderAdmin();
+}
+async function deleteAero(id){if(!confirm('¿Eliminar?'))return;await sb.from('aerolineas').delete().eq('id',id);toast('Eliminada');renderAdmin();}
+
+function openProvModal(){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Proveedor</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="mp-nm" placeholder="Orlantours"></div>
+      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="mp-tipo"><option value="traslado">Traslado</option><option value="excursion">Excursión</option><option value="hotel">Hotel</option><option value="seguro">Seguro</option><option value="otro">Otro</option></select></div>
+      <div class="fg"><label class="lbl">País</label><input class="finput" id="mp-pais" placeholder="Estados Unidos"></div>
+      <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="mp-ciudad" placeholder="Orlando"></div>
+      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="mp-not" placeholder="Gabriel Quezada · +1 407..."></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveProv()">💾 Guardar</button>
+    </div>`;openModal();
+}
+async function saveProv(){
+  const nm=document.getElementById('mp-nm').value.trim();if(!nm)return;
+  await sb.from('proveedores').insert({nombre:nm,tipo:document.getElementById('mp-tipo').value,pais:document.getElementById('mp-pais').value,ciudad:document.getElementById('mp-ciudad').value,contacto:document.getElementById('mp-not').value});
+  closeModal();toast('✓ Proveedor agregado');renderAdmin();
+}
+async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('proveedores').delete().eq('id',id);toast('Eliminado');renderAdmin();}
+
+function openAgentModal(){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">📩 Invitar agente</div>
+    <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se invitan desde el panel de <strong>Netlify Identity</strong>. El sistema los reconoce automáticamente al hacer login por primera vez.</p>
+    <div class="tip">💡 Netlify → Site configuration → Identity → Invite users → Ingresá el email del agente. Recibirá un mail para crear su contraseña.</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-pri" onclick="window.open('https://app.netlify.com','_blank');closeModal()">Ir a Netlify →</button>
+    </div>`;openModal();
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function openModal(){document.getElementById('modal-overlay').style.display='block';document.getElementById('modal-box').style.display='block';}
+function closeModal(){document.getElementById('modal-overlay').style.display='none';document.getElementById('modal-box').style.display='none';}
+
+// ═══════════════════════════════════════════
+// BUILD QUOTE HTML (PDF renderer)
+// ═══════════════════════════════════════════
+function fmtMoney(n,cur){if(!n||n===0)return'';return(cur||'USD')+' '+Number(n).toLocaleString('es-AR');}
+function buildQuoteHTML(d){
+  const ag=agCfg;const today=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+  const pr=d.precios||{},cl=d.cliente||{},vi=d.viaje||{};
+  const ini=(ag.nm||'M').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'M';
+  const gloss=[{n:vi.destino?1:0,l:'Destinos',i:'📍'},{n:(d.hoteles||[]).filter(h=>h.nombre).length,l:'Alojamientos',i:'🏨'},{n:(d.vuelos||[]).length,l:'Vuelos',i:'✈️'},{n:(d.excursiones||[]).filter(e=>e.nombre).length,l:'Entradas',i:'🎟️'},{n:(d.traslados||[]).filter(t=>t.origen||t.destino).length,l:'Transfers',i:'🚐'},{n:vi.noches||0,l:'Noches',i:'🌙'},{n:d.seguro?.nombre?1:0,l:'Seguros',i:'🛡️'}].filter(g=>g.n>0);
+
+  let H=`<div id="qwrap" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 6px 40px rgba(12,30,60,.15);max-width:900px;margin:0 auto">
+  <div class="q-cover">
+    ${coverUrl?`<img class="q-cover-img" src="${coverUrl}" alt="">`:''}
+    <div class="q-cover-ov"></div>
+    <div class="q-topbar">
+      <div style="font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">SU VIAJE A:</div>
+      ${logoUrl?`<img class="q-logo-img" src="${logoUrl}" alt="logo">`:`<div class="q-logo-txt">${ag.ag||ag.nm||'Magic Planner'}</div>`}
+    </div>
+    <div class="q-cover-bot">
+      ${cl.nombre?`<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4);border-radius:20px;padding:5px 14px;margin-bottom:14px"><span style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)">Cotización para</span><span style="font-size:.82rem;font-weight:700;color:white">${cl.nombre}</span></div><br>`:''}
+      <div class="q-dest">${vi.destino||'Destino'}${vi.pais?', '+vi.pais:''}</div>
+      <div class="q-ref">Ref ID: ${d.refId||'—'} · ${today}</div>
+    </div>
+  </div>
+  <div class="q-bar">
+    <div><div class="qb-l">PRESUPUESTO</div><div class="qb-v">${cl.pasajeros||cl.nombre||'—'}</div>${vi.salida&&vi.regreso?`<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:1px">${vi.salida} – ${vi.regreso}${vi.noches?' ('+vi.noches+' noches)':''}</div>`:''}</div>
+    <div><div class="qb-l">VALIDEZ</div><div class="qb-v">${pr.validez||'24 horas'}</div></div>
+    <div><div class="qb-l">REF</div><div class="qb-v">${d.refId||'—'}</div></div>
+  </div>`;
+
+  if(gloss.length)H+=`<div class="q-gloss"><span class="q-gloss-l">INCLUYE:</span>${gloss.map(g=>`<div class="qg-item"><span>${g.i}</span><span class="qg-n">${g.n}</span><span class="qg-l">${g.l}</span></div>`).join('')}</div>`;
+
+  // Descripción
+  H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">📋</div><div><div class="q-sec-ttl">Descripción del viaje</div></div></div>`;
+  if((d.vuelos||[]).length)H+=`<div class="desc-item"><span>✈️</span><span><strong>Transporte aéreo:</strong> ${d.vuelos[0].origen} → ${d.vuelos[d.vuelos.length-1].destino||d.vuelos[0].destino}</span></div>`;
+  (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>H+=`<div class="desc-item"><span>🏨</span><span><strong>${h.noches?h.noches+' noches':'Hotel'}:</strong> ${h.nombre}${h.regimen?', '+h.regimen:''}.</span></div>`);
+  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>H+=`<div class="desc-item"><span>🎟️</span><span><strong>Ticket:</strong> ${e.nombre}</span></div>`);
+  (d.traslados||[]).filter(t=>t.origen||t.destino).forEach(t=>H+=`<div class="desc-item"><span>🚐</span><span><strong>Traslado:</strong> ${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' en '+t.vehiculo:''}.</span></div>`);
+  if(d.seguro?.nombre)H+=`<div class="desc-item"><span>🛡️</span><span><strong>Seguro:</strong> ${d.seguro.nombre}</span></div>`;
+  H+=`</div>`;
+
+  // Vuelos
+  if((d.vuelos||[]).length){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">✈️</div><div><div class="q-sec-ttl">Vuelos</div></div></div>`;
+    const rBP=(label,isRet,or,io,hs,fs,de,id2,hl,fl,al,num,esc,tesc,dur)=>`
+      <div class="q-bp" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:.78rem;font-weight:700;color:var(--g4)">${or} → ${de}</span>
+          <span class="q-bp-chip${isRet?' ret':''}">${label}</span>
+        </div>
+        <div class="q-bp-grid">
+          <div><div class="q-bp-time">${hs||'–'}</div><div class="q-bp-code">${io||or}</div><div class="q-bp-city">${or}</div>${fs?`<div style="font-size:.67rem;color:var(--g3);margin-top:2px">${fd(fs)}</div>`:''}</div>
+          <div class="q-bp-mid">
+            <div class="q-bp-escl">${esc?'con escala':'directo'}</div>
+            <div class="q-bp-line"></div>
+            ${esc?`<div class="q-bp-via">✦ ${esc}${tesc?' · '+tesc:''}</div>`:''}
+            ${dur?`<div class="q-bp-dur">${dur}</div>`:''}
+          </div>
+          <div style="text-align:right"><div class="q-bp-time">${hl||'–'}</div><div class="q-bp-code">${id2||de}</div><div class="q-bp-city">${de}</div>${fl?`<div style="font-size:.67rem;color:var(--g3);margin-top:2px">${fd(fl)}</div>`:''}</div>
+        </div>
+        <div class="q-bp-footer">
+          ${al?`<span class="q-bp-meta"><b>${al}</b>${num?' · '+num:''}</span>`:''}
+          ${al?`<span class="q-bp-meta">${al.tarifa||''}</span>`:''}
+        </div>
+      </div>`;
+    d.vuelos.forEach(v=>{
+      H+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
+      if(v.mod==='idavuelta'&&v.or2)H+=rBP('VUELTA',true,v.or2,v.io2,v.hs2,v.fs2,v.de2,v.id2,v.hl2,v.fl2,v.al2,v.num2,v.esc2,v.tesc2,v.dur2);
+      if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${v.tarifa?`<span style="background:var(--navy);color:white;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="font-size:.75rem;color:var(--g4)">🧳 ${v.equipaje}</span>`:''}</div>`;
+      if(v.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio vuelos${v.fin?' · '+v.fin:''}</div><div class="ptag-v">${fmtMoney(v.precio,v.moneda)}</div></div></div>`;
+    });
+    H+=`</div>`;
+  }
+
+  // Hoteles
+  (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>{
+    const isP=h.tipo==='disney'||h.tipo==='universal';
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🏨</div><div><div class="q-sec-ttl">${h.nombre}</div><div class="q-sec-sub">${[h.ci&&h.co?h.ci+' – '+h.co:'',h.noches?h.noches+' noches':''].filter(Boolean).join(' · ')}</div></div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 20px;margin-bottom:14px">
+      ${h.estrellas&&h.estrellas!=='—'?`<div style="display:flex;gap:6px;align-items:center"><span style="font-size:.64rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.08em">Cat.</span><span>${'⭐'.repeat(parseInt(h.estrellas)||0)}</span></div>`:''}
+      ${h.hab?`<div style="font-size:.84rem;font-weight:600">${h.hab}</div>`:''}
+      ${h.regimen?`<span style="background:var(--g1);border-radius:6px;padding:3px 10px;font-size:.76rem;font-weight:600">${h.regimen}</span>`:''}
+    </div>`;
+    if(isP){
+      H+=`<div style="background:rgba(0,87,168,.04);border:1px solid rgba(0,87,168,.16);border-radius:10px;padding:16px;margin-bottom:14px">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:${h.tipo==='universal'?'linear-gradient(135deg,#111,#2a2a2a)':'linear-gradient(135deg,#0057A8,#003D7A)'};color:white;font-size:.68rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px">${h.tipo==='universal'?'🎬 Paquete Universal':'🏰 Paquete Disney'}</div>`;
+      if(h.tickets)H+=`<div class="desc-item">🎟️ <span><strong>Tickets:</strong> ${h.tickets}${h.dias_tkt?' ('+h.dias_tkt+' días)':''}</span></div>`;
+      if(h.parques?.length)H+=`<div class="desc-item">🎢 <span><strong>Parques:</strong> ${h.parques.join(', ')}</span></div>`;
+      if(h.beneficios?.length)H+=`<div style="margin-top:12px"><div style="font-size:.64rem;font-weight:700;color:#0057A8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Beneficios</div><div class="am-grid">${h.beneficios.map(b=>`<div class="am-tag"><span class="ck">✓</span>${b}</div>`).join('')}</div></div>`;
+      H+=`</div>`;
+      if(h.mp&&h.mp_pr>0){
+        H+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="background:var(--g1);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Sin plan de comidas</div><div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--sky)">${fmtMoney(h.precio,h.moneda)}</div></div>
+          <div style="background:linear-gradient(135deg,rgba(0,87,168,.08),rgba(0,87,168,.04));border:1px solid rgba(0,87,168,.18);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:#0057A8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">${h.mp}</div><div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--sky)">${fmtMoney(h.mp_pr,h.mp_cur||h.moneda)}</div></div>
+        </div>`;
+        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:var(--g1);border-radius:9px;padding:14px;margin-bottom:12px;border-left:3px solid var(--sky)">${lines.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--dark);margin:10px 0 6px">${c}</div>`:`<div style="font-size:.78rem;color:#4a5568;margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--sky);font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
+      } else if(h.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio</div><div class="ptag-v">${fmtMoney(h.precio,h.moneda)}</div></div></div>`;
+      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:14px;margin-top:10px">${nl.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉🎪✨]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--dark);margin:8px 0 5px">${c}</div>`:`<div style="font-size:.78rem;color:#78350F;margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--amber2)">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
+    } else {
+      const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
+      if(allAm.length)H+=`<div style="margin-bottom:14px"><div class="am-grid">${allAm.map(a=>`<div class="am-tag"><span class="ck">✓</span>${a}</div>`).join('')}</div></div>`;
+      if(h.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio</div><div class="ptag-v">${fmtMoney(h.precio,h.moneda)}</div></div></div>`;
+    }
+    H+=`</div>`;
+  });
+
+  // Excursiones
+  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🎟️</div><div><div class="q-sec-ttl">${e.nombre}</div><div class="q-sec-sub">${[e.categoria,e.fecha,e.dur].filter(Boolean).join(' · ')}</div></div></div>
+    ${e.desc?`<div style="font-size:.84rem;line-height:1.8;color:#4a5568;margin-bottom:14px">${e.desc}</div>`:''}
+    ${e.prov?`<div class="desc-item">🏢 <span><strong>Proveedor:</strong> ${e.prov}</span></div>`:''}
+    ${e.punto?`<div class="desc-item">📍 <span><strong>Encuentro:</strong> ${e.punto}</span></div>`:''}`;
+    if(e.inc||e.noinc)H+=`<div class="ie-grid">${e.inc?`<div><div class="ie-ttl" style="color:var(--green)">✓ Incluido</div>${e.inc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span style="color:var(--green)">✓</span>${x.trim()}</div>`).join('')}</div>`:''} ${e.noinc?`<div><div class="ie-ttl" style="color:var(--red)">✕ No incluido</div>${e.noinc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span style="color:var(--red)">✕</span>${x.trim()}</div>`).join('')}</div>`:''}</div>`;
+    if(e.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio total</div><div class="ptag-v">${fmtMoney(e.precio,e.moneda)}</div></div></div>`;
+    H+=`</div>`;
+  });
+
+  // Traslados
+  const trsOk=(d.traslados||[]).filter(t=>t.origen||t.destino);
+  if(trsOk.length){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🚐</div><div><div class="q-sec-ttl">Traslados</div></div></div>`;
+    trsOk.forEach((t,i)=>H+=`<div class="tr-row" ${i===trsOk.length-1?'style="border:none"':''}><div style="width:38px;height:38px;background:var(--g1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🚐</div><div style="flex:1"><div style="font-weight:700;font-size:.88rem">${t.origen||''}${t.destino?' → '+t.destino:''}</div><div style="font-size:.76rem;color:var(--g4);margin-top:2px">${[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov].filter(Boolean).join(' · ')}</div>${t.notas?`<div style="font-size:.72rem;color:var(--g3);margin-top:1px">${t.notas}</div>`:''}</div><div style="font-weight:700;font-size:.86rem;color:${t.precio>0?'var(--sky)':'var(--g3)'};white-space:nowrap">${t.precio>0?fmtMoney(t.precio,t.moneda):'Incluido'}</div></div>`);
+    H+=`</div>`;
+  }
+
+  // Seguro
+  if(d.seguro?.nombre){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🛡️</div><div><div class="q-sec-ttl">Asistencia al viajero — ${d.seguro.nombre}</div></div></div>
+    <div class="seg-cards">${[['🏥','Cobertura médica',d.seguro.cobertura_medica],['🧳','Equipaje',d.seguro.equipaje_seg],['💊','Preexistencias',d.seguro.preexistencias],['📋','Beneficios',d.seguro.extra]].filter(r=>r[2]).map(r=>`<div class="seg-card"><div class="ico">${r[0]}</div><div class="lbl2">${r[1]}</div><div class="val">${r[2]}</div></div>`).join('')}</div>
+    ${d.seguro.precio>0?`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio${d.seguro.fin?' · '+d.seguro.fin:''}</div><div class="ptag-v">${fmtMoney(d.seguro.precio,d.seguro.moneda)}</div></div></div>`:''}
+    </div>`;
+  }
+
+  // T&C
+  if(pr.tyc){
+    const lines=pr.tyc.split(/\n/).filter(l=>l.trim());
+    H+=`<div class="q-sec"><div class="tyc-box">${lines.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^📄/)?`<div class="tyc-ttl">${c}</div>`:l.match(/^✨/)?`<div class="tyc-cta">${c}</div>`:`<div class="tyc-item"><span style="flex-shrink:0">${l.match(/^[^\w\s]/)?l[0]:'•'}</span><span>${c}</span></div>`;}).join('')}</div></div>`;
+  }
+
+  // Total + agente
+  H+=`<div class="q-sec">
+    <div class="q-total">
+      <div class="q-total-l">
+        <div class="tl">Precio total del paquete</div>
+        ${pr.reserva>0?`<div class="detail">Reserva: ${fmtMoney(pr.reserva,pr.moneda3)}${pr.cuotas?' · '+pr.cuotas:''}</div>`:''}
+        ${pr.cancelacion?`<div class="detail">Cancelación gratuita hasta: ${pr.cancelacion}</div>`:''}
+        <div class="detail">Válida por ${pr.validez||'24 horas'}</div>
+      </div>
+      <div class="q-total-amt">${pr.total>0?fmtMoney(pr.total,pr.moneda2):pr.por_persona>0?fmtMoney(pr.por_persona,pr.moneda)+'/pax':'—'}</div>
+    </div>
+    <div class="q-agent">
+      ${logoUrl?`<img src="${logoUrl}" style="height:40px;max-width:110px;object-fit:contain" alt="logo">`:`<div class="q-agent-av">${ini}</div>`}
+      <div><div class="q-agent-nm">${ag.nm||'Tu Agente'}${ag.ag?' · '+ag.ag:''}</div><div class="q-agent-ct">${[ag.em,ag.tel,ag.soc].filter(Boolean).join('  ·  ')}</div></div>
+    </div>
+  </div></div>`;
+  return H;
+}
+
+window.onbeforeprint=()=>{if(qData)document.getElementById('qprint').innerHTML=buildQuoteHTML(qData);};
+</script>
+</body>
+</html>
