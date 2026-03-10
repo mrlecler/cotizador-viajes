@@ -283,6 +283,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
   <button class="ntab"     onclick="switchTab('preview')">📄 Vista previa</button>
   <button class="ntab"     onclick="switchTab('history')">🗂 Historial</button>
   <button class="ntab"     onclick="switchTab('clients')">👥 Clientes</button>
+  <button class="ntab"     onclick="switchTab('dashboard')">📊 Dashboard</button>
   <button class="ntab"     onclick="switchTab('admin')" id="nav-admin" style="display:none">🛠 Admin</button>
   <button class="ntab"     onclick="switchTab('config')">⚙️ Mi perfil</button>
 </div>
@@ -363,6 +364,14 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
   </div>
 
   <div class="card">
+    <div class="card-hd"><div class="card-ico">🎫</div><div><div class="card-ttl">Tickets / Entradas</div></div></div>
+    <div class="card-body">
+      <div id="tickets-cont"></div>
+      <button class="add-row" onclick="addTicket()">+ Agregar ticket / entrada</button>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-hd"><div class="card-ico">🛡️</div><div><div class="card-ttl">Asistencia al viajero</div></div></div>
     <div class="card-body">
       <div class="g3">
@@ -379,6 +388,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
       <div class="g2">
         <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="seg-fin" placeholder="12 cuotas sin interés · $27.347/mes"></div>
         <div class="fg"><label class="lbl">Otras coberturas</label><input class="finput" type="text" id="seg-extra" placeholder="Covid · PAX Cash"></div>
+      </div>
+      <div class="fg"><label class="lbl">💰 Comisión agente</label>
+        <div class="money-wrap" style="max-width:260px"><div class="money-cur"><select id="seg-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+        <input class="money-inp" type="number" id="seg-com" placeholder="0"></div>
       </div>
     </div>
   </div>
@@ -397,7 +410,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
           <div class="money-wrap"><div class="money-cur"><select id="p-cur3"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-res" placeholder="300"></div>
         </div>
         <div class="fg"><label class="lbl">Cuotas</label><input class="finput" type="text" id="p-cuo" placeholder="12 cuotas sin interés"></div>
-        <div class="fg"><label class="lbl">Cancelación hasta</label><input class="finput" type="text" id="p-can" placeholder="01/09/2026"></div>
+        <div class="fg"><label class="lbl">Cancelación hasta</label><input class="finput" type="date" id="p-can"></div>
         <div class="fg"><label class="lbl">Validez</label><input class="finput" type="text" id="p-val" placeholder="24 horas"></div>
       </div>
       <div class="fg"><label class="lbl">Términos y condiciones</label>
@@ -425,7 +438,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
     </div>
   </div>
 
-  <div style="display:flex;gap:10px;justify-content:flex-end;padding-bottom:20px">
+  <div style="display:flex;gap:10px;justify-content:flex-end;padding-bottom:20px;flex-wrap:wrap">
+    <button class="btn btn-out btn-sm" onclick="loadTestData()" title="Llena el formulario con datos ficticios de ejemplo" style="margin-right:auto;opacity:.7">🎲 Cargar datos de prueba</button>
     <button class="btn btn-nav" onclick="buildAndPreview()">👁 Vista previa</button>
     <button class="btn btn-save" id="btn-save-main" onclick="saveQuote()">☁️ Guardar en nube</button>
     <button class="btn btn-pdf" onclick="buildAndPrint()">🖨️ PDF</button>
@@ -514,6 +528,23 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
       <input class="finput" type="text" id="cli-filter" placeholder="Buscar por nombre, email o teléfono..." oninput="renderClients()" style="margin-bottom:16px">
       <div id="cli-list"><div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div>
     </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="tab-dashboard" class="panel">
+  <div class="intro-bar">
+    <h2>📊 Dashboard</h2>
+    <p>Métricas de rendimiento — cotizaciones, comisiones y conversión.</p>
+  </div>
+  <div id="dash-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px"></div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">📅</div><div><div class="card-ttl">Cotizaciones del mes</div></div></div>
+    <div class="card-body"><div id="dash-mes-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico">💰</div><div><div class="card-ttl">Últimas comisiones registradas</div></div></div>
+    <div class="card-body"><div id="dash-comisiones-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div></div>
   </div>
 </div>
 
@@ -616,6 +647,7 @@ let agCfg=JSON.parse(localStorage.getItem('mp_cfg')||'{}');
 let qData=null, currentUser=null, isAdmin=false;
 let vc=0,hc=0,tc=0,ec=0;
 let allClients=[], allQuotes=[];
+let formDraft=null; // BUG3 — draft en memoria para preservar el formulario entre tabs
 
 // ═══════════════════════════════════════════
 // AUTH — NETLIFY IDENTITY
@@ -737,7 +769,7 @@ function init(){
   loadCfg(); updateHeader();
   const k=document.getElementById('api-key'); if(k) k.value=localStorage.getItem('mp_key')||'';
   if(logoUrl) updateLogoPreview();
-  addVuelo(); addHotel(); addTraslado(); addExcursion();
+  addVuelo(); addHotel(); addTraslado(); addExcursion(); addTicket();
   loadClients();
 }
 
@@ -745,7 +777,9 @@ function init(){
 // SUPABASE HELPERS
 // ═══════════════════════════════════════════
 async function dbSaveQuote(d){
-  if(!currentUser) return;
+  if(!currentUser) throw new Error('No hay sesión activa. Iniciá sesión para guardar.');
+  // Ensure refId exists
+  if(!d.refId) d.refId = Math.floor(Math.random()*90000000+10000000);
   // Save/update client
   let clientId = d._clientId;
   if(!clientId && d.cliente?.nombre){
@@ -756,9 +790,12 @@ async function dbSaveQuote(d){
       if(nc) clientId = nc.id;
     }
   }
-  // Get agente id
-  const {data:ag} = await sb.from('agentes').select('id').eq('email',currentUser.email).single();
-  const agId = ag?.id;
+  // Get agente id (non-fatal if not found)
+  let agId = null;
+  try {
+    const {data:ag} = await sb.from('agentes').select('id').eq('email',currentUser.email).maybeSingle();
+    agId = ag?.id || null;
+  } catch(e) { console.warn('agente lookup warning:', e.message); }
   const row = {
     ref_id: String(d.refId),
     cliente_id: clientId||null,
@@ -773,17 +810,26 @@ async function dbSaveQuote(d){
     cover_url: coverUrl||null,
     precio_total: d.precios?.total||d.precios?.por_persona||null,
     moneda: d.precios?.moneda||'USD',
-    notas_int: d.notas_int||''
+    notas_int: d.notas_int||'',
+    total_comision: d.total_comision||0
   };
   const {error} = await sb.from('cotizaciones').upsert(row, {onConflict:'ref_id'});
-  if(error) throw error;
+  if(error){
+    console.error('dbSaveQuote error:', error);
+    throw new Error(error.message||(error.details||JSON.stringify(error)));
+  }
   await loadClients();
 }
 
 async function dbLoadQuotes(){
   const {data,error} = await sb.from('cotizaciones')
-    .select('*').order('creado_en',{ascending:false}).limit(200);
-  if(error){ console.error(error); return []; }
+    .select('*').order('created_at',{ascending:false}).limit(200);
+  if(error){
+    // Fallback: try with creado_en column name
+    const {data:d2,error:e2} = await sb.from('cotizaciones').select('*').limit(200);
+    if(e2){ console.error('dbLoadQuotes error:',e2); return []; }
+    return (d2||[]).sort((a,b)=>new Date(b.created_at||b.creado_en||0)-new Date(a.created_at||a.creado_en||0));
+  }
   return data||[];
 }
 
@@ -802,16 +848,93 @@ function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={form:0,ia:1,preview:2,history:3,clients:4,admin:5,config:6};
+const tabMap={form:0,ia:1,preview:2,history:3,clients:4,dashboard:5,admin:6,config:7};
 function switchTab(id){
+  // BUG3 — save draft when leaving the form tab
+  const activePanel=document.querySelector('.panel.on');
+  if(activePanel?.id==='tab-form' && id!=='form'){
+    try{ formDraft=collectForm(); }catch(e){ console.warn('saveDraft warning:',e.message); }
+  }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+id)?.classList.add('on');
   const idx=tabMap[id];
   if(idx!==undefined) document.querySelectorAll('.ntab')[idx]?.classList.add('on');
+  // BUG3 — restore draft when returning to form tab
+  if(id==='form' && formDraft){ restoreDraft(formDraft); }
   if(id==='history') renderHistory();
   if(id==='clients') renderClients();
   if(id==='admin') renderAdmin();
+  if(id==='dashboard') renderDashboard();
+}
+
+// BUG3 — restore simple fields from draft
+function restoreDraft(d){
+  if(!d) return;
+  const set=(id,val)=>{ const e=document.getElementById(id); if(e&&val!==undefined&&val!==null) e.value=val; };
+  // Cliente
+  set('m-nombre', d.cliente?.nombre);
+  set('m-cel', d.cliente?.celular);
+  set('m-email', d.cliente?.email);
+  // Pasajeros (extraer de string "2 adultos, 1 niño")
+  const pax=d.cliente?.pasajeros||'';
+  const mA=pax.match(/(\d+)\s*adulto/); if(mA) set('m-adu', mA[1]);
+  const mN=pax.match(/(\d+)\s*niño/);   if(mN) set('m-nin', mN[1]);
+  const mI=pax.match(/(\d+)\s*infante/); if(mI) set('m-inf', mI[1]);
+  // Viaje
+  set('m-dest', d.viaje?.destino);
+  set('m-pais', d.viaje?.pais);
+  // Fechas: almacenadas como DD/MM/YYYY, los inputs son type=date (YYYY-MM-DD)
+  const toISO=(dd)=>{ if(!dd) return ''; if(dd.includes('-')) return dd; const[day,mo,yr]=dd.split('/'); return yr&&mo&&day?`${yr}-${mo.padStart(2,'0')}-${day.padStart(2,'0')}`:'' };
+  set('m-sal', toISO(d.viaje?.salida));
+  set('m-reg', toISO(d.viaje?.regreso));
+  set('m-estado', d.estado);
+  set('m-notas', d.notas_int);
+  set('m-ref', d.refId);
+  // Precios
+  set('p-cur',  d.precios?.moneda);
+  set('p-pp',   d.precios?.por_persona);
+  set('p-cur2', d.precios?.moneda2);
+  set('p-tot',  d.precios?.total);
+  set('p-cur3', d.precios?.moneda3);
+  set('p-res',  d.precios?.reserva);
+  set('p-cuo',  d.precios?.cuotas);
+  set('p-can',  d.precios?.cancelacion);
+  set('p-val',  d.precios?.validez);
+  set('p-tyc',  d.precios?.tyc);
+  // Seguro
+  set('seg-nm',    d.seguro?.nombre);
+  set('seg-med',   d.seguro?.cobertura_medica);
+  set('seg-eq',    d.seguro?.equipaje_seg);
+  set('seg-pre',   d.seguro?.preexistencias);
+  set('seg-dias',  d.seguro?.dias);
+  set('seg-cur',   d.seguro?.moneda);
+  set('seg-precio',d.seguro?.precio);
+  set('seg-fin',   d.seguro?.fin);
+  set('seg-extra', d.seguro?.extra);
+  set('seg-com',   d.seguro?.comision);
+  set('seg-com-cur',d.seguro?.com_cur);
+  // Bloques dinámicos — reconstruir desde draft
+  if(d.vuelos?.length){
+    document.getElementById('vuelos-cont').innerHTML=''; vc=0;
+    d.vuelos.forEach(v=>addVuelo(v));
+  }
+  if(d.hoteles?.length){
+    document.getElementById('hoteles-cont').innerHTML=''; hc=0;
+    d.hoteles.forEach(h=>addHotel(h));
+  }
+  if(d.traslados?.length){
+    const tc_el=document.getElementById('traslados-cont'); if(tc_el){ tc_el.innerHTML=''; tc=0; }
+    d.traslados.forEach(t=>addTraslado(t));
+  }
+  if(d.excursiones?.length){
+    const ec_el=document.getElementById('excursiones-cont'); if(ec_el){ ec_el.innerHTML=''; ec=0; }
+    d.excursiones.forEach(e=>addExcursion(e));
+  }
+  if(d.tickets?.length){
+    const tks=document.getElementById('tickets-cont'); if(tks){ tks.innerHTML=''; }
+    d.tickets.forEach(t=>addTicket(t));
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -942,6 +1065,10 @@ function addVuelo(d){
   <div class="fg"><label class="lbl">Equipaje</label>
     <div class="chk-grp" id="v${id}-eq">${[['b','👜 Bolso personal'],['c','🎒 Carry-on'],['v23','🧳 Valija 23kg'],['v32','🧳 Valija 32kg'],['2v','🧳 2 valijas']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="v${id}-eq-x" placeholder="Detalle adicional..." style="margin-top:8px" value="${d.eq_x||''}">
+  </div>
+  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+    <div class="money-wrap"><div class="money-cur"><select id="v${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+    <input class="money-inp" type="number" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('vuelos-cont').appendChild(el);
   if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
@@ -1009,6 +1136,10 @@ function addHotel(d){
   <div class="fg"><label class="lbl">Amenities</label>
     <div class="chk-grp" id="h${id}-am">${[['wifi','📶 WiFi'],['pool','🏊 Piscina'],['gym','💪 Gimnasio'],['spa','💆 Spa'],['bkf','🍳 Desayuno buffet'],['rest','🍽️ Restaurante'],['bar','🍹 Bar'],['beach','🏖️ Playa'],['park','🅿️ Estacionamiento'],['kids','👶 Área infantil']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="h${id}-am-x" placeholder="Otros amenities..." style="margin-top:8px" value="${d.am_x||''}">
+  </div>
+  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+    <div class="money-wrap"><div class="money-cur"><select id="h${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+    <input class="money-inp" type="number" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('hoteles-cont').appendChild(el);
   if(d.tipo) document.getElementById('h'+id+'-tipo').value=d.tipo;
@@ -1023,6 +1154,23 @@ function onHotelType(id){
   else sec.style.display='none';
 }
 
+
+// ═══════════════════════════════════════════
+// PROVIDER SELECT HELPER
+// ═══════════════════════════════════════════
+function onProvSel(selId){
+  const sel=document.getElementById(selId);
+  const inp=document.getElementById(selId.replace('-sel','-inp'));
+  if(!inp)return;
+  if(sel.value==='__otro__'){inp.style.display='';inp.focus();}
+  else{inp.style.display='none';inp.value='';}
+}
+function getProvVal(baseId){
+  const sel=document.getElementById(baseId+'-sel');
+  const inp=document.getElementById(baseId+'-inp');
+  if(!sel)return'';
+  return sel.value==='__otro__'?(inp?inp.value:''):sel.value;
+}
 // ═══════════════════════════════════════════
 // TRASLADO BLOCK
 // ═══════════════════════════════════════════
@@ -1047,13 +1195,19 @@ function addTraslado(d){
   </div>
   <div class="g2">
     <div class="fg"><label class="lbl">Proveedor</label>
-      <input class="finput" list="prov-list" type="text" id="t${id}-prov" placeholder="Orlantours · Gabriel Quezada" value="${d.prov||''}">
+      <select class="fsel prov-sel" id="t${id}-sel" onchange="onProvSel('t${id}-sel')" data-val=""><option value="">— Elegir proveedor —</option></select>
+      <input class="finput" type="text" id="t${id}-inp" placeholder="Nombre del proveedor" style="display:none;margin-top:6px" value="">
     </div>
     <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="t${id}-not" placeholder="Se abona en efectivo al finalizar" value="${d.notas||''}"></div>
+  </div>
+  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+    <div class="money-wrap"><div class="money-cur"><select id="t${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+    <input class="money-inp" type="number" id="t${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('traslados-cont').appendChild(el);
   if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
   if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
+  if(d.prov){const ps=document.getElementById('t'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('t'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
 }
 
 // ═══════════════════════════════════════════
@@ -1067,8 +1221,12 @@ function addExcursion(d){
     <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
   <div class="g2">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
-    <div class="fg"><label class="lbl">Categoría</label><select class="fsel" id="e${id}-cat"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option></select></div>
-    <div class="fg"><label class="lbl">Proveedor</label><input class="finput" list="prov-list" type="text" id="e${id}-prov" placeholder="Viator · Agencia local" value="${d.prov||''}"></div>
+    <div class="fg"><label class="lbl">Categoría</label><select class="fsel" id="e${id}-cat" onchange="onExcCat(${id},this.value)"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option><option value="otros">Otros</option></select></div>
+    <div class="fg" id="e${id}-cat-otros-wrap" style="display:none"><label class="lbl">Título personalizado</label><input class="finput" type="text" id="e${id}-cat-otros" placeholder="Ej: Ticket de entrada, City Tour..." value="${d.cat_otros||''}"></div>
+    <div class="fg"><label class="lbl">Proveedor</label>
+      <select class="fsel prov-sel" id="e${id}-sel" onchange="onProvSel('e${id}-sel')" data-val=""><option value="">— Elegir proveedor —</option></select>
+      <input class="finput" type="text" id="e${id}-inp" placeholder="Nombre del proveedor" style="display:none;margin-top:6px" value="">
+    </div>
   </div>
   <div class="g4">
     <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${d.fecha||''}"></div>
@@ -1084,8 +1242,13 @@ function addExcursion(d){
     <div class="fg"><label class="lbl">¿Qué NO incluye?</label><textarea class="ftxt" id="e${id}-noinc" rows="3" placeholder="Impuesto arqueológico...">${d.noinc||''}</textarea></div>
   </div>
   <div class="fg"><label class="lbl">Descripción para el cliente</label><textarea class="ftxt" id="e${id}-desc" rows="3" placeholder="Descripción atractiva...">${d.desc||''}</textarea></div>
-  <div class="fg"><label class="lbl">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>`;
+  <div class="fg"><label class="lbl">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>
+  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+    <div class="money-wrap"><div class="money-cur"><select id="e${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+    <input class="money-inp" type="number" id="e${id}-com" placeholder="0" value="${d.comision||''}"></div>
+  </div>`;
   document.getElementById('excursiones-cont').appendChild(el);
+  if(d.prov){const ps=document.getElementById('e'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('e'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
 }
 
 // ═══════════════════════════════════════════
@@ -1102,7 +1265,7 @@ function collectForm(){
     const i=blk.id.replace('vb-','');const or=gv('v'+i+'-or');if(!or)return;
     const mod=gv('v'+i+'-mod');
     const eq=[...blk.querySelectorAll('#v'+i+'-eq input:checked')].map(x=>eqMap[x.value]||x.value);
-    const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · ')};
+    const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · '),comision:gn('v'+i+'-com'),com_cur:gv('v'+i+'-com-cur')};
     if(mod==='idavuelta'){Object.assign(base,{al2:gv('v'+i+'-al2'),num2:gv('v'+i+'-num2'),or2:gv('v'+i+'-or2'),io2:gv('v'+i+'-io2').toUpperCase(),de2:gv('v'+i+'-de2'),id2:gv('v'+i+'-id2').toUpperCase(),fs2:gv('v'+i+'-fs2'),hs2:gv('v'+i+'-hs2'),fl2:gv('v'+i+'-fl2'),hl2:gv('v'+i+'-hl2'),esc2:gv('v'+i+'-esc2'),tesc2:gv('v'+i+'-tesc2'),dur2:gv('v'+i+'-dur2')});}
     vuelos.push(base);
   });
@@ -1112,40 +1275,69 @@ function collectForm(){
     const parqs=[...blk.querySelectorAll('#h'+i+'-parques input:checked')].map(x=>pMap[x.value]||x.value);
     const bens=[...blk.querySelectorAll('#h'+i+'-bens input:checked')].map(x=>bMap[x.value]||x.value);
     const am=[...blk.querySelectorAll('#h'+i+'-am input:checked')].map(x=>amMap[x.value]||x.value);
-    hoteles.push({nombre:nm,tipo,estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x')});
+    hoteles.push({nombre:nm,tipo,estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur')});
   });
   document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
     const i=blk.id.replace('tb-','');const or=gv('t'+i+'-or'),de=gv('t'+i+'-de');if(!or&&!de)return;
-    traslados.push({tipo:gv('t'+i+'-tipo'),origen:or,destino:de,fecha:fd(gv('t'+i+'-fe')),hora:gv('t'+i+'-ho'),vehiculo:gv('t'+i+'-veh'),moneda:gv('t'+i+'-cur'),precio:gn('t'+i+'-pr'),prov:gv('t'+i+'-prov'),notas:gv('t'+i+'-not')});
+    traslados.push({tipo:gv('t'+i+'-tipo'),origen:or,destino:de,fecha:fd(gv('t'+i+'-fe')),hora:gv('t'+i+'-ho'),vehiculo:gv('t'+i+'-veh'),moneda:gv('t'+i+'-cur'),precio:gn('t'+i+'-pr'),prov:getProvVal('t'+i),notas:gv('t'+i+'-not'),comision:gn('t'+i+'-com'),com_cur:gv('t'+i+'-com-cur')});
   });
   document.querySelectorAll('[id^="eb-"]').forEach(blk=>{
     const i=blk.id.replace('eb-','');const nm=gv('e'+i+'-nm');if(!nm)return;
-    excursiones.push({nombre:nm,categoria:gv('e'+i+'-cat'),prov:gv('e'+i+'-prov'),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs')});
+    const cat=gv('e'+i+'-cat');
+    excursiones.push({nombre:nm,categoria:cat==='otros'?gv('e'+i+'-cat-otros')||'Otros':cat,prov:getProvVal('e'+i),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs'),comision:gn('e'+i+'-com'),com_cur:gv('e'+i+'-com-cur')});
+  });
+  const tickets_arr=[];
+  document.querySelectorAll('[id^="tkb-"]').forEach(blk=>{
+    const i=blk.id.replace('tkb-','');const nm=gv('tk'+i+'-nm');if(!nm)return;
+    tickets_arr.push({nombre:nm,tipo:gv('tk'+i+'-tipo'),prov:getProvVal('tk'+i),fecha:fd(gv('tk'+i+'-fe')),moneda:gv('tk'+i+'-cur'),precio:gn('tk'+i+'-pr'),comision:gn('tk'+i+'-com'),com_cur:gv('tk'+i+'-com-cur'),desc:gv('tk'+i+'-desc')});
   });
   const s=gv('m-sal'),e=gv('m-reg');
   const noches=s&&e?Math.round((new Date(e)-new Date(s))/86400000):0;
   const refId=gv('m-ref')||Math.floor(Math.random()*90000000+10000000);
+  // Calcular comisión total (solo valores en USD o numéricas)
+  const calcCom=(arr)=>arr.reduce((sum,x)=>sum+(x.comision&&x.com_cur!=='%'?x.comision:0),0);
+  const segCom=(gv('seg-com-cur')!=='%'?gn('seg-com'):0);
+  const total_comision=calcCom(vuelos)+calcCom(hoteles)+calcCom(traslados)+calcCom(excursiones)+calcCom(tickets_arr)+segCom;
   return{refId,ts:Date.now(),_clientId:document.getElementById('_clientId')?.value||null,
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
     viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches},
-    vuelos,hoteles,traslados,excursiones,
-    seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra')},
-    precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')}};
+    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,
+    seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
+    precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
+    total_comision};
 }
 
 // ═══════════════════════════════════════════
 // SAVE QUOTE
 // ═══════════════════════════════════════════
 async function saveQuote(){
-  qData=collectForm();renderPreview(qData);
+  console.log('click saveQuote — currentUser:', currentUser?.email);
+  // Check auth BEFORE disabling buttons
+  if(!currentUser){
+    toast('Debés iniciar sesión para guardar.',false);
+    return;
+  }
+  let d;
+  try{ d=collectForm(); }
+  catch(err){ toast('Error al leer formulario: '+err.message,false); console.error('collectForm error:',err); return; }
+  qData=d;
+  try{ renderPreview(qData); }catch(err){ console.warn('renderPreview warning:',err); }
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
-  btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span>';}});
+  btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span> Guardando...';}});
   try{
     await dbSaveQuote(qData);
     toast('✓ Guardado en la nube');
-  }catch(e){ toast('Error al guardar: '+e.message,false); }
-  finally{ btns.forEach(b=>{if(b){b.disabled=false;b.innerHTML='☁️ Guardar';}});}
+  }catch(e){
+    console.error('saveQuote error:',e);
+    toast('Error al guardar: '+(e.message||JSON.stringify(e)),false);
+  }
+  finally{ 
+    const b0=document.getElementById('btn-save-main');
+    const b1=document.getElementById('btn-save-prev');
+    if(b0){b0.disabled=false;b0.innerHTML='☁️ Guardar en nube';}
+    if(b1){b1.disabled=false;b1.innerHTML='☁️ Guardar';}
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1164,14 +1356,26 @@ async function processAI(){
   btn.disabled=true;btn.innerHTML='<span class="spin">⏳</span> Procesando...';
   document.getElementById('ia-err').style.display='none';
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3500,system:SYS,messages:[{role:'user',content:txt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3500,system:SYS,messages:[{role:'user',content:txt}]})});
     const data=await res.json();
-    if(data.error)throw new Error(data.error.message);
+    if(data.error){
+      const ec=data.error.type||'';
+      if(ec==='overloaded_error')throw new Error('⚠️ Los servidores de Anthropic están sobrecargados. Intentá nuevamente en unos minutos.');
+      if(ec==='authentication_error')throw new Error('🔑 API Key inválida. Verificá tu clave en la sección IA.');
+      if(ec==='permission_error'||data.error.message?.toLowerCase().includes('credit'))throw new Error('💳 Créditos de Anthropic agotados. Recargá tu cuenta en console.anthropic.com.');
+      if(data.error.message?.toLowerCase().includes('overload'))throw new Error('⚠️ Los servidores de Anthropic están sobrecargados. Intentá en unos minutos.');
+      throw new Error(data.error.message||'Error desconocido de la API');
+    }
     qData=JSON.parse(data.content[0].text);
     if(qData.viaje?.destino&&!coverUrl)coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(qData.viaje.destino+' travel')}&sig=${Date.now()}`;
     updCovers();renderPreview(qData);switchTab('preview');
     toast('✓ Cotización estructurada correctamente');
-  }catch(e){showIAErr('Error: '+e.message);}
+  }catch(e){
+    let msg=e.message||'Error desconocido';
+    if(msg.includes('429')||msg.includes('Too Many'))msg='⏱️ Límite de solicitudes alcanzado. Esperá un momento.';
+    if(msg.includes('402')||msg.toLowerCase().includes('billing'))msg='💳 Créditos de Anthropic agotados. Recargá en console.anthropic.com.';
+    showIAErr(msg);
+  }
   finally{btn.disabled=false;btn.innerHTML='✨ Procesar con IA';}
 }
 function showIAErr(m){const e=document.getElementById('ia-err');e.textContent=m;e.style.display='';}
@@ -1219,18 +1423,23 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PREVIEW & PRINT
 // ═══════════════════════════════════════════
-function buildAndPreview(){qData=collectForm();renderPreview(qData);switchTab('preview');}
-function buildAndPrint(){qData=collectForm();renderPreview(qData);switchTab('preview');setTimeout(doPrint,600);}
+function buildAndPreview(){
+  console.log('click buildAndPreview');
+  try{qData=collectForm();renderPreview(qData);switchTab('preview');}
+  catch(e){toast('Error al generar vista: '+e.message,false);console.error(e);}
+}
+function buildAndPrint(){
+  console.log('click buildAndPrint');
+  try{qData=collectForm();renderPreview(qData);switchTab('preview');setTimeout(doPrint,600);}
+  catch(e){toast('Error al generar PDF: '+e.message,false);console.error(e);}
+}
 function doPrint(){
-  if(!qData)return;
+  if(!qData){toast('Primero generá la vista previa.',false);return;}
   const nm=(qData.cliente?.nombre||'cotizacion').toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
   const today=new Date();const dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yy=today.getFullYear();
-  const key='pc_'+nm+'_'+dd+mm+yy;
-  const cnt=(parseInt(localStorage.getItem(key))||0)+1;
-  localStorage.setItem(key,cnt);
-  document.title=`${nm}_${dd}${mm}${yy}_${String(cnt).padStart(2,'0')}`;
+  document.title=`${nm}_${dd}${mm}${yy}`;
   window.print();
-  setTimeout(()=>document.title='Magic Planner · Cotizador',1000);
+  setTimeout(()=>document.title='Magic Planner · Cotizador',1500);
 }
 function renderPreview(d){
   document.getElementById('prev-empty').style.display='none';
@@ -1263,7 +1472,7 @@ async function renderHistory(){
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
         <div class="hist-meta">Ref: ${r.ref_id} · ${r.pasajeros||''} · ${r.fecha_sal||''}</div>
-        <div class="hist-meta">${new Date(r.creado_en).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        <div class="hist-meta">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
@@ -1356,20 +1565,29 @@ async function renderAdmin(){
     <td>${a.email}</td><td>${a.nombre||'—'}</td>
     <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':'st-borrador'}">${a.rol}</span></td>
     <td>${a.activo?'✅':'❌'}</td>
-    <td><button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">✏️ Editar</button>
+      <button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button>
+    </td>
   </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
 
   // Aerolíneas
   const {data:aeros}=await sb.from('aerolineas').select('*').order('nombre');
   document.getElementById('admin-aero').innerHTML=aeros?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>IATA</th><th>Activa</th><th></th></tr></thead><tbody>
   ${aeros.map(a=>`<tr><td>${a.nombre}</td><td><code>${a.codigo_iata||'—'}</code></td><td>${a.activa?'✅':'❌'}</td>
-    <td><button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')">🗑️</button></td></tr>`).join('')}</tbody></table>`:'<p>Sin aerolíneas.</p>';
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="editAeroModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.codigo_iata||''}')">✏️</button>
+      <button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')">🗑️</button>
+    </td></tr>`).join('')}</tbody></table>`:'<p>Sin aerolíneas.</p>';
 
   // Proveedores
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
   document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Contacto</th><th></th></tr></thead><tbody>
   ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'—'}</td><td>${p.pais||'—'}</td><td style="font-size:.75rem">${p.contacto||''}</td>
-    <td><button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')">🗑️</button></td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}')">✏️</button>
+      <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')">🗑️</button>
+    </td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
 
   // Datalists for autocomplete
   buildDataLists(aeros||[], provs||[]);
@@ -1382,6 +1600,17 @@ function buildDataLists(aeros, provs){
   let pl=document.getElementById('prov-list');
   if(!pl){pl=document.createElement('datalist');pl.id='prov-list';document.body.appendChild(pl);}
   pl.innerHTML=provs.map(p=>`<option value="${p.nombre}">`).join('');
+  // Populate prov-sel dropdowns with Otro option
+  const provOpts='<option value="">— Elegir proveedor —</option>'+provs.map(p=>`<option value="${p.nombre}">${p.nombre}${p.ciudad?' · '+p.ciudad:''}</option>`).join('')+'<option value="__otro__">✏️ Otro (escribir manualmente)</option>';
+  document.querySelectorAll('.prov-sel').forEach(sel=>{
+    const cur=sel.getAttribute('data-val')||'';
+    sel.innerHTML=provOpts;
+    if(cur){
+      // Check if value exists in options, else select __otro__ and fill sibling input
+      const exists=[...sel.options].some(o=>o.value===cur);
+      if(exists){sel.value=cur;}else{sel.value='__otro__';const inp=document.getElementById(sel.id.replace('-sel','-inp'));if(inp){inp.value=cur;inp.style.display='';}}
+    }
+  });
 }
 
 async function toggleAdmin(id,rol){
@@ -1432,6 +1661,161 @@ async function saveProv(){
 }
 async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('proveedores').delete().eq('id',id);toast('Eliminado');renderAdmin();}
 
+// ═══════════════════════════════════════════
+// ADMIN EDIT MODALS
+// ═══════════════════════════════════════════
+function editAgentModal(id,nombre,email,rol){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar agente</div>
+    <div class="fg"><label class="lbl">Email</label><input class="finput" id="ea-em" value="${email}" readonly style="opacity:.6"></div>
+    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ea-nm" value="${nombre}" placeholder="Nombre completo"></div>
+    <div class="fg"><label class="lbl">Rol</label><select class="fsel" id="ea-rol"><option value="agente" ${rol==='agente'?'selected':''}>Agente</option><option value="admin" ${rol==='admin'?'selected':''}>Admin</option></select></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveAgentEdit('${id}')">💾 Guardar</button>
+    </div>`;openModal();
+}
+async function saveAgentEdit(id){
+  const nm=document.getElementById('ea-nm').value.trim();
+  const rol=document.getElementById('ea-rol').value;
+  await sb.from('agentes').update({nombre:nm,rol}).eq('id',id);
+  closeModal();toast('✓ Agente actualizado');renderAdmin();
+}
+
+function editAeroModal(id,nombre,iata){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar aerolínea</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="aea-nm" value="${nombre}" placeholder="American Airlines"></div>
+      <div class="fg"><label class="lbl">Código IATA</label><input class="finput" id="aea-iata" value="${iata}" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveAeroEdit('${id}')">💾 Guardar</button>
+    </div>`;openModal();
+}
+async function saveAeroEdit(id){
+  const nm=document.getElementById('aea-nm').value.trim();if(!nm)return;
+  await sb.from('aerolineas').update({nombre:nm,codigo_iata:document.getElementById('aea-iata').value.toUpperCase()}).eq('id',id);
+  closeModal();toast('✓ Aerolínea actualizada');renderAdmin();
+}
+
+function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar proveedor</div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="epv-nm" value="${nombre}" placeholder="Orlantours"></div>
+      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="epv-tipo"><option value="traslado" ${tipo==='traslado'?'selected':''}>Traslado</option><option value="excursion" ${tipo==='excursion'?'selected':''}>Excursión</option><option value="hotel" ${tipo==='hotel'?'selected':''}>Hotel</option><option value="seguro" ${tipo==='seguro'?'selected':''}>Seguro</option><option value="otro" ${tipo==='otro'?'selected':''}>Otro</option></select></div>
+      <div class="fg"><label class="lbl">País</label><input class="finput" id="epv-pais" value="${pais}" placeholder="Estados Unidos"></div>
+      <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="epv-ciudad" value="${ciudad}" placeholder="Orlando"></div>
+      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="epv-not" value="${contacto}" placeholder="Gabriel · +1 407..."></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveProvEdit('${id}')">💾 Guardar</button>
+    </div>`;openModal();
+}
+async function saveProvEdit(id){
+  const nm=document.getElementById('epv-nm').value.trim();if(!nm)return;
+  await sb.from('proveedores').update({nombre:nm,tipo:document.getElementById('epv-tipo').value,pais:document.getElementById('epv-pais').value,ciudad:document.getElementById('epv-ciudad').value,contacto:document.getElementById('epv-not').value}).eq('id',id);
+  closeModal();toast('✓ Proveedor actualizado');renderAdmin();
+}
+
+// ═══════════════════════════════════════════
+// TICKET BLOCK
+// ═══════════════════════════════════════════
+let tkc=0;
+function addTicket(d){
+  d=d||{};const id=++tkc;
+  const el=document.createElement('div');el.className='rep';el.id='tkb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Ticket ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3">
+    <div class="fg full"><label class="lbl">Nombre / Descripción</label><input class="finput" type="text" id="tk${id}-nm" placeholder="City Pass · Universal 2 días" value="${d.nombre||''}"></div>
+    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="tk${id}-tipo"><option>Ticket de parque</option><option>City Pass</option><option>Entrada museo</option><option>Espectáculo</option><option>Transporte</option><option>Otro</option></select></div>
+    <div class="fg"><label class="lbl">Proveedor</label>
+      <select class="fsel prov-sel" id="tk${id}-sel" onchange="onProvSel('tk${id}-sel')" data-val=""><option value="">— Elegir proveedor —</option></select>
+      <input class="finput" type="text" id="tk${id}-inp" placeholder="Nombre del proveedor" style="display:none;margin-top:6px" value="">
+    </div>
+  </div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="tk${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl">Precio</label>
+      <div class="money-wrap"><div class="money-cur"><select id="tk${id}-cur"><option>USD</option><option>ARS</option></select></div>
+      <input class="money-inp" type="number" id="tk${id}-pr" placeholder="0" value="${d.precio||''}"></div>
+    </div>
+    <div class="fg"><label class="lbl">💰 Comisión agente</label>
+      <div class="money-wrap"><div class="money-cur"><select id="tk${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+      <input class="money-inp" type="number" id="tk${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    </div>
+  </div>
+  <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="tk${id}-desc" placeholder="Canjeables en ventanilla..." value="${d.desc||''}"></div>`;
+  document.getElementById('tickets-cont').appendChild(el);
+  if(d.tipo) document.getElementById('tk'+id+'-tipo').value=d.tipo;
+}
+
+// ═══════════════════════════════════════════
+// EXCURSION CATEGORY OTROS
+// ═══════════════════════════════════════════
+function onExcCat(id,val){
+  const wrap=document.getElementById('e'+id+'-cat-otros-wrap');
+  if(wrap) wrap.style.display=val==='otros'?'':'none';
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+async function renderDashboard(){
+  const all=await dbLoadQuotes();
+  const now=new Date();
+  const mesActual=all.filter(r=>{
+    const d=new Date(r.created_at||r.creado_en||Date.now());
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  });
+  const confirmadas=all.filter(r=>r.estado==='confirmada');
+  const totalPrecio=confirmadas.reduce((s,r)=>s+(r.precio_total||0),0);
+  // Comisiones desde datos JSON
+  const totalCom=all.reduce((s,r)=>s+(r.datos?.total_comision||0),0);
+  const conversion=all.length?Math.round((confirmadas.length/all.length)*100):0;
+  // Render metric cards
+  const metrics=[
+    {ico:'📅',lbl:'Cotizaciones este mes',val:mesActual.length,color:'var(--sky)'},
+    {ico:'📋',lbl:'Total cotizaciones',val:all.length,color:'var(--navy)'},
+    {ico:'✅',lbl:'Confirmadas',val:confirmadas.length,color:'var(--green)'},
+    {ico:'💰',lbl:'Comisiones acumuladas',val:'USD '+Number(totalCom).toLocaleString('es-AR'),color:'var(--amber2)'},
+    {ico:'📈',lbl:'Tasa de conversión',val:conversion+'%',color:'var(--green)'},
+    {ico:'💵',lbl:'Valor confirmadas',val:'USD '+Number(totalPrecio).toLocaleString('es-AR'),color:'var(--sky2)'},
+  ];
+  document.getElementById('dash-metrics').innerHTML=metrics.map(m=>`
+    <div style="background:white;border:1px solid var(--g2);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-left:4px solid ${m.color}">
+      <div style="font-size:1.4rem;margin-bottom:8px">${m.ico}</div>
+      <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g3);margin-bottom:6px">${m.lbl}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:${m.color}">${m.val}</div>
+    </div>`).join('');
+  // Cotizaciones del mes
+  const stLbl={borrador:'📝',enviada:'📨',confirmada:'✅',cancelada:'❌'};
+  document.getElementById('dash-mes-list').innerHTML=mesActual.length?`<table class="tbl"><thead><tr><th>Cliente</th><th>Destino</th><th>Ref</th><th>Estado</th><th>Precio</th><th>Comisión</th></tr></thead><tbody>
+  ${mesActual.map(r=>`<tr>
+    <td><strong>${r.datos?.cliente?.nombre||'—'}</strong></td>
+    <td>${r.destino||'—'}</td>
+    <td style="font-size:.75rem;color:var(--g3)">${r.ref_id}</td>
+    <td><span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||''} ${r.estado||'—'}</span></td>
+    <td style="font-weight:700;color:var(--sky)">${r.precio_total?r.moneda+' '+Number(r.precio_total).toLocaleString('es-AR'):'—'}</td>
+    <td style="font-weight:700;color:var(--amber2)">${r.datos?.total_comision?'USD '+Number(r.datos.total_comision).toLocaleString('es-AR'):'—'}</td>
+  </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin cotizaciones este mes.</div>';
+  // Últimas con comisión
+  const conCom=all.filter(r=>r.datos?.total_comision>0).slice(0,10);
+  document.getElementById('dash-comisiones-list').innerHTML=conCom.length?`<table class="tbl"><thead><tr><th>Cliente</th><th>Destino</th><th>Fecha</th><th>Estado</th><th>Comisión total</th></tr></thead><tbody>
+  ${conCom.map(r=>`<tr>
+    <td><strong>${r.datos?.cliente?.nombre||'—'}</strong></td>
+    <td>${r.destino||'—'}</td>
+    <td style="font-size:.75rem;color:var(--g3)">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</td>
+    <td><span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||''} ${r.estado||'—'}</span></td>
+    <td style="font-weight:700;color:var(--amber2)">USD ${Number(r.datos.total_comision).toLocaleString('es-AR')}</td>
+  </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin comisiones registradas todavía.</div>';
+}
+
 function openAgentModal(){
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:20px">📩 Invitar agente</div>
@@ -1456,14 +1840,17 @@ function buildQuoteHTML(d){
   const ag=agCfg;const today=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
   const pr=d.precios||{},cl=d.cliente||{},vi=d.viaje||{};
   const ini=(ag.nm||'M').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'M';
-  const gloss=[{n:vi.destino?1:0,l:'Destinos',i:'📍'},{n:(d.hoteles||[]).filter(h=>h.nombre).length,l:'Alojamientos',i:'🏨'},{n:(d.vuelos||[]).length,l:'Vuelos',i:'✈️'},{n:(d.excursiones||[]).filter(e=>e.nombre).length,l:'Entradas',i:'🎟️'},{n:(d.traslados||[]).filter(t=>t.origen||t.destino).length,l:'Transfers',i:'🚐'},{n:vi.noches||0,l:'Noches',i:'🌙'},{n:d.seguro?.nombre?1:0,l:'Seguros',i:'🛡️'}].filter(g=>g.n>0);
+  const gloss=[{n:vi.destino?1:0,l:'Destinos',i:'📍'},{n:(d.hoteles||[]).filter(h=>h.nombre).length,l:'Alojamientos',i:'🏨'},{n:(d.vuelos||[]).length,l:'Vuelos',i:'✈️'},{n:(d.excursiones||[]).filter(e=>e.nombre).length,l:'Excursiones',i:'🎟️'},{n:(d.tickets||[]).filter(t=>t.nombre).length,l:'Tickets',i:'🎫'},{n:(d.traslados||[]).filter(t=>t.origen||t.destino).length,l:'Transfers',i:'🚐'},{n:vi.noches||0,l:'Noches',i:'🌙'},{n:d.seguro?.nombre?1:0,l:'Seguros',i:'🛡️'}].filter(g=>g.n>0);
 
   let H=`<div id="qwrap" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 6px 40px rgba(12,30,60,.15);max-width:900px;margin:0 auto">
   <div class="q-cover">
     ${coverUrl?`<img class="q-cover-img" src="${coverUrl}" alt="">`:''}
     <div class="q-cover-ov"></div>
     <div class="q-topbar">
-      <div style="font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">SU VIAJE A:</div>
+      <div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">SU VIAJE A</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--amber);line-height:1.1;margin-top:2px">${(vi.destino||'')+(vi.pais?', '+vi.pais:'')}</div>
+      </div>
       ${logoUrl?`<img class="q-logo-img" src="${logoUrl}" alt="logo">`:`<div class="q-logo-txt">${ag.ag||ag.nm||'Magic Planner'}</div>`}
     </div>
     <div class="q-cover-bot">
@@ -1484,7 +1871,8 @@ function buildQuoteHTML(d){
   H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">📋</div><div><div class="q-sec-ttl">Descripción del viaje</div></div></div>`;
   if((d.vuelos||[]).length)H+=`<div class="desc-item"><span>✈️</span><span><strong>Transporte aéreo:</strong> ${d.vuelos[0].origen} → ${d.vuelos[d.vuelos.length-1].destino||d.vuelos[0].destino}</span></div>`;
   (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>H+=`<div class="desc-item"><span>🏨</span><span><strong>${h.noches?h.noches+' noches':'Hotel'}:</strong> ${h.nombre}${h.regimen?', '+h.regimen:''}.</span></div>`);
-  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>H+=`<div class="desc-item"><span>🎟️</span><span><strong>Ticket:</strong> ${e.nombre}</span></div>`);
+  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>H+=`<div class="desc-item"><span>🎟️</span><span><strong>Excursión:</strong> ${e.nombre}</span></div>`);
+  (d.tickets||[]).filter(t=>t.nombre).forEach(t=>H+=`<div class="desc-item"><span>🎫</span><span><strong>Ticket:</strong> ${t.nombre}</span></div>`);
   (d.traslados||[]).filter(t=>t.origen||t.destino).forEach(t=>H+=`<div class="desc-item"><span>🚐</span><span><strong>Traslado:</strong> ${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' en '+t.vehiculo:''}.</span></div>`);
   if(d.seguro?.nombre)H+=`<div class="desc-item"><span>🛡️</span><span><strong>Seguro:</strong> ${d.seguro.nombre}</span></div>`;
   H+=`</div>`;
@@ -1515,7 +1903,12 @@ function buildQuoteHTML(d){
       </div>`;
     d.vuelos.forEach(v=>{
       H+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
-      if(v.mod==='idavuelta'&&v.or2)H+=rBP('VUELTA',true,v.or2,v.io2,v.hs2,v.fs2,v.de2,v.id2,v.hl2,v.fl2,v.al2,v.num2,v.esc2,v.tesc2,v.dur2);
+      if(v.mod==='idavuelta'){
+        // Show VUELTA tramo: use or2 or fallback to destino of ida leg
+        const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';
+        const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
+        H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',v.al2||v.aerolinea,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
+      }
       if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${v.tarifa?`<span style="background:var(--navy);color:white;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="font-size:.75rem;color:var(--g4)">🧳 ${v.equipaje}</span>`:''}</div>`;
       if(v.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio vuelos${v.fin?' · '+v.fin:''}</div><div class="ptag-v">${fmtMoney(v.precio,v.moneda)}</div></div></div>`;
     });
@@ -1581,6 +1974,23 @@ function buildQuoteHTML(d){
     </div>`;
   }
 
+  // Tickets
+  const tksOk=(d.tickets||[]).filter(t=>t.nombre);
+  if(tksOk.length){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🎫</div><div><div class="q-sec-ttl">Tickets y Entradas</div></div></div>`;
+    tksOk.forEach(t=>{
+      H+=`<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--g1)">
+        <div style="width:36px;height:36px;background:var(--g1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🎫</div>
+        <div style="flex:1"><div style="font-weight:700;font-size:.88rem">${t.nombre}</div>
+          <div style="font-size:.75rem;color:var(--g4);margin-top:2px">${[t.tipo,t.prov,t.fecha?fd(t.fecha):''].filter(Boolean).join(' · ')}</div>
+          ${t.desc?`<div style="font-size:.72rem;color:var(--g3);margin-top:1px">${t.desc}</div>`:''}
+        </div>
+        <div style="font-weight:700;font-size:.86rem;color:${t.precio>0?'var(--sky)':'var(--g3)'};white-space:nowrap">${t.precio>0?fmtMoney(t.precio,t.moneda):'Incluido'}</div>
+      </div>`;
+    });
+    H+=`</div>`;
+  }
+
   // T&C
   if(pr.tyc){
     const lines=pr.tyc.split(/\n/).filter(l=>l.trim());
@@ -1593,7 +2003,7 @@ function buildQuoteHTML(d){
       <div class="q-total-l">
         <div class="tl">Precio total del paquete</div>
         ${pr.reserva>0?`<div class="detail">Reserva: ${fmtMoney(pr.reserva,pr.moneda3)}${pr.cuotas?' · '+pr.cuotas:''}</div>`:''}
-        ${pr.cancelacion?`<div class="detail">Cancelación gratuita hasta: ${pr.cancelacion}</div>`:''}
+        ${pr.cancelacion?`<div class="detail">Cancelación gratuita hasta: ${fd(pr.cancelacion)}</div>`:''}
         <div class="detail">Válida por ${pr.validez||'24 horas'}</div>
       </div>
       <div class="q-total-amt">${pr.total>0?fmtMoney(pr.total,pr.moneda2):pr.por_persona>0?fmtMoney(pr.por_persona,pr.moneda)+'/pax':'—'}</div>
@@ -1607,6 +2017,163 @@ function buildQuoteHTML(d){
 }
 
 window.onbeforeprint=()=>{if(qData)document.getElementById('qprint').innerHTML=buildQuoteHTML(qData);};
+// ═══════════════════════════════════════════
+// TEST DATA LOADER
+// ═══════════════════════════════════════════
+function loadTestData(){
+  if(!confirm('⚠️ Esto va a reemplazar el contenido actual del formulario con datos de prueba.\n\n¿Continuás?')) return;
+
+  const sv=(id,val)=>{ const e=document.getElementById(id); if(e) e.value=val; };
+
+  // ── CLIENTE ──────────────────────────────
+  sv('m-nombre',  'Martínez, Hugo Darío');
+  sv('m-cel',     '+54 9 11 5555-7890');
+  sv('m-email',   'hugo.martinez@gmail.com');
+  sv('m-adu',     '2');
+  sv('m-nin',     '1');
+  sv('m-inf',     '0');
+
+  // ── VIAJE ─────────────────────────────────
+  sv('m-dest',    'Orlando, Florida');
+  sv('m-pais',    'USA');
+  sv('m-sal',     '2025-09-30');
+  sv('m-reg',     '2025-10-13');
+  sv('m-estado',  'borrador');
+  sv('m-ref',     '88240731');
+  sv('m-notas',   'Cliente VIP — solicita habitación piso alto. Niño de 8 años. Viaja por primera vez a Disney.');
+
+  // ── LIMPIAR BLOQUES DINÁMICOS ──────────────
+  document.getElementById('vuelos-cont').innerHTML='';     vc=0;
+  document.getElementById('hoteles-cont').innerHTML='';    hc=0;
+  const tCont=document.getElementById('traslados-cont');   if(tCont){ tCont.innerHTML=''; tc=0; }
+  const eCont=document.getElementById('excursiones-cont'); if(eCont){ eCont.innerHTML=''; ec=0; }
+  const tkCont=document.getElementById('tickets-cont');    if(tkCont) tkCont.innerHTML='';
+
+  // ── VUELO IDA Y VUELTA ─────────────────────
+  addVuelo({
+    mod:        'idavuelta',
+    aerolinea:  'American Airlines',
+    numero:     'AA 930',
+    origen:     'Buenos Aires (EZE)',
+    iata_o:     'EZE',
+    fs:         '2025-09-30',
+    hs:         '23:55',
+    fl:         '2025-10-01',
+    hl:         '08:20',
+    destino:    'Orlando (MCO)',
+    iata_d:     'MCO',
+    escala:     'Miami (MIA)',
+    t_escala:   '1h 40min',
+    duracion:   '13h 25min',
+    tarifa:     'Economy',
+    precio:     1985,
+    fin:        'Contado / 12 cuotas sin interés',
+    comision:   120,
+    // vuelta
+    al2:        'American Airlines',
+    num2:       'AA 931',
+    or2:        'Orlando (MCO)',
+    io2:        'MCO',
+    fs2:        '2025-10-13',
+    hs2:        '10:45',
+    fl2:        '2025-10-14',
+    hl2:        '06:15',
+    de2:        'Buenos Aires (EZE)',
+    id2:        'EZE',
+    esc2:       'Miami (MIA)',
+    tesc2:      '2h 05min',
+    dur2:       '14h 30min',
+  });
+
+  // ── HOTEL ─────────────────────────────────
+  addHotel({
+    nombre:   "Disney's All-Star Sports Resort",
+    tipo:     'disney',
+    estrellas:'3',
+    ci:       '2025-10-01',
+    co:       '2025-10-08',
+    noches:   7,
+    hab:      'Standard Room (3 personas)',
+    regimen:  'Sin desayuno',
+    precio:   2717,
+    comision: 200,
+  });
+  // Set hotel extra fields after DOM is created (hc is now 1)
+  sv('h1-tkt',  '4 Park Magic Ticket');
+  sv('h1-tktd', '4');
+  sv('h1-notes','Early Park Entry incluido · Transporte gratuito a todos los parques · Solicitar habitación renovada');
+
+  // ── TRASLADO ──────────────────────────────
+  addTraslado({
+    tipo:     'in',
+    origen:   'Aeropuerto MCO',
+    destino:  "Disney's All-Star Sports Resort",
+    fecha:    '2025-10-01',
+    hora:     '09:00',
+    vehiculo: 'Van privada',
+    precio:   65,
+    notas:    'Proveedor Orlantours · Se abona en efectivo al llegar',
+    comision: 10,
+  });
+  // Set prov as free text (select won't match, use input field)
+  const tSel=document.getElementById('t1-sel');
+  const tInp=document.getElementById('t1-inp');
+  if(tSel && tInp){
+    tSel.value='__otro__'; tInp.value='Orlantours'; tInp.style.display='';
+  }
+
+  // ── EXCURSIÓN ─────────────────────────────
+  addExcursion({
+    nombre:   'Kennedy Space Center',
+    categoria:'Tour cultural',
+    fecha:    '2025-10-05',
+    hora:     '09:00',
+    dur:      '6-7 horas',
+    precio:   180,
+    punto:    'Lobby del hotel a las 08:45 AM',
+    inc:      'Transporte ida y vuelta desde el hotel · Entrada general al complejo · Guía en español',
+    noinc:    'Almuerzo · Experiencias especiales (adicionales en el lugar)',
+    desc:     'Visitá las instalaciones de la NASA, el Atlantis Space Shuttle, la sala IMAX y el Apollo Saturn V Center. Una experiencia única para toda la familia.',
+    obs:      'Ropa cómoda y calzado deportivo · Protector solar recomendado',
+    comision: 20,
+  });
+  const eInp=document.getElementById('e1-inp');
+  const eSel=document.getElementById('e1-sel');
+  if(eSel && eInp){ eSel.value='__otro__'; eInp.value='Visit Orlando Tours'; eInp.style.display=''; }
+
+  // ── SEGURO ────────────────────────────────
+  sv('seg-nm',     'PAX Assistance Gold');
+  sv('seg-med',    'USD 100.000');
+  sv('seg-eq',     'USD 2.000');
+  sv('seg-pre',    'No cubre');
+  sv('seg-dias',   '14');
+  sv('seg-cur',    'USD');
+  sv('seg-precio', '385');
+  sv('seg-fin',    'incluido en el total');
+  sv('seg-extra',  'Cobertura COVID · Cancelación por enfermedad · Asistencia telefónica 24hs');
+  sv('seg-com',    '35');
+  sv('seg-com-cur','USD');
+
+  // ── PRECIOS ───────────────────────────────
+  sv('p-cur',  'USD');
+  sv('p-pp',   '2176');
+  sv('p-cur2', 'USD');
+  sv('p-tot',  '4352');
+  sv('p-cur3', 'USD');
+  sv('p-res',  '500');
+  sv('p-cuo',  '12 cuotas sin interés en Visa/Mastercard');
+  sv('p-can',  'Sin cargo hasta 45 días antes del viaje · 50% del total entre 44 y 20 días · Sin reembolso con menos de 20 días');
+  sv('p-val',  '48 horas');
+  sv('p-tyc',  'Precios sujetos a disponibilidad y variación de tipo de cambio al momento del abono. Cotización incluye impuestos de embarque. No incluye tasas de ingreso a parques adicionales ni gastos personales.');
+
+  // ── LIMPIAR DRAFT VIEJO ───────────────────
+  formDraft = null;
+
+  toast('🎲 Datos de prueba cargados — revisá el formulario');
+  // Scroll to top of form
+  document.getElementById('tab-form')?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 </script>
 </body>
 </html>
