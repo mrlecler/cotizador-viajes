@@ -752,6 +752,9 @@ window.addEventListener('DOMContentLoaded',async()=>{
 
 async function showApp(user){
   currentUser = user;
+  // Reset edit state on every login — garantiza estado limpio
+  editingQuoteId = null;
+  formDraft = null;
   // Show app immediately — don't wait on Supabase
   document.getElementById('login-wall').style.display='none';
   document.getElementById('ui').style.display='block';
@@ -836,8 +839,8 @@ async function dbSaveQuote(d, supabaseId){
     // UPDATE — editing existing quote, preserve the same record
     ({error} = await sb.from('cotizaciones').update(row).eq('id', supabaseId));
   } else {
-    // INSERT / UPSERT — new quote
-    ({error} = await sb.from('cotizaciones').upsert(row, {onConflict:'ref_id'}));
+    // INSERT — always a brand new record (never upsert, to avoid overwriting by ref_id)
+    ({error} = await sb.from('cotizaciones').insert(row));
   }
   if(error){
     console.error('dbSaveQuote error:', error);
@@ -1318,7 +1321,12 @@ function collectForm(){
   });
   const s=gv('m-sal'),e=gv('m-reg');
   const noches=s&&e?Math.round((new Date(e)-new Date(s))/86400000):0;
-  const refId=gv('m-ref')||Math.floor(Math.random()*90000000+10000000);
+  // Si estamos editando, preservar el ref_id original del formulario.
+  // Si es cotización NUEVA (editingQuoteId===null), siempre generar uno nuevo
+  // para evitar colisiones aunque m-ref tenga un valor residual.
+  const refId = editingQuoteId
+    ? (gv('m-ref') || Math.floor(Math.random()*90000000+10000000))
+    : Math.floor(Math.random()*90000000+10000000);
   // Calcular comisión total (solo valores en USD o numéricas)
   const calcCom=(arr)=>arr.reduce((sum,x)=>sum+(x.comision&&x.com_cur!=='%'?x.comision:0),0);
   const segCom=(gv('seg-com-cur')!=='%'?gn('seg-com'):0);
@@ -1352,15 +1360,16 @@ async function saveQuote(){
   btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span> Guardando...';}});
   try{
     await dbSaveQuote(qData, editingQuoteId);
-    if(editingQuoteId){
-      toast('✓ Cotización actualizada en la nube');
-      // Clear edit mode
-      editingQuoteId = null;
-      const banner=document.getElementById('edit-banner');
-      if(banner) banner.style.display='none';
-    } else {
-      toast('✓ Guardado en la nube');
-    }
+    const wasEditing = !!editingQuoteId;
+    // ── SIEMPRE limpiar modo edición después de guardar ──────────────
+    editingQuoteId = null;
+    formDraft = null;
+    // Limpiar m-ref para que la próxima cotización genere un ref_id nuevo
+    const refField = document.getElementById('m-ref');
+    if(refField) refField.value = '';
+    _hideEditBanner();
+    // Toast según operación
+    toast(wasEditing ? '✓ Cotización actualizada en la nube' : '✓ Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
     toast('Error al guardar: '+(e.message||JSON.stringify(e)),false);
@@ -1563,24 +1572,31 @@ function _showEditBanner(refId){
     const formPanel = document.getElementById('tab-form');
     if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
   }
-  banner.innerHTML = '✏️ Editando cotización Ref: <strong>' + refId + '</strong> &nbsp;—&nbsp; Al guardar se actualizará en la nube. &nbsp;<button onclick="cancelEdit()" style="margin-left:auto;background:none;border:1px solid #D97706;border-radius:6px;padding:4px 10px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Nueva cotización</button>';
+  banner.innerHTML = '✏️ <span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span>&nbsp;<button onclick="cancelEdit()" style="margin-left:auto;flex-shrink:0;background:none;border:1.5px solid #D97706;border-radius:6px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Descartar y crear nueva</button>';
   banner.style.display = 'flex';
 }
 
-function cancelEdit(){
-  editingQuoteId = null;
-  formDraft = null;
+function _hideEditBanner(){
   const banner = document.getElementById('edit-banner');
   if(banner) banner.style.display = 'none';
-  // Reset form
+}
+
+function cancelEdit(){
+  // ── RESET completo del modo edición ──────────────────────────────
+  editingQuoteId = null;
+  formDraft = null;
+  _hideEditBanner();
+  // Reset form — limpiar TODOS los campos incluyendo m-ref
   document.getElementById('vuelos-cont').innerHTML=''; vc=0;
   document.getElementById('hoteles-cont').innerHTML=''; hc=0;
   const tC=document.getElementById('traslados-cont'); if(tC){tC.innerHTML='';tc=0;}
   const eC=document.getElementById('excursiones-cont'); if(eC){eC.innerHTML='';ec=0;}
   const tkC=document.getElementById('tickets-cont'); if(tkC) tkC.innerHTML='';
+  // m-ref se limpia explícitamente para garantizar ref_id nuevo en la próxima cotización
   ['m-nombre','m-cel','m-email','m-dest','m-pais','m-sal','m-reg','m-notas','m-ref',
    'p-pp','p-tot','p-res','p-cuo','p-can','p-val','p-tyc','m-adu','m-nin','m-inf',
-   'seg-nm','seg-precio','seg-com','seg-extra','seg-fin'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+   'seg-nm','seg-precio','seg-com','seg-extra','seg-fin',
+   'm-estado','p-cur','p-cur2','p-cur3','seg-cur','seg-med','seg-eq','seg-pre','seg-dias'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   addVuelo(); addHotel(); addTraslado(); addExcursion(); addTicket();
   toast('Nueva cotización en blanco');
 }
@@ -2264,8 +2280,13 @@ function loadTestData(){
   sv('p-val',  '48 horas');
   sv('p-tyc',  'Precios sujetos a disponibilidad y variación de tipo de cambio al momento del abono. Cotización incluye impuestos de embarque. No incluye tasas de ingreso a parques adicionales ni gastos personales.');
 
-  // ── LIMPIAR DRAFT VIEJO ───────────────────
+  // ── LIMPIAR DRAFT Y ESTADO DE EDICIÓN ─────
   formDraft = null;
+  editingQuoteId = null;
+  // Limpiar m-ref para que genere un ref nuevo al guardar
+  const refInput = document.getElementById('m-ref');
+  if(refInput) refInput.value = '';
+  _hideEditBanner();
 
   toast('🎲 Datos de prueba cargados — revisá el formulario');
   // Scroll to top of form
