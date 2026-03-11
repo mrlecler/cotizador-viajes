@@ -628,6 +628,23 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--sky)!imp
 </div>
 
 <!-- PRINT -->
+
+<!-- ═══ MODAL ESTADO ═══ -->
+<div id="modal-status" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadeIn .2s ease">
+    <div style="font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:6px">Cambiar estado</div>
+    <div style="font-size:.8rem;color:var(--g3);margin-bottom:20px">Seleccioná el nuevo estado de la cotización</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn" style="background:#F1F5F9;color:var(--dark);justify-content:center;padding:14px" onclick="applyStatus('borrador')">📝 Borrador</button>
+      <button class="btn" style="background:#EFF6FF;color:#1D4ED8;justify-content:center;padding:14px" onclick="applyStatus('enviada')">📤 Enviada</button>
+      <button class="btn" style="background:#ECFDF5;color:#047857;justify-content:center;padding:14px" onclick="applyStatus('confirmada')">✅ Confirmada</button>
+      <button class="btn" style="background:#FEF2F2;color:#DC2626;justify-content:center;padding:14px" onclick="applyStatus('cancelada')">❌ Cancelada</button>
+    </div>
+    <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:14px" onclick="closeStatusModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL EDITAR COTIZACION ═══ -->
 <div id="pz"><div id="qprint"></div></div>
 <div id="toast">✓ <span id="toast-msg"></span></div>
 
@@ -648,6 +665,7 @@ let qData=null, currentUser=null, isAdmin=false;
 let vc=0,hc=0,tc=0,ec=0;
 let allClients=[], allQuotes=[];
 let formDraft=null; // BUG3 — draft en memoria para preservar el formulario entre tabs
+let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editando (null = nueva)
 
 // ═══════════════════════════════════════════
 // AUTH — NETLIFY IDENTITY
@@ -776,7 +794,7 @@ function init(){
 // ═══════════════════════════════════════════
 // SUPABASE HELPERS
 // ═══════════════════════════════════════════
-async function dbSaveQuote(d){
+async function dbSaveQuote(d, supabaseId){
   if(!currentUser) throw new Error('No hay sesión activa. Iniciá sesión para guardar.');
   // Ensure refId exists
   if(!d.refId) d.refId = Math.floor(Math.random()*90000000+10000000);
@@ -813,7 +831,14 @@ async function dbSaveQuote(d){
     notas_int: d.notas_int||'',
     total_comision: d.total_comision||0
   };
-  const {error} = await sb.from('cotizaciones').upsert(row, {onConflict:'ref_id'});
+  let error;
+  if(supabaseId){
+    // UPDATE — editing existing quote, preserve the same record
+    ({error} = await sb.from('cotizaciones').update(row).eq('id', supabaseId));
+  } else {
+    // INSERT / UPSERT — new quote
+    ({error} = await sb.from('cotizaciones').upsert(row, {onConflict:'ref_id'}));
+  }
   if(error){
     console.error('dbSaveQuote error:', error);
     throw new Error(error.message||(error.details||JSON.stringify(error)));
@@ -1326,8 +1351,16 @@ async function saveQuote(){
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
   btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span> Guardando...';}});
   try{
-    await dbSaveQuote(qData);
-    toast('✓ Guardado en la nube');
+    await dbSaveQuote(qData, editingQuoteId);
+    if(editingQuoteId){
+      toast('✓ Cotización actualizada en la nube');
+      // Clear edit mode
+      editingQuoteId = null;
+      const banner=document.getElementById('edit-banner');
+      if(banner) banner.style.display='none';
+    } else {
+      toast('✓ Guardado en la nube');
+    }
   }catch(e){
     console.error('saveQuote error:',e);
     toast('Error al guardar: '+(e.message||JSON.stringify(e)),false);
@@ -1368,7 +1401,7 @@ async function processAI(){
     }
     qData=JSON.parse(data.content[0].text);
     if(qData.viaje?.destino&&!coverUrl)coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(qData.viaje.destino+' travel')}&sig=${Date.now()}`;
-    updCovers();renderPreview(qData);switchTab('preview');
+    renderPreview(qData);switchTab('preview');
     toast('✓ Cotización estructurada correctamente');
   }catch(e){
     let msg=e.message||'Error desconocido';
@@ -1387,11 +1420,7 @@ function saveKey(){localStorage.setItem('mp_key',document.getElementById('api-ke
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;updCovers();};r.readAsDataURL(f);}
 function autoCover(){const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(dest+' travel')}&sig=${Date.now()}`;updCovers();}
 function removeCover(){coverUrl=null;updCovers();}
-function updCovers(){
-  ['cov-thumb','tb-thumb'].forEach(id=>{const e=document.getElementById(id);if(!e)return;e.src=coverUrl||'';e.style.display=coverUrl?'':'none';});
-  ['btn-rmcov','btn-rmcov2'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=coverUrl?'':'none';});
-  if(qData){renderPreview(qData);}
-}
+
 function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;localStorage.setItem('mp_logo',logoUrl);updateLogoPreview();};r.readAsDataURL(f);}
 function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogoPreview();}
 function updateLogoPreview(){
@@ -1447,7 +1476,17 @@ function renderPreview(d){
   const html=buildQuoteHTML(d);
   document.getElementById('qscreen').innerHTML=html;
   document.getElementById('qprint').innerHTML=html;
-  updCovers();
+  // Apply covers directly — do NOT call updCovers() here to avoid
+  // the renderPreview→updCovers→renderPreview infinite recursion (stack overflow on PDF).
+  _applyCoversToDOM();
+}
+function _applyCoversToDOM(){
+  ['cov-thumb','tb-thumb'].forEach(function(id){var e=document.getElementById(id);if(!e)return;e.src=coverUrl||'';e.style.display=coverUrl?'':'none';});
+  ['btn-rmcov','btn-rmcov2'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display=coverUrl?'':'none';});
+}
+function updCovers(){
+  _applyCoversToDOM();
+  if(qData) renderPreview(qData);
 }
 
 // ═══════════════════════════════════════════
@@ -1476,8 +1515,9 @@ async function renderHistory(){
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();changeStatus('${r.id}')">Estado</button>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')">✏️ Editar</button>
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')">🔄 Estado</button>
           <button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')">🗑️</button>
         </div>
       </div>
@@ -1485,24 +1525,82 @@ async function renderHistory(){
 }
 
 async function loadFromHistory(refId, id){
+  // Vista previa (click en la fila)
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data)return;
   qData=data.datos;
   if(data.cover_url) coverUrl=data.cover_url;
   renderPreview(qData);switchTab('preview');
 }
+
+async function editFromHistory(refId, id){
+  // Cargar en formulario para editar
+  const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
+  if(!data){ toast('No se encontró la cotización.',false); return; }
+  // Store editing context
+  editingQuoteId = id;
+  const d = data.datos;
+  if(data.cover_url) coverUrl=data.cover_url;
+  // Restore into form via restoreDraft
+  formDraft = d;
+  switchTab('form');
+  // After DOM switch, restore
+  setTimeout(()=>{
+    if(formDraft) restoreDraft(formDraft);
+    formDraft = null;
+    // Show editing banner
+    _showEditBanner(refId);
+    toast('✏️ Cotización cargada para editar — guardá para actualizar');
+  }, 80);
+}
+
+function _showEditBanner(refId){
+  let banner = document.getElementById('edit-banner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'edit-banner';
+    banner.style.cssText = 'background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:.84rem;font-weight:600;color:#92400E';
+    const formPanel = document.getElementById('tab-form');
+    if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
+  }
+  banner.innerHTML = '✏️ Editando cotización Ref: <strong>' + refId + '</strong> &nbsp;—&nbsp; Al guardar se actualizará en la nube. &nbsp;<button onclick="cancelEdit()" style="margin-left:auto;background:none;border:1px solid #D97706;border-radius:6px;padding:4px 10px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Nueva cotización</button>';
+  banner.style.display = 'flex';
+}
+
+function cancelEdit(){
+  editingQuoteId = null;
+  formDraft = null;
+  const banner = document.getElementById('edit-banner');
+  if(banner) banner.style.display = 'none';
+  // Reset form
+  document.getElementById('vuelos-cont').innerHTML=''; vc=0;
+  document.getElementById('hoteles-cont').innerHTML=''; hc=0;
+  const tC=document.getElementById('traslados-cont'); if(tC){tC.innerHTML='';tc=0;}
+  const eC=document.getElementById('excursiones-cont'); if(eC){eC.innerHTML='';ec=0;}
+  const tkC=document.getElementById('tickets-cont'); if(tkC) tkC.innerHTML='';
+  ['m-nombre','m-cel','m-email','m-dest','m-pais','m-sal','m-reg','m-notas','m-ref',
+   'p-pp','p-tot','p-res','p-cuo','p-can','p-val','p-tyc','m-adu','m-nin','m-inf',
+   'seg-nm','seg-precio','seg-com','seg-extra','seg-fin'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  addVuelo(); addHotel(); addTraslado(); addExcursion(); addTicket();
+  toast('Nueva cotización en blanco');
+}
 async function deleteQuote(id){
   if(!confirm('¿Eliminar esta cotización?'))return;
   await sb.from('cotizaciones').delete().eq('id',id);
   toast('Cotización eliminada');renderHistory();
 }
-async function changeStatus(id){
-  const opts=['borrador','enviada','confirmada','cancelada'];
-  const nw=prompt('Estado:\n0=Borrador\n1=Enviada\n2=Confirmada\n3=Cancelada\n\nIngresá el número:');
-  const s=opts[parseInt(nw)];if(!s)return;
-  await sb.from('cotizaciones').update({estado:s}).eq('id',id);
-  toast('✓ Estado actualizado');renderHistory();
+let _statusTargetId=null;
+function openStatusModal(id){ _statusTargetId=id; const m=document.getElementById('modal-status'); m.style.display='flex'; }
+function closeStatusModal(){ document.getElementById('modal-status').style.display='none'; _statusTargetId=null; }
+async function applyStatus(s){
+  if(!_statusTargetId) return;
+  closeStatusModal();
+  await sb.from('cotizaciones').update({estado:s}).eq('id',_statusTargetId);
+  toast('✓ Estado actualizado a: '+s);
+  renderHistory();
 }
+// kept for backwards compatibility
+async function changeStatus(id){ openStatusModal(id); }
 
 // ═══════════════════════════════════════════
 // CLIENTES
