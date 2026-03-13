@@ -233,7 +233,7 @@ async function renderDashboard(){
     <div style="background:white;border:1px solid var(--g2);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-left:4px solid ${m.color}">
       <div style="font-size:1.4rem;margin-bottom:8px">${m.ico}</div>
       <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g3);margin-bottom:6px">${m.lbl}</div>
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:${m.color}">${m.val}</div>
+      <div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.6rem;font-weight:700;color:${m.color}">${m.val}</div>
     </div>`).join('');
   // Cotizaciones del mes
   const stLbl={borrador:'📝',enviada:'📨',confirmada:'✅',cancelada:'❌'};

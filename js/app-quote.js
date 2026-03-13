@@ -12,7 +12,7 @@ function buildQuoteHTML(d){
     <div class="q-topbar">
       <div>
         <div style="font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">SU VIAJE A</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--amber);line-height:1.1;margin-top:2px">${(vi.destino||'')+(vi.pais?', '+vi.pais:'')}</div>
+        <div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.1rem;font-weight:700;color:var(--amber);line-height:1.1;margin-top:2px">${(vi.destino||'')+(vi.pais?', '+vi.pais:'')}</div>
       </div>
       ${logoUrl?`<img class="q-logo-img" src="${logoUrl}" alt="logo">`:`<div class="q-logo-txt">${ag.ag||ag.nm||'Magic Planner'}</div>`}
     </div>
@@ -72,7 +72,7 @@ function buildQuoteHTML(d){
         const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
         H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',v.al2||v.aerolinea,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
       }
-      if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${v.tarifa?`<span style="background:var(--navy);color:white;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="font-size:.75rem;color:var(--g4)">🧳 ${v.equipaje}</span>`:''}</div>`;
+      if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">${v.tarifa?`<span style="background:var(--primary2);color:white;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="font-size:.75rem;color:var(--g4)">🧳 ${v.equipaje}</span>`:''}</div>`;
       if(v.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio vuelos${v.fin?' · '+v.fin:''}</div><div class="ptag-v">${fmtMoney(v.precio,v.moneda)}</div></div></div>`;
     });
     H+=`</div>`;
@@ -89,19 +89,19 @@ function buildQuoteHTML(d){
     </div>`;
     if(isP){
       H+=`<div style="background:rgba(0,87,168,.04);border:1px solid rgba(0,87,168,.16);border-radius:10px;padding:16px;margin-bottom:14px">
-        <div style="display:inline-flex;align-items:center;gap:6px;background:${h.tipo==='universal'?'linear-gradient(135deg,#111,#2a2a2a)':'linear-gradient(135deg,#0057A8,#003D7A)'};color:white;font-size:.68rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px">${h.tipo==='universal'?'🎬 Paquete Universal':'🏰 Paquete Disney'}</div>`;
+        <div style="display:inline-flex;align-items:center;gap:6px;background:${h.tipo==='universal'?'linear-gradient(135deg,#111,#2a2a2a)':'linear-gradient(135deg,var(--primary),#003D7A)'};color:white;font-size:.68rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px">${h.tipo==='universal'?'🎬 Paquete Universal':'🏰 Paquete Disney'}</div>`;
       if(h.tickets)H+=`<div class="desc-item">🎟️ <span><strong>Tickets:</strong> ${h.tickets}${h.dias_tkt?' ('+h.dias_tkt+' días)':''}</span></div>`;
       if(h.parques?.length)H+=`<div class="desc-item">🎢 <span><strong>Parques:</strong> ${h.parques.join(', ')}</span></div>`;
-      if(h.beneficios?.length)H+=`<div style="margin-top:12px"><div style="font-size:.64rem;font-weight:700;color:#0057A8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Beneficios</div><div class="am-grid">${h.beneficios.map(b=>`<div class="am-tag"><span class="ck">✓</span>${b}</div>`).join('')}</div></div>`;
+      if(h.beneficios?.length)H+=`<div style="margin-top:12px"><div style="font-size:.64rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Beneficios</div><div class="am-grid">${h.beneficios.map(b=>`<div class="am-tag"><span class="ck">✓</span>${b}</div>`).join('')}</div></div>`;
       H+=`</div>`;
       if(h.mp&&h.mp_pr>0){
         H+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-          <div style="background:var(--g1);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Sin plan de comidas</div><div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--sky)">${fmtMoney(h.precio,h.moneda)}</div></div>
-          <div style="background:linear-gradient(135deg,rgba(0,87,168,.08),rgba(0,87,168,.04));border:1px solid rgba(0,87,168,.18);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:#0057A8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">${h.mp}</div><div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--sky)">${fmtMoney(h.mp_pr,h.mp_cur||h.moneda)}</div></div>
+          <div style="background:var(--g1);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Sin plan de comidas</div><div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary)">${fmtMoney(h.precio,h.moneda)}</div></div>
+          <div style="background:linear-gradient(135deg,rgba(0,87,168,.08),rgba(0,87,168,.04));border:1px solid rgba(0,87,168,.18);border-radius:10px;padding:14px;text-align:center"><div style="font-size:.62rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">${h.mp}</div><div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.4rem;font-weight:700;color:var(--primary)">${fmtMoney(h.mp_pr,h.mp_cur||h.moneda)}</div></div>
         </div>`;
-        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:var(--g1);border-radius:9px;padding:14px;margin-bottom:12px;border-left:3px solid var(--sky)">${lines.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--dark);margin:10px 0 6px">${c}</div>`:`<div style="font-size:.78rem;color:#4a5568;margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--sky);font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
+        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:var(--g1);border-radius:9px;padding:14px;margin-bottom:12px;border-left:3px solid var(--primary)">${lines.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--text);margin:10px 0 6px">${c}</div>`:`<div style="font-size:.78rem;color:var(--muted);margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--primary);font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
       } else if(h.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio</div><div class="ptag-v">${fmtMoney(h.precio,h.moneda)}</div></div></div>`;
-      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:14px;margin-top:10px">${nl.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉🎪✨]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--dark);margin:8px 0 5px">${c}</div>`:`<div style="font-size:.78rem;color:#78350F;margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--amber2)">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
+      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:14px;margin-top:10px">${nl.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉🎪✨]/)?`<div style="font-size:.82rem;font-weight:700;color:var(--text);margin:8px 0 5px">${c}</div>`:`<div style="font-size:.78rem;color:#78350F;margin-bottom:3px;display:flex;gap:7px"><span style="color:var(--amber2)">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
     } else {
       const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
       if(allAm.length)H+=`<div style="margin-bottom:14px"><div class="am-grid">${allAm.map(a=>`<div class="am-tag"><span class="ck">✓</span>${a}</div>`).join('')}</div></div>`;
@@ -113,7 +113,7 @@ function buildQuoteHTML(d){
   // Excursiones
   (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{
     H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">🎟️</div><div><div class="q-sec-ttl">${e.nombre}</div><div class="q-sec-sub">${[e.categoria,e.fecha,e.dur].filter(Boolean).join(' · ')}</div></div></div>
-    ${e.desc?`<div style="font-size:.84rem;line-height:1.8;color:#4a5568;margin-bottom:14px">${e.desc}</div>`:''}
+    ${e.desc?`<div style="font-size:.84rem;line-height:1.8;color:var(--muted);margin-bottom:14px">${e.desc}</div>`:''}
     ${e.prov?`<div class="desc-item">🏢 <span><strong>Proveedor:</strong> ${e.prov}</span></div>`:''}
     ${e.punto?`<div class="desc-item">📍 <span><strong>Encuentro:</strong> ${e.punto}</span></div>`:''}`;
     if(e.inc||e.noinc)H+=`<div class="ie-grid">${e.inc?`<div><div class="ie-ttl" style="color:var(--green)">✓ Incluido</div>${e.inc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span style="color:var(--green)">✓</span>${x.trim()}</div>`).join('')}</div>`:''} ${e.noinc?`<div><div class="ie-ttl" style="color:var(--red)">✕ No incluido</div>${e.noinc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span style="color:var(--red)">✕</span>${x.trim()}</div>`).join('')}</div>`:''}</div>`;
@@ -148,7 +148,7 @@ function buildQuoteHTML(d){
           <div style="font-size:.75rem;color:var(--g4);margin-top:2px">${[t.tipo,t.prov,t.fecha?fd(t.fecha):''].filter(Boolean).join(' · ')}</div>
           ${t.desc?`<div style="font-size:.72rem;color:var(--g3);margin-top:1px">${t.desc}</div>`:''}
         </div>
-        <div style="font-weight:700;font-size:.86rem;color:${t.precio>0?'var(--sky)':'var(--g3)'};white-space:nowrap">${t.precio>0?fmtMoney(t.precio,t.moneda):'Incluido'}</div>
+        <div style="font-weight:700;font-size:.86rem;color:${t.precio>0?'var(--primary)':'var(--g3)'};white-space:nowrap">${t.precio>0?fmtMoney(t.precio,t.moneda):'Incluido'}</div>
       </div>`;
     });
     H+=`</div>`;
