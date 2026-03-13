@@ -7,12 +7,12 @@ function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogo
 function updateLogoPreview(){
   const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
   if(logoUrl){w.innerHTML=`<img src="${logoUrl}" style="height:50px;max-width:160px;object-fit:contain;border-radius:8px;border:1px solid var(--g2);padding:5px;background:white">`;if(b)b.style.display='';}
-  else{const ini=(agCfg.nm||'M')[0].toUpperCase();w.innerHTML=`<div style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:white">${ini}</div>`;if(b)b.style.display='none';}
+  else{const ini=(agCfg.nm||'M')[0].toUpperCase();w.innerHTML=`<div style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">${ini}</div>`;if(b)b.style.display='none';}
   updateHeader();
 }
 function updateHeader(){
   const lu=document.getElementById('hdr-logo-wrap');
-  if(lu){if(logoUrl)lu.innerHTML=`<img src="${logoUrl}" style="height:32px;object-fit:contain" alt="logo">`;else lu.innerHTML=`<div style="font-family:'Playfair Display',serif;color:white;font-size:1rem;font-weight:700">Magic<span style="color:var(--amber)">Planner</span></div>`;}
+  if(lu){if(logoUrl)lu.innerHTML=`<img src="${logoUrl}" style="height:32px;object-fit:contain" alt="logo">`;else lu.innerHTML=`<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:white;font-size:1rem;font-weight:800">Magic<span style="color:var(--amber)">Planner</span></div>`;}
 }
 
 // ═══════════════════════════════════════════
