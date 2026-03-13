@@ -175,7 +175,11 @@ function buildQuoteHTML(d){
       ${logoUrl?`<img src="${logoUrl}" style="height:40px;max-width:110px;object-fit:contain" alt="logo">`:`<div class="q-agent-av">${ini}</div>`}
       <div><div class="q-agent-nm">${ag.nm||'Tu Agente'}${ag.ag?' · '+ag.ag:''}</div><div class="q-agent-ct">${[ag.em,ag.tel,ag.soc].filter(Boolean).join('  ·  ')}</div></div>
     </div>
-  </div></div>`;
+  </div></div>
+  <div style="text-align:center;padding:18px 0 8px;border-top:1px solid #EDE9FE;margin-top:4px">
+    <span style="font-size:.62rem;font-weight:500;color:#A78BFA;letter-spacing:.08em;opacity:.8">powered by </span><span style="font-size:.62rem;font-weight:800;color:#7C3AED;letter-spacing:.04em">ERMIX</span><span style="font-size:.62rem;font-weight:400;color:#C4B5FD;margin-left:6px;opacity:.7">· www.ermix.com</span>
+  </div>
+  </div>`;
   return H;
 }
 

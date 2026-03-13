@@ -290,15 +290,15 @@ input:focus,textarea:focus,select:focus{
 }
 .btn-pdf:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,158,11,.5)}
 .btn-save{
-  background:linear-gradient(135deg,#059669,#047857);color:white;
-  box-shadow:0 4px 15px rgba(5,150,105,.35)
+  background:linear-gradient(135deg,#7C3AED,#6D28D9);color:white;
+  box-shadow:0 4px 15px rgba(124,58,237,.35)
 }
-.btn-save:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(5,150,105,.5)}
+.btn-save:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.5)}
 .btn-nav{
   background:transparent;color:var(--primary);
   border:1.5px solid var(--primary)
 }
-.btn-nav:hover{background:var(--primary);color:white}
+.btn-nav:hover{background:var(--grad);color:white;border-color:transparent}
 .btn-sm{padding:7px 14px;font-size:.76rem}
 .btn-xs{padding:5px 10px;font-size:.72rem}
 .add-row{
