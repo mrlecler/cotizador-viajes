@@ -12,12 +12,12 @@ function buildQuoteHTML(d){
     <div class="q-topbar">
       <div>
         <div style="font-size:.58rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4)">SU VIAJE A</div>
-        <div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.1rem;font-weight:700;color:var(--amber);line-height:1.1;margin-top:2px">${(vi.destino||'')+(vi.pais?', '+vi.pais:'')}</div>
+        <div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.1rem;font-weight:700;color:white;line-height:1.1;margin-top:2px">${(vi.destino||'')+(vi.pais?', '+vi.pais:'')}</div>
       </div>
       ${logoUrl?`<img class="q-logo-img" src="${logoUrl}" alt="logo">`:`<div class="q-logo-txt">${ag.ag||ag.nm||'Magic Planner'}</div>`}
     </div>
     <div class="q-cover-bot">
-      ${cl.nombre?`<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4);border-radius:20px;padding:5px 14px;margin-bottom:14px"><span style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)">Cotización para</span><span style="font-size:.82rem;font-weight:700;color:white">${cl.nombre}</span></div><br>`:''}
+      ${cl.nombre?`<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,0.75);border:1px solid #A78BFA;border-radius:20px;padding:5px 14px;margin-bottom:14px"><span style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:white">Cotización para</span><span style="font-size:.82rem;font-weight:700;color:white">${cl.nombre}</span></div><br>`:''}
       <div class="q-dest">${vi.destino||'Destino'}${vi.pais?', '+vi.pais:''}</div>
       <div class="q-ref">Ref ID: ${d.refId||'—'} · ${today}</div>
     </div>
