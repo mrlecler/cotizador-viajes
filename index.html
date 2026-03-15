@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="ermix-brand-assets/png/ermix-icon-transparent.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,25 +16,44 @@
 <div id="login-wall">
   <div class="login-card">
     <div style="margin-bottom:36px;text-align:center">
-  <svg width="200" height="56" viewBox="0 0 400 112" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="lg-login" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#E9D5FF"/>
-        <stop offset="45%" stop-color="#A855F7"/>
-        <stop offset="100%" stop-color="#F43F5E"/>
-      </linearGradient>
-    </defs>
-    <text x="200" y="70" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="78" fill="url(#lg-login)" letter-spacing="-2">ermix</text>
-    <text x="200" y="98" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="400" font-size="16" fill="rgba(255,255,255,0.38)" letter-spacing="6">TRAVEL PLATFORM</text>
-  </svg>
+  <svg id="login-wm" style="display:block;margin:0 auto"></svg>
+  <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:.6rem;font-weight:500;letter-spacing:.35em;color:rgba(255,255,255,.32);margin-top:10px;text-transform:uppercase">TRAVEL PLATFORM</div>
 </div>
+<script>
+(function(){
+  var X="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z";
+  var G=['#4F46E5','#7C3AED','#F43F5E'];
+  function render(){
+    var fs=64,svg=document.getElementById('login-wm');
+    var c=document.createElement('canvas'),ctx=c.getContext('2d');
+    ctx.font='900 '+fs+'px "DM Sans"';
+    var ermiW=ctx.measureText('ermi').width;
+    var capH=fs*0.725,sc=capH/48;
+    var baseline=fs*0.86,totalH=fs*1.0;
+    var xTop=baseline-capH,xLeft=ermiW-1;
+    var totalW=xLeft+48*sc+4;
+    var tx=xLeft-8*sc,ty=xTop-8*sc;
+    svg.setAttribute('viewBox','0 0 '+totalW+' '+totalH);
+    svg.setAttribute('width',totalW);
+    svg.setAttribute('height',totalH);
+    svg.innerHTML='<defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">'
+      +'<stop offset="0%" stop-color="'+G[0]+'"/>'
+      +'<stop offset="45%" stop-color="'+G[1]+'"/>'
+      +'<stop offset="100%" stop-color="'+G[2]+'"/>'
+      +'</linearGradient></defs>'
+      +'<text x="0" y="'+baseline+'" font-family="'DM Sans',sans-serif" font-weight="900" font-size="'+fs+'" letter-spacing="-2" fill="white">ermi</text>'
+      +'<path transform="translate('+tx+','+ty+') scale('+sc+')" d="'+X+'" fill="url(#lg)"/>';
+  }
+  document.fonts.ready.then(render);
+})();
+</script>
     <div style="margin-bottom:16px">
       <input class="finput" id="li-email" type="email" placeholder="tu@email.com" style="background:#1a1a1a;border-color:#333;color:white;margin-bottom:10px">
       <div style="position:relative">
         <input class="finput" id="li-pass" type="password" placeholder="Contraseña" style="background:#1a1a1a;border-color:#333;color:white" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
     </div>
-    <button class="login-btn-main" onclick="doLogin()" id="li-btn">🔐 Iniciar sesion</button>
+    <button class="login-btn-main" onclick="doLogin()" id="li-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion</button>
     <div id="login-status" style="min-height:22px;margin-top:12px"></div>
     <div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="flex:1;height:1px;background:#333"></div><span style="font-size:.7rem;color:#555">o</span><div style="flex:1;height:1px;background:#333"></div></div>
     <button onclick="doLoginGoogle()" style="display:block;width:100%;padding:12px;background:#1a1a1a;border:1.5px solid #333;border-radius:10px;color:white;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:10px" onmouseover="this.style.borderColor='#555'" onmouseout="this.style.borderColor='#333'">
@@ -49,45 +68,60 @@
 <!-- APP -->
 <div id="ui" style="display:none">
 <div id="hdr">
-  <div id="hdr-logo-wrap" style="cursor:pointer" onclick="switchTab('form')">
-    <svg width="110" height="34" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="lg-hdr" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#E9D5FF"/>
-      <stop offset="45%" stop-color="#A855F7"/>
-      <stop offset="100%" stop-color="#F43F5E"/>
-    </linearGradient>
-  </defs>
-  <rect x="0" y="5" width="84" height="84" rx="20" fill="#F43F5E"/>
-  <text x="41" y="73" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="900" font-size="62" fill="white">e</text>
-  <circle cx="72" cy="20" r="10" fill="white"/>
-  <text x="98" y="68" font-family="system-ui,-apple-system,sans-serif" font-weight="800" font-size="58" fill="url(#lg-hdr)" letter-spacing="-1">ermix</text>
-</svg>
-  </div>
+  <div id="hdr-logo-wrap" style="cursor:pointer;display:flex;align-items:center" onclick="switchTab('form')">
+  <svg id="hdr-wm" height="28" style="display:block"></svg>
+</div>
+<script>
+(function(){
+  var X="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z";
+  var G=['#4F46E5','#7C3AED','#F43F5E'];
+  function render(){
+    var fs=28,svg=document.getElementById('hdr-wm');
+    var c=document.createElement('canvas'),ctx=c.getContext('2d');
+    ctx.font='900 '+fs+'px "DM Sans"';
+    var ermiW=ctx.measureText('ermi').width;
+    var capH=fs*0.725,sc=capH/48;
+    var baseline=fs*0.86,totalH=fs*1.0;
+    var xTop=baseline-capH,xLeft=ermiW-1;
+    var totalW=xLeft+48*sc+4;
+    var tx=xLeft-8*sc,ty=xTop-8*sc;
+    svg.setAttribute('viewBox','0 0 '+totalW+' '+totalH);
+    svg.setAttribute('width',totalW);
+    svg.innerHTML='<defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">'
+      +'<stop offset="0%" stop-color="'+G[0]+'"/>'
+      +'<stop offset="45%" stop-color="'+G[1]+'"/>'
+      +'<stop offset="100%" stop-color="'+G[2]+'"/>'
+      +'</linearGradient></defs>'
+      +'<text x="0" y="'+baseline+'" font-family="'DM Sans',sans-serif" font-weight="900" font-size="'+fs+'" letter-spacing="-1" fill="white">ermi</text>'
+      +'<path transform="translate('+tx+','+ty+') scale('+sc+')" d="'+X+'" fill="url(#hg)"/>';
+  }
+  document.fonts.ready.then(render);
+})();
+</script>
   <div id="hdr-right">
     <span id="hdr-user"></span>
     <span id="hdr-role-badge" class="hdr-badge" style="display:none">ADMIN</span>
-    <button class="hdr-btn" onclick="switchTab('history')">📋 Historial</button>
-    <button class="hdr-btn" id="btn-admin" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
+    <button class="hdr-btn" onclick="switchTab('history')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Historial</button>
+    <button class="hdr-btn" id="btn-admin" onclick="switchTab('admin')" style="display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Admin</button>
     <button class="hdr-btn" onclick="doLogout()">Salir →</button>
   </div>
 </div>
 <div id="nav">
-  <button class="ntab on"  onclick="switchTab('form')">📝 Nueva cotización</button>
-  <button class="ntab"     onclick="switchTab('ia')">✨ Importar IA</button>
-  <button class="ntab"     onclick="switchTab('preview')">📄 Vista previa</button>
-  <button class="ntab"     onclick="switchTab('history')">🗂 Historial</button>
-  <button class="ntab"     onclick="switchTab('clients')">👥 Clientes</button>
-  <button class="ntab"     onclick="switchTab('dashboard')">📊 Dashboard</button>
-  <button class="ntab"     onclick="switchTab('admin')" id="nav-admin" style="display:none">🛠 Admin</button>
-  <button class="ntab"     onclick="switchTab('config')">⚙️ Mi perfil</button>
+  <button class="ntab on"  onclick="switchTab('form')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Nueva cotización</button>
+  <button class="ntab"     onclick="switchTab('ia')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg> Importar IA</button>
+  <button class="ntab"     onclick="switchTab('preview')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Vista previa</button>
+  <button class="ntab"     onclick="switchTab('history')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Historial</button>
+  <button class="ntab"     onclick="switchTab('clients')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Clientes</button>
+  <button class="ntab"     onclick="switchTab('dashboard')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</button>
+  <button class="ntab"     onclick="switchTab('admin')" id="nav-admin" style="display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Admin</button>
+  <button class="ntab"     onclick="switchTab('config')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Mi perfil</button>
 </div>
 <div class="wrap">
 
 <!-- ═══ FORM ═══ -->
 <div id="tab-form" class="panel on">
   <div class="card">
-    <div class="card-hd"><div class="card-ico">👤</div><div><div class="card-ttl">Pasajero</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="card-ttl">Pasajero</div></div></div>
     <div class="card-body">
       <div class="fg"><label class="lbl">Buscar cliente existente</label>
         <div class="search-wrap">
@@ -116,8 +150,8 @@
         <select class="fsel" id="m-estado" style="max-width:220px">
           <option value="borrador">📝 Borrador</option>
           <option value="enviada">📨 Enviada</option>
-          <option value="confirmada">✅ Confirmada</option>
-          <option value="cancelada">❌ Cancelada</option>
+          <option value="confirmada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmada</option>
+          <option value="cancelada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelada</option>
         </select>
       </div>
       <div class="fg"><label class="lbl">Notas internas</label>
@@ -127,7 +161,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">✈️</div><div><div class="card-ttl">Vuelos</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 4s-2 1-3.5 2.5L11 8 2.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 7.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div><div class="card-ttl">Vuelos</div></div></div>
     <div class="card-body">
       <div id="vuelos-cont"></div>
       <button class="add-row" onclick="addVuelo()">+ Agregar vuelo / segmento</button>
@@ -135,7 +169,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🏨</div><div><div class="card-ttl">Alojamiento</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div><div class="card-ttl">Alojamiento</div></div></div>
     <div class="card-body">
       <div id="hoteles-cont"></div>
       <button class="add-row" onclick="addHotel()">+ Agregar hotel</button>
@@ -143,7 +177,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🚐</div><div><div class="card-ttl">Traslados</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div><div class="card-ttl">Traslados</div></div></div>
     <div class="card-body">
       <div id="traslados-cont"></div>
       <button class="add-row" onclick="addTraslado()">+ Agregar traslado</button>
@@ -151,7 +185,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🎡</div><div><div class="card-ttl">Excursiones y Atracciones</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div><div><div class="card-ttl">Excursiones y Atracciones</div></div></div>
     <div class="card-body">
       <div id="excursiones-cont"></div>
       <button class="add-row" onclick="addExcursion()">+ Agregar excursión</button>
@@ -159,7 +193,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🎫</div><div><div class="card-ttl">Tickets / Entradas</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg></div><div><div class="card-ttl">Tickets / Entradas</div></div></div>
     <div class="card-body">
       <div id="tickets-cont"></div>
       <button class="add-row" onclick="addTicket()">+ Agregar ticket / entrada</button>
@@ -167,7 +201,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🛡️</div><div><div class="card-ttl">Asistencia al viajero</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="card-ttl">Asistencia al viajero</div></div></div>
     <div class="card-body">
       <div class="g3">
         <div class="fg"><label class="lbl">Aseguradora</label><input class="finput" type="text" id="seg-nm" placeholder="PAX Assistance"></div>
@@ -192,7 +226,7 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">💵</div><div><div class="card-ttl">Precios y condiciones</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="card-ttl">Precios y condiciones</div></div></div>
     <div class="card-body">
       <div class="g3">
         <div class="fg"><label class="lbl">Precio por persona</label>
@@ -221,12 +255,12 @@
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico">🖼️</div><div><div class="card-ttl">Foto de portada</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div><div class="card-ttl">Foto de portada</div></div></div>
     <div class="card-body">
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <img id="cov-thumb" src="" style="display:none;height:56px;width:90px;object-fit:cover;border-radius:8px;border:2px solid var(--amber)" alt="">
-        <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f1').click()">📁 Subir foto</button>
-        <button class="btn btn-out btn-sm" onclick="autoCover()">🔍 Buscar por destino</button>
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f1').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto</button>
+        <button class="btn btn-out btn-sm" onclick="autoCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar por destino</button>
         <button class="btn btn-del btn-xs" id="btn-rmcov" onclick="removeCover()" style="display:none">✕ Quitar</button>
         <input type="file" id="cov-f1" accept="image/*" style="display:none" onchange="uploadCover(this)">
       </div>
@@ -234,10 +268,10 @@
   </div>
 
   <div style="display:flex;gap:10px;justify-content:flex-end;padding-bottom:20px;flex-wrap:wrap">
-    <button class="btn btn-out btn-sm" onclick="loadTestData()" title="Llena el formulario con datos ficticios de ejemplo" style="margin-right:auto;opacity:.7">🎲 Cargar datos de prueba</button>
-    <button class="btn btn-nav" onclick="buildAndPreview()">👁 Vista previa</button>
-    <button class="btn btn-save" id="btn-save-main" onclick="saveQuote()">☁️ Guardar en nube</button>
-    <button class="btn btn-pdf" onclick="buildAndPrint()">🖨️ PDF</button>
+    <button class="btn btn-out btn-sm" onclick="loadTestData()" title="Llena el formulario con datos ficticios de ejemplo" style="margin-right:auto;opacity:.7"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="1.5" fill="#A855F7" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="#A855F7" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="#A855F7" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="#A855F7" stroke="none"/></svg> Cargar datos de prueba</button>
+    <button class="btn btn-nav" onclick="buildAndPreview()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Vista previa</button>
+    <button class="btn btn-save" id="btn-save-main" onclick="saveQuote()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar en nube</button>
+    <button class="btn btn-pdf" onclick="buildAndPrint()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF</button>
   </div>
 </div><!-- /form -->
 
@@ -252,7 +286,7 @@
       <div class="fg"><label class="lbl">API Key de Anthropic</label>
         <div style="display:flex;gap:8px">
           <input class="finput" type="password" id="api-key" placeholder="sk-ant-api03-..." style="flex:1">
-          <button class="btn btn-out btn-sm" onclick="saveKey()">💾 Guardar</button>
+          <button class="btn btn-out btn-sm" onclick="saveKey()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar</button>
         </div>
         <div style="font-size:.71rem;color:var(--g3);margin-top:6px"><a href="https://console.anthropic.com" target="_blank" style="color:var(--sky)">Obtener clave en console.anthropic.com →</a></div>
       </div>
@@ -260,7 +294,7 @@
         <textarea class="ftxt" id="raw-text" rows="14" placeholder="Hugo Martínez · 2 adultos&#10;Orlando · 30/09 - 13/10&#10;✈️ EZE → MCO American Airlines AA930 · USD 1985&#10;🏨 Disney All-Star Sports 01/10-07/10 · USD 2717&#10;🚐 MCO → Sports USD 65 · Orlantours&#10;🛡️ PAX Assistance · 12 cuotas $27.347"></textarea>
       </div>
       <div id="ia-err" class="err" style="display:none"></div>
-      <button class="btn btn-pri" id="btn-ai" onclick="processAI()">✨ Procesar con IA</button>
+      <button class="btn btn-pri" id="btn-ai" onclick="processAI()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg> Procesar con IA</button>
     </div>
   </div>
 </div>
@@ -275,14 +309,14 @@
   <div id="prev-content" style="display:none">
     <div style="background:white;border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--g2);box-shadow:var(--sh)">
       <img id="tb-thumb" src="" style="display:none;height:36px;width:64px;object-fit:cover;border-radius:6px;border:2px solid var(--amber)" alt="">
-      <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f2').click()">📁 Foto</button>
-      <button class="btn btn-out btn-sm" onclick="autoCover()">🔍 Destino</button>
+      <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f2').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Foto</button>
+      <button class="btn btn-out btn-sm" onclick="autoCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Destino</button>
       <button class="btn btn-del btn-xs" id="btn-rmcov2" onclick="removeCover()" style="display:none">✕</button>
       <input type="file" id="cov-f2" accept="image/*" style="display:none" onchange="uploadCover(this)">
       <div style="flex:1"></div>
       <button class="btn btn-out btn-sm" onclick="switchTab('form')">← Editar</button>
-      <button class="btn btn-save btn-sm" id="btn-save-prev" onclick="saveQuote()">☁️ Guardar</button>
-      <button class="btn btn-pdf btn-sm" onclick="doPrint()">🖨️ PDF</button>
+      <button class="btn btn-save btn-sm" id="btn-save-prev" onclick="saveQuote()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar</button>
+      <button class="btn btn-pdf btn-sm" onclick="doPrint()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF</button>
     </div>
     <div id="qscreen"></div>
   </div>
@@ -292,7 +326,7 @@
 <div id="tab-history" class="panel">
   <div class="card">
     <div class="card-hd">
-      <div class="card-ico">🗂</div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Historial de cotizaciones</div><div class="card-sub">Sincronizado en la nube · Todos los dispositivos</div></div>
       <div style="display:flex;gap:8px;align-items:center">
         <select class="fsel btn-sm" id="hist-filter" onchange="renderHistory()" style="min-width:140px">
@@ -315,7 +349,7 @@
 <div id="tab-clients" class="panel">
   <div class="card">
     <div class="card-hd">
-      <div class="card-ico">👥</div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Clientes</div><div class="card-sub">CRM básico de pasajeros</div></div>
       <button class="btn btn-pri btn-sm" onclick="openClientModal()">+ Nuevo cliente</button>
     </div>
@@ -329,16 +363,16 @@
 <!-- ═══ DASHBOARD ═══ -->
 <div id="tab-dashboard" class="panel">
   <div class="intro-bar">
-    <h2>📊 Dashboard</h2>
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</h2>
     <p>Métricas de rendimiento — cotizaciones, comisiones y conversión.</p>
   </div>
   <div id="dash-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px"></div>
   <div class="card">
-    <div class="card-hd"><div class="card-ico">📅</div><div><div class="card-ttl">Cotizaciones del mes</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="card-ttl">Cotizaciones del mes</div></div></div>
     <div class="card-body"><div id="dash-mes-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div></div>
   </div>
   <div class="card">
-    <div class="card-hd"><div class="card-ico">💰</div><div><div class="card-ttl">Últimas comisiones registradas</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="card-ttl">Últimas comisiones registradas</div></div></div>
     <div class="card-body"><div id="dash-comisiones-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div></div></div>
   </div>
 </div>
@@ -353,7 +387,7 @@
   <!-- AGENTES -->
   <div class="card">
     <div class="card-hd">
-      <div class="card-ico">👨‍💼</div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Agentes</div></div>
       <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
     </div>
@@ -365,7 +399,7 @@
   <!-- AEROLÍNEAS -->
   <div class="card">
     <div class="card-hd">
-      <div class="card-ico">✈️</div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 4s-2 1-3.5 2.5L11 8 2.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 7.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Aerolíneas</div></div>
       <button class="btn btn-pri btn-sm" onclick="openAeroModal()">+ Agregar</button>
     </div>
@@ -377,7 +411,7 @@
   <!-- PROVEEDORES -->
   <div class="card">
     <div class="card-hd">
-      <div class="card-ico">🏢</div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Proveedores</div></div>
       <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar</button>
     </div>
@@ -390,12 +424,12 @@
 <!-- ═══ CONFIG ═══ -->
 <div id="tab-config" class="panel">
   <div class="card" style="max-width:540px">
-    <div class="card-hd"><div class="card-ico">🌴</div><div><div class="card-ttl">Mi perfil de agente</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl">Mi perfil de agente</div></div></div>
     <div class="card-body">
       <div class="fg"><label class="lbl">Logo</label>
         <div style="display:flex;align-items:center;gap:12px">
-          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
-          <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()">📁 Subir</button>
+          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
+          <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
           <button class="btn btn-del btn-xs" id="btn-rmlogo" onclick="removeLogo()" style="display:none">✕</button>
           <input type="file" id="logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
         </div>
@@ -407,7 +441,7 @@
         <div class="fg"><label class="lbl">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040"></div>
         <div class="fg full"><label class="lbl">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
       </div>
-      <button class="btn btn-pri" onclick="saveCfg()">💾 Guardar perfil</button>
+      <button class="btn btn-pri" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
     </div>
   </div>
@@ -430,10 +464,10 @@
     <div style="font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:6px">Cambiar estado</div>
     <div style="font-size:.8rem;color:var(--g3);margin-bottom:20px">Seleccioná el nuevo estado de la cotización</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button class="btn" style="background:#F1F5F9;color:var(--dark);justify-content:center;padding:14px" onclick="applyStatus('borrador')">📝 Borrador</button>
-      <button class="btn" style="background:#EFF6FF;color:#1D4ED8;justify-content:center;padding:14px" onclick="applyStatus('enviada')">📤 Enviada</button>
-      <button class="btn" style="background:#ECFDF5;color:#047857;justify-content:center;padding:14px" onclick="applyStatus('confirmada')">✅ Confirmada</button>
-      <button class="btn" style="background:#FEF2F2;color:#DC2626;justify-content:center;padding:14px" onclick="applyStatus('cancelada')">❌ Cancelada</button>
+      <button class="btn" style="background:#F1F5F9;color:var(--dark);justify-content:center;padding:14px" onclick="applyStatus('borrador')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Borrador</button>
+      <button class="btn" style="background:#EFF6FF;color:#1D4ED8;justify-content:center;padding:14px" onclick="applyStatus('enviada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviada</button>
+      <button class="btn" style="background:#ECFDF5;color:#047857;justify-content:center;padding:14px" onclick="applyStatus('confirmada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmada</button>
+      <button class="btn" style="background:#FEF2F2;color:#DC2626;justify-content:center;padding:14px" onclick="applyStatus('cancelada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelada</button>
     </div>
     <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:14px" onclick="closeStatusModal()">Cancelar</button>
   </div>

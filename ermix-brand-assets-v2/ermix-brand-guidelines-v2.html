@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ermix — Brand Guidelines v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09000F;
+  --ink2:#0F0018;
+  --ink3:#160024;
+  --white:#FFFFFF;
+  --muted:rgba(255,255,255,0.45);
+  --muted2:rgba(255,255,255,0.18);
+  --muted3:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+  /* Paleta ermix */
+  --violet:#7C3AED;
+  --violet-mid:#A855F7;
+  --violet-light:#C4B5FD;
+  --indigo:#4F46E5;
+  --coral:#F43F5E;
+  /* Gradiente opción E */
+  --grad:linear-gradient(135deg,#4F46E5 0%,#7C3AED 50%,#F43F5E 100%);
+  --grad-text:linear-gradient(90deg,#818CF8 0%,#A855F7 45%,#F43F5E 100%);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--ink);color:var(--white);
+  font-size:15px;line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(9,0,15,0.82);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 56px;
+}
+.nav-logo{display:flex;align-items:center}
+.nav-links{display:flex;gap:2px}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:12px;font-weight:500;letter-spacing:.02em;
+  padding:6px 14px;border-radius:6px;transition:all .2s;
+}
+.nav-links a:hover{color:var(--white);background:var(--muted3)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:100px 56px 80px;
+  position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% -5%,rgba(79,70,229,.28) 0%,transparent 60%),
+    radial-gradient(ellipse 35% 35% at 85% 75%,rgba(244,63,94,.1) 0%,transparent 55%),
+    radial-gradient(ellipse 25% 30% at 15% 65%,rgba(124,58,237,.1) 0%,transparent 50%);
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(79,70,229,.4);background:rgba(79,70,229,.1);
+  color:#818CF8;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  padding:7px 20px;border-radius:100px;margin-bottom:40px;position:relative;
+}
+.hero-pulse{width:5px;height:5px;border-radius:50%;background:#818CF8;animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero-wordmark{position:relative;margin-bottom:8px}
+.hero-sub{
+  font-size:.72rem;font-weight:700;letter-spacing:6px;text-transform:uppercase;
+  color:rgba(255,255,255,.18);margin-bottom:48px;position:relative;
+}
+.hero-claim{
+  font-size:clamp(1.15rem,2.8vw,1.6rem);font-weight:400;
+  color:rgba(255,255,255,.5);max-width:600px;line-height:1.55;position:relative;
+}
+.hero-claim strong{color:var(--white);font-weight:700}
+.hero-version{
+  position:absolute;bottom:40px;
+  font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,.1);
+}
+
+/* ── LAYOUT ── */
+.container{max-width:1040px;margin:0 auto;padding:0 56px;position:relative;z-index:1}
+.section{padding:100px 0 0}
+.sec-tag{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;
+  color:var(--violet-mid);margin-bottom:18px;
+}
+.sec-num{font-family:'DM Mono',monospace;color:rgba(255,255,255,.18)}
+.sec-title{
+  font-size:clamp(2rem,4.5vw,3rem);font-weight:900;
+  letter-spacing:-1.5px;color:var(--white);line-height:1.0;margin-bottom:14px;
+}
+.sec-desc{color:var(--muted);font-size:.95rem;max-width:500px;line-height:1.7}
+.divider{border:none;height:1px;background:var(--border);margin:100px 0 0}
+
+/* ── MANIFESTO ── */
+.manifesto{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;margin-top:52px;border-radius:20px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.m-item{
+  padding:44px;background:var(--ink2);transition:background .25s;
+}
+.m-item:hover{background:var(--ink3)}
+.m-num{font-family:'DM Mono',monospace;font-size:10px;color:#818CF8;margin-bottom:14px;letter-spacing:2px}
+.m-title{font-size:1.15rem;font-weight:800;letter-spacing:-.3px;margin-bottom:10px}
+.m-text{font-size:.88rem;color:var(--muted);line-height:1.65}
+
+/* ── MENSAJE CENTRAL ── */
+.mensaje-hero{
+  margin-top:52px;padding:60px;
+  background:var(--ink2);border:1px solid var(--border);border-radius:20px;
+  position:relative;overflow:hidden;
+}
+.mensaje-hero::after{
+  content:'';position:absolute;top:-120px;right:-120px;
+  width:480px;height:480px;
+  background:radial-gradient(circle,rgba(79,70,229,.12) 0%,transparent 65%);
+  pointer-events:none;
+}
+.mensaje-kicker{font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:#818CF8;margin-bottom:24px}
+.mensaje-headline{
+  font-size:clamp(2rem,4vw,3.2rem);font-weight:900;
+  letter-spacing:-1.2px;line-height:1.05;margin-bottom:36px;
+}
+.mensaje-headline span{
+  background:var(--grad-text);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.mensaje-body{
+  font-size:1rem;color:var(--muted);line-height:1.75;
+  max-width:560px;border-left:2px solid var(--indigo);padding-left:22px;
+}
+.taglines{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+.tl-card{
+  background:rgba(79,70,229,.07);border:1px solid rgba(79,70,229,.18);
+  border-radius:12px;padding:22px;
+}
+.tl-text{font-size:.92rem;font-weight:700;color:var(--white);line-height:1.35;margin-bottom:8px}
+.tl-note{font-size:.76rem;color:var(--muted);line-height:1.5}
+
+/* ── LOGO ── */
+.logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:52px;border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.logo-cell{padding:52px;display:flex;flex-direction:column;gap:16px}
+.logo-cell.dark{background:var(--ink)}
+.logo-cell.mid{background:var(--ink2)}
+.logo-cell.light{background:#F0ECF8}
+.logo-cell.white{background:#FFFFFF}
+.logo-cell-lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
+.logo-cell.dark .logo-cell-lbl,.logo-cell.mid .logo-cell-lbl{color:rgba(255,255,255,.2)}
+.logo-cell.light .logo-cell-lbl,.logo-cell.white .logo-cell-lbl{color:rgba(0,0,0,.2)}
+
+/* Favicon row */
+.favicon-row{
+  display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;
+  padding:40px;background:var(--ink2);border:1px solid var(--border);
+  border-radius:16px;margin-top:14px;
+}
+.fav-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.fav-lbl{font-size:9px;color:rgba(255,255,255,.2);font-family:'DM Mono',monospace}
+
+/* Regla separación -->
+.sep-rule{
+  margin-top:14px;padding:24px 32px;
+  background:rgba(244,63,94,.04);border:1px solid rgba(244,63,94,.15);
+  border-radius:12px;
+}
+.sep-rule-title{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#F43F5E;margin-bottom:10px}
+.sep-rule-text{font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* ── PALETA ── */
+.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:52px}
+.sw{cursor:default}
+.sw-color{height:88px;border-radius:12px;border:1px solid rgba(255,255,255,.06);margin-bottom:10px;position:relative;overflow:hidden}
+.sw-color::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 50%)}
+.sw-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.sw-hex{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px}
+.sw-role{font-size:10px;color:rgba(255,255,255,.22);margin-top:4px;line-height:1.45}
+
+/* Semantic row */
+.sem-row{
+  display:flex;flex-wrap:wrap;gap:10px;
+  margin-top:28px;padding:28px 32px;
+  background:var(--ink2);border:1px solid var(--border);border-radius:14px;
+}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;letter-spacing:.3px}
+.s-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.s-ok{background:rgba(5,150,105,.12);color:#34D399;border:1px solid rgba(5,150,105,.2)}
+.s-sent{background:rgba(59,130,246,.12);color:#93C5FD;border:1px solid rgba(59,130,246,.2)}
+.s-draft{background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);border:1px solid var(--border)}
+.s-cancel{background:rgba(244,63,94,.1);color:#FCA5A5;border:1px solid rgba(244,63,94,.15)}
+
+/* ── TIPOGRAFÍA ── */
+.type-scale{margin-top:52px}
+.type-row{
+  display:grid;grid-template-columns:180px 1fr;
+  align-items:center;gap:32px;
+  padding:28px 0;border-bottom:1px solid var(--border);
+}
+.type-row:last-child{border-bottom:none}
+.type-meta{font-size:11px;color:var(--muted);line-height:1.8}
+.type-meta strong{display:block;color:var(--white);font-weight:600;font-size:12px;margin-bottom:3px}
+
+/* ── COMPONENTES ── */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:52px;border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.comp-block{padding:40px;background:var(--ink2)}
+.comp-lbl{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+
+/* Buttons */
+.btn-pri{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--grad);color:var(--white);border:none;border-radius:10px;
+  padding:13px 26px;font-size:.88rem;font-weight:700;cursor:pointer;
+  transition:all .25s;font-family:'DM Sans',sans-serif;letter-spacing:-.2px;
+  box-shadow:0 4px 20px rgba(79,70,229,.35);
+}
+.btn-pri:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(79,70,229,.5)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;border:1px solid rgba(255,255,255,.18);
+  color:var(--white);border-radius:10px;
+  padding:12px 26px;font-size:.88rem;font-weight:600;cursor:pointer;
+  transition:all .25s;font-family:'DM Sans',sans-serif;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.3)}
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(79,70,229,.15);border:1px solid rgba(79,70,229,.3);
+  color:#818CF8;font-size:10px;font-weight:700;letter-spacing:1px;
+  padding:4px 12px;border-radius:100px;
+}
+.badge-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+/* Quote card */
+.qcard{
+  background:var(--ink3);border:1px solid var(--border);
+  border-radius:14px;padding:22px;transition:border-color .2s;
+}
+.qcard:hover{border-color:rgba(79,70,229,.35)}
+.qc-dest{font-size:1.25rem;font-weight:800;letter-spacing:-.4px;margin-bottom:3px}
+.qc-ref{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:14px}
+.qc-data{display:flex;gap:18px;margin-bottom:16px}
+.qc-item label{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18);display:block;margin-bottom:2px}
+.qc-item span{font-size:.82rem;font-weight:600}
+.qc-price{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+.qc-price-l{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.qc-price-v{
+  font-size:1.5rem;font-weight:900;letter-spacing:-.5px;
+  background:var(--grad-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* Inputs */
+.finput{
+  width:100%;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);color:var(--white);
+  border-radius:8px;padding:11px 14px;font-size:.85rem;
+  font-family:'DM Sans',sans-serif;outline:none;transition:all .2s;
+}
+.finput:focus{border-color:rgba(79,70,229,.55);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.finput::placeholder{color:rgba(255,255,255,.18)}
+.flabel{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);display:block;margin-bottom:6px}
+
+/* Icons */
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.icon-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:18px 10px;background:var(--ink3);border:1px solid var(--border);
+  border-radius:10px;transition:border-color .2s;
+}
+.icon-item:hover{border-color:rgba(79,70,229,.35)}
+.icon-item svg{width:20px;height:20px;stroke:#A855F7;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.icon-item span{font-size:9px;color:var(--muted);text-align:center;letter-spacing:.3px}
+
+/* ── VOZ ── */
+.voice-grid{display:flex;flex-direction:column;gap:10px;margin-top:52px}
+.voice-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vc{background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:22px}
+.vc.ok{border-color:rgba(79,70,229,.28);background:rgba(79,70,229,.04)}
+.vc.no{border-color:rgba(244,63,94,.14);background:rgba(244,63,94,.03)}
+.vc-ind{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.vc-ind.ok{color:#34D399}.vc-ind.no{color:#F43F5E}
+.vc-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+.vc-text{font-size:.88rem;color:var(--white);line-height:1.5}
+.voice-attrs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.va{padding:18px;background:var(--ink2);border:1px solid var(--border);border-radius:10px}
+.va-title{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#818CF8;margin-bottom:8px}
+.va-text{font-size:.82rem;color:var(--muted);line-height:1.55}
+
+/* ── REGLAS ── */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:52px}
+.rule{border-radius:16px;padding:32px;border:1px solid}
+.rule.do{background:rgba(5,150,105,.03);border-color:rgba(5,150,105,.14)}
+.rule.dont{background:rgba(244,63,94,.03);border-color:rgba(244,63,94,.14)}
+.rule-hd{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
+.rule.do .rule-hd{color:#34D399}.rule.dont .rule-hd{color:#F43F5E}
+.rule-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.rule-list li{font-size:.86rem;color:rgba(255,255,255,.55);padding-left:15px;position:relative;line-height:1.55}
+.rule-list li::before{content:'';position:absolute;left:0;top:9px;width:4px;height:4px;border-radius:50%}
+.rule.do li::before{background:#34D399}.rule.dont li::before{background:#F43F5E}
+
+/* ── FOOTER ── */
+footer{
+  margin-top:100px;background:var(--ink2);
+  border-top:1px solid var(--border);
+  padding:52px 56px;
+}
+.footer-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.footer-text{font-size:12px;color:rgba(255,255,255,.18);line-height:1.7}
+.footer-text strong{color:rgba(255,255,255,.5)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:780px){
+  nav{padding:0 20px}.container{padding:0 20px}
+  .hero{padding:70px 20px 60px}
+  .nav-links{display:none}
+  .manifesto,.logo-grid,.comp-grid,.rules-grid,.voice-pair{grid-template-columns:1fr}
+  .palette{grid-template-columns:repeat(2,1fr)}
+  .taglines,.voice-attrs{grid-template-columns:1fr}
+  .type-row{grid-template-columns:1fr;gap:6px}
+  .icon-grid{grid-template-columns:repeat(3,1fr)}
+  .mensaje-hero{padding:32px}
+  .footer-inner{flex-direction:column;gap:16px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" id="nav-logo"></div>
+  <div class="nav-links">
+    <a href="#identidad">Identidad</a>
+    <a href="#mensaje">Mensaje</a>
+    <a href="#logo">Logo</a>
+    <a href="#paleta">Paleta</a>
+    <a href="#tipo">Tipografía</a>
+    <a href="#ui">Componentes</a>
+    <a href="#voz">Voz</a>
+    <a href="#reglas">Reglas</a>
+    <a href="#modos">Dark / Light</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-tag"><span class="hero-pulse"></span>Brand Guidelines v2.0 · 2026</div>
+  <div class="hero-wordmark" id="hero-wm"></div>
+  <div class="hero-sub">Travel Platform</div>
+  <div class="hero-claim">
+    El arma secreta del agente independiente<br>para <strong>competir de igual a igual</strong> con las agencias grandes.
+  </div>
+  <div class="hero-version">Documento interno · Uso reservado · ermix © 2026</div>
+</section>
+
+<!-- 01 IDENTIDAD -->
+<div class="container" id="identidad">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">01</span>Identidad de marca</div>
+    <h2 class="sec-title">Quiénes somos.</h2>
+    <p class="sec-desc">ermix no es otra plataforma. Es el acceso que antes estaba reservado para los grandes.</p>
+    <div class="manifesto">
+      <div class="m-item">
+        <div class="m-num">01 / PROPÓSITO</div>
+        <div class="m-title">Democratizar la profesionalidad</div>
+        <div class="m-text">Cada agente freelance y cada agencia chica merece las mismas herramientas que las grandes. ermix cierra esa brecha — sin complejidad, sin costos prohibitivos.</div>
+      </div>
+      <div class="m-item">
+        <div class="m-num">02 / PROMESA</div>
+        <div class="m-title">Tu próxima cotización, en minutos</div>
+        <div class="m-text">Dejá de saltar entre plataformas. ermix centraliza todo el proceso comercial para que puedas enfocarte en lo que importa: vender y crecer.</div>
+      </div>
+      <div class="m-item">
+        <div class="m-num">03 / POSICIÓN</div>
+        <div class="m-title">Disruptivo por accesibilidad</div>
+        <div class="m-text">No somos disruptivos en tecnología blockchain. Somos disruptivos porque hacemos accesible lo que antes requería un presupuesto de agencia grande.</div>
+      </div>
+      <div class="m-item">
+        <div class="m-num">04 / PERSONALIDAD</div>
+        <div class="m-title">Aliado, no proveedor</div>
+        <div class="m-text">Hablamos como un colega que conoce el negocio. Sin tecnicismos. Sin condescendencia. Siempre del lado del agente, con foco en su crecimiento.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 MENSAJE -->
+<div class="container" id="mensaje">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">02</span>Mensaje central</div>
+    <h2 class="sec-title">Una sola idea.</h2>
+    <p class="sec-desc">Todo lo que ermix comunica orbita alrededor de un mensaje único y sin ambigüedad.</p>
+    <div class="mensaje-hero">
+      <div class="mensaje-kicker">El headline de ermix</div>
+      <div class="mensaje-headline">Cotizá como<br><span>una agencia grande.</span><br>Siendo vos.</div>
+      <div class="mensaje-body">ermix es la plataforma de cotización para agentes de viajes freelance y agencias independientes que quieren brindar un servicio de nivel profesional — sin herramientas caras ni procesos complejos.</div>
+    </div>
+    <div class="taglines">
+      <div class="tl-card">
+        <div class="tl-text">"Tu agencia. Tu nivel."</div>
+        <div class="tl-note">Redes sociales y comunicaciones cortas. Directo, empoderador.</div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-text">"La herramienta que las grandes no quieren que tengas."</div>
+        <div class="tl-note">Campañas de adquisición. Tono disruptivo y confrontacional.</div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-text">"De freelance a pro, en minutos."</div>
+        <div class="tl-note">Onboarding y demos. Énfasis en velocidad y transformación.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 LOGO -->
+<div class="container" id="logo">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">03</span>Logo & Marca</div>
+    <h2 class="sec-title">El wordmark.</h2>
+    <p class="sec-desc">ermix es una sola palabra. La X custom con cortes diagonales se integra al peso de DM Sans 900 — nunca separada, nunca aislada del resto del nombre.</p>
+
+    <div class="logo-grid" id="logo-grid">
+      <div class="logo-cell dark"><div id="lg-dark"></div><div class="logo-cell-lbl">Principal · fondo oscuro · X gradiente</div></div>
+      <div class="logo-cell mid"><div id="lg-mid"></div><div class="logo-cell-lbl">Todo blanco · headers y navbars</div></div>
+      <div class="logo-cell light"><div id="lg-light"></div><div class="logo-cell-lbl" style="color:rgba(0,0,0,.25)">Fondo claro · X violeta</div></div>
+      <div class="logo-cell white"><div id="lg-white"></div><div class="logo-cell-lbl" style="color:rgba(0,0,0,.25)">Fondo blanco · PDFs y documentos</div></div>
+    </div>
+
+    <!-- Favicon -->
+    <div style="margin-top:14px;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:14px">Ícono standalone · favicon · app icon</div>
+    <div class="favicon-row" id="fav-row"></div>
+
+    <!-- Regla inseparabilidad -->
+    <div class="sep-rule" style="margin-top:14px">
+      <div class="sep-rule-title">✗ Regla de inseparabilidad</div>
+      <div class="sep-rule-text">La X nunca aparece separada del wordmark <strong style="color:white">ermix</strong>. Como ícono standalone es admisible únicamente en favicon, app icon y avatares donde el espacio no permite el wordmark completo. Nunca se escribe "ermi" + X separados tipográficamente.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 PALETA -->
+<div class="container" id="paleta">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">04</span>Paleta de color</div>
+    <h2 class="sec-title">Negro. Preciso. Violeta.</h2>
+    <p class="sec-desc">Fondo casi negro inspirado en TravelX. Violeta oscuro como único acento de marca. Índigo→violeta→coral solo para la X y momentos de máxima energía.</p>
+    <div class="palette">
+      <div class="sw"><div class="sw-color" style="background:#09000F"></div><div class="sw-name">Ink</div><div class="sw-hex">#09000F</div><div class="sw-role">Fondo base. Nunca negro puro.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#0F0018"></div><div class="sw-name">Ink 2</div><div class="sw-hex">#0F0018</div><div class="sw-role">Cards y paneles elevados.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#160024"></div><div class="sw-name">Ink 3</div><div class="sw-hex">#160024</div><div class="sw-role">Hover states, seleccionados.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#7C3AED"></div><div class="sw-name">Violet</div><div class="sw-hex">#7C3AED</div><div class="sw-role">Color primario. CTAs, bordes activos.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#A855F7"></div><div class="sw-name">Violet Mid</div><div class="sw-hex">#A855F7</div><div class="sw-role">Badges, labels, hover de violet.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#4F46E5"></div><div class="sw-name">Indigo</div><div class="sw-hex">#4F46E5</div><div class="sw-role">Inicio del gradiente de la X.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#F43F5E"></div><div class="sw-name">Coral</div><div class="sw-hex">#F43F5E</div><div class="sw-role">Fin del gradiente. Solo en X y CTAs.</div></div>
+      <div class="sw"><div class="sw-color" style="background:linear-gradient(135deg,#4F46E5,#7C3AED,#F43F5E)"></div><div class="sw-name">Gradient E</div><div class="sw-hex">Índigo→Violeta→Coral</div><div class="sw-role">Solo para la X, botón principal y totales de precio.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#C4B5FD"></div><div class="sw-name">Violet Pale</div><div class="sw-hex">#C4B5FD</div><div class="sw-role">Texto suave sobre oscuro. Tags, chips secundarios.</div></div>
+      <div class="sw"><div class="sw-color" style="background:#818CF8"></div><div class="sw-name">Indigo Light</div><div class="sw-hex">#818CF8</div><div class="sw-role">Labels, kickers, texto de acento en UI.</div></div>
+    </div>
+    <div class="sem-row">
+      <div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:6px">Colores semánticos de estado</div>
+      <span class="status s-ok"><span class="s-dot"></span>Confirmada</span>
+      <span class="status s-sent"><span class="s-dot"></span>Enviada</span>
+      <span class="status s-draft"><span class="s-dot"></span>Borrador</span>
+      <span class="status s-cancel"><span class="s-dot"></span>Cancelada</span>
+    </div>
+  </div>
+</div>
+
+<!-- 05 TIPOGRAFÍA -->
+<div class="container" id="tipo">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">05</span>Tipografía</div>
+    <h2 class="sec-title">DM Sans. Sin excepciones.</h2>
+    <p class="sec-desc">Una sola familia tipográfica variable. DM Mono únicamente para referencias, IDs y datos técnicos.</p>
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta"><strong>Display / Hero</strong>DM Sans 900<br>clamp(5rem → 10rem)<br>letter-spacing: −4px</div>
+        <div id="type-display"></div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Headline 1</strong>DM Sans 900<br>clamp(2rem → 3rem)<br>letter-spacing: −1.5px</div>
+        <div style="font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;letter-spacing:-1.2px;line-height:1.05">Cotizá como una agencia grande.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Headline 2</strong>DM Sans 800<br>1.3rem · letter-spacing: −0.4px</div>
+        <div style="font-size:1.3rem;font-weight:800;letter-spacing:-.4px">Nueva cotización · Orlando, Florida</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Body</strong>DM Sans 400<br>0.95rem · line-height: 1.7</div>
+        <div style="font-size:.95rem;color:var(--muted);line-height:1.7;max-width:480px">Seleccioná el vuelo, agregá los servicios y generá un PDF profesional. Tu cliente recibe una cotización que transmite confianza desde el primer vistazo.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Label UI</strong>DM Sans 700<br>9–10px uppercase<br>letter-spacing: 3px</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#818CF8">Fecha de salida · Destino · Referencia</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><strong>Mono</strong>DM Mono 400–500<br>10–12px<br>Solo refs y datos técnicos</div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)">COT-2026-0847 · #7C3AED · v2.0.0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 COMPONENTES -->
+<div class="container" id="ui">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">06</span>Componentes UI</div>
+    <h2 class="sec-title">El sistema de piezas.</h2>
+    <p class="sec-desc">Cada componente sigue las mismas reglas de color, tipografía y espaciado. La consistencia es la firma de ermix.</p>
+    <div class="comp-grid">
+      <div class="comp-block">
+        <div class="comp-lbl">Botones y badges</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><button class="btn-pri">Generar cotización →</button></div>
+          <div><button class="btn-ghost">Ver historial</button></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <span class="badge"><span class="badge-dot"></span>Pro</span>
+            <span class="badge" style="background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.25);color:#FCA5A5"><span class="badge-dot" style="background:#FCA5A5"></span>Nuevo</span>
+            <span class="badge" style="background:rgba(5,150,105,.12);border-color:rgba(5,150,105,.22);color:#34D399"><span class="badge-dot" style="background:#34D399"></span>Activo</span>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">
+            <span class="status s-ok"><span class="s-dot"></span>Confirmada</span>
+            <span class="status s-sent"><span class="s-dot"></span>Enviada</span>
+            <span class="status s-draft"><span class="s-dot"></span>Borrador</span>
+            <span class="status s-cancel"><span class="s-dot"></span>Cancelada</span>
+          </div>
+        </div>
+      </div>
+      <div class="comp-block">
+        <div class="comp-lbl">Card de cotización</div>
+        <div class="qcard">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div><div class="qc-dest">Orlando, Florida</div><div class="qc-ref">COT-2026-0847</div></div>
+            <span class="status s-sent"><span class="s-dot"></span>Enviada</span>
+          </div>
+          <div class="qc-data">
+            <div class="qc-item"><label>Salida</label><span>12 Jun</span></div>
+            <div class="qc-item"><label>Regreso</label><span>19 Jun</span></div>
+            <div class="qc-item"><label>Pasajeros</label><span>2 adultos</span></div>
+          </div>
+          <div class="qc-price">
+            <div class="qc-price-l">Total</div>
+            <div class="qc-price-v">USD 3.480</div>
+          </div>
+        </div>
+      </div>
+      <div class="comp-block">
+        <div class="comp-lbl">Campos de formulario</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><div class="flabel">Destino</div><input class="finput" type="text" value="Orlando, Florida"></div>
+          <div><div class="flabel">Fecha de salida</div><input class="finput" type="text" value="12 / 06 / 2026"></div>
+          <div><div class="flabel">Pasajeros</div><input class="finput" type="text" placeholder="2 adultos, 1 niño"></div>
+        </div>
+      </div>
+      <div class="comp-block">
+        <div class="comp-lbl">Iconografía — Lucide · stroke 1.5px · 20×20px</div>
+        <div class="icon-grid">
+          <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Destino</span></div>
+          <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3 6.18 2 2 0 0 1 4.99 4h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.09 11.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Contacto</span></div>
+          <div class="icon-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Fecha</span></div>
+          <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 1 16.5 2.5L13 6 4.8 4.2c-.5-.1-1 .1-1.3.5l-.5.8c-.3.4-.2.9.1 1.3L8 12l-2 2H4l-1 1 3 2 2 3 1-1v-2l2-2 5.4 4.9c.4.3.9.4 1.3.1l.8-.5c.4-.3.6-.8.3-1.3z"/></svg><span>Vuelo</span></div>
+          <div class="icon-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Pasajeros</span></div>
+          <div class="icon-item"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Precio</span></div>
+        </div>
+        <div style="margin-top:14px;padding:12px 16px;background:var(--ink3);border-radius:8px;font-size:.78rem;color:var(--muted)">
+          Stroke <strong style="color:white">1.5px</strong> · Size <strong style="color:white">20×20px</strong> · Color <code style="font-family:'DM Mono',monospace;font-size:.72rem;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px">#A855F7</code> sobre fondo oscuro
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 07 VOZ -->
+<div class="container" id="voz">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">07</span>Voz y tono</div>
+    <h2 class="sec-title">Cómo habla ermix.</h2>
+    <p class="sec-desc">Directo, humano, del sector. Ni corporativo ni casual. Siempre del lado del agente.</p>
+    <div class="voice-grid">
+      <div class="voice-pair">
+        <div class="vc ok"><div class="vc-ind ok"><span class="vc-dot"></span>Correcto</div><div class="vc-text">"Tu próxima cotización está a 3 pasos. Sin complicaciones."</div></div>
+        <div class="vc no"><div class="vc-ind no"><span class="vc-dot"></span>Evitar</div><div class="vc-text">"Bienvenido a la plataforma de gestión de cotizaciones turísticas avanzada."</div></div>
+      </div>
+      <div class="voice-pair">
+        <div class="vc ok"><div class="vc-ind ok"><span class="vc-dot"></span>Correcto</div><div class="vc-text">"Cotización guardada. Ya la pueden ver tus clientes."</div></div>
+        <div class="vc no"><div class="vc-ind no"><span class="vc-dot"></span>Evitar</div><div class="vc-text">"El registro fue procesado exitosamente por el sistema."</div></div>
+      </div>
+      <div class="voice-pair">
+        <div class="vc ok"><div class="vc-ind ok"><span class="vc-dot"></span>Correcto</div><div class="vc-text">"¿Todo listo? Generá el PDF y mandáselo a tu cliente en un click."</div></div>
+        <div class="vc no"><div class="vc-ind no"><span class="vc-dot"></span>Evitar</div><div class="vc-text">"Para completar la exportación haga click en el botón de generación."</div></div>
+      </div>
+    </div>
+    <div class="voice-attrs">
+      <div class="va"><div class="va-title">Directo</div><div class="va-text">Sin rodeos. Cada palabra cumple una función.</div></div>
+      <div class="va"><div class="va-title">Humano</div><div class="va-text">Tuteo siempre. Como un colega del sector, no un sistema.</div></div>
+      <div class="va"><div class="va-title">Empoderador</div><div class="va-text">ermix le da poder al agente. El tono lo refleja en cada pantalla.</div></div>
+      <div class="va"><div class="va-title">Del sector</div><div class="va-text">Conocemos GDS, PNR, tarifa neta. Los usamos cuando corresponde.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 08 REGLAS -->
+<div class="container" id="reglas">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">08</span>Reglas de uso</div>
+    <h2 class="sec-title">Qué hacer y qué evitar.</h2>
+    <p class="sec-desc">La coherencia visual protege la credibilidad de la marca ante agentes y clientes.</p>
+    <div class="rules-grid">
+      <div class="rule do">
+        <div class="rule-hd">✓ Hacer</div>
+        <ul class="rule-list">
+          <li>Escribir "ermix" siempre en minúscula en todos los contextos</li>
+          <li>Usar el gradiente índigo→violeta→coral solo en la X, botón principal y totales de precio</li>
+          <li>Mantener el fondo base en #09000F — nunca negro puro ni blanco puro en la app</li>
+          <li>Usar DM Sans 900 para el wordmark y DM Mono solo para referencias y datos técnicos</li>
+          <li>Mantener stroke 1.5px en todos los íconos de la interfaz</li>
+          <li>Respetar los 3 niveles de superficie: #09000F → #0F0018 → #160024</li>
+          <li>Tratar la X siempre como parte inseparable del wordmark ermix</li>
+        </ul>
+      </div>
+      <div class="rule dont">
+        <div class="rule-hd">✗ Evitar</div>
+        <ul class="rule-list">
+          <li>Usar emoji como íconos de interfaz — solo SVG de Lucide</li>
+          <li>Separar la X del texto "ermi" en cualquier contexto de wordmark</li>
+          <li>Aplicar el gradiente en textos corridos o elementos menores de 28px</li>
+          <li>Combinar DM Sans con otras familias tipográficas en el mismo material</li>
+          <li>Escribir "Ermix", "ERMIX" ni ninguna variante capitalizada como nombre de marca</li>
+          <li>Usar cards con fondo blanco en la app — ermix es dark-first siempre</li>
+          <li>Mezclar el violeta con azules puros o verdes como color principal de UI</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="padding-bottom:100px"></div>
+</div>
+
+<!-- 09 DARK / LIGHT -->
+<div class="container" id="modos">
+  <hr class="divider">
+  <div class="section">
+    <div class="sec-tag"><span class="sec-num">09</span>Dark mode & Light mode</div>
+    <h2 class="sec-title">Dos modos. Una marca.</h2>
+    <p class="sec-desc">ermix es dark-first. El modo claro es una variante válida para contextos de alta luminosidad, documentos externos y preferencias del usuario — no un tema secundario.</p>
+
+    <!-- TOGGLE DEMO -->
+    <div style="margin-top:52px;display:flex;align-items:center;gap:16px;margin-bottom:28px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25)">Vista previa</div>
+      <div id="mode-toggle" style="display:flex;background:#0F0018;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:3px;gap:3px;cursor:pointer">
+        <div id="btn-dark" onclick="setMode('dark')" style="padding:6px 18px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:1px;background:rgba(79,70,229,.2);border:1px solid rgba(79,70,229,.35);color:#818CF8;transition:all .2s">Dark</div>
+        <div id="btn-light" onclick="setMode('light')" style="padding:6px 18px;border-radius:7px;font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.3);transition:all .2s">Light</div>
+      </div>
+    </div>
+
+    <!-- SIDE BY SIDE PREVIEW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.07)">
+
+      <!-- DARK PANEL -->
+      <div id="panel-dark" style="background:#09000F;padding:40px">
+        <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:28px">Modo oscuro — Dark</div>
+
+        <!-- Logo dark -->
+        <div style="margin-bottom:28px"><div id="logo-dm"></div></div>
+
+        <!-- Paleta dark -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px">Paleta activa</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px">
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#09000F;border:1px solid rgba(255,255,255,.12)"></div><div style="font-size:8px;color:rgba(255,255,255,.25);font-family:monospace">#09000F</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#0F0018"></div><div style="font-size:8px;color:rgba(255,255,255,.25);font-family:monospace">#0F0018</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#7C3AED"></div><div style="font-size:8px;color:rgba(255,255,255,.25);font-family:monospace">#7C3AED</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#4F46E5,#7C3AED,#F43F5E)"></div><div style="font-size:8px;color:rgba(255,255,255,.25);font-family:monospace">Grad E</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#FFFFFF"></div><div style="font-size:8px;color:rgba(255,255,255,.25);font-family:monospace">#FFFFFF</div></div>
+        </div>
+
+        <!-- Tipografía dark -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px">Tipografía</div>
+        <div style="margin-bottom:6px;font-size:1.1rem;font-weight:900;letter-spacing:-.5px;color:#FFFFFF">Título — #FFFFFF</div>
+        <div style="margin-bottom:6px;font-size:.88rem;font-weight:400;color:rgba(255,255,255,.45)">Body — rgba(255,255,255,0.45)</div>
+        <div style="margin-bottom:20px;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#818CF8">LABEL — #818CF8</div>
+
+        <!-- Componentes dark -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px">Componentes</div>
+        <div style="background:#0F0018;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px;margin-bottom:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:8px">Destino</div>
+          <div style="font-size:1.1rem;font-weight:800;letter-spacing:-.4px;margin-bottom:10px">Orlando, Florida</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)">
+            <span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3)">Total</span>
+            <span style="font-size:1.25rem;font-weight:900;background:linear-gradient(90deg,#818CF8,#A855F7,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 3.480</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button style="flex:1;padding:11px;background:linear-gradient(135deg,#4F46E5,#7C3AED,#F43F5E);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer">Generar PDF →</button>
+          <button style="flex:1;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-size:.82rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer">Ver historial</button>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:6px">Input</div>
+          <input style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:white;border-radius:8px;padding:10px 13px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none" placeholder="Nombre del pasajero" value="Hugo Martínez">
+        </div>
+      </div>
+
+      <!-- LIGHT PANEL -->
+      <div id="panel-light" style="background:#F7F4FF;padding:40px">
+        <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(0,0,0,.25);margin-bottom:28px">Modo claro — Light</div>
+
+        <!-- Logo light -->
+        <div style="margin-bottom:28px"><div id="logo-lm"></div></div>
+
+        <!-- Paleta light -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:12px">Paleta activa</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px">
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#FFFFFF;border:1px solid rgba(0,0,0,.1)"></div><div style="font-size:8px;color:rgba(0,0,0,.3);font-family:monospace">#FFFFFF</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#F7F4FF;border:1px solid rgba(0,0,0,.06)"></div><div style="font-size:8px;color:rgba(0,0,0,.3);font-family:monospace">#F7F4FF</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#EDE9FE;border:1px solid rgba(0,0,0,.06)"></div><div style="font-size:8px;color:rgba(0,0,0,.3);font-family:monospace">#EDE9FE</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:#5B21B6"></div><div style="font-size:8px;color:rgba(0,0,0,.3);font-family:monospace">#5B21B6</div></div>
+          <div style="display:flex;flex-direction:column;gap:5px;align-items:center"><div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#4F46E5,#7C3AED,#F43F5E)"></div><div style="font-size:8px;color:rgba(0,0,0,.3);font-family:monospace">Grad E</div></div>
+        </div>
+
+        <!-- Tipografía light -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:12px">Tipografía</div>
+        <div style="margin-bottom:6px;font-size:1.1rem;font-weight:900;letter-spacing:-.5px;color:#0A0014">Título — #0A0014</div>
+        <div style="margin-bottom:6px;font-size:.88rem;font-weight:400;color:rgba(0,0,0,.5)">Body — rgba(0,0,0,0.5)</div>
+        <div style="margin-bottom:20px;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#5B21B6">LABEL — #5B21B6</div>
+
+        <!-- Componentes light -->
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:12px">Componentes</div>
+        <div style="background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:18px;margin-bottom:10px;box-shadow:0 2px 12px rgba(79,70,229,.08)">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.25);margin-bottom:8px">Destino</div>
+          <div style="font-size:1.1rem;font-weight:800;letter-spacing:-.4px;color:#0A0014;margin-bottom:10px">Orlando, Florida</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(0,0,0,.07)">
+            <span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.35)">Total</span>
+            <span style="font-size:1.25rem;font-weight:900;background:linear-gradient(90deg,#4F46E5,#7C3AED,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 3.480</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button style="flex:1;padding:11px;background:linear-gradient(135deg,#4F46E5,#7C3AED,#F43F5E);border:none;border-radius:8px;color:white;font-size:.82rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.3)">Generar PDF →</button>
+          <button style="flex:1;padding:11px;background:transparent;border:1px solid rgba(91,33,182,.3);border-radius:8px;color:#5B21B6;font-size:.82rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer">Ver historial</button>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:6px">Input</div>
+          <input style="width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.12);color:#0A0014;border-radius:8px;padding:10px 13px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;box-shadow:0 1px 4px rgba(0,0,0,.06)" placeholder="Nombre del pasajero" value="Hugo Martínez">
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE TOKENS POR MODO -->
+    <div style="margin-top:14px;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:#0F0018;border-bottom:1px solid rgba(255,255,255,.07)">
+        <div style="padding:14px 20px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3)">Token</div>
+        <div style="padding:14px 20px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);border-left:1px solid rgba(255,255,255,.06)">Dark Mode</div>
+        <div style="padding:14px 20px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);border-left:1px solid rgba(255,255,255,.06)">Light Mode</div>
+      </div>
+      <div id="tokens-table"></div>
+    </div>
+
+    <!-- REGLA DE USO DE FONDOS -->
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="padding:28px;background:rgba(79,70,229,.06);border:1px solid rgba(79,70,229,.18);border-radius:14px">
+        <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#818CF8;margin-bottom:14px">Dark mode — cuándo usarlo</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#818CF8;display:block"></span>
+            App principal — siempre dark por defecto
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#818CF8;display:block"></span>
+            Login, splash screen, onboarding
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#818CF8;display:block"></span>
+            Comunicaciones digitales y redes sociales
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#818CF8;display:block"></span>
+            Presentaciones y pitch decks
+          </li>
+        </ul>
+      </div>
+      <div style="padding:28px;background:rgba(91,33,182,.04);border:1px solid rgba(91,33,182,.15);border-radius:14px">
+        <div style="font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#A855F7;margin-bottom:14px">Light mode — cuándo usarlo</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#A855F7;display:block"></span>
+            Preferencia explícita del usuario (toggle)
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#A855F7;display:block"></span>
+            PDFs de cotización enviados al cliente
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#A855F7;display:block"></span>
+            Documentos impresos y materiales físicos
+          </li>
+          <li style="font-size:.85rem;color:rgba(255,255,255,.55);padding-left:14px;position:relative;line-height:1.5">
+            <span style="position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:#A855F7;display:block"></span>
+            Ambientes de alta luminosidad (ferias, stands)
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="padding-bottom:100px"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div id="footer-logo"></div>
+    <div class="footer-text">
+      <strong>ermix</strong> · Brand Guidelines v2.0 · 2026<br>
+      Para agentes freelance y agencias independientes que quieren jugar en las grandes ligas.
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── X APROBADA ──────────────────────────────────────────────────────────────
+const X_PATH = "M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z";
+// Gradiente opción E
+const G = ['#4F46E5','#7C3AED','#F43F5E'];
+
+let _gradCounter = 0;
+function gradDef(id, horiz) {
+  const x2 = horiz ? '100%' : '100%';
+  const y2 = horiz ? '0%' : '100%';
+  return `<linearGradient id="${id}" x1="0%" y1="0%" x2="${x2}" y2="${y2}">
+    <stop offset="0%" stop-color="${G[0]}"/>
+    <stop offset="45%" stop-color="${G[1]}"/>
+    <stop offset="100%" stop-color="${G[2]}"/>
+  </linearGradient>`;
+}
+
+function makeWordmark(container, fontSize, textFill, xFill, horiz) {
+  _gradCounter++;
+  const gid = `wg${_gradCounter}`;
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  ctx.font = `900 ${fontSize}px "DM Sans"`;
+  const ermiW = ctx.measureText('ermi').width;
+  const capH  = fontSize * 0.725;
+  const sc    = capH / 48;
+  const baseline = fontSize * 0.86;
+  const totalH   = fontSize * 1.0;
+  const xTop  = baseline - capH;
+  const xLeft = ermiW - 1;
+  const totalW = xLeft + 48*sc + 4;
+  const tx = xLeft - 8*sc;
+  const ty = xTop  - 8*sc;
+  const fill = xFill === 'grad' ? `url(#${gid})` : xFill;
+  const defs = xFill === 'grad' ? `<defs>${gradDef(gid, horiz)}</defs>` : '';
+  const svg = `<svg viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" xmlns="http://www.w3.org/2000/svg">
+    ${defs}
+    <text x="0" y="${baseline}" font-family="'DM Sans',system-ui,sans-serif" font-weight="900" font-size="${fontSize}" letter-spacing="-1" fill="${textFill}">ermi</text>
+    <path transform="translate(${tx},${ty}) scale(${sc})" d="${X_PATH}" fill="${fill}"/>
+  </svg>`;
+  if(typeof container === 'string') {
+    document.getElementById(container).innerHTML = svg;
+  } else {
+    container.innerHTML = svg;
+  }
+}
+
+function makeFavicon(sz, xFill, rx, gradHoriz) {
+  _gradCounter++;
+  const gid = `fg${_gradCounter}`;
+  const sc  = 56/48;
+  const off = 8 - 8*sc;
+  const fill = xFill === 'grad' ? `url(#${gid})` : xFill;
+  const defs = xFill === 'grad' ? `<defs>${gradDef(gid, gradHoriz)}</defs>` : '';
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+    ${defs}
+    <rect width="72" height="72" rx="${rx}" fill="#09000F"/>
+    <path transform="translate(${off},${off}) scale(${sc})" d="${X_PATH}" fill="${fill}"/>
+  </svg>`;
+}
+
+document.fonts.ready.then(() => {
+  // NAV logo
+  makeWordmark('nav-logo', 22, 'white', 'grad', true);
+
+  // HERO wordmark — grande
+  makeWordmark('hero-wm', 88, 'white', 'grad', true);
+
+  // Logo grid
+  makeWordmark('lg-dark',  60, 'white',   'grad',    true);
+  makeWordmark('lg-mid',   60, 'white',   'white',   false);
+  makeWordmark('lg-light', 60, '#1A0030', '#5B21B6', false);
+  makeWordmark('lg-white', 60, '#1A0030', '#5B21B6', false);
+
+  // Favicon row
+  const favRow = document.getElementById('fav-row');
+  const sizes  = [72,48,36,24,16];
+  sizes.forEach(sz => {
+    const w = document.createElement('div');
+    w.className = 'fav-item';
+    w.innerHTML = makeFavicon(sz, 'grad', Math.round(sz*0.25), true)
+      + `<div class="fav-lbl">${sz}px</div>`;
+    favRow.appendChild(w);
+  });
+  // White variant
+  const ww = document.createElement('div');
+  ww.className = 'fav-item';
+  ww.style.cssText = 'padding-left:20px;border-left:1px solid rgba(255,255,255,0.07);margin-left:4px';
+  ww.innerHTML = makeFavicon(72, 'white', 18, false) + `<div class="fav-lbl">White</div>`;
+  favRow.appendChild(ww);
+
+  // Footer logo
+  makeWordmark('footer-logo', 22, 'white', 'grad', true);
+
+  // Type display
+  makeWordmark('type-display', 72, 'white', 'grad', true);
+
+  // Section 09 — dark/light logos
+  makeWordmark('logo-dm', 36, 'white',   'grad',    true);
+  makeWordmark('logo-lm', 36, '#1A0030', '#5B21B6', false);
+
+  // Tokens table
+  const tokens = [
+    ['Background base',   '#09000F',                    '#FFFFFF'],
+    ['Surface / Card',    '#0F0018',                    '#F7F4FF'],
+    ['Surface hover',     '#160024',                    '#EDE9FE'],
+    ['Texto principal',   '#FFFFFF',                    '#0A0014'],
+    ['Texto secundario',  'rgba(255,255,255,0.45)',      'rgba(0,0,0,0.5)'],
+    ['Label / Kicker',    '#818CF8',                    '#5B21B6'],
+    ['Border',            'rgba(255,255,255,0.07)',      'rgba(0,0,0,0.08)'],
+    ['Primario / CTA',    '#7C3AED',                    '#5B21B6'],
+    ['Gradiente X',       'Índigo→Violeta→Coral',        'Índigo→Violeta→Coral'],
+    ['Input background',  'rgba(255,255,255,0.04)',      '#FFFFFF'],
+    ['Input border',      'rgba(255,255,255,0.09)',      'rgba(0,0,0,0.12)'],
+    ['Btn ghost border',  'rgba(255,255,255,0.15)',      'rgba(91,33,182,0.3)'],
+    ['Btn ghost text',    '#FFFFFF',                    '#5B21B6'],
+  ];
+  const tbody = document.getElementById('tokens-table');
+  tokens.forEach((row, i) => {
+    const bg = i % 2 === 0 ? 'background:#09000F' : 'background:#0A0012';
+    const d = document.createElement('div');
+    d.style.cssText = `display:grid;grid-template-columns:1fr 1fr 1fr;${bg};border-bottom:1px solid rgba(255,255,255,.04)`;
+    d.innerHTML = `
+      <div style="padding:12px 20px;font-size:12px;color:rgba(255,255,255,.5);font-weight:500">${row[0]}</div>
+      <div style="padding:12px 20px;font-size:11px;color:rgba(255,255,255,.4);font-family:monospace;border-left:1px solid rgba(255,255,255,.04)">${row[1]}</div>
+      <div style="padding:12px 20px;font-size:11px;color:rgba(255,255,255,.4);font-family:monospace;border-left:1px solid rgba(255,255,255,.04)">${row[2]}</div>`;
+    tbody.appendChild(d);
+  });
+});
+
+// Toggle preview (visual only — no page theme change)
+function setMode(mode) {
+  const btnD = document.getElementById('btn-dark');
+  const btnL = document.getElementById('btn-light');
+  if(mode === 'dark') {
+    btnD.style.background = 'rgba(79,70,229,.2)';
+    btnD.style.border = '1px solid rgba(79,70,229,.35)';
+    btnD.style.color = '#818CF8';
+    btnL.style.background = 'transparent';
+    btnL.style.border = '1px solid transparent';
+    btnL.style.color = 'rgba(255,255,255,.3)';
+    document.getElementById('panel-dark').style.opacity = '1';
+    document.getElementById('panel-light').style.opacity = '.4';
+  } else {
+    btnL.style.background = 'rgba(91,33,182,.15)';
+    btnL.style.border = '1px solid rgba(91,33,182,.35)';
+    btnL.style.color = '#C4B5FD';
+    btnD.style.background = 'transparent';
+    btnD.style.border = '1px solid transparent';
+    btnD.style.color = 'rgba(255,255,255,.3)';
+    document.getElementById('panel-light').style.opacity = '1';
+    document.getElementById('panel-dark').style.opacity = '.4';
+  }
+}
+</script>
+</body>
+</html>
