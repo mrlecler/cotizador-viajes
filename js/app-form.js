@@ -36,7 +36,7 @@ function addVuelo(d){
       <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur" placeholder="17h 19min" value="${d.duracion||''}"></div>
     </div>
   </div>
-  <div id="v${id}-ret-sec" style="display:none;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--rs);padding:14px;margin-bottom:12px">
+  <div id="v${id}-ret-sec" style="display:none;background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
     <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:12px">↩ TRAMO VUELTA</div>
     <div class="g3">
       <div class="fg"><label class="lbl">Aerolínea vuelta</label><input class="finput" list="al-list" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}"></div>
@@ -124,7 +124,7 @@ function addHotel(d){
       <div class="fg"><label class="lbl">Beneficios</label>
         <div class="chk-grp" id="h${id}-bens">${[['ep','Early Park Entry'],['tr','Transporte gratuito'],['mm','Memory Maker'],['dl','Entrega en hotel'],['ex','Express Pass'],['sp','Disney Springs'],['wp','Parque acuático gratis'],['me','Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
       </div>
-      <div style="background:white;border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(0,90,170,.15)">
+      <div style="background:var(--ink3);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(124,58,237,0.18)">
         <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:10px">Plan de comidas</div>
         <div class="g3">
           <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>

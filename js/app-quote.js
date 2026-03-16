@@ -217,7 +217,7 @@ function buildQuoteHTML(d){
           ${h.estrellas&&h.estrellas!=='—'?`<div style="font-size:9px;margin-top:4px">★ ${h.estrellas} estrellas</div>`:''}
           ${allAm.length?`<div class="am-grid">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`:''}
         </div>
-        ${h.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16)}</div>`:''}
+        ${h.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:rgba(124,58,237,0.08)"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16)}</div>`:''}
       </div>`;
     }
     H+=`</div>`;
@@ -253,7 +253,7 @@ function buildQuoteHTML(d){
           <div class="q-card-dt">${[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov].filter(Boolean).join(' · ')}</div>
           ${t.notas?`<div style="font-size:9px;color:rgba(0,0,0,.4);margin-top:2px">${t.notas}</div>`:''}
         </div>
-        ${t.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),16)}</div>`:`<div style="font-size:10px;font-weight:600;color:#059669;flex-shrink:0;margin-left:12px">Incluido</div>`}
+        ${t.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:rgba(124,58,237,0.08)"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),16)}</div>`:`<div style="font-size:10px;font-weight:600;color:#059669;flex-shrink:0;margin-left:12px">Incluido</div>`}
       </div>`;
     });
     H+=`</div>`;

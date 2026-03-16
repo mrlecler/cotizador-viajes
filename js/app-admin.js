@@ -7,9 +7,11 @@ async function renderAdmin(){
     <td>${a.email}</td><td>${a.nombre||'—'}</td>
     <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':'st-borrador'}">${a.rol}</span></td>
     <td>${a.activo?'Sí':'No'}</td>
-    <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
-      <button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button>
+    <td style="white-space:nowrap;vertical-align:middle">
+      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
+        <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        <button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button>
+      </div>
     </td>
   </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
 
@@ -114,7 +116,24 @@ async function loadSeguros(){
   const el=document.getElementById('admin-seguros');
   if(el){
     if(error){
-      el.innerHTML=`<p style="color:var(--red);font-size:.8rem">Error al cargar seguros: ${error.message}</p>`;
+      const isSchemaError=error.message&&(error.message.includes('schema cache')||error.message.includes('does not exist')||error.message.includes('relation'));
+      if(isSchemaError){
+        el.innerHTML=`<div style="border:1px solid rgba(124,58,237,0.4);border-radius:12px;padding:16px 20px;background:rgba(124,58,237,0.08)">
+          <div style="font-size:.8rem;font-weight:700;color:#C4B5FD;margin-bottom:10px">La tabla de seguros no está creada aún. Ejecutá el siguiente SQL en Supabase:</div>
+          <pre style="background:rgba(0,0,0,0.35);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:12px;font-size:.72rem;color:#E9D5FF;overflow-x:auto;cursor:pointer;white-space:pre-wrap;word-break:break-all" title="Click para copiar" onclick="navigator.clipboard.writeText(this.textContent).then(()=>toast('SQL copiado'))">CREATE TABLE public.seguros (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  nombre text NOT NULL,
+  activo boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.seguros ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Acceso autenticado" ON public.seguros
+  FOR ALL USING (auth.role() = 'authenticated');</pre>
+          <div style="font-size:.72rem;color:rgba(196,181,253,.6);margin-top:8px">Click en el bloque SQL para copiarlo · Luego ir a Supabase Dashboard &rarr; SQL Editor &rarr; pegar y ejecutar.</div>
+        </div>`;
+      } else {
+        el.innerHTML=`<p style="color:var(--red);font-size:.8rem">Error al cargar seguros: ${error.message}</p>`;
+      }
     } else {
       el.innerHTML=segs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Activo</th><th></th></tr></thead><tbody>
       ${segs.map(s=>`<tr><td>${s.nombre}</td><td>${s.activo?'Sí':'No'}</td>
@@ -127,8 +146,12 @@ async function loadSeguros(){
   // Actualizar select del formulario
   const sel=document.getElementById('seg-nm');
   if(sel){
-    const activos=(segs||[]).filter(s=>s.activo!==false);
-    sel.innerHTML='<option value="">— Elegir aseguradora —</option>'+activos.map(s=>`<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    if(error||!segs){
+      sel.innerHTML='<option value="">— Sin seguros disponibles —</option>';
+    } else {
+      const activos=segs.filter(s=>s.activo!==false);
+      sel.innerHTML='<option value="">— Elegir aseguradora —</option>'+activos.map(s=>`<option value="${s.nombre}">${s.nombre}</option>`).join('');
+    }
   }
 }
 

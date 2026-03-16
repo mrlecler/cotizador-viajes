@@ -943,15 +943,35 @@ a:hover{color:var(--secondary)}
 }
 [data-theme="light"] .card-hd { background: rgba(79,70,229,0.03); border-bottom-color: #F0EDF8; }
 [data-theme="light"] .finput {
-  background: #FFFFFF;
-  border-color: rgba(0,0,0,0.12);
-  color: #09000F;
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #09000F !important;
 }
-[data-theme="light"] .finput::placeholder { color: rgba(0,0,0,0.3); }
+[data-theme="light"] .finput::placeholder { color: rgba(0,0,0,0.3) !important; }
 [data-theme="light"] .fsel {
-  background: #FFFFFF;
-  border-color: rgba(0,0,0,0.12);
-  color: #09000F;
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #09000F !important;
+}
+[data-theme="light"] .ftxt {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #09000F !important;
+}
+[data-theme="light"] .money-wrap {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+[data-theme="light"] .money-inp { color: #09000F !important; }
+[data-theme="light"] .money-cur { background: rgba(79,70,229,0.06) !important; }
+[data-theme="light"] .rep {
+  background: linear-gradient(135deg,#FFFFFF,#F7F4FF) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .chk {
+  background: #F0EDF8 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: rgba(0,0,0,0.65) !important;
 }
 [data-theme="light"] .lbl { color: rgba(0,0,0,0.45); }
 [data-theme="light"] .wrap { background: #F7F4FF; }
