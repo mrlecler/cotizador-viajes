@@ -201,11 +201,11 @@ function buildQuoteHTML(d){
             ${gradPrice(fmtMoney(h.mp_pr,h.mp_cur||h.moneda))}
           </div>
         </div>`;
-        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#F7F4FF;border-radius:0 8px 8px 0;border-left:2px solid #7C3AED;padding:12px;margin-top:8px">${lines.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉]/)?`<div style="font-size:11px;font-weight:700;color:#09000F;margin:8px 0 4px">${c}</div>`:`<div style="font-size:10px;color:rgba(0,0,0,.5);margin-bottom:2px;display:flex;gap:6px"><span style="color:#7C3AED;font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
+        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#F7F4FF;border-radius:0 8px 8px 0;border-left:2px solid #7C3AED;padding:12px;margin-top:8px">${lines.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:11px;font-weight:700;color:#09000F;margin:8px 0 4px">${c}</div>`:`<div style="font-size:10px;color:rgba(0,0,0,.5);margin-bottom:2px;display:flex;gap:6px"><span style="color:#7C3AED;font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
       } else if(h.precio>0){
         H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio</div><div class="ptag-v">${fmtMoney(h.precio,h.moneda)}</div></div></div>`;
       }
-      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-top:8px">${nl.map(l=>{const c=l.replace(/^\s*[•·\-\*]\s*/,'').trim();return l.match(/^[🎃👉🎪✨]/)?`<div style="font-size:11px;font-weight:700;color:#09000F;margin:6px 0 4px">${c}</div>`:`<div style="font-size:10px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
+      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-top:8px">${nl.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:11px;font-weight:700;color:#09000F;margin:6px 0 4px">${c}</div>`:`<div style="font-size:10px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
     } else {
       const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
       H+=`<div class="q-card">
@@ -297,10 +297,10 @@ function buildQuoteHTML(d){
     H+=`<div class="tyc-box">
       <div class="tyc-ttl">Aclaraciones y condiciones</div>
       ${lines.map(l=>{
-        const c=l.replace(/^\s*[•·\-\*📄✨]\s*/,'').trim();
+        const c=l.replace(/^\s*(?:## |=== |[•·\-\*])\s*/,'').trim();
         if(!c)return'';
-        if(l.match(/^📄/))return`<div class="tyc-ttl">${c}</div>`;
-        if(l.match(/^✨/))return`<div class="tyc-cta">${c}</div>`;
+        if(l.match(/^## /))return`<div class="tyc-ttl">${c}</div>`;
+        if(l.match(/^=== /))return`<div class="tyc-cta">${c}</div>`;
         return`<div class="tyc-item">${L(LI.info,11)}<span>${c}</span></div>`;
       }).join('')}
     </div>`;
@@ -343,7 +343,7 @@ window.onbeforeprint=()=>{if(qData)document.getElementById('qprint').innerHTML=b
 // TEST DATA LOADER
 // ═══════════════════════════════════════════
 function loadTestData(){
-  if(!confirm('⚠️ Esto va a reemplazar el contenido actual del formulario con datos de prueba.\n\n¿Continuás?')) return;
+  if(!confirm('Esto va a reemplazar el contenido actual del formulario con datos de prueba.\n\n¿Continuás?')) return;
 
   const sv=(id,val)=>{ const e=document.getElementById(id); if(e) e.value=val; };
 
@@ -496,7 +496,7 @@ function loadTestData(){
   if(refInput) refInput.value = '';
   _hideEditBanner();
 
-  toast('🎲 Datos de prueba cargados — revisá el formulario');
+  toast('Datos de prueba cargados — revisá el formulario');
   // Scroll to top of form
   document.getElementById('tab-form')?.scrollIntoView({behavior:'smooth', block:'start'});
 }

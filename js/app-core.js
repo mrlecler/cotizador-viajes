@@ -99,7 +99,7 @@ async function doLogin(){
   const pass=document.getElementById('li-pass').value;
   const btn=document.getElementById('li-btn');
   if(!email||!pass){setLoginStatus('Ingresá email y contraseña','#F59E0B');return;}
-  btn.disabled=true;btn.innerHTML='<span class="spin">⏳</span> Verificando...';
+  btn.disabled=true;btn.innerHTML='<span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Verificando...';
   setLoginStatus('');
   try{
     const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
@@ -111,7 +111,7 @@ async function doLogin(){
     if(msg.includes('Email not confirmed')) msg='Confirmá tu email primero (revisá tu casilla)';
     setLoginStatus(msg,'#F87171');
   }
-  btn.disabled=false;btn.innerHTML='🔐 Iniciar sesion';
+  btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion';
 }
 
 async function doLoginGoogle(){
@@ -146,7 +146,7 @@ sb.auth.onAuthStateChange((event,session)=>{
   } else if(event==='PASSWORD_RECOVERY'){
     document.getElementById('li-pass').placeholder='Nueva contraseña';
     document.getElementById('li-btn').onclick=doResetPassword;
-    document.getElementById('li-btn').innerHTML='🔑 Guardar nueva contraseña';
+    document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Guardar nueva contraseña';
     setLoginStatus('Ingresá tu nueva contraseña','#F59E0B');
     document.getElementById('login-wall').style.display='flex';
     document.getElementById('ui').style.display='none';
@@ -158,7 +158,7 @@ async function doResetPassword(){
   if(pass.length<6){setLoginStatus('Mínimo 6 caracteres','#F87171');return;}
   const {error}=await sb.auth.updateUser({password:pass});
   if(error) setLoginStatus('Error: '+error.message,'#F87171');
-  else { setLoginStatus('✓ Contraseña actualizada','#34D399'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='🔐 Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
+  else { setLoginStatus('✓ Contraseña actualizada','#34D399'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{

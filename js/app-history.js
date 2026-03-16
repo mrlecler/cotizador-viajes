@@ -1,6 +1,6 @@
 async function renderHistory(){
   const el=document.getElementById('hist-list');
-  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin">⏳</span> Cargando...</div>';
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(168,85,247,.3);border-top-color:#A855F7;border-radius:50%;vertical-align:middle"></span> Cargando...</div>';
   const rows=await dbLoadQuotes();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase();
@@ -10,10 +10,10 @@ async function renderHistory(){
     return true;
   });
   if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)">Sin resultados.</div>';return;}
-  const stLbl={borrador:'📝 Borrador',enviada:'📨 Enviada',confirmada:'✅ Confirmada',cancelada:'❌ Cancelada'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
   el.innerHTML=filtered.map(r=>`
     <div class="hist-item" onclick="loadFromHistory('${r.ref_id}','${r.id}')">
-      <div class="hist-ico">✈️</div>
+      <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
         <div class="hist-meta">Ref: ${r.ref_id} · ${r.pasajeros||''} · ${r.fecha_sal||''}</div>
@@ -22,9 +22,9 @@ async function renderHistory(){
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
-          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')">✏️ Editar</button>
-          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')">🔄 Estado</button>
-          <button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')">🗑️</button>
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Estado</button>
+          <button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
         </div>
       </div>
     </div>`).join('');
@@ -56,7 +56,7 @@ async function editFromHistory(refId, id){
     formDraft = null;
     // Show editing banner
     _showEditBanner(refId);
-    toast('✏️ Cotización cargada para editar — guardá para actualizar');
+    toast('Cotización cargada para editar — guardá para actualizar');
   }, 80);
 }
 
@@ -69,7 +69,7 @@ function _showEditBanner(refId){
     const formPanel = document.getElementById('tab-form');
     if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
   }
-  banner.innerHTML = '✏️ <span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span>&nbsp;<button onclick="cancelEdit()" style="margin-left:auto;flex-shrink:0;background:none;border:1.5px solid #D97706;border-radius:6px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Descartar y crear nueva</button>';
+  banner.innerHTML = '<span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span>&nbsp;<button onclick="cancelEdit()" style="margin-left:auto;flex-shrink:0;background:none;border:1.5px solid #D97706;border-radius:6px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Descartar y crear nueva</button>';
   banner.style.display = 'flex';
 }
 
@@ -131,8 +131,8 @@ async function renderClients(){
     <td>${c.email||'—'}</td>
     <td style="font-size:.75rem;color:var(--g3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notas||''}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')">✏️</button>
-      <button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')">🗑️</button>
+      <button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </td>
   </tr>`).join('')}</tbody></table>`;
 }
@@ -140,14 +140,14 @@ async function renderClients(){
 function openClientModal(id){
   const c=allClients.find(x=>x.id===id)||{};
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">${id?'✏️ Editar cliente':'+ Nuevo cliente'}</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
     <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="mc-nm" value="${c.nombre||''}" placeholder="Hugo Martínez"></div>
     <div class="fg"><label class="lbl">Celular</label><input class="finput" id="mc-cel" value="${c.celular||''}" placeholder="+54 362..."></div>
     <div class="fg"><label class="lbl">Email</label><input class="finput" id="mc-em" value="${c.email||''}" placeholder="email@..."></div>
     <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="mc-not" rows="3">${c.notas||''}</textarea></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveClient('${id||''}')">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveClient('${id||''}')">Guardar</button>
     </div>`;
   openModal();
 }

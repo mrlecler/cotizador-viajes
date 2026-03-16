@@ -17,7 +17,7 @@ function addVuelo(d){
     <div class="fg"><label class="lbl">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
   </div>
   <div style="background:var(--g1);border-radius:var(--rs);padding:14px;margin-bottom:12px">
-    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g4);margin-bottom:12px">✈ TRAMO IDA</div>
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g4);margin-bottom:12px">TRAMO IDA</div>
     <div class="g4">
       <div class="fg"><label class="lbl">Ciudad origen</label><input class="finput" type="text" id="v${id}-or" placeholder="Buenos Aires (EZE)" value="${d.origen||''}"></div>
       <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-io" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.iata_o||''}"></div>
@@ -71,10 +71,10 @@ function addVuelo(d){
     <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="v${id}-fin" placeholder="Contado / cuotas" value="${d.fin||''}"></div>
   </div>
   <div class="fg"><label class="lbl">Equipaje</label>
-    <div class="chk-grp" id="v${id}-eq">${[['b','👜 Bolso personal'],['c','🎒 Carry-on'],['v23','🧳 Valija 23kg'],['v32','🧳 Valija 32kg'],['2v','🧳 2 valijas']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+    <div class="chk-grp" id="v${id}-eq">${[['b','Bolso personal'],['c','Carry-on'],['v23','Valija 23kg'],['v32','Valija 32kg'],['2v','2 valijas']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="v${id}-eq-x" placeholder="Detalle adicional..." style="margin-top:8px" value="${d.eq_x||''}">
   </div>
-  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="v${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
     <input class="money-inp" type="number" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
@@ -96,8 +96,8 @@ function addHotel(d){
     <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
   <div class="g3">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
-    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">🏨 Hotel regular</option><option value="disney">🏰 Hotel Disney</option><option value="universal">🎬 Hotel Universal</option><option value="airbnb">🏠 Airbnb / Apart.</option><option value="crucero">🚢 Crucero</option></select></div>
-    <div class="fg"><label class="lbl">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="5">⭐⭐⭐⭐⭐</option></select></div>
+    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">Hotel regular</option><option value="disney">Hotel Disney</option><option value="universal">Hotel Universal</option><option value="airbnb">Airbnb / Apart.</option><option value="crucero">Crucero</option></select></div>
+    <div class="fg"><label class="lbl">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
   </div>
   <div class="g4">
     <div class="fg"><label class="lbl">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
@@ -113,19 +113,19 @@ function addHotel(d){
   </div>
   <div id="h${id}-pk" style="${isD||isU?'':'display:none'}">
     <div class="disney-sec">
-      <div class="disney-badge" id="h${id}-badge">${isU?'🎬 Paquete Universal':'🏰 Paquete Disney'}</div>
+      <div class="disney-badge" id="h${id}-badge">${isU?'Paquete Universal':'Paquete Disney'}</div>
       <div class="g2">
         <div class="fg"><label class="lbl">Tickets incluidos</label><input class="finput" type="text" id="h${id}-tkt" placeholder="4 Park Magic Ticket" value="${d.tickets||''}"></div>
         <div class="fg"><label class="lbl">Días tickets</label><input class="finput" type="number" id="h${id}-tktd" placeholder="4" value="${d.dias_tkt||''}"></div>
       </div>
       <div class="fg"><label class="lbl">Parques</label>
-        <div class="chk-grp" id="h${id}-parques">${[['mk','🏰 Magic Kingdom'],['ep','🌍 EPCOT'],['ak','🦁 Animal Kingdom'],['hs','🎬 Hollywood Studios'],['us','🎥 Universal Studios'],['ia','🌴 Islands of Adventure'],['eu','✨ Epic Universe'],['vb','🌋 Volcano Bay']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+        <div class="chk-grp" id="h${id}-parques">${[['mk','Magic Kingdom'],['ep','EPCOT'],['ak','Animal Kingdom'],['hs','Hollywood Studios'],['us','Universal Studios'],['ia','Islands of Adventure'],['eu','Epic Universe'],['vb','Volcano Bay']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
       </div>
       <div class="fg"><label class="lbl">Beneficios</label>
-        <div class="chk-grp" id="h${id}-bens">${[['ep','⏰ Early Park Entry'],['tr','🚌 Transporte gratuito'],['mm','📸 Memory Maker'],['dl','🛍️ Entrega en hotel'],['ex','⚡ Express Pass'],['sp','🎪 Disney Springs'],['wp','🏄 Parque acuático gratis'],['me','🪄 Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+        <div class="chk-grp" id="h${id}-bens">${[['ep','Early Park Entry'],['tr','Transporte gratuito'],['mm','Memory Maker'],['dl','Entrega en hotel'],['ex','Express Pass'],['sp','Disney Springs'],['wp','Parque acuático gratis'],['me','Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
       </div>
       <div style="background:white;border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(0,90,170,.15)">
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:10px">🍽 Plan de comidas</div>
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:10px">Plan de comidas</div>
         <div class="g3">
           <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
           <div class="fg"><label class="lbl">Precio con plan</label>
@@ -139,13 +139,13 @@ function addHotel(d){
     </div>
   </div>
   <div class="fg"><label class="lbl">Notas / opcionales</label>
-    <textarea class="ftxt" id="h${id}-notes" rows="3" placeholder="🎃 Opcionales especiales, notas para el cliente..." value="">${d.notes||''}</textarea>
+    <textarea class="ftxt" id="h${id}-notes" rows="3" placeholder="Opcionales especiales, notas para el cliente..." value="">${d.notes||''}</textarea>
   </div>
   <div class="fg"><label class="lbl">Amenities</label>
-    <div class="chk-grp" id="h${id}-am">${[['wifi','📶 WiFi'],['pool','🏊 Piscina'],['gym','💪 Gimnasio'],['spa','💆 Spa'],['bkf','🍳 Desayuno buffet'],['rest','🍽️ Restaurante'],['bar','🍹 Bar'],['beach','🏖️ Playa'],['park','🅿️ Estacionamiento'],['kids','👶 Área infantil']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
+    <div class="chk-grp" id="h${id}-am">${[['wifi','WiFi'],['pool','Piscina'],['gym','Gimnasio'],['spa','Spa'],['bkf','Desayuno buffet'],['rest','Restaurante'],['bar','Bar'],['beach','Playa'],['park','Estacionamiento'],['kids','Área infantil']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="h${id}-am-x" placeholder="Otros amenities..." style="margin-top:8px" value="${d.am_x||''}">
   </div>
-  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="h${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
     <input class="money-inp" type="number" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
@@ -158,7 +158,7 @@ function onHotelType(id){
   const tipo=document.getElementById('h'+id+'-tipo').value;
   const sec=document.getElementById('h'+id+'-pk');
   const badge=document.getElementById('h'+id+'-badge');
-  if(tipo==='disney'||tipo==='universal'){sec.style.display='';badge.className='disney-badge'+(tipo==='universal'?' universal-badge':'');badge.textContent=tipo==='universal'?'🎬 Paquete Universal':'🏰 Paquete Disney';}
+  if(tipo==='disney'||tipo==='universal'){sec.style.display='';badge.className='disney-badge'+(tipo==='universal'?' universal-badge':'');badge.textContent=tipo==='universal'?'Paquete Universal':'Paquete Disney';}
   else sec.style.display='none';
 }
 
@@ -189,7 +189,7 @@ function addTraslado(d){
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}</div>
     <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">✈→🏨 Aeropuerto → Hotel</option><option value="out">🏨→✈ Hotel → Aeropuerto</option><option value="hoteles">🏨↔🏨 Entre hoteles</option><option value="privado">🚗 Privado en destino</option><option value="ciudad">🏙️ A otra ciudad</option></select></div>
+    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">Aeropuerto → Hotel</option><option value="out">Hotel → Aeropuerto</option><option value="hoteles">Entre hoteles</option><option value="privado">Privado en destino</option><option value="ciudad">A otra ciudad</option></select></div>
     <div class="fg"><label class="lbl">Origen</label><input class="finput" type="text" id="t${id}-or" placeholder="Aeropuerto MCO" value="${d.origen||''}"></div>
     <div class="fg"><label class="lbl">Destino</label><input class="finput" type="text" id="t${id}-de" placeholder="Disney All-Star Sports" value="${d.destino||''}"></div>
   </div>
@@ -208,7 +208,7 @@ function addTraslado(d){
     </div>
     <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="t${id}-not" placeholder="Se abona en efectivo al finalizar" value="${d.notas||''}"></div>
   </div>
-  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="t${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
     <input class="money-inp" type="number" id="t${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
@@ -251,7 +251,7 @@ function addExcursion(d){
   </div>
   <div class="fg"><label class="lbl">Descripción para el cliente</label><textarea class="ftxt" id="e${id}-desc" rows="3" placeholder="Descripción atractiva...">${d.desc||''}</textarea></div>
   <div class="fg"><label class="lbl">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>
-  <div class="fg"><label class="lbl">💰 Comisión agente</label>
+  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="e${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
     <input class="money-inp" type="number" id="e${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
@@ -337,7 +337,7 @@ async function saveQuote(){
   qData=d;
   try{ renderPreview(qData); }catch(err){ console.warn('renderPreview warning:',err); }
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
-  btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin">⏳</span> Guardando...';}});
+  btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Guardando...';}});
   try{
     await dbSaveQuote(qData, editingQuoteId);
     const wasEditing = !!editingQuoteId;
@@ -357,8 +357,8 @@ async function saveQuote(){
   finally{ 
     const b0=document.getElementById('btn-save-main');
     const b1=document.getElementById('btn-save-prev');
-    if(b0){b0.disabled=false;b0.innerHTML='☁️ Guardar en nube';}
-    if(b1){b1.disabled=false;b1.innerHTML='☁️ Guardar';}
+    if(b0){b0.disabled=false;b0.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar en nube';}
+    if(b1){b1.disabled=false;b1.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar';}
   }
 }
 
