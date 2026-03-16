@@ -1,45 +1,124 @@
 // ═══════════════════════════════════════════
-// AIRPORTS AUTOCOMPLETE
+// AUTOCOMPLETE — AEROPUERTOS Y CIUDADES
 // ═══════════════════════════════════════════
 let airportsList=[];
-fetch('data/airports.json').then(r=>r.json()).then(data=>{airportsList=data;}).catch(()=>{});
+let citiesList=[];
+fetch('data/airports.json').then(r=>r.json()).then(d=>{airportsList=d;}).catch(()=>{});
+fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCityAC();}).catch(()=>{});
 
-function airportAC(inputId,iataId){
+// ── Estilos compartidos del dropdown ──
+const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:var(--ink2,#0F0018);border:1px solid rgba(124,58,237,0.25);border-radius:10px;box-shadow:0 8px 24px rgba(79,70,229,0.15);max-height:260px;overflow-y:auto;display:none;';
+const AC_ITEM_BASE='padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:10px;transition:background .15s;';
+
+// ── Función genérica base ──
+function _createDrop(inputId){
   const inp=document.getElementById(inputId);
-  const iataInp=iataId?document.getElementById(iataId):null;
-  if(!inp)return;
-  // Remove existing dropdown if present
-  const existingDrop=document.getElementById('ac-drop-'+inputId);
-  if(existingDrop)existingDrop.remove();
-  // Create dropdown
+  if(!inp)return null;
+  const old=document.getElementById('ac-drop-'+inputId);
+  if(old)old.remove();
   const drop=document.createElement('div');
   drop.id='ac-drop-'+inputId;
-  drop.style.cssText='position:absolute;z-index:9999;left:0;right:0;top:100%;background:var(--surface,#0F0018);border:1px solid var(--border,rgba(255,255,255,0.07));border-radius:var(--r,12px);box-shadow:var(--sh,0 4px 16px rgba(79,70,229,0.06));max-height:280px;overflow-y:auto;display:none;';
-  inp.parentElement.style.position='relative';
-  inp.parentElement.appendChild(drop);
-  function showSuggestions(q){
+  drop.style.cssText=AC_DROP_CSS;
+  const wrap=inp.closest('.fg')||inp.parentElement;
+  wrap.style.position='relative';
+  wrap.appendChild(drop);
+  inp.addEventListener('blur',function(){setTimeout(()=>drop.style.display='none',200);});
+  inp.addEventListener('keydown',function(e){if(e.key==='Escape')drop.style.display='none';});
+  return {inp,drop};
+}
+
+// ── FUNCIÓN A — Autocomplete de aeropuerto ──
+// inputCiudadId: campo de texto ciudad/aeropuerto
+// inputIataId: campo IATA asociado (puede ser null)
+function initAirportAutocomplete(inputCiudadId,inputIataId){
+  const obj=_createDrop(inputCiudadId);
+  if(!obj)return;
+  const {inp,drop}=obj;
+  function show(q){
     if(!q||q.length<2){drop.style.display='none';return;}
     const qu=q.toUpperCase();
     const exact=airportsList.filter(a=>a.iata===qu);
-    const startsWith=airportsList.filter(a=>a.iata!==qu&&(a.iata.startsWith(qu)||a.city.toUpperCase().startsWith(qu)||a.name.toUpperCase().startsWith(qu)));
-    const contains=airportsList.filter(a=>a.iata!==qu&&!a.iata.startsWith(qu)&&!a.city.toUpperCase().startsWith(qu)&&!a.name.toUpperCase().startsWith(qu)&&(a.city.toUpperCase().includes(qu)||a.name.toUpperCase().includes(qu)));
-    const results=[...exact,...startsWith,...contains].slice(0,8);
-    if(!results.length){drop.style.display='none';return;}
-    drop.innerHTML=results.map((a,i)=>`<div class="ac-item" data-i="${i}" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border,rgba(255,255,255,0.05));display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();selectAirport('${inputId}','${iataId||''}','${a.iata.replace(/'/g,"\\'")}','${(a.city+' ('+a.iata+')').replace(/'/g,"\\'")}')"><span style="font-size:12px;font-weight:800;color:var(--primary,#7C3AED);min-width:36px;font-family:'DM Mono',monospace">${a.iata}</span><span style="font-size:12px;color:var(--text,#fff);flex:1;line-height:1.3">${a.city}<br><span style="font-size:10px;opacity:.55">${a.name} · ${a.country}</span></span></div>`).join('');
+    const sw=airportsList.filter(a=>a.iata!==qu&&(a.iata.startsWith(qu)||a.city.toUpperCase().startsWith(qu)||a.name.toUpperCase().startsWith(qu)));
+    const cont=airportsList.filter(a=>a.iata!==qu&&!a.iata.startsWith(qu)&&!a.city.toUpperCase().startsWith(qu)&&!a.name.toUpperCase().startsWith(qu)&&(a.city.toUpperCase().includes(qu)||a.name.toUpperCase().includes(qu)));
+    const res=[...exact,...sw,...cont].slice(0,8);
+    if(!res.length){drop.style.display='none';return;}
+    drop.innerHTML=res.map(a=>{
+      const safe_iata=a.iata.replace(/'/g,"\\'");
+      const safe_label=(a.city+' ('+a.iata+')').replace(/'/g,"\\'");
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirport('${inputCiudadId}','${inputIataId||''}','${safe_iata}','${safe_label}')"><span style="font-size:11px;font-weight:800;color:#A855F7;min-width:38px;font-family:'DM Mono',monospace;letter-spacing:.05em">${a.iata}</span><span style="font-size:12px;color:#fff;flex:1;line-height:1.3">${a.city}<span style="display:block;font-size:10px;opacity:.45;margin-top:1px">${a.name} · ${a.country}</span></span></div>`;
+    }).join('');
     drop.style.display='block';
   }
-  inp.addEventListener('input',function(){showSuggestions(this.value);});
-  inp.addEventListener('blur',function(){setTimeout(()=>drop.style.display='none',200);});
-  inp.addEventListener('focus',function(){if(this.value.length>=2)showSuggestions(this.value);});
+  inp.addEventListener('input',function(){show(this.value);});
+  inp.addEventListener('focus',function(){if(this.value.length>=2)show(this.value);});
 }
-function selectAirport(inputId,iataId,iata,cityLabel){
+function _selAirport(cityId,iataId,iata,label){
+  const ci=document.getElementById(cityId);
+  const ii=iataId?document.getElementById(iataId):null;
+  if(ci)ci.value=label;
+  if(ii)ii.value=iata;
+  const d=document.getElementById('ac-drop-'+cityId);
+  if(d)d.style.display='none';
+}
+// Alias para compatibilidad con llamadas anteriores
+function airportAC(inputId,iataId){initAirportAutocomplete(inputId,iataId);}
+function selectAirport(inputId,iataId,iata,cityLabel){_selAirport(inputId,iataId,iata,cityLabel);}
+
+// ── FUNCIÓN B — Autocomplete de ciudad genérica ──
+// inputId: campo de texto
+// onlyCountries: true → muestra solo países únicos
+function initCityAutocomplete(inputId,onlyCountries){
+  const obj=_createDrop(inputId);
+  if(!obj)return;
+  const {inp,drop}=obj;
+  // Mapa de códigos de país a nombre legible
+  const CNAMES={AR:'Argentina',BR:'Brasil',UY:'Uruguay',PY:'Paraguay',BO:'Bolivia',CL:'Chile',PE:'Perú',CO:'Colombia',EC:'Ecuador',VE:'Venezuela',MX:'México',GT:'Guatemala',SV:'El Salvador',HN:'Honduras',NI:'Nicaragua',CR:'Costa Rica',PA:'Panamá',BZ:'Belice',CU:'Cuba',DO:'Rep. Dominicana',PR:'Puerto Rico',JM:'Jamaica',BB:'Barbados',TT:'Trinidad y Tobago',BS:'Bahamas',GD:'Granada',VC:'San Vicente',LC:'Santa Lucía',AG:'Antigua',KN:'St. Kitts',AW:'Aruba',CW:'Curazao',SX:'Sint Maarten',MF:'Saint Martin',BL:'San Bartolomé',VG:'Islas Vírgenes Británicas',VI:'Islas Vírgenes EEUU',KY:'Islas Caimán',GP:'Guadalupe',MQ:'Martinica',HT:'Haití',GY:'Guyana',SR:'Surinam',GF:'Guayana Francesa',ES:'España',PT:'Portugal',FR:'Francia',IT:'Italia',DE:'Alemania',GB:'Reino Unido',NL:'Países Bajos',BE:'Bélgica',CH:'Suiza',AT:'Austria',DK:'Dinamarca',SE:'Suecia',NO:'Noruega',FI:'Finlandia',GR:'Grecia',TR:'Turquía',PL:'Polonia',CZ:'Chequia',SK:'Eslovaquia',HU:'Hungría',RO:'Rumanía',BG:'Bulgaria',HR:'Croacia',SI:'Eslovenia',RS:'Serbia',ME:'Montenegro',BA:'Bosnia',MK:'Macedonia',AL:'Albania',XK:'Kosovo',EE:'Estonia',LV:'Letonia',LT:'Lituania',IE:'Irlanda',IS:'Islandia',LU:'Luxemburgo',MC:'Mónaco',AD:'Andorra',SM:'San Marino',LI:'Liechtenstein',MT:'Malta',RU:'Rusia',UA:'Ucrania',BY:'Bielorrusia',MD:'Moldavia',GE:'Georgia',AM:'Armenia',AZ:'Azerbaiyán',US:'Estados Unidos',CA:'Canadá',JP:'Japón',KR:'Corea del Sur',CN:'China',HK:'Hong Kong',MO:'Macao',TW:'Taiwán',IN:'India',SG:'Singapur',MY:'Malasia',TH:'Tailandia',VN:'Vietnam',KH:'Camboya',LA:'Laos',MM:'Myanmar',ID:'Indonesia',PH:'Filipinas',LK:'Sri Lanka',NP:'Nepal',MV:'Maldivas',BD:'Bangladesh',PK:'Pakistán',UZ:'Uzbekistán',KZ:'Kazajistán',MN:'Mongolia',AE:'Emiratos Árabes',QA:'Catar',SA:'Arabia Saudita',JO:'Jordania',LB:'Líbano',IL:'Israel',KW:'Kuwait',OM:'Omán',BH:'Baréin',IR:'Irán',IQ:'Irak',EG:'Egipto',ZA:'Sudáfrica',KE:'Kenia',TZ:'Tanzania',UG:'Uganda',RW:'Ruanda',ET:'Etiopía',MZ:'Mozambique',MG:'Madagascar',MU:'Mauricio',SC:'Seychelles',RE:'Reunión',NG:'Nigeria',GH:'Ghana',SN:'Senegal',CI:'Costa de Marfil',AO:'Angola',NA:'Namibia',ZM:'Zambia',ZW:'Zimbabue',BW:'Botsuana',TN:'Túnez',DZ:'Argelia',MA:'Marruecos',AU:'Australia',NZ:'Nueva Zelanda',FJ:'Fiyi',PF:'Polinesia Francesa',CK:'Islas Cook',WS:'Samoa',PG:'Papúa Nueva Guinea',SB:'Islas Salomón',VU:'Vanuatu',NC:'Nueva Caledonia',GU:'Guam'};
+  function show(q){
+    if(!q||q.length<2){drop.style.display='none';return;}
+    const qu=q.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    let src=citiesList;
+    if(onlyCountries){
+      // Construir lista única de países
+      const seen=new Set();
+      src=[];
+      citiesList.forEach(c=>{
+        const cn=CNAMES[c.country]||c.country;
+        if(!seen.has(cn)){seen.add(cn);src.push({name:cn,country:c.country,region:''});}
+      });
+    }
+    const norm=s=>s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const sw=src.filter(c=>norm(c.name).startsWith(qu));
+    const cont=src.filter(c=>!norm(c.name).startsWith(qu)&&norm(c.name).includes(qu));
+    const res=[...sw,...cont].slice(0,8);
+    if(!res.length){drop.style.display='none';return;}
+    drop.innerHTML=res.map(c=>{
+      const safe=c.name.replace(/'/g,"\\'");
+      const label=onlyCountries?c.name:`${c.name}${c.region?', '+c.region:''}`;
+      const sub=onlyCountries?'':`<span style="display:block;font-size:10px;opacity:.45;margin-top:1px">${CNAMES[c.country]||c.country}</span>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selCity('${inputId}','${safe}')"><span style="font-size:12px;color:#fff;flex:1;line-height:1.3">${label}${sub}</span></div>`;
+    }).join('');
+    drop.style.display='block';
+  }
+  inp.addEventListener('input',function(){show(this.value);});
+  inp.addEventListener('focus',function(){if(this.value.length>=2)show(this.value);});
+}
+function _selCity(inputId,val){
   const inp=document.getElementById(inputId);
-  const iataInp=iataId?document.getElementById(iataId):null;
-  if(inp)inp.value=cityLabel;
-  if(iataInp)iataInp.value=iata;
-  const drop=document.getElementById('ac-drop-'+inputId);
-  if(drop)drop.style.display='none';
+  if(inp)inp.value=val;
+  const d=document.getElementById('ac-drop-'+inputId);
+  if(d)d.style.display='none';
 }
+
+// ── Inicializar campos estáticos del formulario principal ──
+function _initStaticCityAC(){
+  initCityAutocomplete('m-dest');
+  initCityAutocomplete('m-pais',true);
+}
+// Si el DOM ya está listo cuando cities carga, _initStaticCityAC se llama arriba;
+// si no, usar DOMContentLoaded como respaldo
+document.addEventListener('DOMContentLoaded',function(){
+  if(citiesList.length>0)_initStaticCityAC();
+});
 
 function addVuelo(d){
   d=d||{};const id=++vc;
@@ -122,18 +201,30 @@ function addVuelo(d){
     <input class="money-inp" type="number" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('vuelos-cont').appendChild(el);
-  // Inicializar autocomplete de aeropuertos
-  airportAC('v'+id+'-or','v'+id+'-io');
-  airportAC('v'+id+'-de','v'+id+'-id');
+  // Autocomplete aeropuertos — tramo ida
+  initAirportAutocomplete('v'+id+'-or','v'+id+'-io');
+  initAirportAutocomplete('v'+id+'-de','v'+id+'-id');
+  initAirportAutocomplete('v'+id+'-esc',null);
+  // Autocomplete tramo vuelta (solo si ya es idavuelta al cargar)
   if(d.mod==='idavuelta'){
-    airportAC('v'+id+'-or2','v'+id+'-io2');
-    airportAC('v'+id+'-de2','v'+id+'-id2');
+    initAirportAutocomplete('v'+id+'-or2','v'+id+'-io2');
+    initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
+    initAirportAutocomplete('v'+id+'-esc2',null);
   }
   if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
   if(d.mod==='idavuelta') document.getElementById('v'+id+'-ret-sec').style.display='';
   if(d.tarifa) document.getElementById('v'+id+'-tar').value=d.tarifa;
 }
-function toggleRet(id){document.getElementById('v'+id+'-ret-sec').style.display=document.getElementById('v'+id+'-mod').value==='idavuelta'?'':'none';}
+function toggleRet(id){
+  const isIV=document.getElementById('v'+id+'-mod').value==='idavuelta';
+  document.getElementById('v'+id+'-ret-sec').style.display=isIV?'':'none';
+  // Inicializar autocomplete del tramo vuelta al activarlo
+  if(isIV){
+    initAirportAutocomplete('v'+id+'-or2','v'+id+'-io2');
+    initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
+    initAirportAutocomplete('v'+id+'-esc2',null);
+  }
+}
 
 // ═══════════════════════════════════════════
 // HOTEL BLOCK
@@ -148,6 +239,10 @@ function addHotel(d){
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
     <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">Hotel regular</option><option value="disney">Hotel Disney</option><option value="universal">Hotel Universal</option><option value="airbnb">Airbnb / Apart.</option><option value="crucero">Crucero</option></select></div>
     <div class="fg"><label class="lbl">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Ciudad</label><input class="finput" type="text" id="h${id}-ciu" placeholder="Orlando" value="${d.ciudad||''}"></div>
+    <div class="fg"><label class="lbl">País</label><input class="finput" type="text" id="h${id}-pai" placeholder="Estados Unidos" value="${d.pais||''}"></div>
   </div>
   <div class="g4">
     <div class="fg"><label class="lbl">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
@@ -200,6 +295,9 @@ function addHotel(d){
     <input class="money-inp" type="number" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('hoteles-cont').appendChild(el);
+  // Autocomplete ciudad y país del hotel
+  initCityAutocomplete('h'+id+'-ciu');
+  initCityAutocomplete('h'+id+'-pai',true);
   if(d.tipo) document.getElementById('h'+id+'-tipo').value=d.tipo;
   if(d.regimen) document.getElementById('h'+id+'-reg').value=d.regimen;
   if(d.mp) document.getElementById('h'+id+'-mp').value=d.mp;
@@ -263,6 +361,9 @@ function addTraslado(d){
     <input class="money-inp" type="number" id="t${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('traslados-cont').appendChild(el);
+  // Autocomplete aeropuertos para origen/destino (IATA null — son lugares, no solo aeropuertos)
+  initAirportAutocomplete('t'+id+'-or',null);
+  initAirportAutocomplete('t'+id+'-de',null);
   if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
   if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
   if(d.prov){const ps=document.getElementById('t'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('t'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
@@ -306,6 +407,7 @@ function addExcursion(d){
     <input class="money-inp" type="number" id="e${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('excursiones-cont').appendChild(el);
+  initCityAutocomplete('e'+id+'-punto');
   if(d.prov){const ps=document.getElementById('e'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('e'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
 }
 
@@ -358,6 +460,8 @@ function addAuto(d){
   </div>
   <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="au${id}-not" rows="2" placeholder="Incluye GPS · Se abona con tarjeta · Sin franquicia">${d.notas||''}</textarea></div>`;
   document.getElementById('autos-cont').appendChild(el);
+  initCityAutocomplete('au'+id+'-or');
+  initCityAutocomplete('au'+id+'-de');
   if(d.categoria) document.getElementById('au'+id+'-cat').value=d.categoria;
   if(d.moneda) document.getElementById('au'+id+'-cur').value=d.moneda;
 }
@@ -414,6 +518,8 @@ function addCrucero(d){
   <div class="fg"><label class="lbl">Puertos de escala</label><textarea class="ftxt" id="cr${id}-esc" rows="3" placeholder="Nassau, Bahamas&#10;Cozumel, México&#10;Roatán, Honduras">${d.escalas||''}</textarea></div>
   <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="cr${id}-not" rows="2" placeholder="Incluye propinas · Excursiones opcionales...">${d.notas||''}</textarea></div>`;
   document.getElementById('cruceros-cont').appendChild(el);
+  initCityAutocomplete('cr'+id+'-pe');
+  initCityAutocomplete('cr'+id+'-pd');
   if(d.cabina) document.getElementById('cr'+id+'-cab').value=d.cabina;
   if(d.regimen) document.getElementById('cr'+id+'-reg').value=d.regimen;
   if(d.moneda) document.getElementById('cr'+id+'-cur').value=d.moneda;
@@ -448,7 +554,7 @@ function collectForm(){
     const parqs=[...blk.querySelectorAll('#h'+i+'-parques input:checked')].map(x=>pMap[x.value]||x.value);
     const bens=[...blk.querySelectorAll('#h'+i+'-bens input:checked')].map(x=>bMap[x.value]||x.value);
     const am=[...blk.querySelectorAll('#h'+i+'-am input:checked')].map(x=>amMap[x.value]||x.value);
-    hoteles.push({nombre:nm,tipo,estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur')});
+    hoteles.push({nombre:nm,tipo,ciudad:gv('h'+i+'-ciu'),pais:gv('h'+i+'-pai'),estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur')});
   });
   document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
     const i=blk.id.replace('tb-','');const or=gv('t'+i+'-or'),de=gv('t'+i+'-de');if(!or&&!de)return;
