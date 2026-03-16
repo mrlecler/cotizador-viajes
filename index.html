@@ -148,6 +148,22 @@
   </div>
 
   <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div><div><div class="card-ttl">Alquiler de Autos</div></div></div>
+    <div class="card-body">
+      <div id="autos-cont"></div>
+      <button class="add-row" onclick="addAuto()">+ Agregar auto</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M10 3.3 12 2l2 1.3"/><path d="M12 2v7"/></svg></div><div><div class="card-ttl">Crucero</div></div></div>
+    <div class="card-body">
+      <div id="cruceros-cont"></div>
+      <button class="add-row" onclick="addCrucero()">+ Agregar crucero</button>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="card-ttl">Asistencia al viajero</div></div></div>
     <div class="card-body">
       <div class="g3">
@@ -405,6 +421,17 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       </div>
       <button class="btn btn-pri" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
+    </div>
+  </div>
+  <div class="card" style="max-width:540px;margin-top:16px">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="card-ttl">Cambiar contraseña</div></div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl">Nueva contraseña</label><input class="finput" type="password" id="pw-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+        <div class="fg"><label class="lbl">Confirmar contraseña</label><input class="finput" type="password" id="pw-conf" placeholder="Repetir contraseña" autocomplete="new-password"></div>
+      </div>
+      <button class="btn btn-pri" onclick="changePassword()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Guardar contraseña</button>
+      <span id="pw-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">Contraseña actualizada</span>
     </div>
   </div>
 </div>

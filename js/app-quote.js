@@ -50,6 +50,8 @@ function buildQuoteHTML(d){
     map:     `<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/>`,
     med:     `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
     info:    `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+    car:     `<path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/>`,
+    ship:    `<path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M10 3.3 12 2l2 1.3"/><path d="M12 2v7"/>`,
   };
 
   // Helper: precio en gradiente (inline — para evitar conflictos con dark theme)
@@ -63,6 +65,8 @@ function buildQuoteHTML(d){
     {n:(d.excursiones||[]).filter(e=>e.nombre).length,l:'Excursiones',i:LI.ticket},
     {n:(d.tickets||[]).filter(t=>t.nombre).length, l:'Tickets',     i:LI.ticket},
     {n:(d.traslados||[]).filter(t=>t.origen||t.destino).length,l:'Transfers',i:LI.bus},
+    {n:(d.autos||[]).filter(a=>a.proveedor).length,     l:'Autos',          i:LI.car},
+    {n:(d.cruceros||[]).filter(c=>c.naviera).length,    l:'Cruceros',       i:LI.ship},
     {n:vi.noches||0,           l:'Noches',         i:LI.moon},
     {n:d.seguro?.nombre?1:0,   l:'Seguros',        i:LI.shield},
   ].filter(g=>g.n>0);
@@ -254,6 +258,51 @@ function buildQuoteHTML(d){
           ${t.notas?`<div style="font-size:9px;color:rgba(0,0,0,.4);margin-top:2px">${t.notas}</div>`:''}
         </div>
         ${t.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:rgba(124,58,237,0.08)"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),16)}</div>`:`<div style="font-size:10px;font-weight:600;color:#059669;flex-shrink:0;margin-left:12px">Incluido</div>`}
+      </div>`;
+    });
+    H+=`</div>`;
+  }
+
+  // ── AUTOS ──────────────────────────────────────────────────────────────────
+  const autosOk=(d.autos||[]).filter(a=>a.proveedor);
+  if(autosOk.length){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">${L(LI.car)}</div><div><div class="q-sec-ttl">Alquiler de Autos</div></div></div>`;
+    autosOk.forEach(a=>{
+      const retiro=[a.retiro_fecha,a.retiro_hora].filter(Boolean).join(' ');
+      const devol=[a.devolucion_fecha,a.devolucion_hora].filter(Boolean).join(' ');
+      H+=`<div class="q-card">
+        <div class="q-card-l">
+          <div class="q-card-nm">${a.proveedor}${a.categoria?' — '+a.categoria:''}</div>
+          <div class="q-card-dt">${[a.retiro_lugar,retiro?'Retiro: '+retiro:''].filter(Boolean).join(' · ')}</div>
+          ${a.devolucion_lugar&&a.devolucion_lugar!==a.retiro_lugar?`<div class="q-card-dt">Devolución: ${a.devolucion_lugar}${devol?' '+devol:''}</div>`:''}
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            ${a.conductor_adicional?`<span class="am-tag"><span class="ck">✓</span> Conductor adicional</span>`:''}
+            ${a.incluye_seguro?`<span class="am-tag"><span class="ck">✓</span> Seguro incluido</span>`:''}
+          </div>
+          ${a.notas?`<div style="font-size:9px;color:rgba(0,0,0,.4);margin-top:3px">${a.notas}</div>`:''}
+        </div>
+        ${a.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:rgba(124,58,237,0.08)"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(a.precio,a.moneda),16)}</div>`:''}
+      </div>`;
+    });
+    H+=`</div>`;
+  }
+
+  // ── CRUCEROS ───────────────────────────────────────────────────────────────
+  const crucOk=(d.cruceros||[]).filter(c=>c.naviera);
+  if(crucOk.length){
+    H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">${L(LI.ship)}</div><div><div class="q-sec-ttl">Crucero</div></div></div>`;
+    crucOk.forEach(c=>{
+      const escalasArr=c.escalas?c.escalas.split(/\n/).filter(s=>s.trim()):[];
+      H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+          <div style="flex:1">
+            <div class="q-card-nm">${c.naviera}${c.barco?' — '+c.barco:''}</div>
+            <div class="q-card-dt">${[c.embarque_puerto&&c.desembarque_puerto?c.embarque_puerto+' → '+c.desembarque_puerto:'',c.embarque_fecha,c.cabina,c.regimen].filter(Boolean).join(' · ')}</div>
+            ${escalasArr.length?`<div style="margin-top:8px"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,0,0,.3);margin-bottom:4px">PUERTOS DE ESCALA</div><div style="display:flex;flex-wrap:wrap;gap:4px">${escalasArr.map(e=>`<span class="am-tag">${L(LI.pin,9,'#7C3AED')} ${e.trim()}</span>`).join('')}</div></div>`:''}
+            ${c.notas?`<div style="font-size:9px;color:rgba(0,0,0,.4);margin-top:4px">${c.notas}</div>`:''}
+          </div>
+          ${(c.precio_total||c.precio_pp)>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;background:rgba(124,58,237,0.08)"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO${c.pasajeros>1?' TOTAL':''}</div>${gradPrice(fmtMoney(c.precio_total||c.precio_pp,c.moneda),16)}${c.pasajeros>1&&c.precio_pp>0?`<div style="font-size:8px;color:rgba(0,0,0,.35);margin-top:2px">${fmtMoney(c.precio_pp,c.moneda)}/pax × ${c.pasajeros}</div>`:''}</div>`:'' }
+        </div>
       </div>`;
     });
     H+=`</div>`;

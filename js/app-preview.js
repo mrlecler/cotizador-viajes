@@ -27,6 +27,19 @@ function saveCfg(){
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
 }
+async function changePassword(){
+  const p1=document.getElementById('pw-new').value;
+  const p2=document.getElementById('pw-conf').value;
+  if(!p1||p1.length<6){toast('La contraseña debe tener al menos 6 caracteres',false);return;}
+  if(p1!==p2){toast('Las contraseñas no coinciden',false);return;}
+  const {error}=await sb.auth.updateUser({password:p1});
+  if(error){toast(error.message,false);return;}
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-conf').value='';
+  const ok=document.getElementById('pw-ok');
+  if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',3000);}
+  toast('Contraseña actualizada');
+}
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
 }

@@ -1,3 +1,46 @@
+// ═══════════════════════════════════════════
+// AIRPORTS AUTOCOMPLETE
+// ═══════════════════════════════════════════
+let airportsList=[];
+fetch('data/airports.json').then(r=>r.json()).then(data=>{airportsList=data;}).catch(()=>{});
+
+function airportAC(inputId,iataId){
+  const inp=document.getElementById(inputId);
+  const iataInp=iataId?document.getElementById(iataId):null;
+  if(!inp)return;
+  // Remove existing dropdown if present
+  const existingDrop=document.getElementById('ac-drop-'+inputId);
+  if(existingDrop)existingDrop.remove();
+  // Create dropdown
+  const drop=document.createElement('div');
+  drop.id='ac-drop-'+inputId;
+  drop.style.cssText='position:absolute;z-index:9999;left:0;right:0;top:100%;background:var(--surface,#0F0018);border:1px solid var(--border,rgba(255,255,255,0.07));border-radius:var(--r,12px);box-shadow:var(--sh,0 4px 16px rgba(79,70,229,0.06));max-height:280px;overflow-y:auto;display:none;';
+  inp.parentElement.style.position='relative';
+  inp.parentElement.appendChild(drop);
+  function showSuggestions(q){
+    if(!q||q.length<2){drop.style.display='none';return;}
+    const qu=q.toUpperCase();
+    const exact=airportsList.filter(a=>a.iata===qu);
+    const startsWith=airportsList.filter(a=>a.iata!==qu&&(a.iata.startsWith(qu)||a.city.toUpperCase().startsWith(qu)||a.name.toUpperCase().startsWith(qu)));
+    const contains=airportsList.filter(a=>a.iata!==qu&&!a.iata.startsWith(qu)&&!a.city.toUpperCase().startsWith(qu)&&!a.name.toUpperCase().startsWith(qu)&&(a.city.toUpperCase().includes(qu)||a.name.toUpperCase().includes(qu)));
+    const results=[...exact,...startsWith,...contains].slice(0,8);
+    if(!results.length){drop.style.display='none';return;}
+    drop.innerHTML=results.map((a,i)=>`<div class="ac-item" data-i="${i}" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border,rgba(255,255,255,0.05));display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();selectAirport('${inputId}','${iataId||''}','${a.iata.replace(/'/g,"\\'")}','${(a.city+' ('+a.iata+')').replace(/'/g,"\\'")}')"><span style="font-size:12px;font-weight:800;color:var(--primary,#7C3AED);min-width:36px;font-family:'DM Mono',monospace">${a.iata}</span><span style="font-size:12px;color:var(--text,#fff);flex:1;line-height:1.3">${a.city}<br><span style="font-size:10px;opacity:.55">${a.name} · ${a.country}</span></span></div>`).join('');
+    drop.style.display='block';
+  }
+  inp.addEventListener('input',function(){showSuggestions(this.value);});
+  inp.addEventListener('blur',function(){setTimeout(()=>drop.style.display='none',200);});
+  inp.addEventListener('focus',function(){if(this.value.length>=2)showSuggestions(this.value);});
+}
+function selectAirport(inputId,iataId,iata,cityLabel){
+  const inp=document.getElementById(inputId);
+  const iataInp=iataId?document.getElementById(iataId):null;
+  if(inp)inp.value=cityLabel;
+  if(iataInp)iataInp.value=iata;
+  const drop=document.getElementById('ac-drop-'+inputId);
+  if(drop)drop.style.display='none';
+}
+
 function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
@@ -79,6 +122,13 @@ function addVuelo(d){
     <input class="money-inp" type="number" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('vuelos-cont').appendChild(el);
+  // Inicializar autocomplete de aeropuertos
+  airportAC('v'+id+'-or','v'+id+'-io');
+  airportAC('v'+id+'-de','v'+id+'-id');
+  if(d.mod==='idavuelta'){
+    airportAC('v'+id+'-or2','v'+id+'-io2');
+    airportAC('v'+id+'-de2','v'+id+'-id2');
+  }
   if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
   if(d.mod==='idavuelta') document.getElementById('v'+id+'-ret-sec').style.display='';
   if(d.tarifa) document.getElementById('v'+id+'-tar').value=d.tarifa;
@@ -260,10 +310,125 @@ function addExcursion(d){
 }
 
 // ═══════════════════════════════════════════
+// AUTO BLOCK
+// ═══════════════════════════════════════════
+let ac_cnt=0;
+function addAuto(d){
+  d=d||{};const id=++ac_cnt;
+  const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Proveedor</label><input class="finput" type="text" id="au${id}-prov" placeholder="Hertz, Avis, Budget..." value="${d.proveedor||''}"></div>
+    <div class="fg"><label class="lbl">Categoría</label>
+      <select class="fsel" id="au${id}-cat">
+        <option>Económico</option><option>Compacto</option><option>Intermedio</option>
+        <option>Full Size</option><option>SUV</option><option>Minivan</option>
+        <option>Premium</option><option>Convertible</option>
+      </select></div>
+    <div class="fg"><label class="lbl">Precio</label>
+      <div class="money-wrap"><div class="money-cur"><select id="au${id}-cur"><option>USD</option><option>ARS</option></select></div>
+      <input class="money-inp" type="number" id="au${id}-pr" placeholder="0" value="${d.precio||''}"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Lugar de retiro</label><input class="finput" type="text" id="au${id}-or" placeholder="Aeropuerto MCO Terminal B" value="${d.retiro_lugar||''}"></div>
+    <div class="fg"><label class="lbl">Lugar de devolución</label><input class="finput" type="text" id="au${id}-de" placeholder="Mismo lugar" value="${d.devolucion_lugar||''}"></div>
+    <div class="fg"><label class="lbl">Fecha retiro</label><input class="finput" type="date" id="au${id}-fr" value="${d.retiro_fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora retiro</label><input class="finput" type="time" id="au${id}-hr" value="${d.retiro_hora||''}"></div>
+    <div class="fg"><label class="lbl">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${d.devolucion_fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora devolución</label><input class="finput" type="time" id="au${id}-hd" value="${d.devolucion_hora||''}"></div>
+  </div>
+  <div class="g3">
+    <div class="fg" style="display:flex;align-items:center;gap:10px;padding-top:18px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;color:var(--text)">
+        <input type="checkbox" id="au${id}-cond" ${d.conductor_adicional?'checked':''} style="width:15px;height:15px;accent-color:var(--primary)"> Conductor adicional
+      </label>
+    </div>
+    <div class="fg" style="display:flex;align-items:center;gap:10px;padding-top:18px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;color:var(--text)">
+        <input type="checkbox" id="au${id}-seg" ${d.incluye_seguro?'checked':''} style="width:15px;height:15px;accent-color:var(--primary)"> Incluye seguro
+      </label>
+    </div>
+    <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+      <div class="money-wrap"><div class="money-cur"><select id="au${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+      <input class="money-inp" type="number" id="au${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    </div>
+  </div>
+  <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="au${id}-not" rows="2" placeholder="Incluye GPS · Se abona con tarjeta · Sin franquicia">${d.notas||''}</textarea></div>`;
+  document.getElementById('autos-cont').appendChild(el);
+  if(d.categoria) document.getElementById('au'+id+'-cat').value=d.categoria;
+  if(d.moneda) document.getElementById('au'+id+'-cur').value=d.moneda;
+}
+
+// ═══════════════════════════════════════════
+// CRUCERO BLOCK
+// ═══════════════════════════════════════════
+let crc_cnt=0;
+function addCrucero(d){
+  d=d||{};const id=++crc_cnt;
+  const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
+  el.innerHTML=`
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}</div>
+    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Naviera</label><input class="finput" type="text" id="cr${id}-nav" placeholder="MSC, Royal Caribbean, Costa..." value="${d.naviera||''}"></div>
+    <div class="fg"><label class="lbl">Nombre del barco</label><input class="finput" type="text" id="cr${id}-barco" placeholder="MSC Seashore" value="${d.barco||''}"></div>
+    <div class="fg"><label class="lbl">Tipo de cabina</label>
+      <select class="fsel" id="cr${id}-cab">
+        <option>Interior</option><option>Oceanview</option><option>Balcón</option>
+        <option>Suite</option><option>Suite Deluxe</option>
+      </select></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Puerto de embarque</label><input class="finput" type="text" id="cr${id}-pe" placeholder="Miami, FL" value="${d.embarque_puerto||''}"></div>
+    <div class="fg"><label class="lbl">Puerto de desembarque</label><input class="finput" type="text" id="cr${id}-pd" placeholder="Miami, FL" value="${d.desembarque_puerto||''}"></div>
+    <div class="fg"><label class="lbl">Fecha embarque</label><input class="finput" type="date" id="cr${id}-fe" value="${d.embarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora embarque</label><input class="finput" type="time" id="cr${id}-he" value="${d.embarque_hora||''}"></div>
+    <div class="fg"><label class="lbl">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${d.desembarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl">Hora desembarque</label><input class="finput" type="time" id="cr${id}-hd" value="${d.desembarque_hora||''}"></div>
+  </div>
+  <div class="g3">
+    <div class="fg"><label class="lbl">Régimen</label>
+      <select class="fsel" id="cr${id}-reg">
+        <option>Solo cabina</option><option>Pensión completa</option>
+        <option>Todo incluido</option><option>Bebidas incluidas</option>
+      </select></div>
+    <div class="fg"><label class="lbl">Precio por persona</label>
+      <div class="money-wrap"><div class="money-cur"><select id="cr${id}-cur"><option>USD</option><option>ARS</option></select></div>
+      <input class="money-inp" type="number" id="cr${id}-pp" placeholder="0" value="${d.precio_pp||''}" oninput="calcCruceroTotal(${id})"></div>
+    </div>
+    <div class="fg"><label class="lbl">Pasajeros</label><input class="finput" type="number" id="cr${id}-pax" placeholder="2" value="${d.pasajeros||''}" oninput="calcCruceroTotal(${id})"></div>
+  </div>
+  <div class="g2">
+    <div class="fg"><label class="lbl">Precio total</label>
+      <div class="money-wrap"><div class="money-cur" style="padding:10px 8px;font-size:.75rem;font-weight:700;color:var(--primary)">TOTAL</div>
+      <input class="money-inp" type="number" id="cr${id}-tot" placeholder="Calculado automáticamente" value="${d.precio_total||''}"></div>
+    </div>
+    <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+      <div class="money-wrap"><div class="money-cur"><select id="cr${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+      <input class="money-inp" type="number" id="cr${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    </div>
+  </div>
+  <div class="fg"><label class="lbl">Puertos de escala</label><textarea class="ftxt" id="cr${id}-esc" rows="3" placeholder="Nassau, Bahamas&#10;Cozumel, México&#10;Roatán, Honduras">${d.escalas||''}</textarea></div>
+  <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="cr${id}-not" rows="2" placeholder="Incluye propinas · Excursiones opcionales...">${d.notas||''}</textarea></div>`;
+  document.getElementById('cruceros-cont').appendChild(el);
+  if(d.cabina) document.getElementById('cr'+id+'-cab').value=d.cabina;
+  if(d.regimen) document.getElementById('cr'+id+'-reg').value=d.regimen;
+  if(d.moneda) document.getElementById('cr'+id+'-cur').value=d.moneda;
+}
+function calcCruceroTotal(id){
+  const pp=parseFloat(document.getElementById('cr'+id+'-pp').value)||0;
+  const pax=parseFloat(document.getElementById('cr'+id+'-pax').value)||0;
+  if(pp>0&&pax>0) document.getElementById('cr'+id+'-tot').value=pp*pax;
+}
+
+// ═══════════════════════════════════════════
 // COLLECT FORM
 // ═══════════════════════════════════════════
 function collectForm(){
-  const vuelos=[],hoteles=[],traslados=[],excursiones=[];
+  const vuelos=[],hoteles=[],traslados=[],excursiones=[],autos=[],cruceros=[];
   const eqMap={b:'Bolso personal',c:'Carry-on',v23:'Valija 23kg',v32:'Valija 32kg','2v':'2 valijas'};
   const pMap={mk:'Magic Kingdom',ep:'EPCOT',ak:'Animal Kingdom',hs:'Hollywood Studios',us:'Universal Studios',ia:'Islands of Adventure',eu:'Epic Universe',vb:'Volcano Bay'};
   const bMap={ep:'Early Park Entry',tr:'Transporte gratuito',mm:'Memory Maker',dl:'Entrega en hotel',ex:'Express Pass',sp:'Disney Springs',wp:'Parque acuático gratis',me:'Magical Extras'};
@@ -294,6 +459,16 @@ function collectForm(){
     const cat=gv('e'+i+'-cat');
     excursiones.push({nombre:nm,categoria:cat==='otros'?gv('e'+i+'-cat-otros')||'Otros':cat,prov:getProvVal('e'+i),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs'),comision:gn('e'+i+'-com'),com_cur:gv('e'+i+'-com-cur')});
   });
+  document.querySelectorAll('[id^="ab-"]').forEach(blk=>{
+    const i=blk.id.replace('ab-','');const prov=document.getElementById('au'+i+'-prov')?.value||'';
+    if(!prov)return;
+    autos.push({proveedor:prov,categoria:gv('au'+i+'-cat'),retiro_lugar:gv('au'+i+'-or'),retiro_fecha:fd(gv('au'+i+'-fr')),retiro_hora:gv('au'+i+'-hr'),devolucion_lugar:gv('au'+i+'-de'),devolucion_fecha:fd(gv('au'+i+'-fd')),devolucion_hora:gv('au'+i+'-hd'),conductor_adicional:document.getElementById('au'+i+'-cond')?.checked||false,incluye_seguro:document.getElementById('au'+i+'-seg')?.checked||false,moneda:gv('au'+i+'-cur'),precio:gn('au'+i+'-pr'),notas:gv('au'+i+'-not'),comision:gn('au'+i+'-com'),com_cur:gv('au'+i+'-com-cur')});
+  });
+  document.querySelectorAll('[id^="cb-"]').forEach(blk=>{
+    const i=blk.id.replace('cb-','');const nav=gv('cr'+i+'-nav');
+    if(!nav)return;
+    cruceros.push({naviera:nav,barco:gv('cr'+i+'-barco'),cabina:gv('cr'+i+'-cab'),regimen:gv('cr'+i+'-reg'),embarque_puerto:gv('cr'+i+'-pe'),embarque_fecha:fd(gv('cr'+i+'-fe')),embarque_hora:gv('cr'+i+'-he'),desembarque_puerto:gv('cr'+i+'-pd'),desembarque_fecha:fd(gv('cr'+i+'-fd')),desembarque_hora:gv('cr'+i+'-hd'),moneda:gv('cr'+i+'-cur'),precio_pp:gn('cr'+i+'-pp'),pasajeros:gn('cr'+i+'-pax'),precio_total:gn('cr'+i+'-tot'),escalas:gv('cr'+i+'-esc'),notas:gv('cr'+i+'-not'),comision:gn('cr'+i+'-com'),com_cur:gv('cr'+i+'-com-cur')});
+  });
   const tickets_arr=[];
   document.querySelectorAll('[id^="tkb-"]').forEach(blk=>{
     const i=blk.id.replace('tkb-','');const nm=gv('tk'+i+'-nm');if(!nm)return;
@@ -315,7 +490,7 @@ function collectForm(){
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
     viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches},
-    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,
+    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
     total_comision};
