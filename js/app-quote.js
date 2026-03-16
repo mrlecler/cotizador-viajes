@@ -72,7 +72,6 @@ function buildQuoteHTML(d){
   <div class="q-cover">
     ${coverUrl?`<img class="q-cover-img" src="${coverUrl}" alt="">`:''}
     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(9,0,15,.2) 0%,rgba(9,0,15,.5) 50%,rgba(9,0,15,.92) 100%);pointer-events:none"></div>
-    <div style="position:absolute;inset:0;opacity:.04;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px);background-size:32px 32px"></div>
     <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(79,70,229,.2) 0%,transparent 60%)"></div>
     <div style="position:absolute;top:0;left:0;right:0;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;z-index:1">
       <div>${buildPdfWordmark(22)}</div>
@@ -82,6 +81,7 @@ function buildQuoteHTML(d){
       </div>
     </div>
     <div style="position:absolute;bottom:28px;left:32px;right:32px;z-index:1">
+      ${cl.nombre?`<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:100px;padding:5px 14px;margin-bottom:14px;font-size:11px;font-weight:700;color:white;letter-spacing:0.5px">COTIZACIÓN PARA &nbsp;<span style="color:#C4B5FD;font-weight:800">${cl.nombre}</span></div>`:''}
       <div style="font-size:8px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">SU VIAJE A</div>
       <div style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;color:#FFFFFF;line-height:1">${vi.destino||'Destino'}${vi.pais?', '+vi.pais:''}</div>
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.35);margin-top:8px">Ref ID: ${d.refId||'—'} · ${today}</div>
@@ -92,7 +92,8 @@ function buildQuoteHTML(d){
   <div class="q-bar">
     <div>
       <div class="qb-l">PRESUPUESTO</div>
-      <div class="qb-v">${cl.pasajeros||cl.nombre||'—'}</div>
+      ${cl.nombre?`<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:2px">${cl.nombre}</div>`:''}
+      <div class="qb-v">${cl.pasajeros||'—'}</div>
       ${vi.salida&&vi.regreso?`<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:1px">${vi.salida} – ${vi.regreso}${vi.noches?' ('+vi.noches+' noches)':''}</div>`:''}
     </div>
     <div>

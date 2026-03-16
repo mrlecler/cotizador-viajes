@@ -11,8 +11,9 @@ function updateLogoPreview(){
   updateHeader();
 }
 function updateHeader(){
-  const lu=document.getElementById('hdr-logo-wrap');
-  if(lu){if(logoUrl)lu.innerHTML=`<img src="${logoUrl}" style="height:32px;object-fit:contain" alt="logo">`;else lu.innerHTML=`<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:white;font-size:1rem;font-weight:800">Magic<span style="color:var(--amber)">Planner</span></div>`;}
+  // El logo de agente solo aparece en el PDF — el header siempre muestra el wordmark ermix
+  // buildWordmark() es llamado desde app-core.js en fonts.ready
+  document.fonts.ready.then(function(){ buildWordmark('hdr-wm',28,'white','grad'); });
 }
 
 // ═══════════════════════════════════════════

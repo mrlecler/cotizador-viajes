@@ -17,6 +17,73 @@ let formDraft=null; // BUG3 — draft en memoria para preservar el formulario en
 let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editando (null = nueva)
 
 // ═══════════════════════════════════════════
+// WORDMARK — función compartida ermix
+// ═══════════════════════════════════════════
+function buildWordmark(targetId, fontSize, textCol, xType) {
+  const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
+  const G=['#4F46E5','#7C3AED','#F43F5E'];
+  const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font='900 '+fontSize+'px "DM Sans"';
+  const ermiW=ctx.measureText('ermi').width;
+  const capH=fontSize*0.725,sc=capH/48;
+  const baseline=fontSize*0.86,totalH=fontSize;
+  const xTop=baseline-capH,xLeft=ermiW-1;
+  const totalW=xLeft+48*sc+4;
+  const tx=xLeft-8*sc,ty=xTop-8*sc;
+  const gid='wm_'+Date.now();
+  const xFill=xType==='grad'?'url(#'+gid+')':(xType||'#7C3AED');
+  const svgInner='<defs><linearGradient id="'+gid+'" x1="0%" y1="0%" x2="100%" y2="100%">'
+    +'<stop offset="0%" stop-color="'+G[0]+'"/>'
+    +'<stop offset="45%" stop-color="'+G[1]+'"/>'
+    +'<stop offset="100%" stop-color="'+G[2]+'"/>'
+    +'</linearGradient></defs>'
+    +'<text x="0" y="'+baseline+'" font-family="\'DM Sans\',sans-serif" font-weight="900" font-size="'+fontSize+'" letter-spacing="-1" fill="'+(textCol||'white')+'">ermi</text>'
+    +'<path transform="translate('+tx+','+ty+') scale('+sc+')" d="'+X+'" fill="'+xFill+'"/>';
+  const target=document.getElementById(targetId);
+  if(!target)return;
+  if(target.tagName&&target.tagName.toLowerCase()==='svg'){
+    target.setAttribute('viewBox','0 0 '+totalW+' '+totalH);
+    target.setAttribute('width',totalW);
+    target.setAttribute('height',totalH);
+    target.innerHTML=svgInner;
+  } else {
+    target.innerHTML='<svg viewBox="0 0 '+totalW+' '+totalH+'" width="'+totalW+'" height="'+totalH+'" xmlns="http://www.w3.org/2000/svg">'+svgInner+'</svg>';
+  }
+}
+
+// Inicialización de wordmarks cuando las fuentes están listas
+document.fonts.ready.then(function(){
+  buildWordmark('login-wm',64,'white','grad');
+  buildWordmark('hdr-wm',28,'white','grad');
+});
+
+// ═══════════════════════════════════════════
+// TEMA — Dark / Light toggle
+// ═══════════════════════════════════════════
+function toggleTheme(){
+  const current=document.documentElement.getAttribute('data-theme');
+  const next=current==='light'?'dark':'light';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('ermix-theme',next);
+  const di=document.getElementById('theme-icon-dark');
+  const li=document.getElementById('theme-icon-light');
+  if(di) di.style.display=next==='light'?'block':'none';
+  if(li) li.style.display=next==='dark'?'block':'none';
+}
+
+(function initTheme(){
+  const saved=localStorage.getItem('ermix-theme')||'dark';
+  document.documentElement.setAttribute('data-theme',saved);
+  // Los iconos se actualizan cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded',function(){
+    const di=document.getElementById('theme-icon-dark');
+    const li=document.getElementById('theme-icon-light');
+    if(di) di.style.display=saved==='light'?'block':'none';
+    if(li) li.style.display=saved==='dark'?'block':'none';
+  });
+})();
+
+// ═══════════════════════════════════════════
 // AUTH — NETLIFY IDENTITY
 // ═══════════════════════════════════════════
 // ═══════════════════════════════════════════
@@ -141,6 +208,8 @@ function init(){
   if(logoUrl) updateLogoPreview();
   addVuelo(); addHotel(); addTraslado(); addExcursion(); addTicket();
   loadClients();
+  // Cargar seguros para el select del formulario
+  if(typeof loadSeguros==='function') loadSeguros();
 }
 
 // ═══════════════════════════════════════════

@@ -6,9 +6,9 @@ async function renderAdmin(){
   ${ags.map(a=>`<tr>
     <td>${a.email}</td><td>${a.nombre||'—'}</td>
     <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':'st-borrador'}">${a.rol}</span></td>
-    <td>${a.activo?'✅':'❌'}</td>
+    <td>${a.activo?'Sí':'No'}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">✏️ Editar</button>
+      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
       <button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button>
     </td>
   </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
@@ -16,10 +16,10 @@ async function renderAdmin(){
   // Aerolíneas
   const {data:aeros}=await sb.from('aerolineas').select('*').order('nombre');
   document.getElementById('admin-aero').innerHTML=aeros?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>IATA</th><th>Activa</th><th></th></tr></thead><tbody>
-  ${aeros.map(a=>`<tr><td>${a.nombre}</td><td><code>${a.codigo_iata||'—'}</code></td><td>${a.activa?'✅':'❌'}</td>
+  ${aeros.map(a=>`<tr><td>${a.nombre}</td><td><code>${a.codigo_iata||'—'}</code></td><td>${a.activa?'Sí':'No'}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editAeroModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.codigo_iata||''}')">✏️</button>
-      <button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')">🗑️</button>
+      <button class="btn btn-out btn-xs" onclick="editAeroModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.codigo_iata||''}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </td></tr>`).join('')}</tbody></table>`:'<p>Sin aerolíneas.</p>';
 
   // Proveedores
@@ -27,12 +27,14 @@ async function renderAdmin(){
   document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Contacto</th><th></th></tr></thead><tbody>
   ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'—'}</td><td>${p.pais||'—'}</td><td style="font-size:.75rem">${p.contacto||''}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}')">✏️</button>
-      <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')">🗑️</button>
+      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
 
   // Datalists for autocomplete
   buildDataLists(aeros||[], provs||[]);
+  // Seguros
+  loadSeguros();
 }
 
 function buildDataLists(aeros, provs){
@@ -43,7 +45,7 @@ function buildDataLists(aeros, provs){
   if(!pl){pl=document.createElement('datalist');pl.id='prov-list';document.body.appendChild(pl);}
   pl.innerHTML=provs.map(p=>`<option value="${p.nombre}">`).join('');
   // Populate prov-sel dropdowns with Otro option
-  const provOpts='<option value="">— Elegir proveedor —</option>'+provs.map(p=>`<option value="${p.nombre}">${p.nombre}${p.ciudad?' · '+p.ciudad:''}</option>`).join('')+'<option value="__otro__">✏️ Otro (escribir manualmente)</option>';
+  const provOpts='<option value="">— Elegir proveedor —</option>'+provs.map(p=>`<option value="${p.nombre}">${p.nombre}${p.ciudad?' · '+p.ciudad:''}</option>`).join('')+'<option value="__otro__">Otro (escribir manualmente)</option>';
   document.querySelectorAll('.prov-sel').forEach(sel=>{
     const cur=sel.getAttribute('data-val')||'';
     sel.innerHTML=provOpts;
@@ -71,7 +73,7 @@ function openAeroModal(){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAero()">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveAero()">Guardar</button>
     </div>`;openModal();
 }
 async function saveAero(){
@@ -93,7 +95,7 @@ function openProvModal(){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveProv()">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveProv()">Guardar</button>
     </div>`;openModal();
 }
 async function saveProv(){
@@ -104,17 +106,81 @@ async function saveProv(){
 async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('proveedores').delete().eq('id',id);toast('Eliminado');renderAdmin();}
 
 // ═══════════════════════════════════════════
+// SEGUROS
+// ═══════════════════════════════════════════
+async function loadSeguros(){
+  const {data:segs}=await sb.from('seguros').select('*').order('nombre');
+  // Renderizar tabla en admin
+  const el=document.getElementById('admin-seguros');
+  if(el){
+    el.innerHTML=segs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Activo</th><th></th></tr></thead><tbody>
+    ${segs.map(s=>`<tr><td>${s.nombre}</td><td>${s.activo?'Sí':'No'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-out btn-xs" onclick="editSeguroModal('${s.id}','${(s.nombre||'').replace(/'/g,"\'")}','${s.activo}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn btn-del btn-xs" onclick="deleteSeguro('${s.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin seguros.</p>';
+  }
+  // Actualizar select del formulario
+  const sel=document.getElementById('seg-nm');
+  if(sel){
+    const activos=(segs||[]).filter(s=>s.activo!==false);
+    sel.innerHTML='<option value="">— Elegir aseguradora —</option>'+activos.map(s=>`<option value="${s.nombre}">${s.nombre}</option>`).join('');
+  }
+}
+
+function openSeguroModal(){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Aseguradora</div>
+    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ms-nm" placeholder="PAX Assistance"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveSeguro()">Guardar</button>
+    </div>`;openModal();
+}
+
+async function saveSeguro(){
+  const nm=document.getElementById('ms-nm').value.trim();if(!nm)return;
+  await sb.from('seguros').insert({nombre:nm,activo:true});
+  closeModal();toast('✓ Aseguradora agregada');renderAdmin();loadSeguros();
+}
+
+function editSeguroModal(id,nombre,activo){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar aseguradora</div>
+    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="es-nm" value="${nombre}" placeholder="PAX Assistance"></div>
+    <div class="fg"><label class="lbl">Activo</label>
+      <select class="fsel" id="es-activo">
+        <option value="true" ${activo==='true'?'selected':''}>Sí</option>
+        <option value="false" ${activo==='false'?'selected':''}>No</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-pri" onclick="saveSeguroEdit('${id}')">Guardar</button>
+    </div>`;openModal();
+}
+
+async function saveSeguroEdit(id){
+  const nm=document.getElementById('es-nm').value.trim();if(!nm)return;
+  const activo=document.getElementById('es-activo').value==='true';
+  await sb.from('seguros').update({nombre:nm,activo}).eq('id',id);
+  closeModal();toast('✓ Aseguradora actualizada');renderAdmin();loadSeguros();
+}
+
+async function deleteSeguro(id){if(!confirm('¿Eliminar?'))return;await sb.from('seguros').delete().eq('id',id);toast('Eliminado');renderAdmin();loadSeguros();}
+
+// ═══════════════════════════════════════════
 // ADMIN EDIT MODALS
 // ═══════════════════════════════════════════
 function editAgentModal(id,nombre,email,rol){
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar agente</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar agente</div>
     <div class="fg"><label class="lbl">Email</label><input class="finput" id="ea-em" value="${email}" readonly style="opacity:.6"></div>
     <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ea-nm" value="${nombre}" placeholder="Nombre completo"></div>
     <div class="fg"><label class="lbl">Rol</label><select class="fsel" id="ea-rol"><option value="agente" ${rol==='agente'?'selected':''}>Agente</option><option value="admin" ${rol==='admin'?'selected':''}>Admin</option></select></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAgentEdit('${id}')">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveAgentEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 async function saveAgentEdit(id){
@@ -126,14 +192,14 @@ async function saveAgentEdit(id){
 
 function editAeroModal(id,nombre,iata){
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar aerolínea</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar aerolínea</div>
     <div class="g2">
       <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="aea-nm" value="${nombre}" placeholder="American Airlines"></div>
       <div class="fg"><label class="lbl">Código IATA</label><input class="finput" id="aea-iata" value="${iata}" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAeroEdit('${id}')">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveAeroEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 async function saveAeroEdit(id){
@@ -144,7 +210,7 @@ async function saveAeroEdit(id){
 
 function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">✏️ Editar proveedor</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar proveedor</div>
     <div class="g2">
       <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="epv-nm" value="${nombre}" placeholder="Orlantours"></div>
       <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="epv-tipo"><option value="traslado" ${tipo==='traslado'?'selected':''}>Traslado</option><option value="excursion" ${tipo==='excursion'?'selected':''}>Excursión</option><option value="hotel" ${tipo==='hotel'?'selected':''}>Hotel</option><option value="seguro" ${tipo==='seguro'?'selected':''}>Seguro</option><option value="otro" ${tipo==='otro'?'selected':''}>Otro</option></select></div>
@@ -154,7 +220,7 @@ function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveProvEdit('${id}')">💾 Guardar</button>
+      <button class="btn btn-pri" onclick="saveProvEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 async function saveProvEdit(id){
@@ -187,7 +253,7 @@ function addTicket(d){
       <div class="money-wrap"><div class="money-cur"><select id="tk${id}-cur"><option>USD</option><option>ARS</option></select></div>
       <input class="money-inp" type="number" id="tk${id}-pr" placeholder="0" value="${d.precio||''}"></div>
     </div>
-    <div class="fg"><label class="lbl">💰 Comisión agente</label>
+    <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
       <div class="money-wrap"><div class="money-cur"><select id="tk${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
       <input class="money-inp" type="number" id="tk${id}-com" placeholder="0" value="${d.comision||''}"></div>
     </div>
@@ -220,23 +286,27 @@ async function renderDashboard(){
   // Comisiones desde datos JSON
   const totalCom=all.reduce((s,r)=>s+(r.datos?.total_comision||0),0);
   const conversion=all.length?Math.round((confirmadas.length/all.length)*100):0;
-  // Render metric cards
-  const metrics=[
-    {ico:'📅',lbl:'Cotizaciones este mes',val:mesActual.length,color:'var(--sky)'},
-    {ico:'📋',lbl:'Total cotizaciones',val:all.length,color:'var(--navy)'},
-    {ico:'✅',lbl:'Confirmadas',val:confirmadas.length,color:'var(--green)'},
-    {ico:'💰',lbl:'Comisiones acumuladas',val:'USD '+Number(totalCom).toLocaleString('es-AR'),color:'var(--amber2)'},
-    {ico:'📈',lbl:'Tasa de conversión',val:conversion+'%',color:'var(--green)'},
-    {ico:'💵',lbl:'Valor confirmadas',val:'USD '+Number(totalPrecio).toLocaleString('es-AR'),color:'var(--sky2)'},
-  ];
-  document.getElementById('dash-metrics').innerHTML=metrics.map(m=>`
-    <div style="background:white;border:1px solid var(--g2);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-left:4px solid ${m.color}">
-      <div style="font-size:1.4rem;margin-bottom:8px">${m.ico}</div>
-      <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g3);margin-bottom:6px">${m.lbl}</div>
-      <div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:1.6rem;font-weight:700;color:${m.color}">${m.val}</div>
-    </div>`).join('');
+  // Render metric cards — brand v2
+  const comProm=confirmadas.length?Math.round(totalCom/confirmadas.length):0;
+  const icons={
+    calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+    check:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    dollar:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+    trend:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+    bars:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'
+  };
+  const mkCard=(icon,label,value,grad,sub)=>`<div class="dash-metric"><div class="metric-label"><svg viewBox="0 0 24 24">${icon}</svg>${label}</div><div class="metric-value${grad?' grad':''}">${value}</div>${sub?'<div class="metric-sub">'+sub+'</div>':''}</div>`;
+  document.getElementById('dash-metrics').innerHTML=[
+    mkCard(icons.calendar,'Cotizaciones este mes',mesActual.length,false,'mes en curso'),
+    mkCard(icons.file,'Total cotizaciones',all.length,false,'historial completo'),
+    mkCard(icons.check,'Confirmadas',confirmadas.length,true,conversion+'% conversión'),
+    mkCard(icons.dollar,'Comisiones totales','USD '+Number(totalCom).toLocaleString('es-AR'),true,'acumulado'),
+    mkCard(icons.trend,'Tasa de conversión',conversion+'%',false,all.length+' cotizaciones'),
+    mkCard(icons.bars,'Com. promedio','USD '+Number(comProm).toLocaleString('es-AR'),false,'por confirmada'),
+  ].join('');
   // Cotizaciones del mes
-  const stLbl={borrador:'📝',enviada:'📨',confirmada:'✅',cancelada:'❌'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
   document.getElementById('dash-mes-list').innerHTML=mesActual.length?`<table class="tbl"><thead><tr><th>Cliente</th><th>Destino</th><th>Ref</th><th>Estado</th><th>Precio</th><th>Comisión</th></tr></thead><tbody>
   ${mesActual.map(r=>`<tr>
     <td><strong>${r.datos?.cliente?.nombre||'—'}</strong></td>
@@ -260,9 +330,9 @@ async function renderDashboard(){
 
 function openAgentModal(){
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">📩 Invitar agente</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Invitar agente</div>
     <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se invitan desde el panel de <strong>Netlify Identity</strong>. El sistema los reconoce automáticamente al hacer login por primera vez.</p>
-    <div class="tip">💡 Netlify → Site configuration → Identity → Invite users → Ingresá el email del agente. Recibirá un mail para crear su contraseña.</div>
+    <div class="tip">Netlify → Site configuration → Identity → Invite users → Ingresá el email del agente. Recibirá un mail para crear su contraseña.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-pri" onclick="window.open('https://app.netlify.com','_blank');closeModal()">Ir a Netlify →</button>
     </div>`;openModal();
