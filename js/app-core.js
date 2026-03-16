@@ -117,7 +117,7 @@ async function doLogin(){
 async function doLoginGoogle(){
   const {error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:window.location.origin}
+    options:{redirectTo:'https://mrlecler.github.io/cotizador-viajes/'}
   });
   if(error) setLoginStatus('Error Google: '+error.message,'#F87171');
 }
@@ -125,7 +125,7 @@ async function doLoginGoogle(){
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
   if(!email){setLoginStatus('Ingresá tu email primero','#F59E0B');return;}
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'?reset=1'});
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
   if(error) setLoginStatus('Error: '+error.message,'#F87171');
   else setLoginStatus('✓ Email enviado — revisá tu casilla','#34D399');
 }

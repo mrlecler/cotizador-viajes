@@ -357,11 +357,22 @@ async function renderDashboard(){
 
 function openAgentModal(){
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Invitar agente</div>
-    <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se invitan desde el panel de <strong>Netlify Identity</strong>. El sistema los reconoce automáticamente al hacer login por primera vez.</p>
-    <div class="tip">Netlify → Site configuration → Identity → Invite users → Ingresá el email del agente. Recibirá un mail para crear su contraseña.</div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-pri" onclick="window.open('https://app.netlify.com','_blank');closeModal()">Ir a Netlify →</button>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar agente</div>
+    <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se crean directamente desde el panel de Supabase.</p>
+    <div style="border:1px solid rgba(124,58,237,0.3);border-radius:var(--r);background:rgba(124,58,237,0.1);padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+      ${[
+        'Ir a <strong style="color:var(--violet-light)">Supabase Dashboard → Authentication → Users</strong>',
+        'Click en <strong style="color:var(--violet-light)">"Add user" → "Create new user"</strong>',
+        'Ingresar el email y una contraseña temporal',
+        'El agente recibirá sus credenciales y podrá cambiar la contraseña desde <strong style="color:var(--violet-light)">Mi Perfil</strong>'
+      ].map((step,i)=>`<div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:22px;height:22px;border-radius:6px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white;flex-shrink:0;margin-top:1px">${i+1}</div>
+        <div style="font-size:.83rem;color:var(--g4);line-height:1.5">${step}</div>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+      <button class="btn btn-out" onclick="closeModal()">Cerrar</button>
+      <button class="btn btn-pri" onclick="window.open('https://supabase.com/dashboard','_blank')">Ir a Supabase &rarr;</button>
     </div>`;openModal();
 }
 
