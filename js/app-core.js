@@ -388,8 +388,19 @@ function restoreDraft(d){
 // ═══════════════════════════════════════════
 function toast(msg,ok=true){
   const t=document.getElementById('toast'),m=document.getElementById('toast-msg');
-  t.style.background=ok?'#1E293B':'var(--red)';
-  m.textContent=msg; t.classList.add('show');
+  const ico=document.getElementById('toast-icon');
+  // Limpiar ✓ del inicio del mensaje (evita doble ✓ heredado de calls anteriores)
+  const cleanMsg=(msg||'').replace(/^[✓\s]+/,'');
+  if(ok){
+    t.style.background='linear-gradient(135deg,rgba(79,70,229,0.15),rgba(124,58,237,0.15))';
+    t.style.borderColor='rgba(124,58,237,0.4)';
+    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else {
+    t.style.background='rgba(244,63,94,0.15)';
+    t.style.borderColor='rgba(244,63,94,0.4)';
+    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  }
+  m.textContent=cleanMsg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 

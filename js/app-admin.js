@@ -109,16 +109,20 @@ async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('p
 // SEGUROS
 // ═══════════════════════════════════════════
 async function loadSeguros(){
-  const {data:segs}=await sb.from('seguros').select('*').order('nombre');
+  const {data:segs, error}=await sb.from('seguros').select('*').order('nombre');
   // Renderizar tabla en admin
   const el=document.getElementById('admin-seguros');
   if(el){
-    el.innerHTML=segs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Activo</th><th></th></tr></thead><tbody>
-    ${segs.map(s=>`<tr><td>${s.nombre}</td><td>${s.activo?'Sí':'No'}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-out btn-xs" onclick="editSeguroModal('${s.id}','${(s.nombre||'').replace(/'/g,"\'")}','${s.activo}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="btn btn-del btn-xs" onclick="deleteSeguro('${s.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-      </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin seguros.</p>';
+    if(error){
+      el.innerHTML=`<p style="color:var(--red);font-size:.8rem">Error al cargar seguros: ${error.message}</p>`;
+    } else {
+      el.innerHTML=segs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Activo</th><th></th></tr></thead><tbody>
+      ${segs.map(s=>`<tr><td>${s.nombre}</td><td>${s.activo?'Sí':'No'}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-out btn-xs" onclick="editSeguroModal('${s.id}','${(s.nombre||'').replace(/'/g,"\'")}','${s.activo}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="btn btn-del btn-xs" onclick="deleteSeguro('${s.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin seguros.</p>';
+    }
   }
   // Actualizar select del formulario
   const sel=document.getElementById('seg-nm');
@@ -141,7 +145,7 @@ function openSeguroModal(){
 async function saveSeguro(){
   const nm=document.getElementById('ms-nm').value.trim();if(!nm)return;
   await sb.from('seguros').insert({nombre:nm,activo:true});
-  closeModal();toast('✓ Aseguradora agregada');renderAdmin();loadSeguros();
+  closeModal();toast('Aseguradora agregada');await renderAdmin();await loadSeguros();
 }
 
 function editSeguroModal(id,nombre,activo){
@@ -164,10 +168,10 @@ async function saveSeguroEdit(id){
   const nm=document.getElementById('es-nm').value.trim();if(!nm)return;
   const activo=document.getElementById('es-activo').value==='true';
   await sb.from('seguros').update({nombre:nm,activo}).eq('id',id);
-  closeModal();toast('✓ Aseguradora actualizada');renderAdmin();loadSeguros();
+  closeModal();toast('Aseguradora actualizada');await renderAdmin();await loadSeguros();
 }
 
-async function deleteSeguro(id){if(!confirm('¿Eliminar?'))return;await sb.from('seguros').delete().eq('id',id);toast('Eliminado');renderAdmin();loadSeguros();}
+async function deleteSeguro(id){if(!confirm('¿Eliminar?'))return;await sb.from('seguros').delete().eq('id',id);toast('Eliminado');await renderAdmin();await loadSeguros();}
 
 // ═══════════════════════════════════════════
 // ADMIN EDIT MODALS

@@ -76,8 +76,10 @@ function buildQuoteHTML(d){
     <div style="position:absolute;top:0;left:0;right:0;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;z-index:1">
       <div>${buildPdfWordmark(22)}</div>
       <div style="display:flex;align-items:center;gap:9px">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#F43F5E);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:white;flex-shrink:0">${ini}</div>
-        ${ag.ag||ag.nm?`<span style="font-size:11px;font-weight:600;color:white;opacity:.85">${ag.ag||ag.nm}</span>`:''}
+        <div style="text-align:right;line-height:1.3">
+          <div style="font-size:13px;font-weight:700;color:white">${ag.nm||'Agente'}</div>
+          ${ag.ag?`<div style="font-size:11px;color:rgba(255,255,255,0.6)">${ag.ag}</div>`:''}
+        </div>
       </div>
     </div>
     <div style="position:absolute;bottom:28px;left:32px;right:32px;z-index:1">
@@ -184,7 +186,7 @@ function buildQuoteHTML(d){
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
           ${h.hab?`<span style="font-size:10px;font-weight:600;color:#374151">${h.hab}</span>`:''}
           ${h.regimen?`<span class="am-tag">${h.regimen}</span>`:''}
-          ${h.estrellas&&h.estrellas!=='—'?`<span style="font-size:10px">⭐ ${h.estrellas}</span>`:''}
+          ${h.estrellas&&h.estrellas!=='—'?`<span style="font-size:10px">★ ${h.estrellas}</span>`:''}
         </div>`;
       if(h.tickets)H+=`<div class="desc-item">${L(LI.ticket,11,'rgba(0,0,0,.35)')}<span><strong style="color:#09000F">Tickets:</strong> ${h.tickets}${h.dias_tkt?' ('+h.dias_tkt+' días)':''}</span></div>`;
       if(h.parques?.length)H+=`<div class="desc-item">${L(LI.map,11,'rgba(0,0,0,.35)')}<span><strong style="color:#09000F">Parques:</strong> ${h.parques.join(', ')}</span></div>`;
@@ -212,10 +214,10 @@ function buildQuoteHTML(d){
         <div class="q-card-l">
           <div class="q-card-nm">${h.nombre}</div>
           <div class="q-card-dt">${[h.hab,h.regimen,h.noches?h.noches+' noches':'',h.ci&&h.co?h.ci+' – '+h.co:''].filter(Boolean).join(' · ')}</div>
-          ${h.estrellas&&h.estrellas!=='—'?`<div style="font-size:9px;margin-top:4px">⭐ ${h.estrellas} estrellas</div>`:''}
+          ${h.estrellas&&h.estrellas!=='—'?`<div style="font-size:9px;margin-top:4px">★ ${h.estrellas} estrellas</div>`:''}
           ${allAm.length?`<div class="am-grid">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`:''}
         </div>
-        ${h.precio>0?`<div class="q-card-r"><div class="q-card-pl">Precio</div>${gradPrice(fmtMoney(h.precio,h.moneda),15)}</div>`:''}
+        ${h.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16)}</div>`:''}
       </div>`;
     }
     H+=`</div>`;
@@ -251,9 +253,7 @@ function buildQuoteHTML(d){
           <div class="q-card-dt">${[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov].filter(Boolean).join(' · ')}</div>
           ${t.notas?`<div style="font-size:9px;color:rgba(0,0,0,.4);margin-top:2px">${t.notas}</div>`:''}
         </div>
-        <div class="q-card-r">
-          ${t.precio>0?`<div class="q-card-pl">Precio</div>${gradPrice(fmtMoney(t.precio,t.moneda),14)}`:`<div style="font-size:10px;font-weight:600;color:#059669">Incluido</div>`}
-        </div>
+        ${t.precio>0?`<div style="border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),16)}</div>`:`<div style="font-size:10px;font-weight:600;color:#059669;flex-shrink:0;margin-left:12px">Incluido</div>`}
       </div>`;
     });
     H+=`</div>`;
@@ -323,7 +323,7 @@ function buildQuoteHTML(d){
 
   <!-- ── FOOTER AGENTE ── -->
   <div class="q-agent">
-    ${logoUrl?`<img src="${logoUrl}" style="height:40px;max-width:100px;object-fit:contain;border-radius:50%;flex-shrink:0" alt="logo">`:`<div class="q-agent-av">${ini}</div>`}
+    ${logoUrl?`<img src="${logoUrl}" style="max-height:60px;max-width:120px;object-fit:contain;border-radius:12px;flex-shrink:0;background:rgba(255,255,255,0.1)" alt="logo">`:`<div class="q-agent-av">${ini}</div>`}
     <div>
       <div class="q-agent-nm">${ag.nm||'Tu Agente'}</div>
       ${ag.ag?`<div class="q-agent-ag">${ag.ag}</div>`:''}
