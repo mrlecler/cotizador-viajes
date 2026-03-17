@@ -5,11 +5,12 @@ let airportsList=[];
 let citiesList=[];
 fetch('data/airports.json').then(r=>r.json()).then(d=>{airportsList=d;}).catch(()=>{});
 fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCityAC();}).catch(()=>{});
-// Mapa aerolínea→IATA para logos (carga asíncrona silenciosa)
-(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('aerolineas').select('nombre,codigo_iata');if(data)window.aerolineasMap=Object.fromEntries(data.filter(a=>a.codigo_iata).map(a=>[a.nombre.toLowerCase(),a.codigo_iata.toUpperCase()]));}}catch(e){}})();
+// Mapa aerolínea→IATA y lista completa para autocomplete (carga asíncrona silenciosa)
+(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('aerolineas').select('nombre,codigo_iata');if(data){window.aerolineasMap=Object.fromEntries(data.filter(a=>a.codigo_iata).map(a=>[a.nombre.toLowerCase(),a.codigo_iata.toUpperCase()]));window.aerolineasList=data.filter(a=>a.nombre).map(a=>({nombre:a.nombre,codigo_iata:(a.codigo_iata||'').toUpperCase()}));}}}catch(e){}})();
 
 // ── Estilos compartidos del dropdown ──
-const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:var(--ink2,#0F0018);border:1px solid rgba(124,58,237,0.25);border-radius:10px;box-shadow:0 8px 24px rgba(79,70,229,0.15);max-height:260px;overflow-y:auto;display:none;';
+// Fondo siempre oscuro — en light-mode var(--ink2) se redefine como blanco y haría ilegible el texto
+const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:#160024;border:1px solid rgba(124,58,237,0.3);border-radius:10px;box-shadow:0 8px 24px rgba(79,70,229,0.22);max-height:260px;overflow-y:auto;display:none;';
 const AC_ITEM_BASE='padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:10px;transition:background .15s;';
 
 // ── Función genérica base ──
@@ -47,7 +48,7 @@ function initAirportAutocomplete(inputCiudadId,inputIataId){
     drop.innerHTML=res.map(a=>{
       const safe_iata=a.iata.replace(/'/g,"\\'");
       const safe_label=(a.city+' ('+a.iata+')').replace(/'/g,"\\'");
-      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirport('${inputCiudadId}','${inputIataId||''}','${safe_iata}','${safe_label}')"><span style="font-size:11px;font-weight:800;color:#A855F7;min-width:38px;font-family:'DM Mono',monospace;letter-spacing:.05em">${a.iata}</span><span style="font-size:12px;color:#fff;flex:1;line-height:1.3">${a.city}<span style="display:block;font-size:10px;opacity:.45;margin-top:1px">${a.name} · ${a.country}</span></span></div>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirport('${inputCiudadId}','${inputIataId||''}','${safe_iata}','${safe_label}')"><span style="font-size:11px;font-weight:800;color:#C4B5FD;min-width:38px;font-family:'DM Mono',monospace;letter-spacing:.05em">${a.iata}</span><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.city}<span style="display:block;font-size:10px;color:rgba(255,255,255,.4);margin-top:1px">${a.name} · ${a.country}</span></span></div>`;
     }).join('');
     drop.style.display='block';
   }
@@ -97,7 +98,7 @@ function initCityAutocomplete(inputId,onlyCountries){
       const safe=c.name.replace(/'/g,"\\'");
       const label=onlyCountries?c.name:`${c.name}${c.region?', '+c.region:''}`;
       const sub=onlyCountries?'':`<span style="display:block;font-size:10px;opacity:.45;margin-top:1px">${CNAMES[c.country]||c.country}</span>`;
-      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selCity('${inputId}','${safe}')"><span style="font-size:12px;color:#fff;flex:1;line-height:1.3">${label}${sub}</span></div>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selCity('${inputId}','${safe}')"><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${label}${sub}</span></div>`;
     }).join('');
     drop.style.display='block';
   }
@@ -111,6 +112,33 @@ function _selCity(inputId,val){
   if(d)d.style.display='none';
 }
 
+// ── Fetch de proveedores para selects de traslados/excursiones ──
+(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,ciudad');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',ciudad:p.ciudad||''}));// Poblar cualquier prov-sel ya renderizado (ej: al cargar historial)
+document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'');});}}}catch(e){}})();
+
+// Poblar un select de proveedor específico con la lista global
+function _populateProvSel(selId,savedVal){
+  const sel=document.getElementById(selId);
+  if(!sel)return;
+  const list=window.provsList||[];
+  sel.innerHTML='<option value="">— Elegir proveedor —</option>';
+  list.forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.nombre;
+    opt.textContent=p.nombre+(p.ciudad?' ('+p.ciudad+')':'');
+    sel.appendChild(opt);
+  });
+  const otro=document.createElement('option');
+  otro.value='__otro__';
+  otro.textContent='Otro...';
+  sel.appendChild(otro);
+  if(savedVal){
+    const found=[...sel.options].find(o=>o.value===savedVal);
+    if(found){sel.value=savedVal;}
+    else{sel.value='__otro__';const inp=document.getElementById(selId.replace('-sel','-inp'));if(inp){inp.value=savedVal;inp.style.display='';}}
+  }
+}
+
 // ── Inicializar campos estáticos del formulario principal ──
 function _initStaticCityAC(){
   initCityAutocomplete('m-dest');
@@ -120,6 +148,7 @@ function _initStaticCityAC(){
 // si no, usar DOMContentLoaded como respaldo
 document.addEventListener('DOMContentLoaded',function(){
   if(citiesList.length>0)_initStaticCityAC();
+  _initAutoTotal();
 });
 
 // ── Logos de aerolíneas — CDN Google Flights ──
@@ -145,12 +174,52 @@ function _initAirlineLogo(inputId,logoId,numId){
   if(numId){const ni=document.getElementById(numId);if(ni)ni.addEventListener('input',()=>_updateAirlineLogo(inputId,logoId,numId));}
 }
 
+// ── Autocomplete de aerolínea con dropdown custom (logo + nombre + IATA) ──
+function initAirlineAutocomplete(inputId,logoId,numId){
+  const obj=_createDrop(inputId);
+  if(!obj)return;
+  const {inp,drop}=obj;
+  function show(q){
+    if(!q||q.length<2){drop.style.display='none';return;}
+    const list=window.aerolineasList||[];
+    if(!list.length){drop.style.display='none';return;}
+    const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const qu=norm(q);
+    const sw=list.filter(a=>norm(a.nombre).startsWith(qu));
+    const cont=list.filter(a=>!norm(a.nombre).startsWith(qu)&&norm(a.nombre).includes(qu));
+    const res=[...sw,...cont].slice(0,8);
+    if(!res.length){drop.style.display='none';return;}
+    drop.innerHTML=res.map(a=>{
+      const safe_n=a.nombre.replace(/'/g,"\\'");
+      const iata=a.codigo_iata||'';
+      const logo=iata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${iata}.png" width="20" height="20" style="object-fit:contain;border-radius:3px;flex-shrink:0" onerror="this.style.display='none'">`:'<span style="width:20px;flex-shrink:0"></span>';
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirline('${inputId}','${logoId}','${safe_n}','${iata}')">${logo}<span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.nombre}</span><span style="font-size:10px;color:#C4B5FD;font-family:'DM Mono',monospace;letter-spacing:.05em;flex-shrink:0">${iata}</span></div>`;
+    }).join('');
+    drop.style.display='block';
+  }
+  inp.addEventListener('input',function(){show(this.value);});
+  inp.addEventListener('focus',function(){if(this.value.length>=2)show(this.value);});
+  // Mantener el número de vuelo como fuente de IATA (listener secundario)
+  if(numId){const ni=document.getElementById(numId);if(ni)ni.addEventListener('input',()=>_updateAirlineLogo(inputId,logoId,numId));}
+}
+function _selAirline(inputId,logoId,nombre,iata){
+  const inp=document.getElementById(inputId);
+  if(inp)inp.value=nombre;
+  const d=document.getElementById('ac-drop-'+inputId);
+  if(d)d.style.display='none';
+  if(logoId){
+    const img=document.getElementById(logoId);
+    if(iata&&img){img.src=`https://www.gstatic.com/flights/airline_logos/70px/${iata}.png`;img.style.display='block';if(inp)inp.style.paddingLeft='42px';}
+    else if(img){img.src='';img.style.display='none';if(inp)inp.style.paddingLeft='';}
+  }
+}
+
 function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3" style="margin-bottom:4px">
     <div class="fg"><label class="lbl">Modalidad</label>
       <select class="fsel" id="v${id}-mod" onchange="toggleRet(${id})">
@@ -161,7 +230,7 @@ function addVuelo(d){
     <div class="fg"><label class="lbl">Aerolínea IDA</label>
       <div style="position:relative">
         <img id="v${id}-al-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
-        <input class="finput" list="al-list" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
+        <input class="finput" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
       </div>
     </div>
     <div class="fg"><label class="lbl">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
@@ -192,7 +261,7 @@ function addVuelo(d){
       <div class="fg"><label class="lbl">Aerolínea vuelta</label>
         <div style="position:relative">
           <img id="v${id}-al2-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
-          <input class="finput" list="al-list" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}">
+          <input class="finput" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}">
         </div>
       </div>
       <div class="fg"><label class="lbl">N° vuelo vuelta</label><input class="finput" type="text" id="v${id}-num2" placeholder="AV 123" value="${d.num2||''}"></div>
@@ -221,7 +290,7 @@ function addVuelo(d){
       <select class="fsel" id="v${id}-tar"><option>Economy Basic</option><option>Economy</option><option>Economy Flex</option><option>Premium Economy</option><option>Business</option><option>First Class</option></select></div>
     <div class="fg"><label class="lbl">Precio</label>
       <div class="money-wrap"><div class="money-cur"><select id="v${id}-cur"><option>USD</option><option>ARS</option></select></div>
-      <input class="money-inp" type="number" id="v${id}-pr" placeholder="1985" value="${d.precio||''}"></div>
+      <input class="money-inp" data-precio type="number" id="v${id}-pr" placeholder="1985" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
     <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="v${id}-fin" placeholder="Contado / cuotas" value="${d.fin||''}"></div>
   </div>
@@ -244,16 +313,17 @@ function addVuelo(d){
     initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
     initAirportAutocomplete('v'+id+'-esc2',null);
   }
-  // Logos aerolíneas — Surface 1
-  _initAirlineLogo('v'+id+'-al','v'+id+'-al-logo','v'+id+'-num');
+  // Autocomplete aerolíneas — Surface 1
+  initAirlineAutocomplete('v'+id+'-al','v'+id+'-al-logo','v'+id+'-num');
   if(d.aerolinea)_updateAirlineLogo('v'+id+'-al','v'+id+'-al-logo','v'+id+'-num');
   if(d.mod==='idavuelta'){
-    _initAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
+    initAirlineAutocomplete('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
     if(d.al2)_updateAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
   }
   if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
   if(d.mod==='idavuelta') document.getElementById('v'+id+'-ret-sec').style.display='';
   if(d.tarifa) document.getElementById('v'+id+'-tar').value=d.tarifa;
+  _onPriceChange('vuelos-cont','VUELOS');
 }
 function toggleRet(id){
   const isIV=document.getElementById('v'+id+'-mod').value==='idavuelta';
@@ -263,7 +333,7 @@ function toggleRet(id){
     initAirportAutocomplete('v'+id+'-or2','v'+id+'-io2');
     initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
     initAirportAutocomplete('v'+id+'-esc2',null);
-    _initAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
+    initAirlineAutocomplete('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
   }
 }
 
@@ -274,8 +344,8 @@ function addHotel(d){
   d=d||{};const id=++hc;const isD=d.tipo==='disney',isU=d.tipo==='universal';
   const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
     <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">Hotel regular</option><option value="disney">Hotel Disney</option><option value="universal">Hotel Universal</option><option value="airbnb">Airbnb / Apart.</option><option value="crucero">Crucero</option></select></div>
@@ -290,7 +360,7 @@ function addHotel(d){
     <div class="fg"><label class="lbl">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${d.co||''}"></div>
     <div class="fg"><label class="lbl">Noches</label><input class="finput" type="number" id="h${id}-nc" placeholder="7" value="${d.noches||''}"></div>
     <div class="fg"><label class="lbl">Precio base</label>
-      <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="h${id}-pr" placeholder="2717" value="${d.precio||''}"></div>
+      <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="h${id}-pr" placeholder="2717" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
@@ -342,6 +412,8 @@ function addHotel(d){
   if(d.tipo) document.getElementById('h'+id+'-tipo').value=d.tipo;
   if(d.regimen) document.getElementById('h'+id+'-reg').value=d.regimen;
   if(d.mp) document.getElementById('h'+id+'-mp').value=d.mp;
+  _initNochesCalc('h'+id+'-ci','h'+id+'-co','h'+id+'-nc');
+  _onPriceChange('hoteles-cont','HOTELES');
 }
 function onHotelType(id){
   const tipo=document.getElementById('h'+id+'-tipo').value;
@@ -375,8 +447,8 @@ function addTraslado(d){
   d=d||{};const id=++tc;
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">Aeropuerto → Hotel</option><option value="out">Hotel → Aeropuerto</option><option value="hoteles">Entre hoteles</option><option value="privado">Privado en destino</option><option value="ciudad">A otra ciudad</option></select></div>
     <div class="fg"><label class="lbl">Origen</label><input class="finput" type="text" id="t${id}-or" placeholder="Aeropuerto MCO" value="${d.origen||''}"></div>
@@ -387,7 +459,7 @@ function addTraslado(d){
     <div class="fg"><label class="lbl">Hora recogida</label><input class="finput" type="time" id="t${id}-ho" value="${d.hora||''}"></div>
     <div class="fg"><label class="lbl">Vehículo</label><select class="fsel" id="t${id}-veh"><option>Van privada</option><option>Auto privado</option><option>Minibús</option><option>Shuttle compartido</option></select></div>
     <div class="fg"><label class="lbl">Precio</label>
-      <div class="money-wrap"><div class="money-cur"><select id="t${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="t${id}-pr" placeholder="65" value="${d.precio||''}"></div>
+      <div class="money-wrap"><div class="money-cur"><select id="t${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="t${id}-pr" placeholder="65" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
@@ -405,9 +477,10 @@ function addTraslado(d){
   // Autocomplete aeropuertos para origen/destino (IATA null — son lugares, no solo aeropuertos)
   initAirportAutocomplete('t'+id+'-or',null);
   initAirportAutocomplete('t'+id+'-de',null);
+  _populateProvSel('t'+id+'-sel',d.prov||'');
   if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
   if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
-  if(d.prov){const ps=document.getElementById('t'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('t'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
+  _onPriceChange('traslados-cont','TRASLADOS');
 }
 
 // ═══════════════════════════════════════════
@@ -417,8 +490,8 @@ function addExcursion(d){
   d=d||{};const id=++ec;
   const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g2">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
     <div class="fg"><label class="lbl">Categoría</label><select class="fsel" id="e${id}-cat" onchange="onExcCat(${id},this.value)"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option><option value="otros">Otros</option></select></div>
@@ -433,7 +506,7 @@ function addExcursion(d){
     <div class="fg"><label class="lbl">Hora</label><input class="finput" type="time" id="e${id}-ho" value="${d.hora||''}"></div>
     <div class="fg"><label class="lbl">Duración</label><input class="finput" type="text" id="e${id}-dur" placeholder="12-13 horas" value="${d.dur||''}"></div>
     <div class="fg"><label class="lbl">Precio total</label>
-      <div class="money-wrap"><div class="money-cur"><select id="e${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="e${id}-pr" placeholder="0" value="${d.precio||''}"></div>
+      <div class="money-wrap"><div class="money-cur"><select id="e${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="e${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="fg"><label class="lbl">Punto de encuentro</label><input class="finput" type="text" id="e${id}-punto" placeholder="Lobby del hotel 7:00 AM" value="${d.punto||''}"></div>
@@ -449,7 +522,8 @@ function addExcursion(d){
   </div>`;
   document.getElementById('excursiones-cont').appendChild(el);
   initCityAutocomplete('e'+id+'-punto');
-  if(d.prov){const ps=document.getElementById('e'+id+'-sel');if(ps){ps.setAttribute('data-val',d.prov);const opt=[...ps.options].find(o=>o.value===d.prov);if(opt){ps.value=d.prov;}else{ps.value='__otro__';const pi=document.getElementById('e'+id+'-inp');if(pi){pi.value=d.prov;pi.style.display='';}}}}
+  _populateProvSel('e'+id+'-sel',d.prov||'');
+  _onPriceChange('excursiones-cont','EXCURSIONES');
 }
 
 // ═══════════════════════════════════════════
@@ -460,8 +534,8 @@ function addAuto(d){
   d=d||{};const id=++ac_cnt;
   const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Proveedor</label><input class="finput" type="text" id="au${id}-prov" placeholder="Hertz, Avis, Budget..." value="${d.proveedor||''}"></div>
     <div class="fg"><label class="lbl">Categoría</label>
@@ -472,7 +546,7 @@ function addAuto(d){
       </select></div>
     <div class="fg"><label class="lbl">Precio</label>
       <div class="money-wrap"><div class="money-cur"><select id="au${id}-cur"><option>USD</option><option>ARS</option></select></div>
-      <input class="money-inp" type="number" id="au${id}-pr" placeholder="0" value="${d.precio||''}"></div>
+      <input class="money-inp" data-precio type="number" id="au${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
@@ -483,6 +557,7 @@ function addAuto(d){
     <div class="fg"><label class="lbl">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${d.devolucion_fecha||''}"></div>
     <div class="fg"><label class="lbl">Hora devolución</label><input class="finput" type="time" id="au${id}-hd" value="${d.devolucion_hora||''}"></div>
   </div>
+  <div id="au${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
   <div class="g3">
     <div class="fg" style="display:flex;align-items:center;gap:10px;padding-top:18px">
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.83rem;color:var(--text)">
@@ -505,6 +580,8 @@ function addAuto(d){
   initCityAutocomplete('au'+id+'-de');
   if(d.categoria) document.getElementById('au'+id+'-cat').value=d.categoria;
   if(d.moneda) document.getElementById('au'+id+'-cur').value=d.moneda;
+  _initDurInfo('au'+id+'-fr','au'+id+'-fd','au'+id+'-dur-info','días');
+  _onPriceChange('autos-cont','AUTOS');
 }
 
 // ═══════════════════════════════════════════
@@ -515,8 +592,8 @@ function addCrucero(d){
   d=d||{};const id=++crc_cnt;
   const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}</div>
-    <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Naviera</label><input class="finput" type="text" id="cr${id}-nav" placeholder="MSC, Royal Caribbean, Costa..." value="${d.naviera||''}"></div>
     <div class="fg"><label class="lbl">Nombre del barco</label><input class="finput" type="text" id="cr${id}-barco" placeholder="MSC Seashore" value="${d.barco||''}"></div>
@@ -534,6 +611,7 @@ function addCrucero(d){
     <div class="fg"><label class="lbl">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${d.desembarque_fecha||''}"></div>
     <div class="fg"><label class="lbl">Hora desembarque</label><input class="finput" type="time" id="cr${id}-hd" value="${d.desembarque_hora||''}"></div>
   </div>
+  <div id="cr${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Régimen</label>
       <select class="fsel" id="cr${id}-reg">
@@ -549,7 +627,7 @@ function addCrucero(d){
   <div class="g2">
     <div class="fg"><label class="lbl">Precio total</label>
       <div class="money-wrap"><div class="money-cur" style="padding:10px 8px;font-size:.75rem;font-weight:700;color:var(--primary)">TOTAL</div>
-      <input class="money-inp" type="number" id="cr${id}-tot" placeholder="Calculado automáticamente" value="${d.precio_total||''}"></div>
+      <input class="money-inp" data-precio type="number" id="cr${id}-tot" placeholder="Calculado automáticamente" value="${d.precio_total||''}"></div>
     </div>
     <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
       <div class="money-wrap"><div class="money-cur"><select id="cr${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
@@ -564,11 +642,14 @@ function addCrucero(d){
   if(d.cabina) document.getElementById('cr'+id+'-cab').value=d.cabina;
   if(d.regimen) document.getElementById('cr'+id+'-reg').value=d.regimen;
   if(d.moneda) document.getElementById('cr'+id+'-cur').value=d.moneda;
+  _initDurInfo('cr'+id+'-fe','cr'+id+'-fd','cr'+id+'-dur-info','noches');
+  _onPriceChange('cruceros-cont','CRUCEROS');
 }
 function calcCruceroTotal(id){
   const pp=parseFloat(document.getElementById('cr'+id+'-pp').value)||0;
   const pax=parseFloat(document.getElementById('cr'+id+'-pax').value)||0;
   if(pp>0&&pax>0) document.getElementById('cr'+id+'-tot').value=pp*pax;
+  _onPriceChange('cruceros-cont','CRUCEROS');
 }
 
 // ═══════════════════════════════════════════
@@ -587,6 +668,7 @@ function collectForm(){
     const eq=[...blk.querySelectorAll('#v'+i+'-eq input:checked')].map(x=>eqMap[x.value]||x.value);
     const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · '),comision:gn('v'+i+'-com'),com_cur:gv('v'+i+'-com-cur'),aerolinea_iata:_getAirlineIata(gv('v'+i+'-al'),gv('v'+i+'-num'))};
     if(mod==='idavuelta'){Object.assign(base,{al2:gv('v'+i+'-al2'),num2:gv('v'+i+'-num2'),or2:gv('v'+i+'-or2'),io2:gv('v'+i+'-io2').toUpperCase(),de2:gv('v'+i+'-de2'),id2:gv('v'+i+'-id2').toUpperCase(),fs2:gv('v'+i+'-fs2'),hs2:gv('v'+i+'-hs2'),fl2:gv('v'+i+'-fl2'),hl2:gv('v'+i+'-hl2'),esc2:gv('v'+i+'-esc2'),tesc2:gv('v'+i+'-tesc2'),dur2:gv('v'+i+'-dur2'),al2_iata:_getAirlineIata(gv('v'+i+'-al2'),gv('v'+i+'-num2'))});}
+    base.incluir_en_total=_getIncluir(blk);base.opcion=_getOpcion(blk);
     vuelos.push(base);
   });
   document.querySelectorAll('[id^="hb-"]').forEach(blk=>{
@@ -595,26 +677,26 @@ function collectForm(){
     const parqs=[...blk.querySelectorAll('#h'+i+'-parques input:checked')].map(x=>pMap[x.value]||x.value);
     const bens=[...blk.querySelectorAll('#h'+i+'-bens input:checked')].map(x=>bMap[x.value]||x.value);
     const am=[...blk.querySelectorAll('#h'+i+'-am input:checked')].map(x=>amMap[x.value]||x.value);
-    hoteles.push({nombre:nm,tipo,ciudad:gv('h'+i+'-ciu'),pais:gv('h'+i+'-pai'),estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur')});
+    hoteles.push({nombre:nm,tipo,ciudad:gv('h'+i+'-ciu'),pais:gv('h'+i+'-pai'),estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
     const i=blk.id.replace('tb-','');const or=gv('t'+i+'-or'),de=gv('t'+i+'-de');if(!or&&!de)return;
-    traslados.push({tipo:gv('t'+i+'-tipo'),origen:or,destino:de,fecha:fd(gv('t'+i+'-fe')),hora:gv('t'+i+'-ho'),vehiculo:gv('t'+i+'-veh'),moneda:gv('t'+i+'-cur'),precio:gn('t'+i+'-pr'),prov:getProvVal('t'+i),notas:gv('t'+i+'-not'),comision:gn('t'+i+'-com'),com_cur:gv('t'+i+'-com-cur')});
+    traslados.push({tipo:gv('t'+i+'-tipo'),origen:or,destino:de,fecha:fd(gv('t'+i+'-fe')),hora:gv('t'+i+'-ho'),vehiculo:gv('t'+i+'-veh'),moneda:gv('t'+i+'-cur'),precio:gn('t'+i+'-pr'),prov:getProvVal('t'+i),notas:gv('t'+i+'-not'),comision:gn('t'+i+'-com'),com_cur:gv('t'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   document.querySelectorAll('[id^="eb-"]').forEach(blk=>{
     const i=blk.id.replace('eb-','');const nm=gv('e'+i+'-nm');if(!nm)return;
     const cat=gv('e'+i+'-cat');
-    excursiones.push({nombre:nm,categoria:cat==='otros'?gv('e'+i+'-cat-otros')||'Otros':cat,prov:getProvVal('e'+i),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs'),comision:gn('e'+i+'-com'),com_cur:gv('e'+i+'-com-cur')});
+    excursiones.push({nombre:nm,categoria:cat==='otros'?gv('e'+i+'-cat-otros')||'Otros':cat,prov:getProvVal('e'+i),fecha:fd(gv('e'+i+'-fe')),hora:gv('e'+i+'-ho'),dur:gv('e'+i+'-dur'),moneda:gv('e'+i+'-cur'),precio:gn('e'+i+'-pr'),punto:gv('e'+i+'-punto'),inc:gv('e'+i+'-inc'),noinc:gv('e'+i+'-noinc'),desc:gv('e'+i+'-desc'),obs:gv('e'+i+'-obs'),comision:gn('e'+i+'-com'),com_cur:gv('e'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   document.querySelectorAll('[id^="ab-"]').forEach(blk=>{
     const i=blk.id.replace('ab-','');const prov=document.getElementById('au'+i+'-prov')?.value||'';
     if(!prov)return;
-    autos.push({proveedor:prov,categoria:gv('au'+i+'-cat'),retiro_lugar:gv('au'+i+'-or'),retiro_fecha:fd(gv('au'+i+'-fr')),retiro_hora:gv('au'+i+'-hr'),devolucion_lugar:gv('au'+i+'-de'),devolucion_fecha:fd(gv('au'+i+'-fd')),devolucion_hora:gv('au'+i+'-hd'),conductor_adicional:document.getElementById('au'+i+'-cond')?.checked||false,incluye_seguro:document.getElementById('au'+i+'-seg')?.checked||false,moneda:gv('au'+i+'-cur'),precio:gn('au'+i+'-pr'),notas:gv('au'+i+'-not'),comision:gn('au'+i+'-com'),com_cur:gv('au'+i+'-com-cur')});
+    autos.push({proveedor:prov,categoria:gv('au'+i+'-cat'),retiro_lugar:gv('au'+i+'-or'),retiro_fecha:fd(gv('au'+i+'-fr')),retiro_hora:gv('au'+i+'-hr'),devolucion_lugar:gv('au'+i+'-de'),devolucion_fecha:fd(gv('au'+i+'-fd')),devolucion_hora:gv('au'+i+'-hd'),conductor_adicional:document.getElementById('au'+i+'-cond')?.checked||false,incluye_seguro:document.getElementById('au'+i+'-seg')?.checked||false,moneda:gv('au'+i+'-cur'),precio:gn('au'+i+'-pr'),notas:gv('au'+i+'-not'),comision:gn('au'+i+'-com'),com_cur:gv('au'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   document.querySelectorAll('[id^="cb-"]').forEach(blk=>{
     const i=blk.id.replace('cb-','');const nav=gv('cr'+i+'-nav');
     if(!nav)return;
-    cruceros.push({naviera:nav,barco:gv('cr'+i+'-barco'),cabina:gv('cr'+i+'-cab'),regimen:gv('cr'+i+'-reg'),embarque_puerto:gv('cr'+i+'-pe'),embarque_fecha:fd(gv('cr'+i+'-fe')),embarque_hora:gv('cr'+i+'-he'),desembarque_puerto:gv('cr'+i+'-pd'),desembarque_fecha:fd(gv('cr'+i+'-fd')),desembarque_hora:gv('cr'+i+'-hd'),moneda:gv('cr'+i+'-cur'),precio_pp:gn('cr'+i+'-pp'),pasajeros:gn('cr'+i+'-pax'),precio_total:gn('cr'+i+'-tot'),escalas:gv('cr'+i+'-esc'),notas:gv('cr'+i+'-not'),comision:gn('cr'+i+'-com'),com_cur:gv('cr'+i+'-com-cur')});
+    cruceros.push({naviera:nav,barco:gv('cr'+i+'-barco'),cabina:gv('cr'+i+'-cab'),regimen:gv('cr'+i+'-reg'),embarque_puerto:gv('cr'+i+'-pe'),embarque_fecha:fd(gv('cr'+i+'-fe')),embarque_hora:gv('cr'+i+'-he'),desembarque_puerto:gv('cr'+i+'-pd'),desembarque_fecha:fd(gv('cr'+i+'-fd')),desembarque_hora:gv('cr'+i+'-hd'),moneda:gv('cr'+i+'-cur'),precio_pp:gn('cr'+i+'-pp'),pasajeros:gn('cr'+i+'-pax'),precio_total:gn('cr'+i+'-tot'),escalas:gv('cr'+i+'-esc'),notas:gv('cr'+i+'-not'),comision:gn('cr'+i+'-com'),com_cur:gv('cr'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   const tickets_arr=[];
   document.querySelectorAll('[id^="tkb-"]').forEach(blk=>{
@@ -690,3 +772,240 @@ async function saveQuote(){
 const SYS=`Sos experto en turismo. Extraé la info del texto y devolvé SOLO JSON válido sin backticks.
 {"cliente":{"nombre":"","celular":"","email":"","pasajeros":""},"viaje":{"destino":"","pais":"","salida":"DD/MM/YYYY","regreso":"DD/MM/YYYY","noches":0},"vuelos":[{"mod":"simple","aerolinea":"","numero":"","origen":"","iata_o":"","destino":"","iata_d":"","fs":"YYYY-MM-DD","hs":"HH:MM","fl":"YYYY-MM-DD","hl":"HH:MM","escala":"","t_escala":"","duracion":"","al2":"","num2":"","or2":"","io2":"","de2":"","id2":"","fs2":"YYYY-MM-DD","hs2":"HH:MM","fl2":"YYYY-MM-DD","hl2":"HH:MM","esc2":"","tesc2":"","dur2":"","tarifa":"Economy","moneda":"USD","precio":0,"fin":"","equipaje":""}],"hoteles":[{"nombre":"","tipo":"regular","estrellas":0,"ci":"DD/MM/YYYY","co":"DD/MM/YYYY","noches":0,"hab":"","regimen":"","moneda":"USD","precio":0,"tickets":"","parques":[],"beneficios":[],"mp":"","mp_cur":"USD","mp_pr":0,"mp_desc":"","notes":"","amenities":[]}],"traslados":[{"tipo":"in","origen":"","destino":"","fecha":"DD/MM/YYYY","hora":"","vehiculo":"Van privada","moneda":"USD","precio":0,"prov":"","notas":""}],"excursiones":[{"nombre":"","categoria":"","prov":"","fecha":"DD/MM/YYYY","hora":"","dur":"","moneda":"USD","precio":0,"punto":"","inc":"","noinc":"","desc":"","obs":""}],"seguro":{"nombre":"","cobertura_medica":"","equipaje_seg":"","preexistencias":"","moneda":"USD","precio":0,"fin":"","extra":""},"precios":{"moneda":"USD","por_persona":0,"total":0,"reserva":0,"cuotas":"","cancelacion":"","validez":"24 horas","tyc":""}}
 Si es ida y vuelta usa mod="idavuelta" y completá campos *2. Disney/Universal: tipo="disney"/"universal".`;
+
+// ══════════════════════════════════════════════════════════════
+// COMPONENTES TRANSVERSALES
+// C1: Auto-cálculo de noches/días
+// C2: Subtotales por sección
+// C3: Sistema de opciones A/B/C con checkbox "Incluir en total"
+// C4: Total automático en Precios y Condiciones
+// ══════════════════════════════════════════════════════════════
+const OPCION_LETRAS='ABCDEFGHIJ';
+
+// ── Diferencia en días entre dos fechas ISO (YYYY-MM-DD) ──
+function _diffDays(f1,f2){
+  if(!f1||!f2)return 0;
+  const d=Math.round((new Date(f2)-new Date(f1))/86400000);
+  return d>0?d:0;
+}
+
+// ── C1: Calcular noches hotel automáticamente al cambiar fechas ──
+function _initNochesCalc(f1Id,f2Id,ncId){
+  function calc(){
+    const f1=document.getElementById(f1Id)?.value;
+    const f2=document.getElementById(f2Id)?.value;
+    const nc=_diffDays(f1,f2);
+    if(nc>0){const el=document.getElementById(ncId);if(el)el.value=nc;}
+  }
+  const e1=document.getElementById(f1Id),e2=document.getElementById(f2Id);
+  if(e1)e1.addEventListener('change',calc);
+  if(e2)e2.addEventListener('change',calc);
+  calc();// Si ya hay fechas al cargar, calcular de inmediato
+}
+
+// ── C1: Mostrar días/noches como texto informativo (autos y cruceros) ──
+function _initDurInfo(f1Id,f2Id,infoId,unit){
+  function calc(){
+    const f1=document.getElementById(f1Id)?.value;
+    const f2=document.getElementById(f2Id)?.value;
+    const d=_diffDays(f1,f2);
+    const el=document.getElementById(infoId);
+    if(el)el.textContent=d>0?d+' '+unit:'';
+  }
+  const e1=document.getElementById(f1Id),e2=document.getElementById(f2Id);
+  if(e1)e1.addEventListener('change',calc);
+  if(e2)e2.addEventListener('change',calc);
+  calc();
+}
+
+// ── C3: Actualizar badges de opción en un contenedor ──
+function _updateBadges(contId){
+  const cont=document.getElementById(contId);
+  if(!cont)return;
+  [...cont.querySelectorAll('.rep')].forEach((item,idx)=>{
+    const badge=item.querySelector('.opcion-badge');
+    const cb=item.querySelector('.incluir-en-total');
+    const on=!cb||cb.checked;
+    if(badge){
+      badge.textContent='Opción '+(OPCION_LETRAS[idx]||String(idx+1));
+      badge.style.background=on?'rgba(124,58,237,0.12)':'rgba(255,255,255,0.06)';
+      badge.style.borderColor=on?'rgba(124,58,237,0.3)':'rgba(255,255,255,0.12)';
+      badge.style.color=on?'var(--primary)':'var(--g3)';
+    }
+    item.style.opacity=on?'':'0.55';
+    item.style.transition='opacity .2s';
+  });
+}
+
+// ── C2: Actualizar subtotal de sección (solo si hay 2+ ítems) ──
+function _updateSubtotal(contId,label){
+  const cont=document.getElementById(contId);
+  if(!cont)return;
+  const items=[...cont.querySelectorAll('.rep')];
+  const subId='sub-'+contId;
+  let sub=document.getElementById(subId);
+  if(items.length<2){if(sub)sub.style.display='none';return;}
+  let total=0;
+  items.forEach(item=>{
+    const cb=item.querySelector('.incluir-en-total');
+    if(cb&&!cb.checked)return;
+    const pi=item.querySelector('[data-precio]');
+    if(pi)total+=parseFloat(pi.value)||0;
+  });
+  if(!sub){
+    sub=document.createElement('div');sub.id=subId;
+    const nxt=cont.nextElementSibling;
+    cont.parentElement.insertBefore(sub,nxt||null);
+  }
+  sub.style.display='';
+  sub.innerHTML=`<div style="display:flex;align-items:center;justify-content:flex-end;padding:8px 16px;margin-bottom:4px;border-top:1px solid var(--border)"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g3);margin-right:12px">SUBTOTAL ${label}</span><span style="font-size:14px;font-weight:700;color:var(--primary)">${total.toLocaleString('es-AR')}</span></div>`;
+}
+
+// ── Callback genérico para onchange del checkbox "Incluir en total" ──
+function _onIncluirChange(cb){
+  const rep=cb.closest('.rep');
+  const cont=rep?.closest('[id$="-cont"]');
+  if(!cont)return;
+  const labels={
+    'vuelos-cont':'VUELOS','hoteles-cont':'HOTELES','traslados-cont':'TRASLADOS',
+    'excursiones-cont':'EXCURSIONES','autos-cont':'AUTOS','cruceros-cont':'CRUCEROS'
+  };
+  _onPriceChange(cont.id,labels[cont.id]||'');
+}
+
+// ── Callback genérico para oninput de campos de precio ──
+function _onItemPriceChange(el){
+  const rep=el.closest('.rep');
+  const cont=rep?.closest('[id$="-cont"]');
+  if(!cont)return;
+  const labels={
+    'vuelos-cont':'VUELOS','hoteles-cont':'HOTELES','traslados-cont':'TRASLADOS',
+    'excursiones-cont':'EXCURSIONES','autos-cont':'AUTOS','cruceros-cont':'CRUCEROS'
+  };
+  _onPriceChange(cont.id,labels[cont.id]||'');
+}
+
+// ── Trigger central: badges + subtotales + total ──
+function _onPriceChange(contId,label){
+  _updateBadges(contId);
+  _updateSubtotal(contId,label);
+  _recalcTotal();
+}
+
+// ── Función unificada para el botón ✕ ──
+function _removeRep(btn){
+  const rep=btn.closest('.rep');
+  const cont=rep?.closest('[id$="-cont"]');
+  const contId=cont?.id;
+  rep?.remove();
+  if(contId){
+    const labels={
+      'vuelos-cont':'VUELOS','hoteles-cont':'HOTELES','traslados-cont':'TRASLADOS',
+      'excursiones-cont':'EXCURSIONES','autos-cont':'AUTOS','cruceros-cont':'CRUCEROS'
+    };
+    _onPriceChange(contId,labels[contId]||'');
+  }
+}
+
+// ── Helpers para collectForm ──
+function _getOpcion(blk){
+  const b=blk.querySelector('.opcion-badge');
+  return b?b.textContent.replace('Opción','').trim():'A';
+}
+function _getIncluir(blk){
+  const cb=blk.querySelector('.incluir-en-total');return cb?cb.checked:true;
+}
+
+// ── C4: Suma total de todos los ítems incluidos ──
+function _calcAutoTotal(){
+  let total=0;
+  ['vuelos-cont','hoteles-cont','traslados-cont','excursiones-cont','autos-cont','cruceros-cont'].forEach(cid=>{
+    const c=document.getElementById(cid);if(!c)return;
+    c.querySelectorAll('.rep').forEach(item=>{
+      const cb=item.querySelector('.incluir-en-total');
+      if(cb&&!cb.checked)return;
+      const pi=item.querySelector('[data-precio]');
+      if(pi)total+=parseFloat(pi.value)||0;
+    });
+  });
+  // Seguro (campo fuera de .rep)
+  const seg=document.getElementById('seg-precio');if(seg)total+=parseFloat(seg.value)||0;
+  return total;
+}
+
+// ── C4: Variables de modo AUTO/MANUAL ──
+let _totalIsAuto=true,_ppIsAuto=true;
+
+function _recalcTotal(){
+  if(!_totalIsAuto)return;
+  const field=document.getElementById('p-tot');
+  if(field){
+    const t=_calcAutoTotal();
+    field.value=t>0?t:'';
+  }
+  _recalcPP();
+}
+
+function _recalcPP(){
+  if(!_ppIsAuto)return;
+  const tot=parseFloat(document.getElementById('p-tot')?.value)||0;
+  const a=parseInt(gv('m-adu'))||0,n=parseInt(gv('m-nin'))||0,inf=parseInt(gv('m-inf'))||0;
+  const pax=Math.max(a+n+inf,1);
+  const field=document.getElementById('p-pp');
+  if(field)field.value=tot>0?Math.round(tot/pax):'';
+}
+
+function recalcularTotal(){
+  _totalIsAuto=true;
+  _setChip('p-tot-chip','p-tot-reset',true);
+  _recalcTotal();
+}
+
+function recalcularPP(){
+  _ppIsAuto=true;
+  _setChip('p-pp-chip','p-pp-reset',true);
+  _recalcPP();
+}
+
+// ── C4: Cambiar chip AUTO ↔ MANUAL ──
+function _setChip(chipId,resetId,isAuto){
+  const chip=document.getElementById(chipId);const reset=document.getElementById(resetId);
+  if(chip){
+    chip.textContent=isAuto?'AUTO':'MANUAL';
+    chip.style.background=isAuto?'rgba(124,58,237,0.1)':'rgba(255,255,255,0.05)';
+    chip.style.borderColor=isAuto?'rgba(124,58,237,0.2)':'var(--border)';
+    chip.style.color=isAuto?'var(--primary)':'var(--g3)';
+  }
+  if(reset)reset.style.display=isAuto?'none':'';
+}
+
+// SVG recalcular reutilizable
+const _RECAP_SVG=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer;vertical-align:middle"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`;
+
+// ── C4: Inyectar chips AUTO en los labels de p-tot y p-pp ──
+function _initAutoTotal(){
+  const _patchLabel=(fieldId,chipId,resetId,onManual)=>{
+    const fg=document.getElementById(fieldId)?.closest('.fg');
+    if(!fg||document.getElementById(chipId))return;
+    const lbl=fg.querySelector('.lbl');
+    if(lbl){
+      lbl.insertAdjacentHTML('beforeend',
+        ` <span id="${chipId}" style="font-size:10px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:2px 8px;color:var(--primary);vertical-align:middle">AUTO</span>` +
+        ` <span id="${resetId}" style="display:none;cursor:pointer;vertical-align:middle;margin-left:2px" onclick="${onManual==='total'?'recalcularTotal()':'recalcularPP()'}" title="Volver a cálculo automático">${_RECAP_SVG}</span>`
+      );
+    }
+    document.getElementById(fieldId)?.addEventListener('input',function(){
+      if(onManual==='total'){_totalIsAuto=false;_setChip(chipId,resetId,false);_recalcPP();}
+      else{_ppIsAuto=false;_setChip(chipId,resetId,false);}
+    });
+  };
+  _patchLabel('p-tot','p-tot-chip','p-tot-reset','total');
+  _patchLabel('p-pp','p-pp-chip','p-pp-reset','pp');
+  // Recalc PP cuando cambian pasajeros
+  ['m-adu','m-nin','m-inf'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.addEventListener('input',_recalcPP);
+  });
+  // Recalc total cuando cambia el seguro
+  const seg=document.getElementById('seg-precio');
+  if(seg)seg.addEventListener('input',_recalcTotal);
+}

@@ -175,8 +175,8 @@ function buildQuoteHTML(d){
     d.vuelos.forEach(v=>{
       // ── Logo + nombre aerolínea IDA (Superficies 2 y 3) ──
       const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
-      if(v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.1);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
-        <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:white">${v.aerolinea}</div></div></div>`;
+      if(v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(124,58,237,0.08);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
+        <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.45)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:#1a1a2e">${v.aerolinea}</div></div></div>`;
       H+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
       if(v.mod==='idavuelta'){
         const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';
@@ -184,8 +184,8 @@ function buildQuoteHTML(d){
         // ── Logo aerolínea VUELTA (solo si difiere de IDA) ──
         const retAl=v.al2||v.aerolinea;
         const retAiata=v.al2_iata||_extractAirlineIata(retAl,v.num2||v.numero);
-        if(retAl&&retAl!==v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.1);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
-          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:white">${retAl}</div></div></div>`;
+        if(retAl&&retAl!==v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(124,58,237,0.08);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
+          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,.45)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:#1a1a2e">${retAl}</div></div></div>`;
         H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',retAl,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
       }
       if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
