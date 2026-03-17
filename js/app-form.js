@@ -5,6 +5,8 @@ let airportsList=[];
 let citiesList=[];
 fetch('data/airports.json').then(r=>r.json()).then(d=>{airportsList=d;}).catch(()=>{});
 fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCityAC();}).catch(()=>{});
+// Mapa aerolínea→IATA para logos (carga asíncrona silenciosa)
+(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('aerolineas').select('nombre,codigo_iata');if(data)window.aerolineasMap=Object.fromEntries(data.filter(a=>a.codigo_iata).map(a=>[a.nombre.toLowerCase(),a.codigo_iata.toUpperCase()]));}}catch(e){}})();
 
 // ── Estilos compartidos del dropdown ──
 const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:var(--ink2,#0F0018);border:1px solid rgba(124,58,237,0.25);border-radius:10px;box-shadow:0 8px 24px rgba(79,70,229,0.15);max-height:260px;overflow-y:auto;display:none;';
@@ -120,6 +122,29 @@ document.addEventListener('DOMContentLoaded',function(){
   if(citiesList.length>0)_initStaticCityAC();
 });
 
+// ── Logos de aerolíneas — CDN Google Flights ──
+function _getAirlineIata(name,flightNum){
+  if(!name)return'';
+  const map=window.aerolineasMap||{};
+  const fromMap=map[name.toLowerCase()];if(fromMap)return fromMap;
+  if(flightNum){const m=flightNum.trim().match(/^([A-Z]{2})/i);if(m)return m[1].toUpperCase();}
+  const m2=name.match(/\(([A-Z]{2})\)/i);if(m2)return m2[1].toUpperCase();
+  return'';
+}
+function _updateAirlineLogo(inputId,logoId,numId){
+  const inp=document.getElementById(inputId);const img=document.getElementById(logoId);
+  if(!inp||!img)return;
+  const iata=_getAirlineIata(inp.value.trim(),numId?document.getElementById(numId)?.value||'':'');
+  if(iata){img.src=`https://www.gstatic.com/flights/airline_logos/70px/${iata}.png`;img.style.display='block';inp.style.paddingLeft='42px';}
+  else{img.src='';img.style.display='none';inp.style.paddingLeft='';}
+}
+function _initAirlineLogo(inputId,logoId,numId){
+  const inp=document.getElementById(inputId);if(!inp)return;
+  inp.addEventListener('input',()=>_updateAirlineLogo(inputId,logoId,numId));
+  inp.addEventListener('change',()=>_updateAirlineLogo(inputId,logoId,numId));
+  if(numId){const ni=document.getElementById(numId);if(ni)ni.addEventListener('input',()=>_updateAirlineLogo(inputId,logoId,numId));}
+}
+
 function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
@@ -134,7 +159,10 @@ function addVuelo(d){
         <option value="interno">Vuelo interno</option>
       </select></div>
     <div class="fg"><label class="lbl">Aerolínea IDA</label>
-      <input class="finput" list="al-list" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
+      <div style="position:relative">
+        <img id="v${id}-al-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
+        <input class="finput" list="al-list" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
+      </div>
     </div>
     <div class="fg"><label class="lbl">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
   </div>
@@ -161,7 +189,12 @@ function addVuelo(d){
   <div id="v${id}-ret-sec" style="display:none;background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
     <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet-light);margin-bottom:12px">↩ TRAMO VUELTA</div>
     <div class="g3">
-      <div class="fg"><label class="lbl">Aerolínea vuelta</label><input class="finput" list="al-list" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}"></div>
+      <div class="fg"><label class="lbl">Aerolínea vuelta</label>
+        <div style="position:relative">
+          <img id="v${id}-al2-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
+          <input class="finput" list="al-list" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}">
+        </div>
+      </div>
       <div class="fg"><label class="lbl">N° vuelo vuelta</label><input class="finput" type="text" id="v${id}-num2" placeholder="AV 123" value="${d.num2||''}"></div>
       <div class="fg"></div>
     </div>
@@ -211,6 +244,13 @@ function addVuelo(d){
     initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
     initAirportAutocomplete('v'+id+'-esc2',null);
   }
+  // Logos aerolíneas — Surface 1
+  _initAirlineLogo('v'+id+'-al','v'+id+'-al-logo','v'+id+'-num');
+  if(d.aerolinea)_updateAirlineLogo('v'+id+'-al','v'+id+'-al-logo','v'+id+'-num');
+  if(d.mod==='idavuelta'){
+    _initAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
+    if(d.al2)_updateAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
+  }
   if(d.mod) document.getElementById('v'+id+'-mod').value=d.mod;
   if(d.mod==='idavuelta') document.getElementById('v'+id+'-ret-sec').style.display='';
   if(d.tarifa) document.getElementById('v'+id+'-tar').value=d.tarifa;
@@ -223,6 +263,7 @@ function toggleRet(id){
     initAirportAutocomplete('v'+id+'-or2','v'+id+'-io2');
     initAirportAutocomplete('v'+id+'-de2','v'+id+'-id2');
     initAirportAutocomplete('v'+id+'-esc2',null);
+    _initAirlineLogo('v'+id+'-al2','v'+id+'-al2-logo','v'+id+'-num2');
   }
 }
 
@@ -544,8 +585,8 @@ function collectForm(){
     const i=blk.id.replace('vb-','');const or=gv('v'+i+'-or');if(!or)return;
     const mod=gv('v'+i+'-mod');
     const eq=[...blk.querySelectorAll('#v'+i+'-eq input:checked')].map(x=>eqMap[x.value]||x.value);
-    const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · '),comision:gn('v'+i+'-com'),com_cur:gv('v'+i+'-com-cur')};
-    if(mod==='idavuelta'){Object.assign(base,{al2:gv('v'+i+'-al2'),num2:gv('v'+i+'-num2'),or2:gv('v'+i+'-or2'),io2:gv('v'+i+'-io2').toUpperCase(),de2:gv('v'+i+'-de2'),id2:gv('v'+i+'-id2').toUpperCase(),fs2:gv('v'+i+'-fs2'),hs2:gv('v'+i+'-hs2'),fl2:gv('v'+i+'-fl2'),hl2:gv('v'+i+'-hl2'),esc2:gv('v'+i+'-esc2'),tesc2:gv('v'+i+'-tesc2'),dur2:gv('v'+i+'-dur2')});}
+    const base={mod,aerolinea:gv('v'+i+'-al'),numero:gv('v'+i+'-num'),origen:or,iata_o:gv('v'+i+'-io').toUpperCase(),destino:gv('v'+i+'-de'),iata_d:gv('v'+i+'-id').toUpperCase(),fs:gv('v'+i+'-fs'),hs:gv('v'+i+'-hs'),fl:gv('v'+i+'-fl'),hl:gv('v'+i+'-hl'),escala:gv('v'+i+'-esc'),t_escala:gv('v'+i+'-tesc'),duracion:gv('v'+i+'-dur'),tarifa:gv('v'+i+'-tar'),moneda:gv('v'+i+'-cur'),precio:gn('v'+i+'-pr'),fin:gv('v'+i+'-fin'),equipaje:[...eq,gv('v'+i+'-eq-x')].filter(Boolean).join(' · '),comision:gn('v'+i+'-com'),com_cur:gv('v'+i+'-com-cur'),aerolinea_iata:_getAirlineIata(gv('v'+i+'-al'),gv('v'+i+'-num'))};
+    if(mod==='idavuelta'){Object.assign(base,{al2:gv('v'+i+'-al2'),num2:gv('v'+i+'-num2'),or2:gv('v'+i+'-or2'),io2:gv('v'+i+'-io2').toUpperCase(),de2:gv('v'+i+'-de2'),id2:gv('v'+i+'-id2').toUpperCase(),fs2:gv('v'+i+'-fs2'),hs2:gv('v'+i+'-hs2'),fl2:gv('v'+i+'-fl2'),hl2:gv('v'+i+'-hl2'),esc2:gv('v'+i+'-esc2'),tesc2:gv('v'+i+'-tesc2'),dur2:gv('v'+i+'-dur2'),al2_iata:_getAirlineIata(gv('v'+i+'-al2'),gv('v'+i+'-num2'))});}
     vuelos.push(base);
   });
   document.querySelectorAll('[id^="hb-"]').forEach(blk=>{

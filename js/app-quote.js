@@ -1,5 +1,13 @@
 function fmtMoney(n,cur){if(!n||n===0)return'';return(cur||'USD')+' '+Number(n).toLocaleString('es-AR');}
 
+// ── Extraer código IATA de aerolínea para logos ──
+function _extractAirlineIata(name,flightNum){
+  const map=window.aerolineasMap||{};
+  if(name&&map[name.toLowerCase()])return map[name.toLowerCase()];
+  if(flightNum){const m=flightNum.trim().match(/^([A-Z]{2})/i);if(m)return m[1].toUpperCase();}
+  return'';
+}
+
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
   const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
@@ -165,11 +173,20 @@ function buildQuoteHTML(d){
       </div>
     </div>`;
     d.vuelos.forEach(v=>{
+      // ── Logo + nombre aerolínea IDA (Superficies 2 y 3) ──
+      const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
+      if(v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.1);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
+        <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:white">${v.aerolinea}</div></div></div>`;
       H+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
       if(v.mod==='idavuelta'){
         const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';
         const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
-        H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',v.al2||v.aerolinea,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
+        // ── Logo aerolínea VUELTA (solo si difiere de IDA) ──
+        const retAl=v.al2||v.aerolinea;
+        const retAiata=v.al2_iata||_extractAirlineIata(retAl,v.num2||v.numero);
+        if(retAl&&retAl!==v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(255,255,255,0.1);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
+          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:white">${retAl}</div></div></div>`;
+        H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',retAl,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
       }
       if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
         ${v.tarifa?`<span style="background:#7C3AED;color:white;font-size:7px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:4px;text-transform:uppercase">${v.tarifa}</span>`:''}
