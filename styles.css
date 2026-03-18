@@ -185,6 +185,20 @@ input:focus,textarea:focus,select:focus{
   font-size:10px;font-weight:800;color:var(--primary);
   cursor:pointer;user-select:none;flex-shrink:0
 }
+/* ── Colores explícitos para wordmarks ─────────────────
+   currentColor en SVG necesita color explícito en el
+   contenedor — no alcanza con heredar del body
+──────────────────────────────────────────────────── */
+/* Login — fondo crema blanco, texto oscuro */
+#login-wm { color: #2D1F14; }
+/* Header — cambia según tema */
+[data-theme="light"] #hdr-wm,
+[data-theme="light"] #hdr-logo-wrap { color: #2D1F14; }
+[data-theme="dark"] #hdr-wm,
+[data-theme="dark"] #hdr-logo-wrap { color: #FFFFFF; }
+/* Sidebar logo — sobre gradiente turquesa, siempre blanco */
+#sb-logo { color: #FFFFFF; }
+
 /* Tooltips CSS-only para .sb-item y #sb-logo */
 .sb-item,.sb-avatar{position:relative}
 .sb-item::after,.sb-avatar::after{
@@ -591,7 +605,7 @@ input:focus,textarea:focus,select:focus{
 .q-cover{
   height:320px;
   position:relative;overflow:hidden;
-  background:#0D120F
+  background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)
 }
 .q-cover-img{
   position:absolute;inset:0;width:100%;height:100%;
@@ -606,11 +620,11 @@ input:focus,textarea:focus,select:focus{
   border-bottom:1px solid rgba(255,255,255,.06)
 }
 .qb-l{
-  font-size:7px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:rgba(255,255,255,.28)!important;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,.65)!important;
   margin-bottom:3px
 }
-.qb-v{font-size:11px;font-weight:600;color:rgba(255,255,255,.78)!important;line-height:1.4}
+.qb-v{font-size:12px;font-weight:600;color:rgba(255,255,255,.9)!important;line-height:1.4}
 
 /* ── Fila "incluye" ── */
 .q-gloss{
@@ -656,12 +670,12 @@ input:focus,textarea:focus,select:focus{
   display:flex;align-items:center;justify-content:space-between;width:100%
 }
 .q-ph-title{
-  font-size:11px;font-weight:800;color:white;
+  font-size:12px;font-weight:800;color:white;
   display:flex;align-items:center;gap:6px
 }
 .q-ph-title svg{stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .q-ph-badge{
-  font-size:7px;font-weight:700;padding:2px 8px;
+  font-size:8px;font-weight:700;padding:2px 9px;
   border-radius:20px;background:rgba(255,255,255,0.2);color:white
 }
 /* Sección sin photo header (descripción) */
@@ -835,10 +849,10 @@ input:focus,textarea:focus,select:focus{
   display:flex;justify-content:space-between;align-items:center
 }
 .q-total-l .tl{
-  font-size:7px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:6px
 }
-.q-total-l .detail{font-size:10px;color:rgba(255,255,255,.45);line-height:1.7;margin-top:2px}
+.q-total-l .detail{font-size:10px;color:rgba(255,255,255,.65);line-height:1.7;margin-top:2px}
 .q-total-r{text-align:right}
 .q-total-amt{
   font-size:32px;font-weight:900!important;letter-spacing:-1px;
@@ -846,7 +860,7 @@ input:focus,textarea:focus,select:focus{
   -webkit-text-fill-color:white!important;
   line-height:1.1
 }
-.q-total-cuotas{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px}
+.q-total-cuotas{font-size:10px;color:rgba(255,255,255,.65);margin-top:3px}
 
 /* ── Footer agente ── */
 .q-agent{
@@ -862,7 +876,7 @@ input:focus,textarea:focus,select:focus{
   font-weight:800;font-size:12px;color:white!important;
   box-shadow:0 3px 10px rgba(27,158,143,.25)
 }
-.q-agent-nm{font-size:12px;font-weight:700;color:#2D1F14!important}
+.q-agent-nm{font-size:13px;font-weight:700;color:#2D1F14!important}
 .q-agent-ag{font-size:11px;font-weight:600;color:rgba(45,31,20,.55)!important;margin-top:1px}
 .q-agent-ct{font-size:10px;color:rgba(45,31,20,.35)!important;margin-top:2px}
 
@@ -981,7 +995,7 @@ a:hover{color:var(--secondary)}
 }
 .sec-photo-hd::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,0.68) 0%,transparent 60%);
+  background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,transparent 60%);
 }
 .sec-photo-deco{
   position:absolute;right:14px;top:50%;transform:translateY(-50%);
