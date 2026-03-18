@@ -53,8 +53,8 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 
 // Inicialización de wordmarks cuando las fuentes están listas
 document.fonts.ready.then(function(){
-  buildWordmark('login-wm',64,'white','grad');
-  buildWordmark('hdr-wm',22,'white','grad');
+  buildWordmark('login-wm',64,'currentColor','grad');
+  buildWordmark('hdr-wm',22,'currentColor','grad');
   // Sidebar logo: X blanca sobre fondo gradiente turquesa
   _buildSbLogo();
 });

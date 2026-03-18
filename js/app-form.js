@@ -157,7 +157,7 @@ const _DEST_LIST=[
   {nm:'Orlando',    grad:'linear-gradient(135deg,#0EA5E9,#1565C0)', img:'https://images.unsplash.com/photo-1575517111478-7f6afd0973db?w=200&q=60'},
   {nm:'Miami',      grad:'linear-gradient(135deg,#F43F5E,#E11D48)', img:'https://images.unsplash.com/photo-1506966953602-c20cc11f75e3?w=200&q=60'},
   {nm:'Nueva York', grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8)', img:'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=200&q=60'},
-  {nm:'Las Vegas',  grad:'linear-gradient(135deg,#9B7FD4,#6D28D9)', img:'https://images.unsplash.com/photo-1605833556294-ea5c2a5e4b35?w=200&q=60'},
+  {nm:'Las Vegas',  grad:'linear-gradient(135deg,#F43F5E,#B91C1C)', img:'https://images.unsplash.com/photo-1605833556294-ea5c2a5e4b35?w=200&q=60'},
   {nm:'Cancún',     grad:'linear-gradient(135deg,#06B6D4,#0891B2)', img:'https://images.unsplash.com/photo-1552074284-5e88ef1aef18?w=200&q=60'},
   {nm:'París',      grad:'linear-gradient(135deg,#D4A017,#B7791F)', img:'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=60'},
   {nm:'España',     grad:'linear-gradient(135deg,#E8826A,#C2185B)', img:'https://images.unsplash.com/photo-1543785734-4b6e564642f8?w=200&q=60'},
@@ -188,13 +188,47 @@ function _gradStops(grad){
 }
 
 function _selectDest(nm){
+  // Mapa IATA por destino
+  const IATA={
+    'Orlando':'MCO','Miami':'MIA','Nueva York':'JFK',
+    'Las Vegas':'LAS','Cancún':'CUN','París':'CDG',
+    'España':'MAD','Roma':'FCO','Dubai':'DXB','Río':'GIG'
+  };
+  // Mapa ciudad para hotel/traslado
+  const CIUDAD={
+    'Orlando':'Orlando','Miami':'Miami','Nueva York':'Nueva York',
+    'Las Vegas':'Las Vegas','Cancún':'Cancún','París':'París',
+    'España':'Madrid','Roma':'Roma','Dubai':'Dubai','Río':'Río de Janeiro'
+  };
+  const PAISES={
+    'Orlando':'Estados Unidos','Miami':'Estados Unidos','Nueva York':'Estados Unidos',
+    'Las Vegas':'Estados Unidos','Cancún':'México','París':'Francia','España':'España',
+    'Roma':'Italia','Dubai':'Emiratos Árabes Unidos','Río':'Brasil'
+  };
+
+  // Rellenar campo destino principal
   const dest=document.getElementById('m-dest');
   if(dest&&!dest.value) dest.value=nm;
+
+  // Rellenar país
   const pais=document.getElementById('m-pais');
-  const PAISES={'Orlando':'Estados Unidos','Miami':'Estados Unidos','Nueva York':'Estados Unidos',
-    'Las Vegas':'Estados Unidos','Cancún':'México','París':'Francia','España':'España',
-    'Roma':'Italia','Dubai':'Emiratos Árabes','Río':'Brasil'};
   if(pais&&!pais.value&&PAISES[nm]) pais.value=PAISES[nm];
+
+  // Rellenar ciudad destino del primer vuelo (v1-de e v1-id)
+  const iata=IATA[nm];
+  const ciudad=CIUDAD[nm]||nm;
+  if(iata){
+    const vDe=document.getElementById('v1-de');
+    const vId=document.getElementById('v1-id');
+    if(vDe&&!vDe.value){ vDe.value=ciudad+' ('+iata+')'; }
+    if(vId&&!vId.value){ vId.value=iata; }
+  }
+
+  // Rellenar ciudad y país del primer hotel (h1-ciu, h1-pai)
+  const hCiu=document.getElementById('h1-ciu');
+  const hPai=document.getElementById('h1-pai');
+  if(hCiu&&!hCiu.value&&ciudad) hCiu.value=ciudad;
+  if(hPai&&!hPai.value&&PAISES[nm]) hPai.value=PAISES[nm];
 }
 
 // ── Logos de aerolíneas — CDN Google Flights ──

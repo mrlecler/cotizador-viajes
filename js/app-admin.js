@@ -15,15 +15,6 @@ async function renderAdmin(){
     </td>
   </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
 
-  // Aerolíneas
-  const {data:aeros}=await sb.from('aerolineas').select('*').order('nombre');
-  document.getElementById('admin-aero').innerHTML=aeros?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>IATA</th><th>Activa</th><th></th></tr></thead><tbody>
-  ${aeros.map(a=>`<tr><td>${a.nombre}</td><td><code>${a.codigo_iata||'—'}</code></td><td>${a.activa?'Sí':'No'}</td>
-    <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editAeroModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.codigo_iata||''}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="btn btn-del btn-xs" onclick="deleteAero('${a.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-    </td></tr>`).join('')}</tbody></table>`:'<p>Sin aerolíneas.</p>';
-
   // Proveedores
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
   document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Contacto</th><th></th></tr></thead><tbody>
@@ -34,15 +25,12 @@ async function renderAdmin(){
     </td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
 
   // Datalists for autocomplete
-  buildDataLists(aeros||[], provs||[]);
+  buildDataLists(provs||[]);
   // Seguros
   loadSeguros();
 }
 
-function buildDataLists(aeros, provs){
-  let dl=document.getElementById('al-list');
-  if(!dl){dl=document.createElement('datalist');dl.id='al-list';document.body.appendChild(dl);}
-  dl.innerHTML=aeros.map(a=>`<option value="${a.nombre}">`).join('');
+function buildDataLists(provs){
   let pl=document.getElementById('prov-list');
   if(!pl){pl=document.createElement('datalist');pl.id='prov-list';document.body.appendChild(pl);}
   pl.innerHTML=provs.map(p=>`<option value="${p.nombre}">`).join('');
@@ -65,25 +53,6 @@ async function toggleAdmin(id,rol){
   await sb.from('agentes').update({rol:nw}).eq('id',id);
   toast('✓ Rol actualizado');renderAdmin();
 }
-
-function openAeroModal(){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Aerolínea</div>
-    <div class="g2">
-      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ma-nm" placeholder="American Airlines"></div>
-      <div class="fg"><label class="lbl">Código IATA</label><input class="finput" id="ma-iata" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAero()">Guardar</button>
-    </div>`;openModal();
-}
-async function saveAero(){
-  const nm=document.getElementById('ma-nm').value.trim();if(!nm)return;
-  await sb.from('aerolineas').insert({nombre:nm,codigo_iata:document.getElementById('ma-iata').value.toUpperCase()});
-  closeModal();toast('✓ Aerolínea agregada');renderAdmin();
-}
-async function deleteAero(id){if(!confirm('¿Eliminar?'))return;await sb.from('aerolineas').delete().eq('id',id);toast('Eliminada');renderAdmin();}
 
 function openProvModal(){
   document.getElementById('modal-content').innerHTML=`
@@ -215,24 +184,6 @@ async function saveAgentEdit(id){
   const rol=document.getElementById('ea-rol').value;
   await sb.from('agentes').update({nombre:nm,rol}).eq('id',id);
   closeModal();toast('✓ Agente actualizado');renderAdmin();
-}
-
-function editAeroModal(id,nombre,iata){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar aerolínea</div>
-    <div class="g2">
-      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="aea-nm" value="${nombre}" placeholder="American Airlines"></div>
-      <div class="fg"><label class="lbl">Código IATA</label><input class="finput" id="aea-iata" value="${iata}" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAeroEdit('${id}')">Guardar</button>
-    </div>`;openModal();
-}
-async function saveAeroEdit(id){
-  const nm=document.getElementById('aea-nm').value.trim();if(!nm)return;
-  await sb.from('aerolineas').update({nombre:nm,codigo_iata:document.getElementById('aea-iata').value.toUpperCase()}).eq('id',id);
-  closeModal();toast('✓ Aerolínea actualizada');renderAdmin();
 }
 
 function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
