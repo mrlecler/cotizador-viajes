@@ -118,9 +118,9 @@ async function loadSeguros(){
     if(error){
       const isSchemaError=error.message&&(error.message.includes('schema cache')||error.message.includes('does not exist')||error.message.includes('relation'));
       if(isSchemaError){
-        el.innerHTML=`<div style="border:1px solid rgba(124,58,237,0.4);border-radius:12px;padding:16px 20px;background:rgba(124,58,237,0.08)">
-          <div style="font-size:.8rem;font-weight:700;color:#C4B5FD;margin-bottom:10px">La tabla de seguros no está creada aún. Ejecutá el siguiente SQL en Supabase:</div>
-          <pre style="background:rgba(0,0,0,0.35);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:12px;font-size:.72rem;color:#E9D5FF;overflow-x:auto;cursor:pointer;white-space:pre-wrap;word-break:break-all" title="Click para copiar" onclick="navigator.clipboard.writeText(this.textContent).then(()=>toast('SQL copiado'))">CREATE TABLE public.seguros (
+        el.innerHTML=`<div style="border:1px solid rgba(27,158,143,0.3);border-radius:12px;padding:16px 20px;background:rgba(27,158,143,0.07)">
+          <div style="font-size:.8rem;font-weight:700;color:var(--primary);margin-bottom:10px">La tabla de seguros no está creada aún. Ejecutá el siguiente SQL en Supabase:</div>
+          <pre style="background:rgba(0,0,0,0.06);border:1px solid rgba(27,158,143,0.2);border-radius:8px;padding:12px;font-size:.72rem;color:var(--text);overflow-x:auto;cursor:pointer;white-space:pre-wrap;word-break:break-all" title="Click para copiar" onclick="navigator.clipboard.writeText(this.textContent).then(()=>toast('SQL copiado'))">CREATE TABLE public.seguros (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   nombre text NOT NULL,
   activo boolean DEFAULT true,
@@ -313,7 +313,7 @@ async function renderDashboard(){
   // Comisiones desde datos JSON
   const totalCom=all.reduce((s,r)=>s+(r.datos?.total_comision||0),0);
   const conversion=all.length?Math.round((confirmadas.length/all.length)*100):0;
-  // Render metric cards — brand v2
+  // Render metric cards — brand v3 pastel
   const comProm=confirmadas.length?Math.round(totalCom/confirmadas.length):0;
   const icons={
     calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
@@ -323,14 +323,14 @@ async function renderDashboard(){
     trend:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
     bars:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'
   };
-  const mkCard=(icon,label,value,grad,sub)=>`<div class="dash-metric"><div class="metric-label"><svg viewBox="0 0 24 24">${icon}</svg>${label}</div><div class="metric-value${grad?' grad':''}">${value}</div>${sub?'<div class="metric-sub">'+sub+'</div>':''}</div>`;
+  const mkCard=(icon,label,value,grad,sub,cls='')=>`<div class="dash-metric${cls?' '+cls:''}"><div class="metric-label"><svg viewBox="0 0 24 24">${icon}</svg>${label}</div><div class="metric-value${grad?' grad':''}">${value}</div>${sub?'<div class="metric-sub">'+sub+'</div>':''}</div>`;
   document.getElementById('dash-metrics').innerHTML=[
-    mkCard(icons.calendar,'Cotizaciones este mes',mesActual.length,false,'mes en curso'),
-    mkCard(icons.file,'Total cotizaciones',all.length,false,'historial completo'),
-    mkCard(icons.check,'Confirmadas',confirmadas.length,true,conversion+'% conversión'),
-    mkCard(icons.dollar,'Comisiones totales','USD '+Number(totalCom).toLocaleString('es-AR'),true,'acumulado'),
-    mkCard(icons.trend,'Tasa de conversión',conversion+'%',false,all.length+' cotizaciones'),
-    mkCard(icons.bars,'Com. promedio','USD '+Number(comProm).toLocaleString('es-AR'),false,'por confirmada'),
+    mkCard(icons.calendar,'Cotizaciones este mes',mesActual.length,false,'mes en curso','dm-vuelos'),
+    mkCard(icons.file,'Total cotizaciones',all.length,false,'historial completo','dm-crucero'),
+    mkCard(icons.check,'Confirmadas',confirmadas.length,true,conversion+'% conversión','dm-hotel'),
+    mkCard(icons.dollar,'Comisiones totales','USD '+Number(totalCom).toLocaleString('es-AR'),true,'acumulado','dm-hotel'),
+    mkCard(icons.trend,'Tasa de conversión',conversion+'%',false,all.length+' cotizaciones','dm-traslado'),
+    mkCard(icons.bars,'Com. promedio','USD '+Number(comProm).toLocaleString('es-AR'),false,'por confirmada','dm-seguro'),
   ].join('');
   // Cotizaciones del mes
   const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
@@ -359,7 +359,7 @@ function openAgentModal(){
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar agente</div>
     <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se crean directamente desde el panel de Supabase.</p>
-    <div style="border:1px solid rgba(124,58,237,0.3);border-radius:var(--r);background:rgba(124,58,237,0.1);padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+    <div style="border:1px solid rgba(27,158,143,0.2);border-radius:var(--r);background:rgba(27,158,143,0.07);padding:16px 20px;display:flex;flex-direction:column;gap:10px">
       ${[
         'Ir a <strong style="color:var(--violet-light)">Supabase Dashboard → Authentication → Users</strong>',
         'Click en <strong style="color:var(--violet-light)">"Add user" → "Create new user"</strong>',

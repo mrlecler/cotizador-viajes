@@ -1,6 +1,6 @@
 async function renderHistory(){
   const el=document.getElementById('hist-list');
-  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(168,85,247,.3);border-top-color:#A855F7;border-radius:50%;vertical-align:middle"></span> Cargando...</div>';
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(27,158,143,.25);border-top-color:#1B9E8F;border-radius:50%;vertical-align:middle"></span> Cargando...</div>';
   const rows=await dbLoadQuotes();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase();

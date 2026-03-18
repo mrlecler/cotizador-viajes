@@ -10,7 +10,7 @@ fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCit
 
 // ── Estilos compartidos del dropdown ──
 // Fondo siempre oscuro — en light-mode var(--ink2) se redefine como blanco y haría ilegible el texto
-const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:#160024;border:1px solid rgba(124,58,237,0.3);border-radius:10px;box-shadow:0 8px 24px rgba(79,70,229,0.22);max-height:260px;overflow-y:auto;display:none;';
+const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:#0D2420;border:1px solid rgba(27,158,143,0.3);border-radius:10px;box-shadow:0 8px 24px rgba(27,158,143,0.18);max-height:260px;overflow-y:auto;display:none;';
 const AC_ITEM_BASE='padding:9px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:10px;transition:background .15s;';
 
 // ── Función genérica base ──
@@ -48,7 +48,7 @@ function initAirportAutocomplete(inputCiudadId,inputIataId){
     drop.innerHTML=res.map(a=>{
       const safe_iata=a.iata.replace(/'/g,"\\'");
       const safe_label=(a.city+' ('+a.iata+')').replace(/'/g,"\\'");
-      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirport('${inputCiudadId}','${inputIataId||''}','${safe_iata}','${safe_label}')"><span style="font-size:11px;font-weight:800;color:#C4B5FD;min-width:38px;font-family:'DM Mono',monospace;letter-spacing:.05em">${a.iata}</span><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.city}<span style="display:block;font-size:10px;color:rgba(255,255,255,.4);margin-top:1px">${a.name} · ${a.country}</span></span></div>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(27,158,143,0.12)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirport('${inputCiudadId}','${inputIataId||''}','${safe_iata}','${safe_label}')"><span style="font-size:11px;font-weight:800;color:#0BC5B8;min-width:38px;font-family:'DM Mono',monospace;letter-spacing:.05em">${a.iata}</span><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.city}<span style="display:block;font-size:10px;color:rgba(255,255,255,.4);margin-top:1px">${a.name} · ${a.country}</span></span></div>`;
     }).join('');
     drop.style.display='block';
   }
@@ -98,7 +98,7 @@ function initCityAutocomplete(inputId,onlyCountries){
       const safe=c.name.replace(/'/g,"\\'");
       const label=onlyCountries?c.name:`${c.name}${c.region?', '+c.region:''}`;
       const sub=onlyCountries?'':`<span style="display:block;font-size:10px;opacity:.45;margin-top:1px">${CNAMES[c.country]||c.country}</span>`;
-      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selCity('${inputId}','${safe}')"><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${label}${sub}</span></div>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(27,158,143,0.12)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selCity('${inputId}','${safe}')"><span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${label}${sub}</span></div>`;
     }).join('');
     drop.style.display='block';
   }
@@ -149,7 +149,53 @@ function _initStaticCityAC(){
 document.addEventListener('DOMContentLoaded',function(){
   if(citiesList.length>0)_initStaticCityAC();
   _initAutoTotal();
+  _initDestCards();
 });
+
+// ── Franja de destinos populares ──
+const _DEST_LIST=[
+  {nm:'Orlando',    grad:'linear-gradient(135deg,#0EA5E9,#1565C0)', img:'https://images.unsplash.com/photo-1575517111478-7f6afd0973db?w=200&q=60'},
+  {nm:'Miami',      grad:'linear-gradient(135deg,#F43F5E,#E11D48)', img:'https://images.unsplash.com/photo-1506966953602-c20cc11f75e3?w=200&q=60'},
+  {nm:'Nueva York', grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8)', img:'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=200&q=60'},
+  {nm:'Las Vegas',  grad:'linear-gradient(135deg,#9B7FD4,#6D28D9)', img:'https://images.unsplash.com/photo-1605833556294-ea5c2a5e4b35?w=200&q=60'},
+  {nm:'Cancún',     grad:'linear-gradient(135deg,#06B6D4,#0891B2)', img:'https://images.unsplash.com/photo-1552074284-5e88ef1aef18?w=200&q=60'},
+  {nm:'París',      grad:'linear-gradient(135deg,#D4A017,#B7791F)', img:'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=60'},
+  {nm:'España',     grad:'linear-gradient(135deg,#E8826A,#C2185B)', img:'https://images.unsplash.com/photo-1543785734-4b6e564642f8?w=200&q=60'},
+  {nm:'Roma',       grad:'linear-gradient(135deg,#FF8E53,#E65100)', img:'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=60'},
+  {nm:'Dubai',      grad:'linear-gradient(135deg,#F59E0B,#B45309)', img:'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=200&q=60'},
+  {nm:'Río',        grad:'linear-gradient(135deg,#43A047,#1B5E20)', img:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=200&q=60'},
+];
+
+function _initDestCards(){
+  const cont=document.getElementById('vuelos-cont');
+  if(!cont||cont.previousElementSibling?.classList.contains('dest-strip')) return;
+  const strip=document.createElement('div');
+  strip.className='dest-strip';
+  strip.title='Clic para completar destino';
+  strip.innerHTML=_DEST_LIST.map(d=>`
+    <button class="dest-card" onclick="_selectDest('${d.nm.replace(/'/g,"\\'")}')">
+      <img class="dest-card-img" src="${d.img}" alt="${d.nm}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <svg class="dest-card-grad" style="display:none" viewBox="0 0 90 64" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="64" fill="url(#g${d.nm.replace(/\s/g,'')})" /><defs><linearGradient id="g${d.nm.replace(/\s/g,'')}" x1="0%" y1="0%" x2="100%" y2="100%">${_gradStops(d.grad)}</linearGradient></defs></svg>
+      <span class="dest-card-lbl">${d.nm}</span>
+    </button>
+  `).join('');
+  cont.parentElement.insertBefore(strip,cont);
+}
+
+function _gradStops(grad){
+  const m=grad.match(/#[0-9A-Fa-f]{6}/g)||['#1B9E8F','#0BC5B8'];
+  return `<stop offset="0%" stop-color="${m[0]}"/><stop offset="100%" stop-color="${m[m.length-1]}"/>`;
+}
+
+function _selectDest(nm){
+  const dest=document.getElementById('m-dest');
+  if(dest&&!dest.value) dest.value=nm;
+  const pais=document.getElementById('m-pais');
+  const PAISES={'Orlando':'Estados Unidos','Miami':'Estados Unidos','Nueva York':'Estados Unidos',
+    'Las Vegas':'Estados Unidos','Cancún':'México','París':'Francia','España':'España',
+    'Roma':'Italia','Dubai':'Emiratos Árabes','Río':'Brasil'};
+  if(pais&&!pais.value&&PAISES[nm]) pais.value=PAISES[nm];
+}
 
 // ── Logos de aerolíneas — CDN Google Flights ──
 function _getAirlineIata(name,flightNum){
@@ -193,7 +239,7 @@ function initAirlineAutocomplete(inputId,logoId,numId){
       const safe_n=a.nombre.replace(/'/g,"\\'");
       const iata=a.codigo_iata||'';
       const logo=iata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${iata}.png" width="20" height="20" style="object-fit:contain;border-radius:3px;flex-shrink:0" onerror="this.style.display='none'">`:'<span style="width:20px;flex-shrink:0"></span>';
-      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(124,58,237,0.1)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirline('${inputId}','${logoId}','${safe_n}','${iata}')">${logo}<span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.nombre}</span><span style="font-size:10px;color:#C4B5FD;font-family:'DM Mono',monospace;letter-spacing:.05em;flex-shrink:0">${iata}</span></div>`;
+      return `<div style="${AC_ITEM_BASE}" onmouseover="this.style.background='rgba(27,158,143,0.12)'" onmouseout="this.style.background=''" onmousedown="event.preventDefault();_selAirline('${inputId}','${logoId}','${safe_n}','${iata}')">${logo}<span style="font-size:12px;color:rgba(255,255,255,.9);flex:1;line-height:1.3">${a.nombre}</span><span style="font-size:10px;color:#0BC5B8;font-family:'DM Mono',monospace;letter-spacing:.05em;flex-shrink:0">${iata}</span></div>`;
     }).join('');
     drop.style.display='block';
   }
@@ -218,7 +264,14 @@ function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#0EA5E9,#1565C0)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Vuelos</div>
+      <div class="sec-photo-badge">SEGMENTO ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3" style="margin-bottom:4px">
     <div class="fg"><label class="lbl">Modalidad</label>
@@ -255,7 +308,7 @@ function addVuelo(d){
       <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur" placeholder="17h 19min" value="${d.duracion||''}"></div>
     </div>
   </div>
-  <div id="v${id}-ret-sec" style="display:none;background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
+  <div id="v${id}-ret-sec" style="display:none;background:rgba(27,158,143,0.06);border:1px solid rgba(27,158,143,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
     <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet-light);margin-bottom:12px">↩ TRAMO VUELTA</div>
     <div class="g3">
       <div class="fg"><label class="lbl">Aerolínea vuelta</label>
@@ -344,7 +397,14 @@ function addHotel(d){
   d=d||{};const id=++hc;const isD=d.tipo==='disney',isU=d.tipo==='universal';
   const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#FF8E53,#E65100)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Alojamiento</div>
+      <div class="sec-photo-badge">HOTEL ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
@@ -380,7 +440,7 @@ function addHotel(d){
       <div class="fg"><label class="lbl">Beneficios</label>
         <div class="chk-grp" id="h${id}-bens">${[['ep','Early Park Entry'],['tr','Transporte gratuito'],['mm','Memory Maker'],['dl','Entrega en hotel'],['ex','Express Pass'],['sp','Disney Springs'],['wp','Parque acuático gratis'],['me','Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
       </div>
-      <div style="background:var(--ink3);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(124,58,237,0.18)">
+      <div style="background:var(--ink3);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(27,158,143,0.18)">
         <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet-light);margin-bottom:10px">Plan de comidas</div>
         <div class="g3">
           <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
@@ -447,7 +507,14 @@ function addTraslado(d){
   d=d||{};const id=++tc;
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#E8826A,#C2185B)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Traslados</div>
+      <div class="sec-photo-badge">TRAMO ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">Aeropuerto → Hotel</option><option value="out">Hotel → Aeropuerto</option><option value="hoteles">Entre hoteles</option><option value="privado">Privado en destino</option><option value="ciudad">A otra ciudad</option></select></div>
@@ -490,7 +557,14 @@ function addExcursion(d){
   d=d||{};const id=++ec;
   const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#43A047,#1B5E20)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>Excursiones</div>
+      <div class="sec-photo-badge">ACTIVIDAD ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g2">
     <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
@@ -534,7 +608,14 @@ function addAuto(d){
   d=d||{};const id=++ac_cnt;
   const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#FF8F00,#E65100)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>Alquiler de Auto</div>
+      <div class="sec-photo-badge">AUTO ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Proveedor</label><input class="finput" type="text" id="au${id}-prov" placeholder="Hertz, Avis, Budget..." value="${d.proveedor||''}"></div>
@@ -592,7 +673,14 @@ function addCrucero(d){
   d=d||{};const id=++crc_cnt;
   const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
   el.innerHTML=`
-  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
+  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#0288D1,#01579B)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>Crucero</div>
+      <div class="sec-photo-badge">CRUCERO ${id}</div>
+    </div>
+  </div>
+  <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
     <div class="fg"><label class="lbl">Naviera</label><input class="finput" type="text" id="cr${id}-nav" placeholder="MSC, Royal Caribbean, Costa..." value="${d.naviera||''}"></div>
@@ -828,8 +916,8 @@ function _updateBadges(contId){
     const on=!cb||cb.checked;
     if(badge){
       badge.textContent='Opción '+(OPCION_LETRAS[idx]||String(idx+1));
-      badge.style.background=on?'rgba(124,58,237,0.12)':'rgba(255,255,255,0.06)';
-      badge.style.borderColor=on?'rgba(124,58,237,0.3)':'rgba(255,255,255,0.12)';
+      badge.style.background=on?'rgba(27,158,143,0.1)':'rgba(0,0,0,0.04)';
+      badge.style.borderColor=on?'rgba(27,158,143,0.25)':'var(--border2)';
       badge.style.color=on?'var(--primary)':'var(--g3)';
     }
     item.style.opacity=on?'':'0.55';
@@ -972,8 +1060,8 @@ function _setChip(chipId,resetId,isAuto){
   const chip=document.getElementById(chipId);const reset=document.getElementById(resetId);
   if(chip){
     chip.textContent=isAuto?'AUTO':'MANUAL';
-    chip.style.background=isAuto?'rgba(124,58,237,0.1)':'rgba(255,255,255,0.05)';
-    chip.style.borderColor=isAuto?'rgba(124,58,237,0.2)':'var(--border)';
+    chip.style.background=isAuto?'rgba(27,158,143,0.1)':'var(--g1)';
+    chip.style.borderColor=isAuto?'rgba(27,158,143,0.2)':'var(--border)';
     chip.style.color=isAuto?'var(--primary)':'var(--g3)';
   }
   if(reset)reset.style.display=isAuto?'none':'';
@@ -990,7 +1078,7 @@ function _initAutoTotal(){
     const lbl=fg.querySelector('.lbl');
     if(lbl){
       lbl.insertAdjacentHTML('beforeend',
-        ` <span id="${chipId}" style="font-size:10px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:2px 8px;color:var(--primary);vertical-align:middle">AUTO</span>` +
+        ` <span id="${chipId}" style="font-size:10px;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.2);border-radius:10px;padding:2px 8px;color:var(--primary);vertical-align:middle">AUTO</span>` +
         ` <span id="${resetId}" style="display:none;cursor:pointer;vertical-align:middle;margin-left:2px" onclick="${onManual==='total'?'recalcularTotal()':'recalcularPP()'}" title="Volver a cálculo automático">${_RECAP_SVG}</span>`
       );
     }

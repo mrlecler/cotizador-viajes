@@ -21,7 +21,7 @@ let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editan
 // ═══════════════════════════════════════════
 function buildWordmark(targetId, fontSize, textCol, xType) {
   const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
-  const G=['#4F46E5','#7C3AED','#F43F5E'];
+  const G=['#1B9E8F','#0BC5B8','#06B6D4'];
   const c=document.createElement('canvas'),ctx=c.getContext('2d');
   ctx.font='900 '+fontSize+'px "DM Sans"';
   const ermiW=ctx.measureText('ermi').width;
@@ -31,7 +31,7 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
   const totalW=xLeft+48*sc+4;
   const tx=xLeft-8*sc,ty=xTop-8*sc;
   const gid='wm_'+Date.now();
-  const xFill=xType==='grad'?'url(#'+gid+')':(xType||'#7C3AED');
+  const xFill=xType==='grad'?'url(#'+gid+')':(xType||'#1B9E8F');
   const svgInner='<defs><linearGradient id="'+gid+'" x1="0%" y1="0%" x2="100%" y2="100%">'
     +'<stop offset="0%" stop-color="'+G[0]+'"/>'
     +'<stop offset="45%" stop-color="'+G[1]+'"/>'
@@ -54,8 +54,21 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 // Inicialización de wordmarks cuando las fuentes están listas
 document.fonts.ready.then(function(){
   buildWordmark('login-wm',64,'white','grad');
-  buildWordmark('hdr-wm',28,'white','grad');
+  buildWordmark('hdr-wm',22,'white','grad');
+  // Sidebar logo: X blanca sobre fondo gradiente turquesa
+  _buildSbLogo();
 });
+
+function _buildSbLogo(){
+  const el=document.getElementById('sb-logo');
+  if(!el) return;
+  // Wordmark compacto: solo la X (18px height) en blanco
+  const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
+  const sz=18, sc=sz/48;
+  el.innerHTML='<svg viewBox="0 0 18 18" width="18" height="18" xmlns="http://www.w3.org/2000/svg">'
+    +'<path transform="scale('+sc+')" d="'+X+'" fill="white"/>'
+    +'</svg>';
+}
 
 // ═══════════════════════════════════════════
 // TEMA — Dark / Light toggle
@@ -72,9 +85,9 @@ function toggleTheme(){
 }
 
 (function initTheme(){
-  const saved=localStorage.getItem('ermix-theme')||'dark';
+  // v3: default es light
+  const saved=localStorage.getItem('ermix-theme')||'light';
   document.documentElement.setAttribute('data-theme',saved);
-  // Los iconos se actualizan cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded',function(){
     const di=document.getElementById('theme-icon-dark');
     const li=document.getElementById('theme-icon-light');
@@ -168,13 +181,23 @@ window.addEventListener('DOMContentLoaded',async()=>{
 
 async function showApp(user){
   currentUser = user;
-  // Reset edit state on every login — garantiza estado limpio
   editingQuoteId = null;
   formDraft = null;
-  // Show app immediately — don't wait on Supabase
+  // Mostrar app y sidebar
   document.getElementById('login-wall').style.display='none';
   document.getElementById('ui').style.display='block';
+  document.getElementById('sidebar').style.display='flex';
   document.getElementById('hdr-user').textContent = user.email;
+  // Iniciales en el avatar del sidebar
+  const av=document.getElementById('sb-avatar');
+  if(av){
+    const nm=user.user_metadata?.full_name||user.email||'';
+    const parts=nm.trim().split(/\s+/);
+    av.textContent=(parts.length>=2
+      ? parts[0][0]+parts[1][0]
+      : nm.substring(0,2)
+    ).toUpperCase();
+  }
   init();
   // Then load Supabase data in background (non-blocking)
   try {
@@ -183,6 +206,14 @@ async function showApp(user){
       isAdmin = data.rol === 'admin';
       if(data.nombre && !agCfg.nm){ agCfg.nm = data.nombre; loadCfg(); }
       if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
+      // Actualizar avatar del sidebar con nombre real
+      if(data.nombre){
+        const av=document.getElementById('sb-avatar');
+        if(av){
+          const parts=data.nombre.trim().split(/\s+/);
+          av.textContent=(parts.length>=2?parts[0][0]+parts[1][0]:data.nombre.substring(0,2)).toUpperCase();
+        }
+      }
     }
     if(isAdmin){
       document.getElementById('hdr-role-badge').style.display='';
@@ -296,17 +327,23 @@ function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
 // ═══════════════════════════════════════════
 const tabMap={form:0,ia:1,preview:2,history:3,clients:4,dashboard:5,admin:6,config:7};
 function switchTab(id){
-  // BUG3 — save draft when leaving the form tab
+  // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
   if(activePanel?.id==='tab-form' && id!=='form'){
     try{ formDraft=collectForm(); }catch(e){ console.warn('saveDraft warning:',e.message); }
   }
+  // Panels
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+id)?.classList.add('on');
+  // Sidebar items — activar por data-tab
+  document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
+    b.classList.toggle('on', b.dataset.tab===id);
+  });
+  // Legacy ntab compat (por si algún módulo depende)
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   const idx=tabMap[id];
   if(idx!==undefined) document.querySelectorAll('.ntab')[idx]?.classList.add('on');
-  // BUG3 — restore draft when returning to form tab
+  // Acciones por tab
   if(id==='form' && formDraft){ restoreDraft(formDraft); }
   if(id==='history') renderHistory();
   if(id==='clients') renderClients();
@@ -392,9 +429,9 @@ function toast(msg,ok=true){
   // Limpiar ✓ del inicio del mensaje (evita doble ✓ heredado de calls anteriores)
   const cleanMsg=(msg||'').replace(/^[✓\s]+/,'');
   if(ok){
-    t.style.background='linear-gradient(135deg,rgba(79,70,229,0.15),rgba(124,58,237,0.15))';
-    t.style.borderColor='rgba(124,58,237,0.4)';
-    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
+    t.style.background='linear-gradient(135deg,rgba(27,158,143,0.12),rgba(11,197,184,0.08))';
+    t.style.borderColor='rgba(27,158,143,0.35)';
+    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
   } else {
     t.style.background='rgba(244,63,94,0.15)';
     t.style.borderColor='rgba(244,63,94,0.4)';
