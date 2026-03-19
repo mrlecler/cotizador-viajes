@@ -251,6 +251,8 @@ async function showApp(user){
   } catch(e) {
     console.warn('Supabase init warning (non-fatal):', e.message);
   }
+  // Cargar métricas de la pantalla Inicio
+  loadDashboardMetrics();
 }
 
 // ═══════════════════════════════════════════
@@ -346,6 +348,47 @@ function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
 }
 
 // ═══════════════════════════════════════════
+// DASHBOARD METRICS (Inicio)
+// ═══════════════════════════════════════════
+async function loadDashboardMetrics(){
+  const cotEl=document.getElementById('met-cot');
+  const actEl=document.getElementById('met-act');
+  const comEl=document.getElementById('met-com');
+  // Mostrar skeleton mientras carga
+  if(cotEl) cotEl.textContent='...';
+  if(actEl) actEl.textContent='...';
+  try{
+    // Obtener el ID del agente actual
+    const {data:ag}=await sb.from('agentes').select('id').eq('email',currentUser.email).maybeSingle();
+    if(!ag){ if(cotEl) cotEl.textContent='0'; if(actEl) actEl.textContent='0'; return; }
+    const {data,error}=await sb.from('cotizaciones')
+      .select('id,estado,total_comision')
+      .eq('agente_id',ag.id);
+    if(error){ console.warn('metrics error:',error.message); return; }
+    const total=(data||[]).length;
+    const estados=['pendiente','activa','en proceso','enviada','confirmada'];
+    const activas=(data||[]).filter(c=>estados.includes((c.estado||'').toLowerCase())).length;
+    const comTotal=(data||[]).reduce((s,c)=>s+(Number(c.total_comision)||0),0);
+    if(cotEl) cotEl.textContent=total||'0';
+    if(actEl) actEl.textContent=activas||'0';
+    if(comEl){
+      if(comTotal>0){
+        comEl.textContent=comTotal>=1000
+          ?'$'+(comTotal/1000).toFixed(1)+'k'
+          :'$'+comTotal.toLocaleString('es-AR');
+      } else {
+        comEl.textContent='—';
+        comEl.title='Próximamente: suma de comisiones estimadas';
+      }
+    }
+  }catch(e){
+    console.warn('metrics load error:',e);
+    if(cotEl) cotEl.textContent='—';
+    if(actEl) actEl.textContent='—';
+  }
+}
+
+// ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,clients:5,dashboard:6,admin:7,config:8};
@@ -372,6 +415,7 @@ function switchTab(id){
   if(id==='clients') renderClients();
   if(id==='admin') renderAdmin();
   if(id==='dashboard') renderDashboard();
+  if(id==='inicio') loadDashboardMetrics();
 }
 
 // BUG3 — restore simple fields from draft

@@ -95,7 +95,7 @@ function buildQuoteHTML(d){
       </div>
     </div>
     <div style="position:absolute;bottom:28px;left:32px;right:32px;z-index:1">
-      ${cl.nombre?`<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(27,158,143,0.2);border:1px solid rgba(27,158,143,0.4);border-radius:100px;padding:5px 14px;margin-bottom:14px;font-size:11px;font-weight:700;color:white;letter-spacing:0.5px">COTIZACIÓN PARA &nbsp;<span style="color:#0BC5B8;font-weight:800">${cl.nombre}</span></div>`:''}
+      ${cl.nombre?`<div style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;background:rgba(27,158,143,0.2);border:1px solid rgba(27,158,143,0.4);border-radius:10px;padding:6px 14px;margin-bottom:14px"><span style="font-size:8px;font-weight:500;letter-spacing:0.5px;color:rgba(255,255,255,0.6);text-transform:lowercase">cotización para</span><span style="font-size:14px;font-weight:800;color:#0BC5B8;letter-spacing:-0.3px;line-height:1.2">${cl.nombre}</span></div>`:''}
       <div style="font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:8px">SU VIAJE A</div>
       <div style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;color:#FFFFFF;line-height:1">${vi.destino||'Destino'}${vi.pais?', '+vi.pais:''}</div>
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);margin-top:8px">Ref ID: ${d.refId||'—'} · ${today}</div>
