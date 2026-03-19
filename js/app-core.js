@@ -81,7 +81,7 @@ function toggleTheme(){
   if(di) di.style.display=next==='light'?'block':'none';
   if(li) li.style.display=next==='dark'?'block':'none';
   const lbl=document.getElementById('login-theme-lbl');
-  if(lbl) lbl.textContent=next==='light'?'Modo oscuro':'Modo claro';
+  if(lbl) lbl.textContent='Tema al ingresar: '+(next==='light'?'claro':'oscuro');
 }
 
 (function initTheme(){
@@ -94,7 +94,7 @@ function toggleTheme(){
     if(di) di.style.display=saved==='light'?'block':'none';
     if(li) li.style.display=saved==='dark'?'block':'none';
     const lbl=document.getElementById('login-theme-lbl');
-    if(lbl) lbl.textContent=saved==='light'?'Modo oscuro':'Modo claro';
+    if(lbl) lbl.textContent='Tema al ingresar: '+(saved==='light'?'claro':'oscuro');
   });
 })();
 
@@ -244,7 +244,6 @@ async function showApp(user){
     }
     if(isAdmin){
       document.getElementById('hdr-role-badge').style.display='';
-      document.getElementById('btn-admin').style.display='';
       document.getElementById('nav-admin').style.display='';
     }
     // Ensure agent record exists (fire and forget)

@@ -125,6 +125,10 @@ input:focus,textarea:focus,select:focus{
 #login-status{font-size:.82rem;color:rgba(255,255,255,.4);margin-top:8px;min-height:22px}
 .login-footer{margin-top:20px;font-size:.65rem;color:rgba(255,255,255,.14);line-height:1.6}
 #login-debug{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.5;text-align:left;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;display:none}
+/* Light mode — card gets slightly warmer tint so toggle has visible effect */
+[data-theme="light"] .login-card{background:rgba(240,237,230,.07);border-color:rgba(255,255,255,.15)}
+[data-theme="light"] .login-aurora-1{opacity:.78}
+[data-theme="light"] .login-aurora-2{opacity:.68}
 /* Theme toggle */
 .login-theme-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:24px}
 .login-theme-icon{display:flex;align-items:center;color:rgba(255,255,255,.25)}
