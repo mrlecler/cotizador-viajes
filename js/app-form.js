@@ -298,13 +298,6 @@ function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0EA5E9,#1565C0)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Vuelos</div>
-      <div class="sec-photo-badge">SEGMENTO ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3" style="margin-bottom:4px">
@@ -431,13 +424,6 @@ function addHotel(d){
   d=d||{};const id=++hc;const isD=d.tipo==='disney',isU=d.tipo==='universal';
   const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8E53,#E65100)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Alojamiento</div>
-      <div class="sec-photo-badge">HOTEL ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
@@ -541,13 +527,6 @@ function addTraslado(d){
   d=d||{};const id=++tc;
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#E8826A,#C2185B)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg>Traslados</div>
-      <div class="sec-photo-badge">TRAMO ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
@@ -591,13 +570,6 @@ function addExcursion(d){
   d=d||{};const id=++ec;
   const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Excursiones</div>
-      <div class="sec-photo-badge">ACTIVIDAD ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g2">
@@ -642,13 +614,6 @@ function addAuto(d){
   d=d||{};const id=++ac_cnt;
   const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8F00,#E65100)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>Alquiler de Auto</div>
-      <div class="sec-photo-badge">AUTO ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
@@ -707,13 +672,6 @@ function addCrucero(d){
   d=d||{};const id=++crc_cnt;
   const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1548574505-5e239809ee19?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0288D1,#01579B)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>Crucero</div>
-      <div class="sec-photo-badge">CRUCERO ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
     <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
   <div class="g3">
