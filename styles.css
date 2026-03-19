@@ -1327,3 +1327,43 @@ a:hover{color:var(--secondary)}
     transition-duration:.01ms!important
   }
 }
+
+/* ── Google login button ── */
+.btn-google{
+  display:block;width:100%;padding:12px;
+  background:var(--surface);
+  border:1.5px solid rgba(45,31,20,0.12);
+  border-radius:10px;
+  color:var(--text);
+  font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:border-color .2s;
+  font-family:inherit;margin-bottom:10px
+}
+.btn-google:hover{border-color:rgba(45,31,20,0.3)}
+.btn-google svg{width:16px;height:16px;vertical-align:middle;margin-right:8px}
+[data-theme="dark"] .btn-google{border-color:var(--border2)}
+[data-theme="dark"] .btn-google:hover{border-color:var(--border)}
+
+/* ── Forgot password link ── */
+.link-forgot{
+  background:transparent;border:none;
+  color:var(--primary);font-size:.72rem;
+  cursor:pointer;text-decoration:underline;
+  margin-top:4px;display:block;width:100%
+}
+
+/* ── Status modal box ── */
+.status-modal-box{
+  background:var(--surface);
+  border-radius:16px;padding:28px;
+  width:100%;max-width:360px;
+  box-shadow:var(--sh4);
+  animation:fadeIn .2s ease
+}
+.status-modal-ttl{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:6px}
+
+/* ── Status modal action buttons ── */
+.btn-st-draft{background:var(--g1);color:var(--text);justify-content:center;padding:14px}
+.btn-st-sent{background:var(--badge-blue-bg);color:var(--badge-blue-c);justify-content:center;padding:14px}
+.btn-st-confirmed{background:var(--badge-green-bg);color:var(--badge-green-c);justify-content:center;padding:14px}
+.btn-st-cancelled{background:var(--badge-red-bg);color:var(--badge-red-c);justify-content:center;padding:14px}
