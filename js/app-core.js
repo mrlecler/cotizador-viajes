@@ -53,7 +53,7 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 
 // Inicialización de wordmarks cuando las fuentes están listas
 document.fonts.ready.then(function(){
-  buildWordmark('login-wm',64,'currentColor','grad');
+  buildWordmark('login-wm',88,'white','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
 });
 

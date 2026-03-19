@@ -15,28 +15,30 @@
 
 <!-- LOGIN -->
 <div id="login-wall">
-  <div class="login-orb login-orb-1"></div>
-  <div class="login-orb login-orb-2"></div>
-  <div class="login-orb login-orb-3"></div>
-  <div class="login-layout">
-    <!-- Showcase panel — desktop only -->
-    <div class="login-showcase">
-      <div class="login-showcase-brand">ermix</div>
-      <p class="login-showcase-tagline">La plataforma de cotización de viajes para agentes freelance que trabajan en serio.</p>
-      <div class="login-feat"><div class="login-feat-dot"></div><p><strong>Cotizaciones profesionales</strong> listas para enviar al cliente en minutos</p></div>
-      <div class="login-feat"><div class="login-feat-dot"></div><p><strong>Historial y clientes</strong> organizados en un solo lugar</p></div>
-      <div class="login-feat"><div class="login-feat-dot"></div><p><strong>PDF impecable</strong> con tu marca, colores y logo</p></div>
-      <div class="login-feat"><div class="login-feat-dot"></div><p><strong>IA integrada</strong> para generar descripciones de destinos al instante</p></div>
+  <!-- Aurora animated bands -->
+  <div class="login-aurora login-aurora-1"></div>
+  <div class="login-aurora login-aurora-2"></div>
+  <div class="login-aurora login-aurora-3"></div>
+  <!-- Star field -->
+  <div class="login-stars"></div>
+  <!-- Content -->
+  <div class="login-center">
+    <!-- Brand hero -->
+    <div class="login-brand-hero">
+      <div id="login-wm"></div>
+      <span class="login-brand-tag">Travel Platform for Agents</span>
     </div>
     <!-- Login card -->
     <div class="login-card">
-      <div id="login-wm" style="margin-bottom:28px;text-align:center"></div>
-      <div class="login-subtitle">Travel Platform</div>
-      <div style="margin-bottom:16px">
+      <div class="login-portal-ring"></div>
+      <div class="login-subtitle">Ingresá a tu cuenta</div>
+      <div style="margin-bottom:18px">
         <input class="finput" id="li-email" type="email" placeholder="tu@email.com" style="margin-bottom:10px">
         <input class="finput" id="li-pass" type="password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
-      <button class="login-btn-main" onclick="doLogin()" id="li-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Iniciar sesión</button>
+      <button class="login-btn-main" onclick="doLogin()" id="li-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:7px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Iniciar sesión
+      </button>
       <div id="login-status" style="min-height:22px;margin-top:8px"></div>
       <div class="login-divider"><div class="login-divider-line"></div><span class="login-divider-lbl">o</span><div class="login-divider-line"></div></div>
       <button onclick="doLoginGoogle()" class="btn-google">
@@ -46,9 +48,9 @@
       <button onclick="showForgot()" class="link-forgot">¿Olvidaste tu contraseña?</button>
       <!-- Theme toggle -->
       <div class="login-theme-row">
-        <span class="login-theme-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+        <span class="login-theme-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
         <button class="login-theme-sw" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
-        <span class="login-theme-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+        <span class="login-theme-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
         <span class="login-theme-lbl" id="login-theme-lbl">Modo oscuro</span>
       </div>
       <div class="login-footer">Acceso restringido · Solo agentes autorizados</div>
