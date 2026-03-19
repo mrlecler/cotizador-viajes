@@ -708,8 +708,15 @@ input:focus,textarea:focus,select:focus{
 #qwrap .q-bp-code{font-family:'DM Mono',monospace!important}
 
 /* ── Control de corte de página ── */
-#qwrap .q-sec{break-inside:avoid}
+/* .q-sec puede contener muchos ítems (varios vuelos, hoteles) — no forzar que esté entero */
+#qwrap .q-sec{break-inside:auto}
+/* La cabecera foto jamás queda sola al final de página */
+#qwrap .q-ph{break-after:avoid;break-inside:avoid}
+/* Mantener cada ítem atómico sin partirse */
 #qwrap .q-bp{break-inside:avoid}
+#qwrap .q-card{break-inside:avoid}
+#qwrap .ptag{break-inside:avoid}
+#qwrap .q-gloss{break-inside:avoid}
 #qwrap .q-total{break-inside:avoid;break-before:avoid}
 #qwrap .q-agent{break-inside:avoid;break-before:avoid}
 #qwrap .tyc-box{break-inside:avoid}
@@ -1003,10 +1010,16 @@ input:focus,textarea:focus,select:focus{
   @page{size:A4;margin:0}
   #ui{display:none!important}
   #pz{display:block!important}
-  #pz #qwrap{border-radius:0;box-shadow:none;max-width:none}
-  /* Ocultar sidebar al imprimir, corregir márgenes */
+  #pz #qwrap{
+    border-radius:0;box-shadow:none;max-width:none;
+    /* CRÍTICO: overflow:hidden corta el contenido en los bordes de página */
+    overflow:visible!important
+  }
+  /* Sidebar e iframes — ocultar */
   #sidebar,.sb,[class*="sidebar"]{display:none!important}
   #ui,#main-content,.cnt{margin-left:0!important}
+  /* Forzar que los backgrounds se impriman */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 #pz{display:none}
 
