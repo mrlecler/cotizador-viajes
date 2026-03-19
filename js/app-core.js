@@ -121,7 +121,7 @@ async function doLogin(){
   const email=document.getElementById('li-email').value.trim();
   const pass=document.getElementById('li-pass').value;
   const btn=document.getElementById('li-btn');
-  if(!email||!pass){setLoginStatus('Ingresá email y contraseña','#F59E0B');return;}
+  if(!email||!pass){setLoginStatus('Ingresá email y contraseña','var(--amber)');return;}
   btn.disabled=true;btn.innerHTML='<span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Verificando...';
   setLoginStatus('');
   try{
@@ -132,7 +132,7 @@ async function doLogin(){
     let msg=e.message||'Error';
     if(msg.includes('Invalid login')) msg='Email o contraseña incorrectos';
     if(msg.includes('Email not confirmed')) msg='Confirmá tu email primero (revisá tu casilla)';
-    setLoginStatus(msg,'#F87171');
+    setLoginStatus(msg,'var(--red)');
   }
   btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion';
 }
@@ -142,15 +142,15 @@ async function doLoginGoogle(){
     provider:'google',
     options:{redirectTo:'https://mrlecler.github.io/cotizador-viajes/'}
   });
-  if(error) setLoginStatus('Error Google: '+error.message,'#F87171');
+  if(error) setLoginStatus('Error Google: '+error.message,'var(--red)');
 }
 
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
-  if(!email){setLoginStatus('Ingresá tu email primero','#F59E0B');return;}
+  if(!email){setLoginStatus('Ingresá tu email primero','var(--amber)');return;}
   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
-  if(error) setLoginStatus('Error: '+error.message,'#F87171');
-  else setLoginStatus('✓ Email enviado — revisá tu casilla','#34D399');
+  if(error) setLoginStatus('Error: '+error.message,'var(--red)');
+  else setLoginStatus('Email enviado — revisá tu casilla','var(--green)');
 }
 
 async function doLogout(){
@@ -159,7 +159,7 @@ async function doLogout(){
   document.getElementById('ui').style.display='none';
   document.getElementById('login-wall').style.display='flex';
   document.getElementById('li-pass').value='';
-  setLoginStatus('Sesión cerrada.','rgba(255,255,255,.4)');
+  setLoginStatus('Sesión cerrada.','var(--muted)');
 }
 
 // Check existing session + listen to auth changes
@@ -170,7 +170,7 @@ sb.auth.onAuthStateChange((event,session)=>{
     document.getElementById('li-pass').placeholder='Nueva contraseña';
     document.getElementById('li-btn').onclick=doResetPassword;
     document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Guardar nueva contraseña';
-    setLoginStatus('Ingresá tu nueva contraseña','#F59E0B');
+    setLoginStatus('Ingresá tu nueva contraseña','var(--amber)');
     document.getElementById('login-wall').style.display='flex';
     document.getElementById('ui').style.display='none';
   }
@@ -178,10 +178,10 @@ sb.auth.onAuthStateChange((event,session)=>{
 
 async function doResetPassword(){
   const pass=document.getElementById('li-pass').value;
-  if(pass.length<6){setLoginStatus('Mínimo 6 caracteres','#F87171');return;}
+  if(pass.length<6){setLoginStatus('Mínimo 6 caracteres','var(--red)');return;}
   const {error}=await sb.auth.updateUser({password:pass});
-  if(error) setLoginStatus('Error: '+error.message,'#F87171');
-  else { setLoginStatus('✓ Contraseña actualizada','#34D399'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
+  if(error) setLoginStatus('Error: '+error.message,'var(--red)');
+  else { setLoginStatus('Contraseña actualizada','var(--green)'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
@@ -497,13 +497,13 @@ function toast(msg,ok=true){
   // Limpiar ✓ del inicio del mensaje (evita doble ✓ heredado de calls anteriores)
   const cleanMsg=(msg||'').replace(/^[✓\s]+/,'');
   if(ok){
-    t.style.background='linear-gradient(135deg,rgba(27,158,143,0.12),rgba(11,197,184,0.08))';
+    t.style.background='var(--grad-soft)';
     t.style.borderColor='rgba(27,158,143,0.35)';
-    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
+    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>';
   } else {
-    t.style.background='rgba(244,63,94,0.15)';
-    t.style.borderColor='rgba(244,63,94,0.4)';
-    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    t.style.background='rgba(220,38,38,0.10)';
+    t.style.borderColor='rgba(220,38,38,0.35)';
+    if(ico) ico.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   }
   m.textContent=cleanMsg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);

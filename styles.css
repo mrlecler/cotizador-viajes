@@ -36,6 +36,7 @@
   --c-excursion:#FFF8E3;  --c-excursion-acc:#D4A017;
   /* Utiles */
   --green:#059669;--red:#DC2626;--amber:#F59E0B;--amber2:#D97706;
+  --amber-bg:#FEF3C7;--amber-text:#92400E;
   /* Legacy compat — evitan romper componentes existentes */
   --white:#FFFFFF;
   --ink:var(--bg);--ink2:var(--surface);--ink3:var(--surface2);
@@ -52,6 +53,9 @@ input:focus,textarea:focus,select:focus{
   box-shadow:0 0 0 3px rgba(27,158,143,.15)!important
 }
 .spin{animation:spin .7s linear infinite;display:inline-block}
+.spin-tq{width:14px;height:14px;border:2px solid rgba(27,158,143,.25);border-top-color:var(--primary);border-radius:50%;vertical-align:middle}
+.edit-banner{background:var(--amber-bg);border:1.5px solid var(--amber);border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:.84rem;font-weight:600;color:var(--amber-text)}
+.edit-banner-btn{margin-left:auto;flex-shrink:0;background:none;border:1.5px solid var(--amber2);border-radius:6px;padding:5px 12px;font-size:.76rem;font-weight:700;color:var(--amber-text);cursor:pointer}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}

@@ -1,6 +1,6 @@
 async function renderHistory(){
   const el=document.getElementById('hist-list');
-  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(27,158,143,.25);border-top-color:#1B9E8F;border-radius:50%;vertical-align:middle"></span> Cargando...</div>';
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
   const rows=await dbLoadQuotes();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase();
@@ -65,11 +65,11 @@ function _showEditBanner(refId){
   if(!banner){
     banner = document.createElement('div');
     banner.id = 'edit-banner';
-    banner.style.cssText = 'background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:.84rem;font-weight:600;color:#92400E';
+    banner.className = 'edit-banner';
     const formPanel = document.getElementById('tab-form');
     if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
   }
-  banner.innerHTML = '<span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span>&nbsp;<button onclick="cancelEdit()" style="margin-left:auto;flex-shrink:0;background:none;border:1.5px solid #D97706;border-radius:6px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#92400E;cursor:pointer">✕ Descartar y crear nueva</button>';
+  banner.innerHTML = '<span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span><button onclick="cancelEdit()" class="edit-banner-btn">Descartar y crear nueva</button>';
   banner.style.display = 'flex';
 }
 
@@ -112,8 +112,6 @@ async function applyStatus(s){
   toast('✓ Estado actualizado a: '+s);
   renderHistory();
 }
-// kept for backwards compatibility
-async function changeStatus(id){ openStatusModal(id); }
 
 // ═══════════════════════════════════════════
 // CLIENTES

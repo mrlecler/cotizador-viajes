@@ -98,7 +98,7 @@ async function loadSeguros(){
 ALTER TABLE public.seguros ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Acceso autenticado" ON public.seguros
   FOR ALL USING (auth.role() = 'authenticated');</pre>
-          <div style="font-size:.72rem;color:rgba(196,181,253,.6);margin-top:8px">Click en el bloque SQL para copiarlo · Luego ir a Supabase Dashboard &rarr; SQL Editor &rarr; pegar y ejecutar.</div>
+          <div style="font-size:.72rem;color:var(--g3);margin-top:8px">Click en el bloque SQL para copiarlo · Luego ir a Supabase Dashboard &rarr; SQL Editor &rarr; pegar y ejecutar.</div>
         </div>`;
       } else {
         el.innerHTML=`<p style="color:var(--red);font-size:.8rem">Error al cargar seguros: ${error.message}</p>`;
