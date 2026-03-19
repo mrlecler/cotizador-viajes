@@ -39,6 +39,10 @@ function buildQuoteHTML(d){
   const pr=d.precios||{},cl=d.cliente||{},vi=d.viaje||{};
   const ini=(ag.nm||'M').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'M';
 
+  // Helper: background de sección con foto personalizada
+  const _sph=JSON.parse(localStorage.getItem('mp_sec_photos')||'{}');
+  const sphBg=(k,fb)=>{const u=(_sph[k]?.url||'').trim(),p=_sph[k]?.pos||'center center';return u?`url('${u}') ${p}/cover no-repeat,${fb}`:fb;};
+
   // Helper Lucide SVG: L(pathContent, size, stroke)
   const L=(p,sz=15,col='#1B9E8F')=>`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const LI={
@@ -143,7 +147,7 @@ function buildQuoteHTML(d){
 
   // ── VUELOS ─────────────────────────────────────────────────────────────────
   if((d.vuelos||[]).length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#0EA5E9,#1565C0)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg> Vuelos</div><div class="q-ph-badge">TRANSPORTE AÉREO</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('vuelos','linear-gradient(135deg,#0EA5E9,#1565C0)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg> Vuelos</div><div class="q-ph-badge">TRANSPORTE AÉREO</div></div></div>`;
     const rBP=(label,isRet,or,io,hs,fs,de,id2,hl,fl,al,num,esc,tesc,dur)=>`
     <div class="q-bp">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -203,7 +207,7 @@ function buildQuoteHTML(d){
   // ── HOTELES ────────────────────────────────────────────────────────────────
   (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>{
     const isP=h.tipo==='disney'||h.tipo==='universal';
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#FF8E53,#E65100)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> ${h.nombre}</div><div class="q-ph-badge">${h.noches?h.noches+' NOCHES':'ALOJAMIENTO'}</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('hotel','linear-gradient(135deg,#FF8E53,#E65100)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> ${h.nombre}</div><div class="q-ph-badge">${h.noches?h.noches+' NOCHES':'ALOJAMIENTO'}</div></div></div>`;
     if(isP){
       H+=`<div style="display:inline-flex;align-items:center;gap:5px;background:${h.tipo==='universal'?'linear-gradient(135deg,#374151,#111827)':'linear-gradient(135deg,#FF8E53,#E65100)'};color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:10px;text-transform:uppercase">${h.tipo==='universal'?'Paquete Universal':'Paquete Disney'}</div>`;
       H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
@@ -249,7 +253,7 @@ function buildQuoteHTML(d){
 
   // ── EXCURSIONES ────────────────────────────────────────────────────────────
   (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#43A047,#1B5E20)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> ${e.nombre}</div><div class="q-ph-badge">${e.categoria||'EXCURSIÓN'}</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('excursiones','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> ${e.nombre}</div><div class="q-ph-badge">${e.categoria||'EXCURSIÓN'}</div></div></div>`;
     H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
       ${e.desc?`<div style="font-size:10px;line-height:1.65;color:rgba(45,31,20,0.55);margin-bottom:10px">${e.desc}</div>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:${(e.inc||e.noinc)?'0':'0'}">
@@ -269,7 +273,7 @@ function buildQuoteHTML(d){
   // ── TRASLADOS ──────────────────────────────────────────────────────────────
   const trsOk=(d.traslados||[]).filter(t=>t.origen||t.destino);
   if(trsOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#E8826A,#C2185B)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/></svg> Traslados</div><div class="q-ph-badge">TRANSFERS</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('traslados','linear-gradient(135deg,#E8826A,#C2185B)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/></svg> Traslados</div><div class="q-ph-badge">TRANSFERS</div></div></div>`;
     trsOk.forEach(t=>{
       H+=`<div class="q-card">
         <div class="q-card-l">
@@ -286,7 +290,7 @@ function buildQuoteHTML(d){
   // ── AUTOS ──────────────────────────────────────────────────────────────────
   const autosOk=(d.autos||[]).filter(a=>a.proveedor);
   if(autosOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#FF8F00,#E65100)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/></svg> Alquiler de Autos</div><div class="q-ph-badge">RENT A CAR</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('autos','linear-gradient(135deg,#FF8F00,#E65100)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/></svg> Alquiler de Autos</div><div class="q-ph-badge">RENT A CAR</div></div></div>`;
     autosOk.forEach(a=>{
       const retiro=[a.retiro_fecha,a.retiro_hora].filter(Boolean).join(' ');
       const devol=[a.devolucion_fecha,a.devolucion_hora].filter(Boolean).join(' ');
@@ -310,7 +314,7 @@ function buildQuoteHTML(d){
   // ── CRUCEROS ───────────────────────────────────────────────────────────────
   const crucOk=(d.cruceros||[]).filter(c=>c.naviera);
   if(crucOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#0288D1,#01579B)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1"/></svg> Crucero</div><div class="q-ph-badge">CRUCERO</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('cruceros','linear-gradient(135deg,#0288D1,#01579B)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1"/></svg> Crucero</div><div class="q-ph-badge">CRUCERO</div></div></div>`;
     crucOk.forEach(c=>{
       const escalasArr=c.escalas?c.escalas.split(/\n/).filter(s=>s.trim()):[];
       H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
@@ -330,7 +334,7 @@ function buildQuoteHTML(d){
 
   // ── SEGURO ─────────────────────────────────────────────────────────────────
   if(d.seguro?.nombre){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Asistencia al viajero — ${d.seguro.nombre}</div><div class="q-ph-badge">SEGURO</div></div></div>
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('seguro','linear-gradient(135deg,#9B7FD4,#6D28D9)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Asistencia al viajero — ${d.seguro.nombre}</div><div class="q-ph-badge">SEGURO</div></div></div>
     <div class="seg-grid">${[
       [LI.med,'Cobertura médica',d.seguro.cobertura_medica],
       [LI.luggage,'Equipaje',d.seguro.equipaje_seg],
@@ -344,7 +348,7 @@ function buildQuoteHTML(d){
   // ── TICKETS ────────────────────────────────────────────────────────────────
   const tksOk=(d.tickets||[]).filter(t=>t.nombre);
   if(tksOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:linear-gradient(135deg,#43A047,#1B5E20)"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg> Tickets y Entradas</div><div class="q-ph-badge">TICKETS</div></div></div>`;
+    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('tickets','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg> Tickets y Entradas</div><div class="q-ph-badge">TICKETS</div></div></div>`;
     tksOk.forEach(t=>{
       H+=`<div class="q-card">
         <div class="q-card-l">

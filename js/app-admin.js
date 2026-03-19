@@ -215,13 +215,6 @@ function addTicket(d){
   d=d||{};const id=++tkc;
   const el=document.createElement('div');el.className='rep';el.id='tkb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
-    <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Ticket</div>
-      <div class="sec-photo-badge">ENTRADA ${id}</div>
-    </div>
-  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Ticket ${id}</div>
     <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
   <div class="g3">
@@ -339,6 +332,80 @@ function openAgentModal(){
 // ═══════════════════════════════════════════
 function openModal(){document.getElementById('modal-overlay').style.display='block';document.getElementById('modal-box').style.display='block';}
 function closeModal(){document.getElementById('modal-overlay').style.display='none';document.getElementById('modal-box').style.display='none';}
+
+// ═══════════════════════════════════════════
+// IMÁGENES DE SECCIONES DEL FORMULARIO
+// ═══════════════════════════════════════════
+const _SPH_KEY='mp_sec_photos';
+const _SPH_SECS=[
+  {k:'vuelos',      el:'sph-vuelos',      lbl:'Vuelos',               fb:'linear-gradient(135deg,#0EA5E9,#1565C0)'},
+  {k:'hotel',       el:'sph-hotel',       lbl:'Alojamiento',          fb:'linear-gradient(135deg,#FF8E53,#E65100)'},
+  {k:'traslados',   el:'sph-traslados',   lbl:'Traslados',            fb:'linear-gradient(135deg,#E8826A,#C2185B)'},
+  {k:'excursiones', el:'sph-excursiones', lbl:'Excursiones',          fb:'linear-gradient(135deg,#43A047,#1B5E20)'},
+  {k:'tickets',     el:'sph-tickets',     lbl:'Tickets / Entradas',   fb:'linear-gradient(135deg,#43A047,#1B5E20)'},
+  {k:'autos',       el:'sph-autos',       lbl:'Alquiler de Autos',    fb:'linear-gradient(135deg,#FF8F00,#E65100)'},
+  {k:'cruceros',    el:'sph-cruceros',    lbl:'Cruceros',             fb:'linear-gradient(135deg,#0288D1,#01579B)'},
+  {k:'seguro',      el:'sph-seguro',      lbl:'Asistencia al viajero',fb:'linear-gradient(135deg,#9B7FD4,#6D28D9)'},
+];
+
+function _applySecPhotos(){
+  const saved=JSON.parse(localStorage.getItem(_SPH_KEY)||'{}');
+  _SPH_SECS.forEach(s=>{
+    const el=document.getElementById(s.el);
+    if(!el) return;
+    const url=(saved[s.k]?.url||'').trim();
+    const pos=saved[s.k]?.pos||'center center';
+    el.style.background=url
+      ?`url('${url}') ${pos}/cover no-repeat,${s.fb}`
+      :s.fb;
+  });
+}
+
+function _loadSecPhotoAdmin(){
+  const saved=JSON.parse(localStorage.getItem(_SPH_KEY)||'{}');
+  _SPH_SECS.forEach(s=>{
+    const u=document.getElementById('spc-'+s.k+'-url');
+    const p=document.getElementById('spc-'+s.k+'-pos');
+    if(u) u.value=saved[s.k]?.url||'';
+    if(p) p.value=saved[s.k]?.pos||'center center';
+    _sphUpdatePreview(s.k);
+  });
+}
+
+function _sphUpdatePreview(k){
+  const u=document.getElementById('spc-'+k+'-url');
+  const p=document.getElementById('spc-'+k+'-pos');
+  const prev=document.getElementById('spc-'+k+'-prev');
+  if(!prev) return;
+  const url=(u?.value||'').trim();
+  const pos=p?.value||'center center';
+  const s=_SPH_SECS.find(x=>x.k===k);
+  prev.style.background=url
+    ?`url('${url}') ${pos}/cover no-repeat,${s.fb}`
+    :s.fb;
+}
+
+function _saveSecPhotos(){
+  const data={};
+  _SPH_SECS.forEach(s=>{
+    const url=(document.getElementById('spc-'+s.k+'-url')?.value||'').trim();
+    const pos=document.getElementById('spc-'+s.k+'-pos')?.value||'center center';
+    if(url) data[s.k]={url,pos};
+  });
+  localStorage.setItem(_SPH_KEY,JSON.stringify(data));
+  _applySecPhotos();
+  toast('Imágenes de secciones guardadas');
+}
+
+function _resetSecPhotos(){
+  if(!confirm('¿Restaurar todas las imágenes a las predeterminadas?')) return;
+  localStorage.removeItem(_SPH_KEY);
+  _applySecPhotos();
+  _loadSecPhotoAdmin();
+  toast('Imágenes restauradas');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{ _applySecPhotos(); });
 
 // ═══════════════════════════════════════════
 // BUILD QUOTE HTML (PDF renderer)

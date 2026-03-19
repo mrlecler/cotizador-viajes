@@ -413,7 +413,7 @@ function switchTab(id){
   if(id==='form' && formDraft){ restoreDraft(formDraft); }
   if(id==='history') renderHistory();
   if(id==='clients') renderClients();
-  if(id==='admin') renderAdmin();
+  if(id==='admin'){renderAdmin();if(typeof _loadSecPhotoAdmin==='function')_loadSecPhotoAdmin();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio') loadDashboardMetrics();
 }
