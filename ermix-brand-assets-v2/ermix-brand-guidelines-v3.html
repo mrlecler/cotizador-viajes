@@ -3,728 +3,1022 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ermix — Brand Guidelines v3</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>ermix — Brand Guidelines v3 · Todas las pantallas</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%231B9E8F'/%3E%3Cstop offset='0.5' stop-color='%230BC5B8'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Ctext x='16' y='23' font-family='DM Sans,sans-serif' font-size='20' font-weight='900' fill='white' text-anchor='middle'%3EX%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: #0F0E12; color: white; line-height: 1.5; }
-
-/* ── Layout ── */
-.page { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
-.section { margin-bottom: 56px; }
-.section-title {
-  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.25); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 12px;
-}
-.section-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.07); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0A0E0B;color:#F0EDE6;line-height:1.5;font-size:13px}
+.page{max-width:1200px;margin:0 auto;padding:48px 32px}
 
 /* ── Header ── */
-.header {
-  padding: 40px; background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07); border-radius: 20px;
-  margin-bottom: 48px; display: flex; align-items: center; gap: 32px;
-}
-.logo-display {
-  width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0;
-  background: linear-gradient(135deg, #1B9E8F, #0BC5B8, #06B6D4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; font-weight: 900; color: white; letter-spacing: -1px;
-}
-.brand-name {
-  font-size: 48px; font-weight: 900; letter-spacing: -2px;
-  background: linear-gradient(135deg, #1B9E8F, #0BC5B8, #06B6D4);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.brand-version {
-  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3);
-  letter-spacing: 2px; text-transform: uppercase; margin-top: 4px;
-}
-.brand-rule {
-  font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 8px; line-height: 1.6;
+.doc-header{display:flex;align-items:center;gap:24px;padding:36px 40px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;margin-bottom:56px}
+.doc-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:white;flex-shrink:0}
+.doc-wordmark{font-size:44px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.doc-sub{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.doc-desc{font-size:13px;color:rgba(255,255,255,0.45);margin-top:6px;max-width:520px;line-height:1.6}
+
+/* ── Sections ── */
+.sec{margin-bottom:64px}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06)}
+
+/* ── Screen frames ── */
+.screens-row{display:grid;gap:24px}
+.screens-2{grid-template-columns:1fr 1fr}
+.screens-3{grid-template-columns:1fr 1fr 1fr}
+.screen-frame{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.screen-cap{padding:10px 14px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
+.screen-cap-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6)}
+.screen-cap-sub{font-size:9px;color:rgba(255,255,255,0.3)}
+.screen-badge{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(27,158,143,0.15);color:#1B9E8F;border:1px solid rgba(27,158,143,0.25)}
+
+/* ── ermix CSS Variables ── */
+/* LIGHT */
+:root{
+  --bg:#F5F0E8;--surface:#FFFFFF;--surface2:#EDE8DF;
+  --text:#2D1F14;--muted:rgba(45,31,20,0.52);
+  --g1:#EDE8DF;--g2:#E2DAD0;--g3:rgba(45,31,20,0.32);--g4:rgba(45,31,20,0.55);
+  --border:rgba(45,31,20,0.07);--border2:rgba(45,31,20,0.13);
+  --sh:0 2px 10px rgba(45,31,20,0.07),0 1px 3px rgba(45,31,20,0.04);
+  --sh2:0 8px 28px rgba(45,31,20,0.13);
+  --r:14px;--r2:8px;
+  --primary:#1B9E8F;--primary2:#0BC5B8;--primary3:#06B6D4;
+  --grad:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);
+  --c-vuelos:#E8F7F3;--c-vuelos-acc:#1B9E8F;
+  --c-hotel:#FFF8E3;--c-hotel-acc:#D4A017;
+  --c-traslado:#FFF0EC;--c-traslado-acc:#E8826A;
+  --c-seguro:#F0EEF9;--c-seguro-acc:#9B7FD4;
+  --c-auto:#FFF0EC;--c-auto-acc:#E8826A;
+  --c-crucero:#E8F4FD;--c-crucero-acc:#0EA5E9;
+  --c-excursion:#FFF8E3;--c-excursion-acc:#D4A017;
 }
 
-/* ── Grid layouts ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+/* ── PANTALLAS ── */
+.app-shell{background:var(--bg);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;min-height:420px}
+.app-layout{display:flex;flex:1;overflow:hidden}
 
-/* ── Color cards ── */
-.color-card {
-  border-radius: 12px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.07);
-}
-.color-swatch { height: 64px; }
-.color-info { padding: 12px; background: rgba(255,255,255,0.04); }
-.color-name { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 3px; }
-.color-hex { font-size: 11px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.4); }
-.color-use { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+/* Sidebar colapsado (default) */
+.sb{width:54px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px;transition:width 0.22s ease}
+.sb-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:13px;font-weight:900;color:white;flex-shrink:0}
+.sb-item{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+.sb-item svg{stroke:rgba(45,31,20,0.28);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;width:16px;height:16px;flex-shrink:0}
+.sb-item.on{background:rgba(27,158,143,0.1)}
+.sb-item.on svg{stroke:#1B9E8F}
+.sb-item-lbl{display:none;font-size:11px;font-weight:600;color:rgba(45,31,20,0.6);white-space:nowrap;margin-left:2px}
+.sb-item.on .sb-item-lbl{color:#1B9E8F}
+.sb-div{width:24px;height:1px;background:var(--border);margin:3px 0;transition:width 0.22s}
+.sb-av{margin-top:auto;width:30px;height:30px;border-radius:50%;background:rgba(27,158,143,0.1);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#1B9E8F;flex-shrink:0}
+/* Botón toggle sidebar */
+.sb-toggle{width:34px;height:28px;border-radius:8px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:4px}
+.sb-toggle svg{stroke:rgba(45,31,20,0.3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:13px;height:13px}
 
-/* ── Pastel section cards ── */
-.pastel-card {
-  border-radius: 12px; padding: 16px; border: 1px solid rgba(0,0,0,0.06);
-}
-.pastel-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-.pastel-hex { font-size: 10px; font-family: 'DM Mono', monospace; opacity: 0.6; margin-bottom: 3px; }
-.pastel-use { font-size: 10px; opacity: 0.5; }
+/* Sidebar expandido (.sb.open) */
+.sb.open{width:200px;align-items:flex-start;padding:10px 8px}
+.sb.open .sb-item{width:100%;justify-content:flex-start;padding:0 8px;gap:8px}
+.sb.open .sb-item-lbl{display:block}
+.sb.open .sb-div{width:100%;margin:3px 0}
+.sb.open .sb-toggle{width:100%;justify-content:flex-end;padding-right:4px}
+.sb.open .sb-av{margin:4px 8px 0}
 
-/* ── Photo header demo ── */
-.photo-hd-demo {
-  height: 72px; border-radius: 12px; overflow: hidden; position: relative;
-  display: flex; align-items: flex-end;
-}
-.photo-hd-demo::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%);
-}
-.photo-hd-bar {
-  position: relative; z-index: 1; padding: 8px 12px;
-  display: flex; align-items: center; justify-content: space-between; width: 100%;
-}
-.photo-hd-title {
-  font-size: 12px; font-weight: 800; color: white;
-  display: flex; align-items: center; gap: 7px;
-}
-.photo-hd-title svg { stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.photo-hd-badge {
-  font-size: 8px; font-weight: 700; padding: 2px 8px;
-  border-radius: 20px; background: rgba(255,255,255,0.2); color: white;
-}
-.photo-hd-deco {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  opacity: 0.2;
-}
-.photo-hd-deco svg { stroke: white; fill: none; width: 30px; height: 30px; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── Sidebar demo ── */
-.sidebar-demo {
-  width: 54px; background: white; border-radius: 14px;
-  padding: 12px 0; display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-.sb-logo-d {
-  width: 34px; height: 34px; border-radius: 10px; margin-bottom: 8px;
-  background: linear-gradient(135deg, #1B9E8F, #0BC5B8);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 900; color: white;
-}
-.sb-item-d {
-  width: 38px; height: 38px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-}
-.sb-item-d svg { stroke: rgba(45,31,20,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; width: 16px; height: 16px; }
-.sb-item-d.on { background: rgba(27,158,143,0.1); }
-.sb-item-d.on svg { stroke: #1B9E8F; }
-.sb-div-d { width: 24px; height: 1px; background: rgba(45,31,20,0.08); margin: 4px 0; }
-.sb-av-d {
-  margin-top: auto; width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(27,158,143,0.1); border: 2px solid rgba(45,31,20,0.12);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 800; color: #1B9E8F;
-}
+/* Content area */
+.cnt{flex:1;overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}
+.topbar{height:44px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:700;color:var(--text);flex:1;letter-spacing:-0.3px}
+.topbar-meta{font-size:10px;color:var(--g3)}
+.topbar-btn{height:28px;padding:0 12px;border-radius:8px;font-size:11px;font-weight:700;color:white;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px}
+.topbar-btn svg{stroke:white;fill:none;width:9px;height:9px;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.topbar-btn-sec{height:28px;padding:0 12px;border-radius:8px;font-size:11px;font-weight:700;color:var(--text);border:1px solid var(--border2);background:var(--surface);font-family:'DM Sans',sans-serif}
 
-/* ── Icon grid ── */
-.icon-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 12px; }
-.icon-item {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 10px; padding: 12px 8px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-}
-.icon-item svg { stroke: rgba(255,255,255,0.6); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.icon-label { font-size: 8px; color: rgba(255,255,255,0.3); text-align: center; }
+.scroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* ── Typography demo ── */
-.typo-demo { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 24px; }
-.typo-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.typo-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-.typo-meta { font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25); min-width: 140px; }
+/* Photo header */
+.ph{height:56px;position:relative;overflow:hidden;display:flex;align-items:flex-end;flex-shrink:0}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.1) 60%,transparent 100%)}
+.ph-deco{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:0.18}
+.ph-deco svg{stroke:white;fill:none;width:28px;height:28px;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ph-bar{position:relative;z-index:1;padding:7px 12px;display:flex;align-items:center;justify-content:space-between;width:100%}
+.ph-title{font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:6px}
+.ph-title svg{stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:11px;height:11px}
+.ph-badge{font-size:7px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;letter-spacing:.5px;text-transform:uppercase}
 
-/* ── CSS Variables block ── */
-.code-block {
-  background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 20px; font-family: 'DM Mono', monospace;
-  font-size: 12px; line-height: 1.7; color: rgba(255,255,255,0.65);
-  overflow-x: auto; white-space: pre;
-}
-.code-block .comment { color: rgba(255,255,255,0.25); }
-.code-block .var { color: #0BC5B8; }
-.code-block .val { color: #F6C843; }
-.code-block .sec { color: #E8826A; }
+/* Section card */
+.sec-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden}
+.sec-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.field-row{display:grid;gap:6px}
+.fr-2{grid-template-columns:1fr 1fr}
+.fr-3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:3px}
+.flbl{font-size:8px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--g3)}
+.finput{background:var(--surface);border:1px solid var(--border2);border-radius:7px;padding:6px 9px;font-size:11px;font-weight:500;color:var(--text);font-family:'DM Sans',sans-serif}
 
-/* ── Buttons demo ── */
-.btn-demo { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.btn-pri {
-  padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700;
-  color: white; border: none; cursor: default; font-family: 'DM Sans', sans-serif;
-  background: linear-gradient(135deg, #1B9E8F, #0BC5B8);
-  display: inline-flex; align-items: center; gap: 7px;
-}
-.btn-pri svg { stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.btn-sec {
-  padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700;
-  color: #2D1F14; border: 1px solid rgba(45,31,20,0.15); cursor: default; font-family: 'DM Sans', sans-serif;
-  background: #F5F0E8;
-}
-.btn-danger {
-  padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700;
-  color: #F43F5E; border: 1px solid rgba(244,63,94,0.2); cursor: default; font-family: 'DM Sans', sans-serif;
-  background: rgba(244,63,94,0.08);
-}
-.btn-sm {
-  padding: 6px 13px; border-radius: 8px; font-size: 11px; font-weight: 700;
-  color: white; border: none; cursor: default; font-family: 'DM Sans', sans-serif;
-  background: linear-gradient(135deg, #1B9E8F, #0BC5B8);
-  display: inline-flex; align-items: center; gap: 5px;
-}
+/* Price box */
+.price-box{padding:8px 11px;border-radius:9px;display:flex;align-items:center;justify-content:space-between;border:1px solid}
+.price-lbl{font-size:8px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase}
+.price-val{font-size:14px;font-weight:800;letter-spacing:-.5px;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-/* ── Price box demo ── */
-.price-demo {
-  padding: 10px 14px; border-radius: 10px;
-  display: inline-flex; align-items: center; justify-content: space-between;
-  gap: 24px;
-}
-.price-lbl { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-.price-val {
-  font-size: 16px; font-weight: 800; letter-spacing: -0.5px;
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
+/* Metric card */
+.metric{background:var(--surface);border-radius:12px;padding:10px 12px;border:1px solid var(--border);box-shadow:var(--sh)}
+.metric-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g3);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.metric-lbl svg{width:10px;height:10px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.metric-val{font-size:22px;font-weight:900;letter-spacing:-1.5px;line-height:1;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.metric-sub{font-size:9px;color:var(--g3);margin-top:4px}
 
-/* ── Rule card ── */
-.rule-card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 16px;
-}
-.rule-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.rule-ok { color: #1B9E8F; }
-.rule-no { color: #F43F5E; }
-.rule-text { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+/* Dest card */
+.dest-strip{display:flex;gap:8px;overflow-x:auto;flex-shrink:0;padding-bottom:2px}
+.dest-strip::-webkit-scrollbar{height:3px}
+.dest-card{flex-shrink:0;width:72px;border-radius:11px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh)}
+.dest-img{height:46px;background-size:cover;background-position:center}
+.dest-lbl{padding:4px 5px;font-size:8px;font-weight:700;color:var(--text);background:var(--surface);text-align:center}
+
+/* Login screen */
+.login-bg{background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:320px;padding:24px}
+.login-card{background:var(--surface);border-radius:20px;padding:28px 24px;box-shadow:0 8px 40px rgba(45,31,20,0.12);border:1px solid var(--border);width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.login-wm{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--text)}
+.login-wm span{background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-sub{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g3);margin-top:-8px}
+.login-inputs{display:flex;flex-direction:column;gap:8px;width:100%}
+.login-input{background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;width:100%}
+.login-btn{width:100%;padding:10px;border-radius:9px;font-size:12px;font-weight:700;color:white;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);font-family:'DM Sans',sans-serif}
+.login-google{width:100%;padding:9px;border-radius:9px;font-size:12px;font-weight:600;color:var(--text);border:1px solid var(--border2);background:var(--surface);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+.login-link{font-size:10px;color:var(--primary)}
+.login-footer{font-size:9px;color:var(--g3)}
+
+/* Inicio screen */
+.inicio-wrap{padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.inicio-greeting{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.1}
+.inicio-sub{font-size:11px;color:var(--g3);margin-top:2px}
+.inicio-cta{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:700;color:white;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);border:none;font-family:'DM Sans',sans-serif}
+
+/* Historial */
+.hist-card{background:var(--surface);border-radius:12px;border:1px solid var(--border);box-shadow:var(--sh);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hist-dest{font-size:12px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.hist-meta{font-size:10px;color:var(--g3);margin-top:2px}
+.hist-status{font-size:8px;font-weight:700;padding:3px 8px;border-radius:20px}
+.hist-status.conf{background:rgba(27,158,143,0.1);color:#1B9E8F;border:1px solid rgba(27,158,143,0.2)}
+.hist-status.pend{background:rgba(212,160,23,0.1);color:#D4A017;border:1px solid rgba(212,160,23,0.2)}
+.hist-status.bor{background:var(--g1);color:var(--g4)}
+
+/* PDF portada */
+.pdf-cover{background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%);padding:16px;display:flex;flex-direction:column;gap:10px;min-height:160px;position:relative;overflow:hidden}
+.pdf-cover-glow{position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(27,158,143,0.25);border-radius:50%;filter:blur(30px)}
+.pdf-logo{font-size:14px;font-weight:900;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pdf-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(27,158,143,0.18);border:1px solid rgba(27,158,143,0.35);border-radius:100px;padding:3px 9px;font-size:8px;color:rgba(255,255,255,0.7);width:fit-content}
+.pdf-chip-name{color:#0BC5B8;font-weight:700}
+.pdf-dest-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:2px}
+.pdf-dest{font-size:22px;font-weight:900;color:white;letter-spacing:-.8px;line-height:1.1}
+.pdf-data-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.07);background:rgba(0,0,0,0.2)}
+.pdf-data-lbl{font-size:7px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:3px}
+.pdf-data-val{font-size:11px;font-weight:700;color:rgba(255,255,255,0.9)}
+.pdf-data-val.grad{background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Total bar */
+.total-bar{padding:10px 14px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.total-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75)}
+.total-sub{font-size:8px;color:rgba(255,255,255,0.55);margin-top:2px}
+.total-val{font-size:18px;font-weight:900;color:white;letter-spacing:-.5px}
+
+/* Código */
+.code-block{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:rgba(255,255,255,0.6);overflow-x:auto;white-space:pre}
+.cv{color:#0BC5B8}.cv2{color:#F6C843}.cc{color:rgba(255,255,255,0.25)}.cs{color:#E8826A}
+
+/* Chips de destino */
+.dest-chip-row{display:flex;gap:6px;flex-wrap:wrap}
+.dest-chip{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:700;border:1px solid var(--border2);background:var(--surface);color:var(--text)}
+
+/* Info box */
+.info-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
+.info-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.info-ok{color:#1B9E8F}.info-no{color:#F43F5E}
+.info-text{font-size:11px;color:rgba(255,255,255,0.4);line-height:1.7}
+
+.grid-2-info{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3-info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Tabla de colores */
+.color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.color-card{border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.color-swatch{height:52px}
+.color-info{padding:8px 10px;background:rgba(255,255,255,0.03)}
+.color-name{font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:2px}
+.color-hex{font-size:9px;font-family:'DM Mono',monospace;color:rgba(255,255,255,0.35)}
+.color-use{font-size:9px;color:rgba(255,255,255,0.25);margin-top:3px}
+
+.pastel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.pastel-card{border-radius:10px;padding:12px;border:1px solid rgba(0,0,0,0.05)}
+.pastel-title{font-size:11px;font-weight:700;margin-bottom:3px}
+.pastel-hex{font-size:9px;font-family:'DM Mono',monospace;opacity:.6;margin-bottom:2px}
+.pastel-use{font-size:9px;opacity:.5}
+
+.icon-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px}
+.icon-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.icon-item svg{stroke:rgba(255,255,255,0.55);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.icon-lbl{font-size:8px;color:rgba(255,255,255,0.3);text-align:center}
+
+.admin-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--sh)}
+.admin-ph{height:44px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:6px 12px}
+.admin-ph::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.65) 0%,transparent 60%)}
+.admin-ph-title{position:relative;z-index:1;font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:6px}
+.admin-ph-title svg{stroke:white;fill:none;width:11px;height:11px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.admin-body{padding:10px 12px}
+.admin-table-hdr{display:grid;gap:6px;padding:6px 8px;background:var(--g1);border-radius:6px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3)}
+.admin-row{display:grid;gap:6px;padding:7px 8px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text)}
+
+.profile-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);padding:16px}
+.profile-section-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.profile-section-title svg{stroke:#1B9E8F;fill:none;width:13px;height:13px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.logo-preview{width:60px;height:40px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-display">e</div>
-    <div>
-      <div class="brand-name">ermix</div>
-      <div class="brand-version">Brand Guidelines v3.0 · Marzo 2026</div>
-      <div class="brand-rule">Layla base + Thats photo headers · Light-first · DM Sans · Turquesa · Sin emojis</div>
-    </div>
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-logo">e</div>
+  <div>
+    <div class="doc-wordmark">ermix</div>
+    <div class="doc-sub">Brand Guidelines v3.0 · Marzo 2026 · Todas las pantallas</div>
+    <div class="doc-desc">Referencia visual completa para Cowork. Contiene: paleta, tipografía, variables CSS, íconos y las 10 pantallas de la app con CSS exacto de cada componente. Leer antes de cualquier cambio de UI.</div>
   </div>
+</div>
 
-  <!-- 1. LOGO -->
-  <div class="section">
-    <div class="section-title">1. Logo — Wordmark ermix</div>
-    <div class="grid-2">
-      <div class="rule-card">
-        <div class="rule-title"><span class="rule-ok">✓</span> Uso correcto</div>
-        <div class="rule-text">
-          • El nombre siempre en minúscula: <strong style="color:white">ermix</strong><br>
-          • El logo se construye dinámicamente con <code style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px">buildWordmark()</code> en <code style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px">js/app-core.js</code><br>
-          • <strong style="color:#F43F5E">⚠️ La X custom mantiene su forma y path SVG exactos — NO modificar</strong><br>
-          • Solo cambian los hexadecimales del gradiente dentro de <code style="font-family:'DM Mono',monospace;font-size:10px">buildWordmark()</code>:<br>
-          &nbsp;&nbsp;<code style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px">#4F46E5 → #1B9E8F</code><br>
-          &nbsp;&nbsp;<code style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px">#7C3AED → #0BC5B8</code><br>
-          &nbsp;&nbsp;<code style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:4px">#F43F5E → #06B6D4</code><br>
-          • LEER el código de <code style="font-family:'DM Mono',monospace;font-size:10px">buildWordmark()</code> antes de hacer cualquier cambio
-        </div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-title"><span class="rule-no">✗</span> Uso incorrecto</div>
-        <div class="rule-text">
-          • Nunca escribir "Ermix", "ERMIX" o "ErMix"<br>
-          • Nunca usar el gradiente violeta-coral del v2<br>
-          • Nunca modificar el path SVG de la X custom<br>
-          • Nunca separar el logo en partes<br>
-          • Nunca colocar el logo del agente en el header de la app<br>
-          • El logo del agente solo va en el PDF de cotización<br>
-          • Nunca usar emojis como sustituto del logo
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- ═══ 1. PALETA ═══ -->
+<div class="sec">
+<div class="sec-label">1 · Paleta de colores</div>
+<div class="color-grid">
+  <div class="color-card"><div class="color-swatch" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)"></div><div class="color-info"><div class="color-name">Turquesa ermix</div><div class="color-hex">#1B9E8F → #0BC5B8</div><div class="color-use">Acento, botones, logo, activos</div></div></div>
+  <div class="color-card"><div class="color-swatch" style="background:#F5F0E8;border-bottom:1px solid rgba(0,0,0,0.08)"></div><div class="color-info"><div class="color-name">Crema base</div><div class="color-hex">#F5F0E8</div><div class="color-use">Fondo light, inputs</div></div></div>
+  <div class="color-card"><div class="color-swatch" style="background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.08)"></div><div class="color-info"><div class="color-name">Blanco surface</div><div class="color-hex">#FFFFFF</div><div class="color-use">Cards, sidebar, topbar</div></div></div>
+  <div class="color-card"><div class="color-swatch" style="background:#2D1F14"></div><div class="color-info"><div class="color-name">Marrón texto</div><div class="color-hex">#2D1F14</div><div class="color-use">Texto principal light</div></div></div>
+  <div class="color-card"><div class="color-swatch" style="background:#0D120F"></div><div class="color-info"><div class="color-name">Verde oscuro</div><div class="color-hex">#0D120F</div><div class="color-use">Fondo dark, portada PDF</div></div></div>
+</div>
+<div class="pastel-grid">
+  <div class="pastel-card" style="background:#E8F7F3;color:#1B6B60"><div class="pastel-title">Menta — Vuelos</div><div class="pastel-hex">#E8F7F3 · acc #1B9E8F</div><div class="pastel-use">Photo hdr: #0EA5E9→#1565C0</div></div>
+  <div class="pastel-card" style="background:#FFF8E3;color:#8B6914"><div class="pastel-title">Amarillo — Hoteles</div><div class="pastel-hex">#FFF8E3 · acc #D4A017</div><div class="pastel-use">Photo hdr: #FF8E53→#E65100</div></div>
+  <div class="pastel-card" style="background:#FFF0EC;color:#8B3A2A"><div class="pastel-title">Durazno — Traslados</div><div class="pastel-hex">#FFF0EC · acc #E8826A</div><div class="pastel-use">Photo hdr: #E8826A→#C2185B</div></div>
+  <div class="pastel-card" style="background:#F0EEF9;color:#5B4A8A"><div class="pastel-title">Lavanda — Seguros</div><div class="pastel-hex">#F0EEF9 · acc #9B7FD4</div><div class="pastel-use">Photo hdr: #9B7FD4→#6D28D9</div></div>
+</div>
+</div>
 
-  <!-- 2. PALETA PRINCIPAL -->
-  <div class="section">
-    <div class="section-title">2. Paleta de colores principal</div>
-    <div class="grid-5">
-      <div class="color-card">
-        <div class="color-swatch" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)"></div>
-        <div class="color-info">
-          <div class="color-name">Turquesa ermix</div>
-          <div class="color-hex">#1B9E8F → #0BC5B8</div>
-          <div class="color-use">Acento principal, botones, logo, links activos</div>
-        </div>
-      </div>
-      <div class="color-card">
-        <div class="color-swatch" style="background:#F5F0E8;border-bottom:1px solid rgba(0,0,0,0.08)"></div>
-        <div class="color-info">
-          <div class="color-name">Crema base</div>
-          <div class="color-hex">#F5F0E8</div>
-          <div class="color-use">Fondo light mode, inputs, scroll area</div>
-        </div>
-      </div>
-      <div class="color-card">
-        <div class="color-swatch" style="background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,0.08)"></div>
-        <div class="color-info">
-          <div class="color-name">Blanco surface</div>
-          <div class="color-hex">#FFFFFF</div>
-          <div class="color-use">Cards, sidebar, topbar, modales</div>
-        </div>
-      </div>
-      <div class="color-card">
-        <div class="color-swatch" style="background:#2D1F14"></div>
-        <div class="color-info">
-          <div class="color-name">Marrón texto</div>
-          <div class="color-hex">#2D1F14</div>
-          <div class="color-use">Texto principal en light mode</div>
-        </div>
-      </div>
-      <div class="color-card">
-        <div class="color-swatch" style="background:#0D120F"></div>
-        <div class="color-info">
-          <div class="color-name">Verde oscuro</div>
-          <div class="color-hex">#0D120F</div>
-          <div class="color-use">Fondo dark mode</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. CSS VARIABLES -->
-  <div class="section">
-    <div class="section-title">3. Variables CSS — styles.css</div>
-    <div class="code-block"><span class="comment">/* ── LIGHT MODE (default) ── */</span>
+<!-- ═══ 2. CSS VARIABLES ═══ -->
+<div class="sec">
+<div class="sec-label">2 · Variables CSS — reemplazar :root y [data-theme="dark"] completos</div>
+<div class="code-block"><span class="cc">/* ── LIGHT (default) ── */</span>
 :root {
-  <span class="var">--bg</span>:         <span class="val">#F5F0E8</span>;   <span class="comment">/* Crema base */</span>
-  <span class="var">--surface</span>:    <span class="val">#FFFFFF</span>;   <span class="comment">/* Cards y sidebar */</span>
-  <span class="var">--surface2</span>:   <span class="val">#EDE8DF</span>;   <span class="comment">/* Headers de card */</span>
-  <span class="var">--text</span>:       <span class="val">#2D1F14</span>;   <span class="comment">/* Texto principal */</span>
-  <span class="var">--muted</span>:      <span class="val">rgba(45,31,20,0.52)</span>;
-  <span class="var">--g1</span>:         <span class="val">#EDE8DF</span>;
-  <span class="var">--g2</span>:         <span class="val">#E2DAD0</span>;
-  <span class="var">--g3</span>:         <span class="val">rgba(45,31,20,0.32)</span>;  <span class="comment">/* Labels */</span>
-  <span class="var">--g4</span>:         <span class="val">rgba(45,31,20,0.55)</span>;  <span class="comment">/* Texto secundario */</span>
-  <span class="var">--border</span>:     <span class="val">rgba(45,31,20,0.07)</span>;
-  <span class="var">--border2</span>:    <span class="val">rgba(45,31,20,0.13)</span>;
-  <span class="var">--sh</span>:         <span class="val">0 2px 10px rgba(45,31,20,0.07), 0 1px 3px rgba(45,31,20,0.04)</span>;
-  <span class="var">--sh2</span>:        <span class="val">0 8px 28px rgba(45,31,20,0.13)</span>;
-  <span class="var">--r</span>:          <span class="val">14px</span>;   <span class="comment">/* Border radius principal */</span>
-  <span class="var">--r2</span>:         <span class="val">8px</span>;    <span class="comment">/* Border radius secundario */</span>
-
-  <span class="comment">/* Acento turquesa */</span>
-  <span class="var">--primary</span>:    <span class="val">#1B9E8F</span>;
-  <span class="var">--primary2</span>:   <span class="val">#0BC5B8</span>;
-  <span class="var">--primary3</span>:   <span class="val">#06B6D4</span>;
-  <span class="var">--grad</span>:       <span class="val">linear-gradient(135deg, #1B9E8F 0%, #0BC5B8 50%, #06B6D4 100%)</span>;
-
-  <span class="comment">/* Colores por sección */</span>
-  <span class="sec">--c-vuelos</span>:       <span class="val">#E8F7F3</span>;  <span class="sec">--c-vuelos-acc</span>:       <span class="val">#1B9E8F</span>;
-  <span class="sec">--c-hotel</span>:        <span class="val">#FFF8E3</span>;  <span class="sec">--c-hotel-acc</span>:        <span class="val">#D4A017</span>;
-  <span class="sec">--c-traslado</span>:     <span class="val">#FFF0EC</span>;  <span class="sec">--c-traslado-acc</span>:     <span class="val">#E8826A</span>;
-  <span class="sec">--c-seguro</span>:       <span class="val">#F0EEF9</span>;  <span class="sec">--c-seguro-acc</span>:       <span class="val">#9B7FD4</span>;
-  <span class="sec">--c-auto</span>:         <span class="val">#FFF0EC</span>;  <span class="sec">--c-auto-acc</span>:         <span class="val">#E8826A</span>;
-  <span class="sec">--c-crucero</span>:      <span class="val">#E8F4FD</span>;  <span class="sec">--c-crucero-acc</span>:      <span class="val">#0EA5E9</span>;
-  <span class="sec">--c-excursion</span>:    <span class="val">#FFF8E3</span>;  <span class="sec">--c-excursion-acc</span>:    <span class="val">#D4A017</span>;
+  <span class="cv">--bg</span>:        <span class="cv2">#F5F0E8</span>;    <span class="cv">--surface</span>:   <span class="cv2">#FFFFFF</span>;    <span class="cv">--surface2</span>:  <span class="cv2">#EDE8DF</span>;
+  <span class="cv">--text</span>:      <span class="cv2">#2D1F14</span>;    <span class="cv">--muted</span>:     <span class="cv2">rgba(45,31,20,0.52)</span>;
+  <span class="cv">--g1</span>:        <span class="cv2">#EDE8DF</span>;    <span class="cv">--g2</span>:        <span class="cv2">#E2DAD0</span>;
+  <span class="cv">--g3</span>:        <span class="cv2">rgba(45,31,20,0.32)</span>;    <span class="cv">--g4</span>: <span class="cv2">rgba(45,31,20,0.55)</span>;
+  <span class="cv">--border</span>:    <span class="cv2">rgba(45,31,20,0.07)</span>;   <span class="cv">--border2</span>: <span class="cv2">rgba(45,31,20,0.13)</span>;
+  <span class="cv">--sh</span>:        <span class="cv2">0 2px 10px rgba(45,31,20,0.07), 0 1px 3px rgba(45,31,20,0.04)</span>;
+  <span class="cv">--sh2</span>:       <span class="cv2">0 8px 28px rgba(45,31,20,0.13)</span>;
+  <span class="cv">--r</span>: <span class="cv2">14px</span>;  <span class="cv">--r2</span>: <span class="cv2">8px</span>;
+  <span class="cv">--primary</span>:   <span class="cv2">#1B9E8F</span>;  <span class="cv">--primary2</span>: <span class="cv2">#0BC5B8</span>;  <span class="cv">--primary3</span>: <span class="cv2">#06B6D4</span>;
+  <span class="cv">--grad</span>:      <span class="cv2">linear-gradient(135deg, #1B9E8F 0%, #0BC5B8 50%, #06B6D4 100%)</span>;
+  <span class="cs">--c-vuelos</span>:<span class="cv2">#E8F7F3</span>; <span class="cs">--c-vuelos-acc</span>:<span class="cv2">#1B9E8F</span>;
+  <span class="cs">--c-hotel</span>:<span class="cv2">#FFF8E3</span>;  <span class="cs">--c-hotel-acc</span>:<span class="cv2">#D4A017</span>;
+  <span class="cs">--c-traslado</span>:<span class="cv2">#FFF0EC</span>;<span class="cs">--c-traslado-acc</span>:<span class="cv2">#E8826A</span>;
+  <span class="cs">--c-seguro</span>:<span class="cv2">#F0EEF9</span>;  <span class="cs">--c-seguro-acc</span>:<span class="cv2">#9B7FD4</span>;
+  <span class="cs">--c-auto</span>:<span class="cv2">#FFF0EC</span>;    <span class="cs">--c-auto-acc</span>:<span class="cv2">#E8826A</span>;
+  <span class="cs">--c-crucero</span>:<span class="cv2">#E8F4FD</span>; <span class="cs">--c-crucero-acc</span>:<span class="cv2">#0EA5E9</span>;
+  <span class="cs">--c-excursion</span>:<span class="cv2">#FFF8E3</span>;<span class="cs">--c-excursion-acc</span>:<span class="cv2">#D4A017</span>;
 }
-
-<span class="comment">/* ── DARK MODE ── */</span>
+<span class="cc">/* ── DARK ── */</span>
 [data-theme="dark"] {
-  <span class="var">--bg</span>:         <span class="val">#0D120F</span>;
-  <span class="var">--surface</span>:    <span class="val">#141A16</span>;
-  <span class="var">--surface2</span>:   <span class="val">#1B231D</span>;
-  <span class="var">--text</span>:       <span class="val">#F0EDE6</span>;
-  <span class="var">--g3</span>:         <span class="val">rgba(240,237,230,0.28)</span>;
-  <span class="var">--border</span>:     <span class="val">rgba(255,255,255,0.07)</span>;
-  <span class="var">--sh</span>:         <span class="val">0 2px 10px rgba(0,0,0,0.45)</span>;
-  <span class="comment">/* Pasteles dark — versiones muy suaves */</span>
-  <span class="sec">--c-vuelos</span>:    <span class="val">rgba(27,158,143,0.1)</span>;
-  <span class="sec">--c-hotel</span>:     <span class="val">rgba(212,160,23,0.08)</span>;
-  <span class="sec">--c-traslado</span>:  <span class="val">rgba(232,130,106,0.08)</span>;
-  <span class="sec">--c-seguro</span>:    <span class="val">rgba(155,127,212,0.08)</span>;
+  <span class="cv">--bg</span>:<span class="cv2">#0D120F</span>; <span class="cv">--surface</span>:<span class="cv2">#141A16</span>; <span class="cv">--surface2</span>:<span class="cv2">#1B231D</span>;
+  <span class="cv">--text</span>:<span class="cv2">#F0EDE6</span>; <span class="cv">--g3</span>:<span class="cv2">rgba(240,237,230,0.28)</span>;
+  <span class="cv">--border</span>:<span class="cv2">rgba(255,255,255,0.07)</span>; <span class="cv">--border2</span>:<span class="cv2">rgba(255,255,255,0.13)</span>;
+  <span class="cv">--sh</span>:<span class="cv2">0 2px 10px rgba(0,0,0,0.45)</span>; <span class="cv">--sh2</span>:<span class="cv2">0 8px 28px rgba(0,0,0,0.55)</span>;
+  <span class="cs">--c-vuelos</span>:<span class="cv2">rgba(27,158,143,0.1)</span>;   <span class="cs">--c-hotel</span>:<span class="cv2">rgba(212,160,23,0.08)</span>;
+  <span class="cs">--c-traslado</span>:<span class="cv2">rgba(232,130,106,0.08)</span>;<span class="cs">--c-seguro</span>:<span class="cv2">rgba(155,127,212,0.08)</span>;
+  <span class="cs">--c-crucero</span>:<span class="cv2">rgba(14,165,233,0.08)</span>;  <span class="cs">--c-excursion</span>:<span class="cv2">rgba(212,160,23,0.08)</span>;
 }</div>
-  </div>
+</div>
 
-  <!-- 4. COLORES POR SECCIÓN -->
-  <div class="section">
-    <div class="section-title">4. Sistema de pasteles por tipo de sección</div>
-    <div class="grid-4">
-      <div class="pastel-card" style="background:#E8F7F3;color:#1B6B60">
-        <div class="pastel-title">Verde Menta — Vuelos</div>
-        <div class="pastel-hex">#E8F7F3 · acento #1B9E8F</div>
-        <div class="pastel-use">Cards de vuelo, métricas de cotizaciones, foto header azul</div>
+<!-- ═══ 3. PANTALLA LOGIN ═══ -->
+<div class="sec">
+<div class="sec-label">3 · Pantalla de Login</div>
+<div class="screens-row screens-2">
+  <div>
+    <div class="screen-frame">
+      <div class="screen-cap"><div><div class="screen-cap-title">Login — Light mode</div><div class="screen-cap-sub">Fondo crema, card blanca, logo visible</div></div><span class="screen-badge">LIGHT</span></div>
+      <div class="login-bg">
+        <div class="login-card">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="login-wm">ermi<span>X</span></div>
+            <div class="login-sub">Travel Platform</div>
+          </div>
+          <div class="login-inputs">
+            <input class="login-input" placeholder="tu@email.com" readonly>
+            <input class="login-input" placeholder="Contraseña" type="password" readonly>
+          </div>
+          <button class="login-btn">Iniciar sesión</button>
+          <button class="login-google">
+            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continuar con Google
+          </button>
+          <a class="login-link" href="#">¿Olvidaste tu contraseña?</a>
+          <div class="login-footer">Acceso restringido · Solo agentes autorizados</div>
+        </div>
       </div>
-      <div class="pastel-card" style="background:#FFF8E3;color:#8B6914">
-        <div class="pastel-title">Amarillo Pálido — Hoteles</div>
-        <div class="pastel-hex">#FFF8E3 · acento #D4A017</div>
-        <div class="pastel-use">Cards de hotel, comisiones, excursiones, foto header naranja</div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.7">
+      • Body: <code style="font-family:'DM Mono',monospace;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px">background: var(--bg)</code> — crema<br>
+      • Card: <code style="font-family:'DM Mono',monospace;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px">background: var(--surface)</code> — blanca<br>
+      • Logo "ermi": <code style="font-family:'DM Mono',monospace;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px">color: var(--text)</code> — oscuro sobre blanco<br>
+      • "X": gradiente turquesa siempre<br>
+      • Inputs: <code style="font-family:'DM Mono',monospace;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px">background: var(--bg)</code>
+    </div>
+  </div>
+  <div class="info-box" style="height:fit-content">
+    <div class="info-title"><span class="info-ok">✓</span> Reglas del login</div>
+    <div class="info-text">
+      • Fondo del body: <strong style="color:rgba(255,255,255,0.7)">var(--bg) = #F5F0E8</strong> — nunca violeta<br><br>
+      • La card nunca tiene fondo de color — siempre var(--surface) blanco<br><br>
+      • El logo se construye con buildWordmark(). El texto "ermi" hereda color del contenedor. En login: contenedor tiene color: var(--text) para que sea visible sobre card blanca<br><br>
+      • La "X" siempre tiene el gradiente turquesa — no cambia según tema<br><br>
+      • Botón Google: fondo var(--surface), borde var(--border2), texto var(--text)<br><br>
+      • Link contraseña: color var(--primary) = #1B9E8F<br><br>
+      <span class="info-no">✗</span> Nunca fondo violeta/oscuro en login<br>
+      <span class="info-no">✗</span> Nunca logo blanco sobre card blanca
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 4. SIDEBAR ═══ -->
+<div class="sec">
+<div class="sec-label">4 · Sidebar lateral — colapsado 54px / expandido 200px con toggle</div>
+<div class="screens-row screens-2">
+  <div style="display:flex;gap:20px;align-items:flex-start">
+    <!-- Sidebar COLAPSADO -->
+    <div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:6px">COLAPSADO · 54px</div>
+      <div style="background:white;border:1px solid rgba(45,31,20,0.08);border-radius:14px;width:54px;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 4px 20px rgba(45,31,20,0.08)">
+        <div class="sb-logo">e</div>
+        <!-- Toggle btn colapsado -->
+        <div style="width:34px;height:26px;border-radius:8px;border:1px solid rgba(45,31,20,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:2px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </div>
+        <div class="sb-item on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="sb-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="sb-div"></div>
+        <div class="sb-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="sb-av">DL</div>
       </div>
-      <div class="pastel-card" style="background:#FFF0EC;color:#8B3A2A">
-        <div class="pastel-title">Durazno — Traslados</div>
-        <div class="pastel-hex">#FFF0EC · acento #E8826A</div>
-        <div class="pastel-use">Traslados, alquiler de autos, foto header coral</div>
+    </div>
+
+    <!-- Sidebar EXPANDIDO -->
+    <div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:6px">EXPANDIDO · 200px · class="sb open"</div>
+      <div style="background:white;border:1px solid rgba(45,31,20,0.08);border-radius:14px;width:200px;padding:10px 8px;display:flex;flex-direction:column;gap:3px;box-shadow:0 4px 20px rgba(45,31,20,0.08)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding:0 4px">
+          <div class="sb-logo">e</div>
+          <!-- Toggle btn expandido → apunta a la izquierda -->
+          <div style="width:28px;height:26px;border-radius:8px;border:1px solid rgba(45,31,20,0.1);display:flex;align-items:center;justify-content:center">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+        </div>
+        <!-- Items con ícono + texto -->
+        <div style="width:100%;height:36px;border-radius:10px;background:rgba(27,158,143,0.1);display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span style="font-size:12px;font-weight:700;color:#1B9E8F;font-family:'DM Sans',sans-serif">Dashboard</span>
+        </div>
+        <div style="width:100%;height:36px;border-radius:10px;display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span style="font-size:12px;font-weight:600;color:rgba(45,31,20,0.55);font-family:'DM Sans',sans-serif">Cotizaciones</span>
+        </div>
+        <div style="width:100%;height:36px;border-radius:10px;display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span style="font-size:12px;font-weight:600;color:rgba(45,31,20,0.55);font-family:'DM Sans',sans-serif">Historial</span>
+        </div>
+        <div style="width:100%;height:36px;border-radius:10px;display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span style="font-size:12px;font-weight:600;color:rgba(45,31,20,0.55);font-family:'DM Sans',sans-serif">Clientes</span>
+        </div>
+        <div style="width:100%;height:1px;background:rgba(45,31,20,0.07);margin:3px 0"></div>
+        <div style="width:100%;height:36px;border-radius:10px;display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          <span style="font-size:12px;font-weight:600;color:rgba(45,31,20,0.55);font-family:'DM Sans',sans-serif">Admin</span>
+        </div>
+        <div style="width:100%;height:36px;border-radius:10px;display:flex;align-items:center;padding:0 8px;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.28)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span style="font-size:12px;font-weight:600;color:rgba(45,31,20,0.55);font-family:'DM Sans',sans-serif">Mi perfil</span>
+        </div>
+        <div style="margin-top:4px;padding:6px 8px;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(45,31,20,0.07);padding-top:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(27,158,143,0.1);border:2px solid rgba(45,31,20,0.1);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#1B9E8F;flex-shrink:0">DL</div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#2D1F14;font-family:'DM Sans',sans-serif">Diego Lecler</div>
+            <div style="font-size:9px;color:rgba(45,31,20,0.4);font-family:'DM Sans',sans-serif">Patoyro Travel</div>
+          </div>
+        </div>
       </div>
-      <div class="pastel-card" style="background:#F0EEF9;color:#5B4A8A">
-        <div class="pastel-title">Lavanda — Seguros</div>
-        <div class="pastel-hex">#F0EEF9 · acento #9B7FD4</div>
-        <div class="pastel-use">Seguros, métricas de conversión, foto header violeta</div>
+    </div>
+
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);line-height:1.9;flex:1">
+      • Colapsado: <strong style="color:rgba(255,255,255,0.6)">54px</strong>, solo íconos + tooltips CSS<br>
+      • Expandido: <strong style="color:rgba(255,255,255,0.6)">200px</strong>, <code>class="sb open"</code> — ícono + label<br>
+      • Toggle: ☰ abre, ← cierra. Guarda estado en <code>localStorage</code><br>
+      • Activo: <strong style="color:#1B9E8F">bg rgba(27,158,143,0.1), texto #1B9E8F</strong><br>
+      • Hover: background var(--g1)<br>
+      • Tooltip colapsado: CSS puro via ::after, aparece a la derecha<br>
+      • Avatar expandido: muestra nombre + agencia<br>
+      • Contenido con <code>margin-left</code> animado: 54px → 200px<br>
+      • Transición: <code>width 0.22s ease</code>
+    </div>
+  </div>
+  <div class="code-block" style="font-size:10px"><span class="cc">/* Tooltip CSS puro */</span>
+.sb-item { position: relative; }
+.sb-item::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%; transform: translateY(-50%);
+  background: <span class="cv">var(--text)</span>; color: <span class="cv">var(--surface)</span>;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 10px; border-radius: 7px;
+  white-space: nowrap; opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s; z-index: 200;
+}
+.sb-item:hover::after { opacity: 1; }</div>
+</div>
+</div>
+
+<!-- ═══ 5. PANTALLA INICIO ═══ -->
+<div class="sec">
+<div class="sec-label">5 · Pantalla de Inicio — nueva pantalla separada</div>
+<div class="screen-frame" style="max-width:500px">
+  <div class="screen-cap"><div class="screen-cap-title">Pantalla de Inicio</div><div class="screen-cap-sub">Primera pantalla al abrir la app — destinos + CTA</div></div>
+  <div class="app-shell" style="min-height:320px">
+    <div class="topbar">
+      <div class="topbar-title">Inicio</div>
+      <div class="topbar-meta">Diego Lecler</div>
+    </div>
+    <div class="inicio-wrap">
+      <div>
+        <div class="inicio-greeting">Hola, Diego</div>
+        <div class="inicio-sub">¿A dónde viajamos hoy?</div>
+      </div>
+      <div class="dest-strip">
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#FF8E53,#FE3752)"></div><div class="dest-lbl">Orlando</div></div>
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#4FC3F7,#0288D1)"></div><div class="dest-lbl">Miami</div></div>
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#546E7A,#1A237E)"></div><div class="dest-lbl">Nueva York</div></div>
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#FFD54F,#E65100)"></div><div class="dest-lbl">Las Vegas</div></div>
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#43E97B,#0DB8A0)"></div><div class="dest-lbl">Cancún</div></div>
+        <div class="dest-card"><div class="dest-img" style="background:linear-gradient(135deg,#CE93D8,#6A1B9A)"></div><div class="dest-lbl">París</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="inicio-cta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva cotización desde cero
+        </button>
+      </div>
+      <div style="font-size:10px;color:var(--g3);margin-top:4px">Al hacer click en un destino → autocompleta el formulario y navega a Nueva cotización</div>
+    </div>
+  </div>
+</div>
+<div style="margin-top:12px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.8">
+  • Cada card de destino: 72px ancho, foto 46px, label fondo var(--surface)<br>
+  • Al clickear: switchTab('form') + autocompletar destino, ciudad hotel, ciudad vuelo, IATA<br>
+  • IATA map: Orlando→MCO, Miami→MIA, NY→JFK, Vegas→LAS, Cancún→CUN, París→CDG, España→MAD, Roma→FCO, Dubai→DXB, Río→GIG<br>
+  • Si Unsplash falla → mostrar gradiente de fallback, nunca imagen rota
+</div>
+</div>
+
+<!-- ═══ 6. FORMULARIO ═══ -->
+<div class="sec">
+<div class="sec-label">6 · Formulario de cotización — secciones con photo headers</div>
+<div class="screens-row screens-2">
+
+  <!-- Demo formulario light -->
+  <div class="screen-frame">
+    <div class="screen-cap"><div class="screen-cap-title">Formulario — Light</div><div class="screen-cap-sub">Photo headers + pasteles + inputs blancos</div></div>
+    <div class="app-shell" style="min-height:500px">
+      <div class="topbar">
+        <div class="topbar-title">Nueva cotización</div>
+        <button class="topbar-btn"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Guardar</button>
+      </div>
+      <div class="scroll">
+        <!-- Vuelos -->
+        <div class="sec-card">
+          <div class="ph" style="background:linear-gradient(135deg,#0EA5E9,#1565C0)">
+            <div class="ph-deco"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+            <div class="ph-bar">
+              <div class="ph-title"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Vuelos</div>
+              <div class="ph-badge">IDA Y VUELTA</div>
+            </div>
+          </div>
+          <div class="sec-body" style="background:#E8F7F3">
+            <div class="field-row fr-2">
+              <div class="field"><div class="flbl">Origen</div><div class="finput">Buenos Aires (EZE)</div></div>
+              <div class="field"><div class="flbl">Destino</div><div class="finput">Orlando (MCO)</div></div>
+            </div>
+            <div class="field-row fr-3">
+              <div class="field"><div class="flbl">Salida</div><div class="finput">05/12/2026</div></div>
+              <div class="field"><div class="flbl">Regreso</div><div class="finput">12/12/2026</div></div>
+              <div class="field"><div class="flbl">Aerolínea</div><div class="finput">American Airlines</div></div>
+            </div>
+            <div class="price-box" style="background:#E8F7F3;border-color:rgba(27,158,143,0.25)">
+              <div><div class="price-lbl" style="color:rgba(27,158,143,0.6)">Precio vuelos</div></div>
+              <div class="price-val" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8)">USD 2.300</div>
+            </div>
+          </div>
+        </div>
+        <!-- Hotel -->
+        <div class="sec-card">
+          <div class="ph" style="background:linear-gradient(135deg,#FF8E53,#E65100)">
+            <div class="ph-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="ph-bar">
+              <div class="ph-title"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Alojamiento</div>
+              <div class="ph-badge">7 NOCHES</div>
+            </div>
+          </div>
+          <div class="sec-body" style="background:#FFF8E3">
+            <div class="field-row fr-2">
+              <div class="field"><div class="flbl">Hotel</div><div class="finput">Disney All Star Music</div></div>
+              <div class="field"><div class="flbl">Ciudad</div><div class="finput">Orlando, FL</div></div>
+            </div>
+            <div class="price-box" style="background:#FFF8E3;border-color:rgba(212,160,23,0.25)">
+              <div><div class="price-lbl" style="color:rgba(212,160,23,0.7)">Precio hotel</div></div>
+              <div class="price-val" style="background:linear-gradient(135deg,#D4A017,#E8826A)">USD 1.960</div>
+            </div>
+          </div>
+        </div>
+        <!-- Seguro -->
+        <div class="sec-card">
+          <div class="ph" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)">
+            <div class="ph-deco"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="ph-bar">
+              <div class="ph-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Asistencia al Viajero</div>
+              <div class="ph-badge">PAX</div>
+            </div>
+          </div>
+          <div class="sec-body" style="background:#F0EEF9">
+            <div class="field-row fr-2">
+              <div class="field"><div class="flbl">Aseguradora</div><div class="finput">PAX Assistance Gold</div></div>
+              <div class="field"><div class="flbl">Cobertura médica</div><div class="finput">USD 200.000</div></div>
+            </div>
+            <div class="price-box" style="background:#F0EEF9;border-color:rgba(155,127,212,0.25)">
+              <div><div class="price-lbl" style="color:rgba(155,127,212,0.7)">Precio seguro</div></div>
+              <div class="price-val" style="background:linear-gradient(135deg,#9B7FD4,#C4B5FD)">USD 320</div>
+            </div>
+          </div>
+        </div>
+        <!-- Total -->
+        <div class="total-bar">
+          <div><div class="total-lbl">Total del paquete</div><div class="total-sub">4 pax · USD 1.145 / persona</div></div>
+          <div class="total-val">USD 4.580</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 5. PHOTO HEADERS -->
-  <div class="section">
-    <div class="section-title">5. Photo headers — gradiente a sangrado completo</div>
-    <div class="grid-3" style="gap:10px">
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#0EA5E9,#1565C0)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-              Vuelos
-            </div>
-            <div class="photo-hd-badge">IDA Y VUELTA</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#0EA5E9 → #1565C0</div>
+  <!-- Reglas del formulario -->
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="info-box">
+      <div class="info-title"><span class="info-ok">✓</span> Reglas del formulario</div>
+      <div class="info-text">
+        • Fondo de la app: <strong style="color:rgba(255,255,255,0.7)">var(--bg) = #F5F0E8</strong><br>
+        • Cada sección es una card: bg var(--surface), border, shadow, overflow:hidden<br>
+        • Photo header 60px con gradiente fuerte + overlay oscuro<br>
+        • Body de la sección: bg pastel del tipo<br>
+        • Inputs SIEMPRE: bg var(--surface) = blanco<br>
+        • Labels: 9px, uppercase, letter-spacing 2px, color var(--g3)<br>
+        • Separación entre secciones: margin-bottom 16px<br>
+        • Total bar al final: gradiente turquesa, texto white
       </div>
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#FF8E53,#E65100)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-              Alojamiento
-            </div>
-            <div class="photo-hd-badge">7 NOCHES</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#FF8E53 → #E65100</div>
-      </div>
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#E8826A,#C2185B)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              Traslados
-            </div>
-            <div class="photo-hd-badge">2 TRAMOS</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#E8826A → #C2185B</div>
-      </div>
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#43A047,#1B5E20)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-              Excursiones
-            </div>
-            <div class="photo-hd-badge">KENNEDY</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#43A047 → #1B5E20</div>
-      </div>
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#0288D1,#01579B)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/></svg>
-              Crucero
-            </div>
-            <div class="photo-hd-badge">MSC SEASHORE</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#0288D1 → #01579B</div>
-      </div>
-
-      <div>
-        <div class="photo-hd-demo" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)">
-          <div class="photo-hd-deco"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div class="photo-hd-bar">
-            <div class="photo-hd-title">
-              <svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Asistencia al Viajero
-            </div>
-            <div class="photo-hd-badge">PAX Assistance</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">#9B7FD4 → #6D28D9</div>
-      </div>
-
     </div>
-
-    <!-- CSS del photo header -->
-    <div style="margin-top:16px" class="code-block"><span class="comment">/* ── CSS del photo header (igual en formulario y vista cliente) ── */</span>
-.sec-photo-hd {
-  height: 60px; position: relative; overflow: hidden;
-  display: flex; align-items: flex-end;
-}
-.sec-photo-hd::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%);
-}
-.sec-photo-deco {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  opacity: 0.2;
-}
-.sec-photo-deco svg { stroke: white; fill: none; width: 32px; height: 32px; }
-.sec-photo-bar {
-  position: relative; z-index: 1; padding: 8px 12px;
-  display: flex; align-items: center; justify-content: space-between; width: 100%;
-}
-.sec-photo-title {
-  font-size: 12px; font-weight: 800; color: white;
-  display: flex; align-items: center; gap: 7px;
-}
-.sec-photo-badge {
-  font-size: 8px; font-weight: 700; padding: 2px 8px;
-  border-radius: 20px; background: rgba(255,255,255,0.2); color: white;
-}</div>
-  </div>
-
-  <!-- 6. SIDEBAR -->
-  <div class="section">
-    <div class="section-title">6. Navegación — Sidebar lateral</div>
-    <div style="display:flex;gap:32px;align-items:flex-start">
-      <div class="sidebar-demo">
-        <div class="sb-logo-d">e</div>
-        <div class="sb-item-d on"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="sb-item-d"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div class="sb-item-d"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        <div class="sb-div-d"></div>
-        <div class="sb-item-d"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div class="sb-item-d"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
-        <div class="sb-item-d"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <div class="sb-av-d">DL</div>
-      </div>
-      <div style="flex:1">
-        <div class="code-block"><span class="comment">/* Sidebar: 54px fijo a la izquierda */</span>
-#sidebar {
-  position: fixed; left: 0; top: 0; bottom: 0;
-  width: 54px; background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  align-items: center; padding: 12px 0; gap: 4px; z-index: 50;
-}
-<span class="comment">/* Item activo */</span>
-.sb-item.on {
-  background: rgba(27,158,143,0.1);
-  color: var(--primary);
-}
-<span class="comment">/* Contenido principal desplazado */</span>
-#app-wrap { margin-left: 54px; }</div>
-        <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.7">
-          • Logo <strong style="color:white">ermix</strong> arriba — 34×34px, border-radius 10px, fondo gradiente turquesa<br>
-          • Items: SVG Lucide, 38×38px, border-radius 10px, hover: fondo <code style="font-family:'DM Mono',monospace;font-size:10px">var(--g1)</code><br>
-          • Ítem activo: fondo <code style="font-family:'DM Mono',monospace;font-size:10px">rgba(27,158,143,0.1)</code>, icono turquesa<br>
-          • Separador: línea de 24px, <code style="font-family:'DM Mono',monospace;font-size:10px">var(--border)</code><br>
-          • Avatar abajo: iniciales del agente, circular, fondo <code style="font-family:'DM Mono',monospace;font-size:10px">rgba(27,158,143,0.1)</code>
-        </div>
+    <div class="info-box">
+      <div class="info-title" style="color:rgba(255,255,255,0.5)">Gradientes photo headers</div>
+      <div class="info-text">
+        Vuelos: <strong style="color:#4FC3F7">#0EA5E9 → #1565C0</strong><br>
+        Hoteles: <strong style="color:#FF8E53">#FF8E53 → #E65100</strong><br>
+        Traslados: <strong style="color:#E8826A">#E8826A → #C2185B</strong><br>
+        Excursiones/Tickets: <strong style="color:#43A047">#43A047 → #1B5E20</strong><br>
+        Autos: <strong style="color:#FF8F00">#FF8F00 → #E65100</strong><br>
+        Cruceros: <strong style="color:#0288D1">#0288D1 → #01579B</strong><br>
+        Seguros: <strong style="color:#9B7FD4">#9B7FD4 → #6D28D9</strong>
       </div>
     </div>
   </div>
+</div>
+</div>
 
-  <!-- 7. TIPOGRAFÍA -->
-  <div class="section">
-    <div class="section-title">7. Tipografía — DM Sans exclusivamente</div>
-    <div class="typo-demo">
-      <div class="typo-row">
-        <div class="typo-meta">900 · 32px · -1.5px</div>
-        <div style="font-size:32px;font-weight:900;letter-spacing:-1.5px;color:white">Cotizá como una agencia grande.</div>
+<!-- ═══ 6b. PHOTO HEADERS VISUALES CON IMÁGENES ═══ -->
+<div class="sec">
+<div class="sec-label">6b · Photo headers — imagen real de Unsplash + overlay gradiente</div>
+<div style="margin-bottom:14px;padding:12px 16px;background:rgba(27,158,143,0.08);border:1px solid rgba(27,158,143,0.2);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.8">
+  <strong style="color:#1B9E8F">Implementación:</strong> Cada sección tiene un campo <code>photo_url</code> administrable desde Admin.<br>
+  Si el agente sube una foto → se usa como background-image del header. Si no hay foto → se muestra el gradiente de fallback.<br>
+  La foto va con <code>background-size:cover; background-position:center</code> y encima el overlay <code>linear-gradient(to top, rgba(0,0,0,0.72), transparent)</code>.<br>
+  <strong style="color:#1B9E8F">Admin:</strong> Panel "Imágenes de secciones" permite subir una foto por cada tipo de servicio. Imágenes sugeridas de Unsplash o carga propia.
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+
+  <!-- Vuelos -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Vuelos
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">IDA Y VUELTA</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">800 · 20px · -0.5px</div>
-        <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;color:white">Nueva cotización · Dashboard · Historial</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #0EA5E9→#1565C0</div>
+  </div>
+
+  <!-- Hotel -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Alojamiento
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">7 NOCHES</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">700 · 14px · -0.3px</div>
-        <div style="font-size:14px;font-weight:700;letter-spacing:-0.3px;color:white">Sección Vuelos · Alojamiento · Traslados</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #FF8E53→#E65100</div>
+  </div>
+
+  <!-- Traslados -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2"/></svg>Traslados
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">2 TRAMOS</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">500 · 13px</div>
-        <div style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.7)">Buenos Aires (EZE) · Orlando, Florida · 7 noches</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #E8826A→#C2185B</div>
+  </div>
+
+  <!-- Excursiones/Tickets -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Excursiones / Tickets
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">GUIADA</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">400 · 12px</div>
-        <div style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5)">Texto descriptivo de la cotización, condiciones, notas del agente.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #43A047→#1B5E20</div>
+  </div>
+
+  <!-- Autos -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>Alquiler de Autos
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">4 DÍAS</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">700 · 9px · 2px letter</div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3)">PRECIO VUELOS · FECHA SALIDA · COTIZACIONES DEL MES</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #FF8F00→#E65100</div>
+  </div>
+
+  <!-- Cruceros -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>Crucero
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">MSC</div>
       </div>
-      <div class="typo-row">
-        <div class="typo-meta">DM Mono · 12px</div>
-        <div style="font-size:12px;font-family:'DM Mono',monospace;color:#0BC5B8">EZE · MCO · AA930 · USD 2.300</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #0288D1→#01579B</div>
+  </div>
+
+  <!-- Seguros -->
+  <div>
+    <div style="height:70px;border-radius:10px 10px 0 0;overflow:hidden;position:relative">
+      <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.75),rgba(0,0,0,0.1))"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:5px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Asistencia al Viajero
+        </div>
+        <div style="font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;text-transform:uppercase;letter-spacing:.5px">PAX</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace">fallback: #9B7FD4→#6D28D9</div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ 6c. RECUADROS DE PRECIO — TODAS LAS SECCIONES ═══ -->
+<div class="sec">
+<div class="sec-label">6c · Recuadros de precio — todas las secciones</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
+  <div style="padding:9px 12px;border-radius:10px;background:#E8F7F3;border:1px solid rgba(27,158,143,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(27,158,143,0.7)">VUELOS</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 2.300</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(212,160,23,0.7)">ALOJAMIENTO</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#D4A017,#E8826A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 1.960</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#FFF0EC;border:1px solid rgba(232,130,106,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(232,130,106,0.7)">TRASLADOS</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#E8826A,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 190</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(212,160,23,0.7)">EXCURSIONES</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#43A047,#1B5E20);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 280</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#FFF0EC;border:1px solid rgba(232,130,106,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(232,130,106,0.7)">ALQUILER AUTOS</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#FF8F00,#E65100);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 420</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#E8F4FD;border:1px solid rgba(14,165,233,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(14,165,233,0.7)">CRUCERO</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#0288D1,#01579B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 3.200</div>
+  </div>
+  <div style="padding:9px 12px;border-radius:10px;background:#F0EEF9;border:1px solid rgba(155,127,212,0.2);display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(155,127,212,0.7)">SEGURO</div>
+    <div style="font-size:14px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#9B7FD4,#C4B5FD);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">USD 320</div>
+  </div>
+  <div style="padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);display:flex;align-items:center;justify-content:space-between;grid-column:span 1">
+    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.75)">TOTAL PAQUETE</div>
+    <div style="font-size:15px;font-weight:900;letter-spacing:-.5px;color:white">USD 8.670</div>
+  </div>
+</div>
+<div style="font-size:10px;color:rgba(255,255,255,0.3);line-height:1.8">
+  • Cada price-box: bg = color pastel de la sección, border = color acento al 20%, precio = gradiente del tipo<br>
+  • La barra total siempre al final: <code>background: var(--grad)</code>, texto blanco, precio grande
+</div>
+</div>
+
+<!-- ═══ 7. HISTORIAL ═══ -->
+<div class="sec">
+<div class="sec-label">7 · Historial de cotizaciones</div>
+<div class="screen-frame" style="max-width:560px">
+  <div class="screen-cap"><div class="screen-cap-title">Historial</div></div>
+  <div class="app-shell" style="min-height:280px">
+    <div class="topbar"><div class="topbar-title">Historial</div><button class="topbar-btn-sec" style="font-size:11px;font-weight:700;padding:0 10px;height:28px;border-radius:8px">Filtrar</button></div>
+    <div class="scroll">
+      <div class="hist-card"><div><div class="hist-dest">Orlando, Florida, USA</div><div class="hist-meta">Familia García · 4 pax · 7 noches · USD 4.450</div></div><span class="hist-status conf">Confirmada</span></div>
+      <div class="hist-card"><div><div class="hist-dest">Cancún, México</div><div class="hist-meta">Martínez, Hugo · 2 pax · 5 noches · USD 2.100</div></div><span class="hist-status pend">Pendiente</span></div>
+      <div class="hist-card"><div><div class="hist-dest">París, Francia</div><div class="hist-meta">González, Ana · 2 pax · 10 noches · USD 5.800</div></div><span class="hist-status bor">Borrador</span></div>
+    </div>
+  </div>
+</div>
+<div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.8">
+  • Cards con hover: transform translateY(-1px), box-shadow var(--sh2)<br>
+  • Status Confirmada: bg rgba(27,158,143,0.1), color #1B9E8F · Pendiente: bg rgba(212,160,23,0.1), color #D4A017 · Borrador: bg var(--g1), color var(--g4)
+</div>
+</div>
+
+<!-- ═══ 8. DASHBOARD ═══ -->
+<div class="sec">
+<div class="sec-label">8 · Dashboard — métricas con pasteles</div>
+<div class="screen-frame" style="max-width:560px">
+  <div class="screen-cap"><div class="screen-cap-title">Dashboard</div></div>
+  <div class="app-shell" style="min-height:240px">
+    <div class="topbar"><div class="topbar-title">Dashboard</div></div>
+    <div class="scroll">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div class="metric" style="background:#E8F7F3">
+          <div class="metric-lbl" style="color:rgba(27,158,143,0.6)"><svg viewBox="0 0 24 24" stroke="#1B9E8F"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>COTIZACIONES</div>
+          <div class="metric-val" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8)">24</div>
+          <div class="metric-sub">este mes</div>
+        </div>
+        <div class="metric" style="background:#FFF8E3">
+          <div class="metric-lbl" style="color:rgba(212,160,23,0.7)"><svg viewBox="0 0 24 24" stroke="#D4A017"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>COMISIONES</div>
+          <div class="metric-val" style="background:linear-gradient(135deg,#D4A017,#E8826A)">$4.2k</div>
+          <div class="metric-sub">USD mes</div>
+        </div>
+        <div class="metric" style="background:#F0EEF9">
+          <div class="metric-lbl" style="color:rgba(155,127,212,0.7)"><svg viewBox="0 0 24 24" stroke="#9B7FD4"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>CONVERSIÓN</div>
+          <div class="metric-val" style="background:linear-gradient(135deg,#9B7FD4,#C4B5FD)">68%</div>
+          <div class="metric-sub">tasa</div>
+        </div>
       </div>
     </div>
   </div>
+</div>
+</div>
 
-  <!-- 8. COMPONENTES -->
-  <div class="section">
-    <div class="section-title">8. Componentes — botones, precio, badges</div>
-
-    <!-- Buttons -->
-    <div style="margin-bottom:16px;font-size:11px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Botones</div>
-    <div class="btn-demo" style="background:white;padding:16px;border-radius:12px;margin-bottom:16px">
-      <button class="btn-pri">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nueva cotización
+<!-- ═══ 9. VISTA PREVIA / PDF ═══ -->
+<div class="sec">
+<div class="sec-label">9 · Vista Previa y PDF</div>
+<div class="screens-row screens-2">
+  <!-- Barra de herramientas -->
+  <div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Barra de herramientas</div>
+    <div style="background:white;border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <!-- thumbnail -->
+      <div style="width:36px;height:28px;border-radius:6px;background:#E8F4FD;border:1px solid rgba(45,31,20,0.1);overflow:hidden"></div>
+      <!-- sec btns -->
+      <button style="padding:0 10px;height:28px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid rgba(45,31,20,0.13);background:white;color:#2D1F14;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2D1F14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Foto
       </button>
-      <button class="btn-sec">Cancelar</button>
-      <button class="btn-danger">Rechazar</button>
-      <button class="btn-sm">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Agregar
+      <button style="padding:0 10px;height:28px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid rgba(45,31,20,0.13);background:white;color:#2D1F14;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2D1F14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Destino
+      </button>
+      <button style="width:28px;height:28px;border-radius:7px;border:1px solid rgba(244,63,94,0.2);background:rgba(244,63,94,0.08);display:flex;align-items:center;justify-content:center">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <button style="padding:0 10px;height:28px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid rgba(45,31,20,0.13);background:white;color:#2D1F14;font-family:'DM Sans',sans-serif">← Editar</button>
+      <button style="padding:0 12px;height:28px;border-radius:7px;font-size:11px;font-weight:700;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;font-family:'DM Sans',sans-serif">Guardar</button>
+      <button style="padding:0 12px;height:28px;border-radius:7px;font-size:11px;font-weight:700;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        PDF
       </button>
     </div>
-
-    <!-- Price boxes -->
-    <div style="margin-bottom:16px;font-size:11px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Recuadros de precio por sección</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <div class="price-demo" style="background:#E8F7F3;border:1px solid rgba(27,158,143,0.2)">
-        <div class="price-lbl" style="color:rgba(27,158,143,0.7)">PRECIO VUELOS</div>
-        <div class="price-val" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8)">USD 2.300</div>
-      </div>
-      <div class="price-demo" style="background:#FFF8E3;border:1px solid rgba(212,160,23,0.2)">
-        <div class="price-lbl" style="color:rgba(212,160,23,0.7)">PRECIO HOTEL</div>
-        <div class="price-val" style="background:linear-gradient(135deg,#D4A017,#E8826A)">USD 1.960</div>
-      </div>
-      <div class="price-demo" style="background:#FFF0EC;border:1px solid rgba(232,130,106,0.2)">
-        <div class="price-lbl" style="color:rgba(232,130,106,0.7)">PRECIO TRASLADOS</div>
-        <div class="price-val" style="background:linear-gradient(135deg,#E8826A,#F43F5E)">USD 190</div>
-      </div>
-      <div class="price-demo" style="background:#F0EEF9;border:1px solid rgba(155,127,212,0.2)">
-        <div class="price-lbl" style="color:rgba(155,127,212,0.7)">PRECIO SEGURO</div>
-        <div class="price-val" style="background:linear-gradient(135deg,#9B7FD4,#C4B5FD)">USD 320</div>
-      </div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.8">
+      • Barra: bg var(--surface), border-bottom var(--border)<br>
+      • Primarios (Guardar, PDF): gradiente turquesa<br>
+      • Secundarios (Foto, Destino, Editar): bg var(--surface), borde var(--border2)<br>
+      • Peligro (X): bg rgba(244,63,94,0.08), borde rgba(244,63,94,0.2)
     </div>
   </div>
-
-  <!-- 9. ÍCONOS -->
-  <div class="section">
-    <div class="section-title">9. Sistema de íconos — SVG Lucide exclusivamente. CERO emojis.</div>
-    <div class="icon-grid">
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        <div class="icon-label">Vuelos</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <div class="icon-label">Hotel</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <div class="icon-label">Traslado</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        <div class="icon-label">Excursión</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <div class="icon-label">Seguro</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
-        <div class="icon-label">Auto</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg>
-        <div class="icon-label">Crucero</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <div class="icon-label">Cotización</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <div class="icon-label">Historial</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        <div class="icon-label">Clientes</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <div class="icon-label">Dashboard</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        <div class="icon-label">Admin</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <div class="icon-label">Comisión</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        <div class="icon-label">Aprobar</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <div class="icon-label">Comentar</div>
-      </div>
-      <div class="icon-item">
-        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <div class="icon-label">Dark mode</div>
-      </div>
-    </div>
-    <div style="margin-top:14px;padding:12px 16px;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);border-radius:10px;font-size:12px;color:rgba(244,63,94,0.8);font-weight:600">
-      ⛔ CERO emojis en toda la UI — ni en botones, ni en labels, ni en métricas, ni en toasts, ni en el PDF. Solo SVG Lucide.
-    </div>
-  </div>
-
-  <!-- 10. REGLAS -->
-  <div class="section">
-    <div class="section-title">10. Reglas absolutas de desarrollo</div>
-    <div class="grid-2">
-      <div class="rule-card">
-        <div class="rule-title"><span class="rule-ok">✓</span> Siempre hacer esto</div>
-        <div class="rule-text">
-          • Usar variables CSS (<code style="font-family:'DM Mono',monospace;font-size:10px">var(--primary)</code>, etc.) — nunca hardcodear<br>
-          • SVG Lucide para todos los íconos, stroke-width 1.8, stroke-linecap round<br>
-          • El gradiente oficial: <code style="font-family:'DM Mono',monospace;font-size:10px">var(--grad)</code><br>
-          • Photo headers en todas las secciones del formulario y vista del cliente<br>
-          • Pasteles por tipo de sección en cards y recuadros de precio<br>
-          • Sidebar lateral de 54px con <code style="font-family:'DM Mono',monospace;font-size:10px">margin-left: 54px</code> en el contenido<br>
-          • DM Sans para todo el texto, DM Mono solo para códigos y valores técnicos<br>
-          • <code style="font-family:'DM Mono',monospace;font-size:10px">data-theme="light"</code> por defecto, <code style="font-family:'DM Mono',monospace;font-size:10px">data-theme="dark"</code> como opción
+  <!-- Portada PDF -->
+  <div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase">Portada del PDF</div>
+    <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+      <div class="pdf-cover">
+        <div class="pdf-cover-glow"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+          <div class="pdf-logo">ermiX</div>
+          <div style="text-align:right"><div style="font-size:11px;font-weight:700;color:white">Diego Lecler</div><div style="font-size:9px;color:rgba(255,255,255,0.5)">Spectro Travel</div></div>
+        </div>
+        <div style="flex:1;position:relative;z-index:1">
+          <div class="pdf-chip">COTIZACIÓN PARA <span class="pdf-chip-name">Familia García</span></div>
+          <div class="pdf-dest-label" style="margin-top:8px">SU VIAJE A</div>
+          <div class="pdf-dest">Orlando,<br>Florida</div>
         </div>
       </div>
-      <div class="rule-card">
-        <div class="rule-title"><span class="rule-no">✗</span> Nunca hacer esto</div>
-        <div class="rule-text">
-          • Emojis en ningún lugar de la UI<br>
-          • Hardcodear colores (no usar <code style="font-family:'DM Mono',monospace;font-size:10px">#7C3AED</code> directo — usar <code style="font-family:'DM Mono',monospace;font-size:10px">var(--primary)</code>)<br>
-          • Tocar la lógica de Supabase auth o guardado de cotizaciones<br>
-          • Tocar <code style="font-family:'DM Mono',monospace;font-size:10px">window.print()</code> o el sistema del PDF<br>
-          • Tocar el sistema <code style="font-family:'DM Mono',monospace;font-size:10px">buildWordmark()</code> (solo adaptar colores)<br>
-          • Usar npm, bundlers o importar librerías externas pesadas<br>
-          • Escribir "Ermix" con mayúscula — siempre "ermix"<br>
-          • Usar el menú horizontal superior (#nav) — está eliminado en v3
+      <div class="pdf-data-bar">
+        <div><div class="pdf-data-lbl">PRESUPUESTO</div><div class="pdf-data-val">Familia García<br><span style="font-size:9px;color:rgba(255,255,255,0.5)">4 pax · 7 noches</span></div></div>
+        <div><div class="pdf-data-lbl">VALIDEZ</div><div class="pdf-data-val">48 horas</div></div>
+        <div><div class="pdf-data-lbl">TOTAL</div><div class="pdf-data-val grad">USD 4.450</div></div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.7">
+      • Fondo: linear-gradient(160deg, #0D2B1E, #0A1A12, #0D120F)<br>
+      • Textos sobre fondo oscuro: white mínimo 12px, labels rgba(255,255,255,0.65) mínimo 9px<br>
+      • Chip cliente: bg rgba(27,158,143,0.18), borde rgba(27,158,143,0.35), nombre #0BC5B8<br>
+      • Total: gradiente turquesa
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 10. ADMIN ═══ -->
+<div class="sec">
+<div class="sec-label">10 · Admin — Proveedores, Seguros, Agentes (sin Aerolíneas)</div>
+<div style="max-width:480px">
+  <div class="admin-card">
+    <div class="admin-ph" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)">
+      <div class="admin-ph-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Seguros</div>
+    </div>
+    <div class="admin-body">
+      <div class="admin-table-hdr" style="grid-template-columns:2fr 1fr 1fr">
+        <span>Aseguradora</span><span>Cobertura</span><span>Acciones</span>
+      </div>
+      <div class="admin-row" style="grid-template-columns:2fr 1fr 1fr;align-items:center">
+        <span>PAX Assistance Gold</span>
+        <span style="font-size:10px;color:var(--g3)">USD 200k</span>
+        <div style="display:flex;gap:5px">
+          <div style="width:24px;height:24px;border-radius:6px;background:#E8F7F3;border:1px solid rgba(27,158,143,0.2);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          <div style="width:24px;height:24px;border-radius:6px;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Footer -->
-  <div style="text-align:center;padding:24px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px">
-    <div style="font-size:18px;font-weight:900;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px">ermix</div>
-    <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px;letter-spacing:2px;text-transform:uppercase">Brand Guidelines v3.0 · Marzo 2026</div>
+  <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.7">
+    • Aerolíneas eliminada del Admin — el autocomplete del formulario ya gestiona esto<br>
+    • Secciones restantes: Proveedores, Seguros, Agentes<br>
+    • Cada sección tiene photo header con gradiente suave<br>
+    • Tablas: header bg var(--g1), filas alternadas, border-bottom var(--border)
   </div>
+</div>
+</div>
+
+<!-- ═══ 11. MI PERFIL ═══ -->
+<div class="sec">
+<div class="sec-label">11 · Mi Perfil — ancho aprovechado</div>
+<div style="max-width:600px;display:flex;flex-direction:column;gap:12px">
+  <div class="profile-card">
+    <div class="profile-section-title"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Mi perfil de agente</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div class="logo-preview"><div style="font-size:8px;font-weight:700;color:var(--g3);text-align:center">LOGO</div></div>
+      <button style="padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif">Subir logo</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><div class="flbl">Nombre completo</div><div class="finput">Diego Lecler</div></div>
+      <div class="field"><div class="flbl">Agencia</div><div class="finput">Spectro Travel</div></div>
+      <div class="field"><div class="flbl">Email</div><div class="finput">diego@spectrotravel.com</div></div>
+      <div class="field"><div class="flbl">Teléfono</div><div class="finput">+54 9 362 470 3040</div></div>
+    </div>
+    <div style="margin-top:12px"><button class="login-btn" style="width:auto;padding:9px 20px;font-size:12px">Guardar perfil</button></div>
+  </div>
+  <div class="profile-card">
+    <div class="profile-section-title"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Cambiar contraseña</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><div class="flbl">Nueva contraseña</div><div class="finput" style="color:var(--g3)">Mínimo 6 caracteres</div></div>
+      <div class="field"><div class="flbl">Confirmar contraseña</div><div class="finput" style="color:var(--g3)">Repetir contraseña</div></div>
+    </div>
+    <div style="margin-top:12px"><button class="login-btn" style="width:auto;padding:9px 20px;font-size:12px">Guardar contraseña</button></div>
+  </div>
+  <div style="font-size:10px;color:rgba(255,255,255,0.3);line-height:1.7">
+    • max-width: 720px, margin: 0 auto — aprovechar el ancho<br>
+    • Dos cards separadas: perfil y contraseña<br>
+    • Inputs siempre bg var(--surface) blanco
+  </div>
+</div>
+</div>
+
+<!-- ═══ 12. ÍCONOS ═══ -->
+<div class="sec">
+<div class="sec-label">12 · Sistema de íconos — SVG Lucide exclusivamente. CERO emojis.</div>
+<div class="icon-grid">
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><div class="icon-lbl">Vuelos</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div class="icon-lbl">Hotel</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/><circle cx="7" cy="15" r="1" fill="rgba(255,255,255,0.55)"/><circle cx="17" cy="15" r="1" fill="rgba(255,255,255,0.55)"/></svg><div class="icon-lbl">Traslado</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg><div class="icon-lbl">Excursión / Ticket</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><div class="icon-lbl">Seguro</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg><div class="icon-lbl">Auto</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg><div class="icon-lbl">Crucero</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="icon-lbl">Cotización</div></div>
+  <div class="icon-item"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="icon-lbl">Historial</div></div>
+</div>
+<div style="margin-top:12px;padding:12px 16px;background:rgba(244,63,94,0.07);border:1px solid rgba(244,63,94,0.18);border-radius:10px;font-size:12px;color:rgba(244,63,94,0.8);font-weight:600">
+  ⛔ CERO emojis en toda la UI — botones, labels, métricas, toasts, PDF. Solo SVG Lucide. stroke-width 1.8, stroke-linecap round, stroke-linejoin round.
+</div>
+</div>
+
+<!-- ═══ 13. REGLAS ABSOLUTAS ═══ -->
+<div class="sec">
+<div class="sec-label">13 · Reglas absolutas de desarrollo</div>
+<div class="grid-2-info">
+  <div class="info-box">
+    <div class="info-title"><span class="info-ok">✓</span> Siempre hacer</div>
+    <div class="info-text">
+      • Usar variables CSS — nunca colores hardcodeados<br>
+      • Inputs: SIEMPRE bg var(--surface) = blanco<br>
+      • Fondo de pantallas: SIEMPRE var(--bg) = crema<br>
+      • Botón primario: SIEMPRE background var(--grad)<br>
+      • Texto sobre fondo oscuro: mínimo rgba(255,255,255,0.65)<br>
+      • Texto sobre fondo pastel: color var(--text) = #2D1F14<br>
+      • Logo sobre fondo turquesa: color white<br>
+      • Logo sobre fondo crema/blanco: color var(--text)<br>
+      • SVG Lucide para todos los íconos<br>
+      • Photo headers en todas las secciones del formulario
+    </div>
+  </div>
+  <div class="info-box">
+    <div class="info-title"><span class="info-no">✗</span> Nunca hacer</div>
+    <div class="info-text">
+      • Emojis en ningún lugar de la UI<br>
+      • Hardcodear colores (usar siempre var(--...))<br>
+      • Fondo violeta en el login<br>
+      • Logo blanco sobre fondo blanco/crema<br>
+      • Inputs con fondo crema/pastel (deben ser blancos)<br>
+      • Tocar lógica de Supabase auth o guardado<br>
+      • Tocar window.print()<br>
+      • Tocar buildWordmark() — solo adaptar colores<br>
+      • Usar npm, bundlers, librerías externas pesadas<br>
+      • Escribir "Ermix" — siempre "ermix" minúscula
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:32px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px">
+  <div style="font-size:22px;font-weight:900;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px">ermix</div>
+  <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px;letter-spacing:2px;text-transform:uppercase">Brand Guidelines v3.0 · Marzo 2026 · Todas las pantallas</div>
+</div>
 
 </div>
 </body>

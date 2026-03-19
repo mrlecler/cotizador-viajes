@@ -1,244 +1,223 @@
-# ermix — Contexto del Proyecto
-> Versión: 3.0 | Última actualización: Marzo 2026
+# ermix — Contexto del proyecto v3.0 · Marzo 2026
+
+## ¿Qué es ermix?
+Plataforma SaaS de cotización de viajes para agentes freelance. Permite crear, guardar y exportar cotizaciones en PDF con múltiples secciones (vuelos, hotel, traslados, excursiones/tickets, autos, cruceros, seguros).
+
+**Dueño:** Diego Lecler (Patoyro Travel / Spectro Travel)  
+**Repo:** `mrlecler/cotizador-viajes`  
+**Deploy:** GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`  
+**Stack:** HTML + CSS + JS vanilla, Supabase (auth + DB), sin bundlers, sin npm
 
 ---
 
-## Qué es ermix
+## Archivos clave
 
-**ermix** es una plataforma SaaS de cotización de viajes para agentes freelance y agencias independientes. Permite crear cotizaciones profesionales con PDF, gestionar clientes, historial, dashboard y un asistente IA. El objetivo es democratizar el acceso a herramientas profesionales para agentes chicos que hoy trabajan con Excel y WhatsApp.
-
----
-
-## Quién lo desarrolla
-
-- **Diego Lecler** — agente de viajes freelance (Patoyro Travel) y Cloud Engineer
-- No es desarrollador — trabaja con Claude Cowork para implementar cambios
-- El repo es `mrlecler/cotizador-viajes` en GitHub
-- Deploy actual: **GitHub Pages** en `https://mrlecler.github.io/cotizador-viajes/`
-
----
-
-## Stack técnico actual
-
-| Capa | Tecnología |
+| Archivo | Descripción |
 |---|---|
-| Frontend | HTML + CSS + JS vanilla (sin bundlers, sin npm) |
-| Archivos | `index.html` + `styles.css` + módulos en `/js/` |
-| Base de datos | Supabase (auth + DB + Storage) |
-| Deploy | GitHub Pages → `mrlecler/cotizador-viajes` |
-| Fotos de destinos | Unsplash API (proxy serverless pendiente) |
-| Autocomplete hoteles | Google Places API (proxy serverless pendiente) |
-| Datos | `/data/airports.json` (915 aeropuertos) + `/data/cities.json` |
-
-> ⚠️ Vercel, Stripe, Resend y subdominios son de Fase 1 — aún no implementados.
-
----
-
-## Archivos JS principales
-
-| Archivo | Responsabilidad |
-|---|---|
-| `js/app-core.js` | Auth de Supabase, buildWordmark(), toggle dark/light, initTheme() |
-| `js/app-form.js` | Formulario de cotización, autocomplete de aeropuertos y ciudades |
-| `js/app-quote.js` | Generación del HTML de la cotización y PDF (window.print()) |
-| `js/app-admin.js` | Panel admin: aerolíneas, proveedores, seguros, agentes |
-| `js/app-clients.js` | Módulo de clientes / mini CRM |
-| `js/app-profile.js` | Perfil del agente, cambio de contraseña |
+| `index.html` | Shell principal de la app |
+| `styles.css` | Todos los estilos — variables CSS, layout, componentes |
+| `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle tema dark/light |
+| `js/app-form.js` | Formulario de cotización, autocomplete aeropuertos/ciudades |
+| `js/app-quote.js` | Generación HTML cotización y PDF (`window.print()`) |
+| `js/app-admin.js` | Panel admin (sin aerolíneas — esa sección fue eliminada) |
+| `data/airports.json` | 915 aeropuertos con IATA, ciudad, país |
+| `data/cities.json` | Ciudades del mundo |
+| `contexto.md` | Este archivo — leer primero |
+| `ermix-brand-assets-v2/ermix-brand-guidelines-v3.html` | **Referencia visual definitiva — leer antes de tocar cualquier CSS** |
 
 ---
 
-## Brand Guidelines v3 — ACTIVO
+## Brand v3 — Resumen ejecutivo
 
-> El archivo de referencia visual es: `ermix-brand-assets-v2/ermix-brand-guidelines-v3.html`
-> (Reemplaza al v2. La carpeta se mantiene igual, solo el archivo HTML cambia.)
-
-### Dirección de diseño
-**Layla base + Thats photo headers**
-- Light-first con dark mode secundario
-- Fondo crema `#F5F0E8` (light) / verde oscuro `#0D120F` (dark)
-- Cards pasteles por tipo de sección
-- Photo headers con gradiente/color a sangrado completo en cada sección
-- Tipografía: DM Sans exclusivamente (sin serif)
-- **CERO emojis** — solo SVG Lucide en toda la UI
-
-### Logo — cambio de color, NO de forma
-
-⚠️ La X custom es la identidad de ermix. Su forma, path SVG y coordenadas NO se tocan.
-
-**Instrucción para Cowork:**
-1. Abrir `js/app-core.js` y leer `buildWordmark()` completa ANTES de tocar nada
-2. Identificar los colores actuales del gradiente de la X (violeta/coral del v2)
-3. Reemplazar SOLO esos hexadecimales por el gradiente turquesa:
-   - `#4F46E5` → `#1B9E8F`
-   - `#7C3AED` → `#0BC5B8`
-   - `#F43F5E` → `#06B6D4`
-4. NO modificar paths SVG, coordenadas, ni la tipografía "ermi"
+**Dirección:** Layla base + Thats photo headers · Light-first  
+**Font:** DM Sans exclusivamente (ya importada). NUNCA Inter, NUNCA system fonts  
+**Fondo:** `#F5F0E8` crema. NUNCA violeta, NUNCA negro puro  
+**Acento:** Turquesa `#1B9E8F → #0BC5B8 → #06B6D4`  
+**Dark bg:** `#0D120F` (verde oscuro, no negro puro)  
+**Emojis:** CERO. Solo SVG Lucide (`stroke-width:1.8`, `stroke-linecap:round`, `stroke-linejoin:round`)
 
 ### Colores principales
-
-```css
---primary:   #1B9E8F;   /* Turquesa ermix — acento principal */
---primary2:  #0BC5B8;
---primary3:  #06B6D4;
---grad:      linear-gradient(135deg, #1B9E8F 0%, #0BC5B8 50%, #06B6D4 100%);
-
-/* Fondos */
---bg:        #F5F0E8;   /* Crema base — light */
---surface:   #FFFFFF;
---surface2:  #EDE8DF;
---text:      #2D1F14;   /* Texto oscuro cálido */
-
-/* Dark mode */
---bg-dark:   #0D120F;   /* Verde oscuro */
---surface-dark: #141A16;
+```
+--bg:       #F5F0E8   (crema, fondo de pantallas)
+--surface:  #FFFFFF   (cards, inputs, sidebar, topbar)
+--text:     #2D1F14   (texto principal)
+--primary:  #1B9E8F
+--primary2: #0BC5B8
+--primary3: #06B6D4
+--grad:     linear-gradient(135deg, #1B9E8F, #0BC5B8, #06B6D4)
 ```
 
-### Colores por tipo de sección (pasteles)
-
-| Sección | Fondo pastel | Color acento |
-|---|---|---|
-| Vuelos | `#E8F7F3` | `#1B9E8F` |
-| Hoteles | `#FFF8E3` | `#D4A017` |
-| Traslados | `#FFF0EC` | `#E8826A` |
-| Seguros | `#F0EEF9` | `#9B7FD4` |
-| Autos | `#FFF0EC` | `#E8826A` |
-| Cruceros | `#E8F4FD` | `#0EA5E9` |
-| Excursiones | `#FFF8E3` | `#D4A017` |
-
-### Photo headers de sección (gradientes)
-
-| Sección | Gradiente |
-|---|---|
-| Vuelos | `linear-gradient(135deg, #0EA5E9, #1565C0)` |
-| Hoteles | `linear-gradient(135deg, #FF8E53, #E65100)` |
-| Traslados | `linear-gradient(135deg, #E8826A, #C2185B)` |
-| Excursiones | `linear-gradient(135deg, #43A047, #1B5E20)` |
-| Autos | `linear-gradient(135deg, #FF8F00, #E65100)` |
-| Cruceros | `linear-gradient(135deg, #0288D1, #01579B)` |
-| Seguros | `linear-gradient(135deg, #9B7FD4, #6D28D9)` |
-
-### Estructura de photo header
-
-```html
-<div class="sec-photo-hd" style="background: [GRADIENTE]">
-  <div class="sec-photo-deco">
-    <!-- SVG Lucide 32px, opacity 0.2, stroke white -->
-  </div>
-  <div class="sec-photo-bar">
-    <div class="sec-photo-title">
-      <!-- SVG Lucide 13px, stroke white + nombre sección -->
-    </div>
-    <div class="sec-photo-badge">BADGE</div>
-  </div>
-</div>
+### Pasteles por sección
+```
+Vuelos:              #E8F7F3  acc #1B9E8F
+Alojamiento/Hotel:   #FFF8E3  acc #D4A017
+Traslados:           #FFF0EC  acc #E8826A
+Excursiones/Tickets: #FFF8E3  acc #D4A017
+Alquiler de Autos:   #FFF0EC  acc #E8826A
+Cruceros:            #E8F4FD  acc #0EA5E9
+Asistencia/Seguro:   #F0EEF9  acc #9B7FD4
 ```
 
-### Navegación — sidebar lateral
-
-- Sidebar fijo de **54px** a la izquierda
-- Logo `ermix` arriba (gradiente turquesa, 34×34px, border-radius 10px)
-- Items de navegación: SVG Lucide, 38×38px, border-radius 10px
-- Item activo: `background: rgba(27,158,143,0.1)`, `color: #1B9E8F`
-- Avatar del agente (iniciales) abajo del todo
-- El contenido principal tiene `margin-left: 54px`
-- El menú horizontal superior (`#nav` con `.ntab`) está **eliminado**
-
-### Tipografía
-
-```css
-font-family: 'DM Sans', sans-serif;
-/* Pesos en uso: 400 (body), 500 (labels), 700 (titles), 800 (headings), 900 (metrics) */
-/* DM Mono: solo para valores técnicos como códigos IATA, precios en PDF */
+### Gradientes photo headers (fallback sin foto)
+```
+Vuelos:              #0EA5E9 → #1565C0
+Alojamiento:         #FF8E53 → #E65100
+Traslados:           #E8826A → #C2185B
+Excursiones/Tickets: #43A047 → #1B5E20
+Alquiler de Autos:   #FF8F00 → #E65100
+Cruceros:            #0288D1 → #01579B
+Asistencia/Seguro:   #9B7FD4 → #6D28D9
 ```
 
 ---
 
-## Funcionalidades implementadas (Fase 0)
+## Logo ermix
 
-### Formulario de cotización
-- **Secciones**: Vuelos (ida/vuelta), Hoteles, Traslados, Excursiones/Tickets, Seguros, Alquiler de Autos, Cruceros
-- **Autocomplete**: aeropuertos (airports.json, 915 entradas) y ciudades (cities.json) desde 2 letras
-- **Logos de aerolíneas**: CDN Google Flights `https://www.gstatic.com/flights/airline_logos/70px/{IATA}.png`
-- **Cards de destinos populares**: franja horizontal al inicio del formulario
-- **Cálculos automáticos**: noches por fechas, subtotales por sección, total general
-- **Opciones A/B/C**: checkbox por ítem para incluir/excluir del total
-- **Modo AUTO/MANUAL**: en campos de total y precio por persona
+La forma X es custom (path SVG propio del v2) — **NO TOCAR EL PATH**.  
+Solo cambiar los colores del gradiente en `buildWordmark()`:
+
+```js
+// Reemplazar en buildWordmark():
+// ANTES (v2 violeta):  #4F46E5, #7C3AED, #F43F5E
+// AHORA (v3 turquesa): #1B9E8F, #0BC5B8, #06B6D4
+```
+
+**Favicon:** SVG inline con la X del logo en gradiente turquesa. Fondo con `border-radius: 8px`.
+
+---
+
+## Sidebar
+
+- **Colapsado:** `54px` fijo, solo íconos + tooltips CSS puro (`::after`)
+- **Expandido:** `200px`, clase `sb open` — ícono + label de texto + avatar con nombre/agencia
+- **Toggle:** botón ☰ (tres líneas) para abrir, ← (chevron) para cerrar
+- Estado guardado en `localStorage('sb-open')`
+- Contenido principal: `margin-left` animado `54px → 200px`, `transition: margin-left 0.22s ease`
+- Ítem activo: `background: rgba(27,158,143,0.1)`, `stroke: #1B9E8F`
+
+**Orden de ítems:**
+1. Inicio
+2. Cotizaciones (formulario)
+3. Historial
+4. Clientes
+5. [separador]
+6. Admin
+7. [separador abajo]
+8. Perfil (avatar)
+
+---
+
+## Pantallas
+
+### Login
+- Fondo: `var(--bg)` = `#F5F0E8`. **NUNCA violeta**
+- Card centrada con `box-shadow: var(--sh2)`
+- Logo con gradiente turquesa (buildWordmark)
+- Botón Google con ícono SVG real
+- Link "olvidé contraseña" en color primary
+
+### Inicio (pantalla separada)
+- Saludo "Hola, [nombre]" + strip de destinos frecuentes con fotos Unsplash
+- Fallback gradiente si Unsplash falla (nunca imagen rota)
+- CTA principal "Nueva cotización desde cero"
+- 3 métricas: Cotizaciones (verde), Comisiones (amarillo), Conversión (púrpura)
+
+### Formulario
+- Cada sección es una card: `background: var(--surface)`, border, shadow, `overflow: hidden`
+- **Photo header** de 60px: foto Unsplash o gradiente fallback + overlay `rgba(0,0,0,0.72)` to top
+- Las fotos son **administrables desde Admin** (panel "Imágenes de secciones")
+- Body de sección: fondo pastel del tipo, inputs **siempre blancos**
+- Recuadro de precio al fondo de cada sección con gradiente del tipo
+- Barra total al fondo: `background: var(--grad)` turquesa
+
+### Vista previa / PDF
+- Toolbar: thumbnail, botón Foto (Unsplash), botón Destino, botón × rojo, Editar, Guardar, PDF
+- **Todos los botones turquesa o neutros. NINGÚN botón violeta**
+- Portada: `linear-gradient(160deg, #0D2B1E, #0A1A12, #0D120F)` — verde esmeralda oscuro. NO negro puro
+- Chip del cliente en turquesa semitransparente
+- `window.print()` para generar PDF — no tocar
 
 ### Admin
-- Aerolíneas (con código IATA)
-- Proveedores
-- Seguros (tabla `seguros` en Supabase)
-- Agentes (invitación vía Supabase Dashboard, no Netlify)
+- Sin sección Aerolíneas (eliminada)
+- Secciones: Seguros, Proveedores, **Imágenes de secciones** (nueva)
+- "Imágenes de secciones": el agente sube una foto por tipo de servicio → se guarda en Supabase → se usa como `background-image` del photo header
+
+### Historial
+- Cards con hover `translateY(-1px)` y `var(--sh2)`
+- Badges: Confirmada (verde), Pendiente (amarillo), Borrador (gris)
 
 ### Mi Perfil
-- Logo de la agencia (PNG/JPG, máx 500KB, 300×80px recomendado)
-- Cambio de contraseña (`supabase.auth.updateUser()`)
-
-### PDF / Vista de cotización
-- Portada con foto del destino (Unsplash o carga manual)
-- Nombre del cliente en portada y barra de datos
-- Photo headers en cada sección (igual que el formulario)
-- Logo de aerolínea en sección de vuelos
-- Crédito de fotógrafo Unsplash (cuando aplica)
-- Precio de cada ítem con recuadro brand (borde + fondo pastel + valor en gradiente)
-
-### Dashboard
-- 6 métricas con cards pastel por tipo
-- SVG Lucide como íconos (sin emojis)
-
-### Auth
-- Login con email/password
-- Login con Google (OAuth — `redirectTo: 'https://mrlecler.github.io/cotizador-viajes/'`)
-- Toggle dark/light mode (persiste en localStorage como `ermix-theme`)
+- Dos cards: "Datos del agente" y "Cambiar contraseña"
+- `max-width: 720px`, `margin: 0 auto`
+- Inputs siempre blancos
 
 ---
 
-## Reglas absolutas de desarrollo
+## Íconos SVG por sección (Lucide)
 
-1. **CERO emojis** en la UI — solo SVG Lucide
-2. **No tocar** la lógica de Supabase auth ni el sistema de guardado de cotizaciones
-3. **No tocar** el esquema de base de datos existente (solo agregar campos si se documenta)
-4. **No tocar** `window.print()` — es el sistema de generación de PDF
-5. **No tocar** el sistema de `buildWordmark()` — solo adaptarlo al nuevo color turquesa
-6. **Variables CSS siempre** — nunca colores hardcodeados en el CSS (usar `var(--primary)`, etc.)
-7. **Archivos JS separados por módulo** — no mezclar responsabilidades
-8. **Sin bundlers, sin npm** — todo vanilla JS, archivos estáticos
+Todos con `stroke-width:1.8`, `stroke-linecap:round`, `stroke-linejoin:round`, `fill:none`:
 
----
-
-## Infraestructura planeada (Fase 1 — pendiente)
-
-| Servicio | Uso | Estado |
-|---|---|---|
-| Vercel | Deploy + subdominios wildcard | ⏳ Pendiente |
-| Cloudflare | Dominios ermix.com + ermix.app | ⏳ Pendiente |
-| Stripe | Suscripciones + trial 7 días | ⏳ Pendiente |
-| Resend | Emails transaccionales | ⏳ Pendiente |
-| Supabase multi-tenancy | RLS + tenant_id | ⏳ Pendiente |
+```
+Vuelos:        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+Alojamiento:   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+Traslados:     <rect x="2" y="6" width="20" height="12" rx="2"/>
+               <path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/>
+Excursiones:   <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/>
+               <path d="M13 5v2M13 17v2M13 11v2"/>
+Autos:         <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/>
+               <circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/>
+Cruceros:      <path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/>
+               <path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/>
+Seguros:       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+```
 
 ---
 
-## Supabase — tablas principales
+## Reglas absolutas — NUNCA hacer
 
-| Tabla | Descripción |
-|---|---|
-| `cotizaciones` | Cotizaciones con todos los datos en JSONB |
-| `clientes` | Mini CRM del agente |
-| `aerolineas` | Lista de aerolíneas con IATA |
-| `proveedores` | Proveedores de traslados |
-| `seguros` | Aseguradoras disponibles |
-| `users` | Perfiles de agentes |
-
-> Campo `share_token` (UUID) en cotizaciones para el link público al cliente — pendiente de implementar en Fase 3.
+- Emojis en cualquier parte de la UI
+- Colores hardcodeados — siempre variables CSS
+- Fondo violeta en el login o en cualquier pantalla
+- Inputs con fondo crema/pastel (siempre blancos)
+- Tocar el path SVG de la X del logo
+- Tocar lógica Supabase auth o guardado de cotizaciones
+- Tocar `window.print()`
+- Tocar IDs de campos del formulario
+- Tocar el sistema de autocomplete
+- Tocar los cálculos automáticos
+- Escribir "Ermix" — siempre "ermix" minúscula
+- Logo blanco sobre fondo blanco/crema
+- Usar npm, bundlers o librerías externas pesadas
 
 ---
 
-## Lo que NO existe todavía
+## Dark mode
 
-- Vercel / subdominios — todo sigue en GitHub Pages
-- Stripe — no hay suscripciones ni cobros
-- Resend — no hay emails automáticos
-- Vista pública del cliente (`/c/[token]`) — pendiente Fase 3
-- Multi-tenancy (`tenant_id`) — pendiente Fase 1
-- Mapa del recorrido — pendiente Fase 3
-- Timeline de itinerario — pendiente Fase 3
+- Toggle guarda en `localStorage('theme')`, aplica `data-theme="dark"` en `<html>`
+- `--bg: #0D120F` (verde oscuro, NO negro puro)
+- `--surface: #141A16`
+- `--surface2: #1B231D` (inputs en dark)
+- `--text: #F0EDE6`
+- Photo headers: igual que en light (la imagen o gradiente no cambia)
+- Pasteles en dark: mismos colores con opacidad reducida (ver variables CSS en guidelines)
+
+---
+
+## Supabase
+
+- RLS habilitado en `public.agentes`
+- Function search path corregido en `public.set_updated_en`
+- Leaked Password Protection: en pausa (requiere plan Pro)
+- Las fotos de secciones se guardan en Supabase Storage o como URL en la tabla de configuración del agente
+
+---
+
+## Estado del proyecto · Marzo 2026
+
+- Brand v3 aprobado y documentado en `ermix-brand-guidelines-v3.html`
+- Reescritura frontend completa en curso
+- Fase 1 SaaS (ermix.com, Cloudflare, Vercel, multi-tenancy, Stripe, Resend) — pendiente
+
+---
+
+*Última actualización: Marzo 2026 · Brand v3.0*

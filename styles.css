@@ -216,7 +216,65 @@ input:focus,textarea:focus,select:focus{
   opacity:1;transform:translateY(-50%) translateX(0)
 }
 /* Contenido principal desplazado por el sidebar */
-#ui{margin-left:54px}
+#ui{margin-left:54px;transition:margin-left 0.22s ease}
+#ui.sb-open{margin-left:200px}
+
+/* ── Sidebar expandible ── */
+#sidebar{transition:width 0.22s ease}
+#sidebar.open{
+  width:200px;
+  align-items:flex-start;
+  padding:10px 0
+}
+/* Toggle button dentro del sidebar */
+#sb-toggle{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--muted);transition:all .18s;
+  flex-shrink:0;margin-bottom:4px
+}
+#sb-toggle:hover{background:var(--g1);color:var(--text)}
+#sb-toggle svg{
+  stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;
+  width:17px;height:17px;pointer-events:none
+}
+/* Chevron visible solo cuando está expandido */
+#sb-ico-close{display:none}
+#sidebar.open #sb-ico-open{display:none!important}
+#sidebar.open #sb-ico-close{display:block!important}
+/* Posición del toggle en sidebar expandido */
+#sidebar.open #sb-toggle{align-self:flex-end;margin-right:8px;margin-bottom:6px}
+/* Logo en sidebar expandido */
+#sidebar.open #sb-logo{
+  margin-left:12px;margin-bottom:8px;
+}
+/* Items expandidos */
+#sidebar.open .sb-item{
+  width:calc(200px - 16px);
+  border-radius:10px;
+  justify-content:flex-start;
+  padding:0 12px;
+  gap:10px
+}
+/* Labels de texto */
+.sb-lbl{
+  display:none;
+  font-size:.73rem;font-weight:600;
+  color:inherit;white-space:nowrap;
+  line-height:1
+}
+#sidebar.open .sb-lbl{display:block}
+/* Ocultar tooltip cuando está expandido (ya se ven los labels) */
+#sidebar.open .sb-item::after{display:none!important;opacity:0!important}
+/* Separador expandido */
+#sidebar.open .sb-div{width:calc(100% - 24px);margin:4px 12px}
+/* Avatar expandido */
+#sidebar.open #sb-avatar{
+  margin-left:12px;
+  width:36px;height:36px;font-size:11px
+}
 
 /* ══════════════════════════
    LAYOUT
@@ -282,13 +340,13 @@ input:focus,textarea:focus,select:focus{
 .finput{
   width:100%;padding:10px 14px;
   border:1.5px solid var(--border2);border-radius:var(--rs);
-  font-size:.87rem;color:var(--text);background:#fafbff;
+  font-size:.87rem;color:var(--text);background:var(--surface);
   transition:border-color .2s,box-shadow .2s
 }
 .fsel{
   width:100%;padding:10px 14px;
   border:1.5px solid var(--border2);border-radius:var(--rs);
-  font-size:.87rem;color:var(--text);background:#fafbff;
+  font-size:.87rem;color:var(--text);background:var(--surface);
   appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 12px center;
@@ -298,12 +356,12 @@ input:focus,textarea:focus,select:focus{
 .ftxt{
   width:100%;padding:10px 14px;
   border:1.5px solid var(--border2);border-radius:var(--rs);
-  font-size:.87rem;color:var(--text);background:#fafbff;
+  font-size:.87rem;color:var(--text);background:var(--surface);
   transition:border-color .2s
 }
 .money-wrap{
   display:flex;border:1.5px solid var(--border2);
-  border-radius:var(--rs);overflow:hidden;background:#fafbff;
+  border-radius:var(--rs);overflow:hidden;background:var(--surface);
   transition:border-color .2s,box-shadow .2s
 }
 .money-wrap:focus-within{

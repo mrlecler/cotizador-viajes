@@ -343,7 +343,7 @@ function addVuelo(d){
     </div>
   </div>
   <div id="v${id}-ret-sec" style="display:none;background:rgba(27,158,143,0.06);border:1px solid rgba(27,158,143,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
-    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet-light);margin-bottom:12px">↩ TRAMO VUELTA</div>
+    <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary3);margin-bottom:12px">↩ TRAMO VUELTA</div>
     <div class="g3">
       <div class="fg"><label class="lbl">Aerolínea vuelta</label>
         <div style="position:relative">
@@ -474,8 +474,8 @@ function addHotel(d){
       <div class="fg"><label class="lbl">Beneficios</label>
         <div class="chk-grp" id="h${id}-bens">${[['ep','Early Park Entry'],['tr','Transporte gratuito'],['mm','Memory Maker'],['dl','Entrega en hotel'],['ex','Express Pass'],['sp','Disney Springs'],['wp','Parque acuático gratis'],['me','Magical Extras']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
       </div>
-      <div style="background:var(--ink3);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(27,158,143,0.18)">
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet-light);margin-bottom:10px">Plan de comidas</div>
+      <div style="background:var(--surface2);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(27,158,143,0.18)">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary3);margin-bottom:10px">Plan de comidas</div>
         <div class="g3">
           <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
           <div class="fg"><label class="lbl">Precio con plan</label>
@@ -542,9 +542,9 @@ function addTraslado(d){
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
   <div class="sec-photo-hd" style="background:linear-gradient(135deg,#E8826A,#C2185B)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
     <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Traslados</div>
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg>Traslados</div>
       <div class="sec-photo-badge">TRAMO ${id}</div>
     </div>
   </div>

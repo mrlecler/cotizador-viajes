@@ -97,6 +97,18 @@ function toggleTheme(){
 })();
 
 // ═══════════════════════════════════════════
+// SIDEBAR — Toggle expandible
+// ═══════════════════════════════════════════
+function _toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ui=document.getElementById('ui');
+  if(!sb||!ui) return;
+  const isOpen=sb.classList.toggle('open');
+  ui.classList.toggle('sb-open',isOpen);
+  localStorage.setItem('sb-open',isOpen?'1':'');
+}
+
+// ═══════════════════════════════════════════
 // AUTH — NETLIFY IDENTITY
 // ═══════════════════════════════════════════
 // ═══════════════════════════════════════════
@@ -187,6 +199,11 @@ async function showApp(user){
   document.getElementById('login-wall').style.display='none';
   document.getElementById('ui').style.display='block';
   document.getElementById('sidebar').style.display='flex';
+  // Restaurar estado expandido del sidebar
+  if(localStorage.getItem('sb-open')){
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('ui').classList.add('sb-open');
+  }
   document.getElementById('hdr-user').textContent = user.email;
   // Iniciales en el avatar del sidebar
   const av=document.getElementById('sb-avatar');
