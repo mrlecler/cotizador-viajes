@@ -427,7 +427,7 @@ function _initSecCollapse(){
   });
 }
 
-document.addEventListener('DOMContentLoaded',()=>{ _applySecPhotos(); _initSecCollapse(); });
+document.addEventListener('DOMContentLoaded',()=>{ _initSecCollapse(); _applySecPhotos(); });
 
 // ═══════════════════════════════════════════
 // BUILD QUOTE HTML (PDF renderer)

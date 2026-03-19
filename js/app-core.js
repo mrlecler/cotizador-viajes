@@ -413,7 +413,10 @@ function switchTab(id){
   const idx=tabMap[id];
   if(idx!==undefined) document.querySelectorAll('.ntab')[idx]?.classList.add('on');
   // Acciones por tab
-  if(id==='form' && formDraft){ restoreDraft(formDraft); }
+  if(id==='form'){
+    if(formDraft) restoreDraft(formDraft);
+    if(typeof _applySecPhotos==='function') _applySecPhotos();
+  }
   if(id==='history') renderHistory();
   if(id==='clients') renderClients();
   if(id==='admin'){renderAdmin();if(typeof _loadSecPhotoAdmin==='function')_loadSecPhotoAdmin();}
