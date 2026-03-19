@@ -80,6 +80,8 @@ function toggleTheme(){
   const li=document.getElementById('theme-icon-light');
   if(di) di.style.display=next==='light'?'block':'none';
   if(li) li.style.display=next==='dark'?'block':'none';
+  const lbl=document.getElementById('login-theme-lbl');
+  if(lbl) lbl.textContent=next==='light'?'Modo oscuro':'Modo claro';
 }
 
 (function initTheme(){
@@ -91,6 +93,8 @@ function toggleTheme(){
     const li=document.getElementById('theme-icon-light');
     if(di) di.style.display=saved==='light'?'block':'none';
     if(li) li.style.display=saved==='dark'?'block':'none';
+    const lbl=document.getElementById('login-theme-lbl');
+    if(lbl) lbl.textContent=saved==='light'?'Modo oscuro':'Modo claro';
   });
 })();
 
