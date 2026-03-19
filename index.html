@@ -137,16 +137,97 @@
 
 <!-- ═══ INICIO ═══ -->
 <div id="tab-inicio" class="panel on">
-  <div class="intro-bar" style="margin-bottom:20px">
-    <h2 id="inicio-saludo">Hola</h2>
-    <p>Creá, guardá y enviá cotizaciones de viajes personalizadas</p>
+  <!-- Quick actions -->
+  <div class="quick-actions">
+    <div class="qa-card qa-card-pri" onclick="switchTab('form')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      <div class="qa-card-label">Nueva cotización</div>
+      <div class="qa-card-sub">Crear desde cero</div>
+    </div>
+    <div class="qa-card" onclick="switchTab('history')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="qa-card-label">Historial</div>
+      <div class="qa-card-count" id="qac-hist">—</div>
+      <div class="qa-card-sub">cotizaciones guardadas</div>
+    </div>
+    <div class="qa-card" onclick="switchTab('clients')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="qa-card-label">Clientes</div>
+      <div class="qa-card-count" id="qac-clients">—</div>
+      <div class="qa-card-sub">en tu base de datos</div>
+    </div>
   </div>
-  <div style="text-align:center;margin-bottom:24px">
-    <button class="btn btn-pri" style="font-size:.88rem;padding:12px 28px" onclick="switchTab('form')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Nueva cotización desde cero
-    </button>
+  <!-- Date filter -->
+  <div class="date-tabs">
+    <span style="font-size:.74rem;font-weight:600;color:var(--g4);align-self:center;margin-right:4px">Período:</span>
+    <button class="date-tab on" data-period="month" onclick="_setDashPeriod('month',this)">Este mes</button>
+    <button class="date-tab" data-period="year" onclick="_setDashPeriod('year',this)">Este año</button>
+    <button class="date-tab" data-period="all" onclick="_setDashPeriod('all',this)">Todo</button>
   </div>
+  <!-- Metric cards -->
+  <div class="dm-grid">
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+      <div class="dm-card-val grad" id="met-cot">—</div>
+      <div class="dm-card-sub" id="met-cot-sub">en el período</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-cot-bar" style="width:0%"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmadas</div>
+      <div class="dm-card-val" id="met-conf" style="color:#22c55e">—</div>
+      <div class="dm-card-sub" id="met-conf-sub">viajes confirmados</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-conf-bar" style="width:0%;background:#22c55e"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>En proceso</div>
+      <div class="dm-card-val" id="met-act" style="color:#f59e0b">—</div>
+      <div class="dm-card-sub">enviadas al cliente</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-act-bar" style="width:0%;background:#f59e0b"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</div>
+      <div class="dm-card-val" id="met-clients">—</div>
+      <div class="dm-card-sub">en tu base de datos</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-clients-bar" style="width:0%;background:#8b5cf6"></div></div>
+    </div>
+  </div>
+  <!-- Commissions + status dist -->
+  <div class="dm-wide" style="margin-bottom:20px">
+    <div class="dm-wide-hd">
+      <span class="dm-wide-ttl">Comisiones estimadas · USD</span>
+      <span style="font-size:.7rem;color:var(--g4)">Basado en datos cargados en cada cotización</span>
+    </div>
+    <div class="dm-com-row">
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">Total período</div>
+        <div class="dm-com-item-val tq" id="met-com">—</div>
+      </div>
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">Confirmadas</div>
+        <div class="dm-com-item-val ok" id="met-com-conf">—</div>
+      </div>
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">En proceso</div>
+        <div class="dm-com-item-val muted" id="met-com-pend">—</div>
+      </div>
+    </div>
+    <div class="stat-dist">
+      <div class="stat-dist-lbl">Distribución de estados</div>
+      <div class="stat-bar" id="stat-bar-track">
+        <div class="stat-bar-seg stat-bar-borrador" id="seg-borrador" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-enviada" id="seg-enviada" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-confirmada" id="seg-confirmada" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-cancelada" id="seg-cancelada" style="width:25%"></div>
+      </div>
+      <div class="stat-legend">
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#94a3b8"></span><span id="leg-borrador">Borradores</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#f59e0b"></span><span id="leg-enviada">Enviadas</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#22c55e"></span><span id="leg-confirmada">Confirmadas</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#ef4444"></span><span id="leg-cancelada">Canceladas</span></span>
+      </div>
+    </div>
+  </div>
+  <!-- Destinations -->
   <div class="card" style="margin-bottom:20px">
     <div class="card-hd">
       <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div>
@@ -154,23 +235,6 @@
     </div>
     <div class="card-body" style="padding-top:10px;padding-bottom:14px">
       <div id="inicio-dest-strip" class="dest-strip"></div>
-    </div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-    <div class="dash-metric dm-vuelos">
-      <div class="metric-label"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
-      <div class="metric-value grad" id="met-cot">—</div>
-      <div class="metric-sub">guardadas</div>
-    </div>
-    <div class="dash-metric dm-hotel">
-      <div class="metric-label"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Comisiones</div>
-      <div class="metric-value" id="met-com">—</div>
-      <div class="metric-sub">estimadas</div>
-    </div>
-    <div class="dash-metric dm-seguro">
-      <div class="metric-label"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activas</div>
-      <div class="metric-value" id="met-act">—</div>
-      <div class="metric-sub">en proceso</div>
     </div>
   </div>
 </div>
@@ -458,19 +522,21 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
   <div class="card">
     <div class="card-hd">
       <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-      <div style="flex:1"><div class="card-ttl">Historial de cotizaciones</div><div class="card-sub">Sincronizado en la nube · Todos los dispositivos</div></div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select class="fsel btn-sm" id="hist-filter" onchange="renderHistory()" style="min-width:140px">
+      <div><div class="card-ttl">Historial de cotizaciones</div><div class="card-sub">Sincronizado en la nube · Todos los dispositivos</div></div>
+    </div>
+    <div class="card-body">
+      <div class="hist-filters">
+        <input class="finput" type="text" id="hist-search" placeholder="Buscar destino, cliente, ref..." oninput="renderHistory()" style="margin:0">
+        <select class="fsel" id="hist-filter" onchange="renderHistory()">
           <option value="">Todos los estados</option>
           <option value="borrador">Borradores</option>
           <option value="enviada">Enviadas</option>
           <option value="confirmada">Confirmadas</option>
           <option value="cancelada">Canceladas</option>
         </select>
-        <input class="finput btn-sm" type="text" id="hist-search" placeholder="Buscar..." oninput="renderHistory()" style="width:180px">
+        <input class="finput" type="date" id="hist-date-from" onchange="renderHistory()" title="Desde" style="margin:0;min-width:130px">
+        <input class="finput" type="date" id="hist-date-to" onchange="renderHistory()" title="Hasta" style="margin:0;min-width:130px">
       </div>
-    </div>
-    <div class="card-body">
       <div id="hist-list"><div style="text-align:center;padding:40px;color:var(--g3)">Cargando...</div></div>
     </div>
   </div>
@@ -485,7 +551,9 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <button class="btn btn-pri btn-sm" onclick="openClientModal()">+ Nuevo cliente</button>
     </div>
     <div class="card-body">
-      <input class="finput" type="text" id="cli-filter" placeholder="Buscar por nombre, email o teléfono..." oninput="renderClients()" style="margin-bottom:16px">
+      <div class="list-toolbar">
+        <input class="finput" type="text" id="cli-filter" placeholder="Buscar por nombre, email o teléfono..." oninput="renderClients()">
+      </div>
       <div id="cli-list"><div style="text-align:center;padding:40px;color:var(--g3)">Cargando...</div></div>
     </div>
   </div>

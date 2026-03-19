@@ -353,41 +353,86 @@ function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
 // ═══════════════════════════════════════════
 // DASHBOARD METRICS (Inicio)
 // ═══════════════════════════════════════════
+let _dashPeriod='month';
+function _setDashPeriod(p,btn){
+  _dashPeriod=p;
+  document.querySelectorAll('.date-tab').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  loadDashboardMetrics();
+}
+
 async function loadDashboardMetrics(){
-  const cotEl=document.getElementById('met-cot');
-  const actEl=document.getElementById('met-act');
-  const comEl=document.getElementById('met-com');
-  // Mostrar skeleton mientras carga
-  if(cotEl) cotEl.textContent='...';
-  if(actEl) actEl.textContent='...';
+  // Skeleton
+  ['met-cot','met-conf','met-act','met-com','met-com-conf','met-com-pend','met-clients'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='...';
+  });
   try{
-    // Obtener el ID del agente actual
     const {data:ag}=await sb.from('agentes').select('id').eq('email',currentUser.email).maybeSingle();
-    if(!ag){ if(cotEl) cotEl.textContent='0'; if(actEl) actEl.textContent='0'; return; }
-    const {data,error}=await sb.from('cotizaciones')
-      .select('id,estado,total_comision')
-      .eq('agente_id',ag.id);
-    if(error){ console.warn('metrics error:',error.message); return; }
-    const total=(data||[]).length;
-    const estados=['pendiente','activa','en proceso','enviada','confirmada'];
-    const activas=(data||[]).filter(c=>estados.includes((c.estado||'').toLowerCase())).length;
-    const comTotal=(data||[]).reduce((s,c)=>s+(Number(c.total_comision)||0),0);
-    if(cotEl) cotEl.textContent=total||'0';
-    if(actEl) actEl.textContent=activas||'0';
-    if(comEl){
-      if(comTotal>0){
-        comEl.textContent=comTotal>=1000
-          ?'$'+(comTotal/1000).toFixed(1)+'k'
-          :'$'+comTotal.toLocaleString('es-AR');
-      } else {
-        comEl.textContent='—';
-        comEl.title='Próximamente: suma de comisiones estimadas';
-      }
+    if(!ag){['met-cot','met-conf','met-act','met-com','met-com-conf','met-com-pend','met-clients'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});return;}
+
+    // Date filter
+    let since=null;
+    const now=new Date();
+    if(_dashPeriod==='month'){since=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
+    else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
+
+    // Quotes
+    let qQuery=sb.from('cotizaciones').select('id,estado,total_comision,created_at').eq('agente_id',ag.id);
+    if(since) qQuery=qQuery.gte('created_at',since);
+    const {data:qData}=await qQuery;
+    const quotes=qData||[];
+
+    // Clients count (always total, not filtered by period)
+    const {count:cliCount}=await sb.from('clientes').select('id',{count:'exact',head:true}).eq('agente_id',ag.id);
+    const totalClients=cliCount||0;
+
+    // Calculations
+    const total=quotes.length;
+    const conf=quotes.filter(q=>q.estado==='confirmada').length;
+    const env=quotes.filter(q=>q.estado==='enviada').length;
+    const borr=quotes.filter(q=>q.estado==='borrador'||!q.estado).length;
+    const canc=quotes.filter(q=>q.estado==='cancelada').length;
+    const comTotal=quotes.reduce((s,q)=>s+(Number(q.total_comision)||0),0);
+    const comConf=quotes.filter(q=>q.estado==='confirmada').reduce((s,q)=>s+(Number(q.total_comision)||0),0);
+    const comPend=quotes.filter(q=>q.estado==='enviada').reduce((s,q)=>s+(Number(q.total_comision)||0),0);
+    const fmtUSD=n=>n>=1000?'$'+(n/1000).toFixed(1)+'k':'$'+n.toLocaleString('es-AR');
+
+    // Update metric cards
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    const setBar=(id,pct)=>{const el=document.getElementById(id);if(el)el.style.width=Math.min(100,pct)+'%';};
+    set('met-cot',total||'0');
+    set('met-cot-sub',_dashPeriod==='month'?'este mes':_dashPeriod==='year'?'este año':'histórico');
+    set('met-conf',conf||'0');
+    set('met-conf-sub',conf===1?'viaje confirmado':'viajes confirmados');
+    set('met-act',env||'0');
+    set('met-clients',totalClients||'0');
+    set('met-com',comTotal>0?fmtUSD(comTotal):'—');
+    set('met-com-conf',comConf>0?fmtUSD(comConf):'—');
+    set('met-com-pend',comPend>0?fmtUSD(comPend):'—');
+
+    // Progress bars (relative to total)
+    if(total>0){
+      setBar('met-cot-bar',100);
+      setBar('met-conf-bar',conf/total*100);
+      setBar('met-act-bar',env/total*100);
+    }
+    setBar('met-clients-bar',Math.min(100,totalClients/50*100));
+
+    // Quick action counts
+    set('qac-hist',total||'0');
+    set('qac-clients',totalClients||'0');
+
+    // Status distribution bar
+    if(total>0){
+      const seg=(id,n)=>{const el=document.getElementById(id);if(el)el.style.width=(n/total*100)+'%';};
+      seg('seg-borrador',borr);seg('seg-enviada',env);
+      seg('seg-confirmada',conf);seg('seg-cancelada',canc);
+      const leg=(id,lbl,n)=>{const el=document.getElementById(id);if(el)el.textContent=lbl+' ('+n+')';};
+      leg('leg-borrador','Borradores',borr);leg('leg-enviada','Enviadas',env);
+      leg('leg-confirmada','Confirmadas',conf);leg('leg-cancelada','Canceladas',canc);
     }
   }catch(e){
-    console.warn('metrics load error:',e);
-    if(cotEl) cotEl.textContent='—';
-    if(actEl) actEl.textContent='—';
+    console.warn('metrics error:',e);
   }
 }
 
