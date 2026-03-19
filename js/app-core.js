@@ -55,8 +55,6 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 document.fonts.ready.then(function(){
   buildWordmark('login-wm',64,'currentColor','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
-  // Sidebar logo: X blanca sobre fondo gradiente turquesa
-  _buildSbLogo();
 });
 
 function _buildSbLogo(){
@@ -205,6 +203,12 @@ async function showApp(user){
     document.getElementById('ui').classList.add('sb-open');
   }
   document.getElementById('hdr-user').textContent = user.email;
+  // Saludo en pantalla Inicio
+  const _saludoEl=document.getElementById('inicio-saludo');
+  if(_saludoEl){
+    const _nm=user.user_metadata?.full_name||user.email?.split('@')[0]||'';
+    _saludoEl.textContent='Hola'+(_nm?', '+_nm.split(' ')[0]:'')+'.';
+  }
   // Iniciales en el avatar del sidebar
   const av=document.getElementById('sb-avatar');
   if(av){
@@ -223,13 +227,15 @@ async function showApp(user){
       isAdmin = data.rol === 'admin';
       if(data.nombre && !agCfg.nm){ agCfg.nm = data.nombre; loadCfg(); }
       if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
-      // Actualizar avatar del sidebar con nombre real
+      // Actualizar avatar del sidebar y saludo con nombre real
       if(data.nombre){
         const av=document.getElementById('sb-avatar');
         if(av){
           const parts=data.nombre.trim().split(/\s+/);
           av.textContent=(parts.length>=2?parts[0][0]+parts[1][0]:data.nombre.substring(0,2)).toUpperCase();
         }
+        const sal=document.getElementById('inicio-saludo');
+        if(sal) sal.textContent='Hola, '+data.nombre.trim().split(/\s+/)[0]+'.';
       }
     }
     if(isAdmin){
@@ -342,7 +348,7 @@ function parseDateArg(s){ // "DD/MM/YYYY" → "YYYY-MM-DD"
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={form:0,ia:1,preview:2,history:3,clients:4,dashboard:5,admin:6,config:7};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,clients:5,dashboard:6,admin:7,config:8};
 function switchTab(id){
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
@@ -384,6 +390,7 @@ function restoreDraft(d){
   // Viaje
   set('m-dest', d.viaje?.destino);
   set('m-pais', d.viaje?.pais);
+  set('m-desc', d.viaje?.descripcion);
   // Fechas: almacenadas como DD/MM/YYYY, los inputs son type=date (YYYY-MM-DD)
   const toISO=(dd)=>{ if(!dd) return ''; if(dd.includes('-')) return dd; const[day,mo,yr]=dd.split('/'); return yr&&mo&&day?`${yr}-${mo.padStart(2,'0')}-${day.padStart(2,'0')}`:'' };
   set('m-sal', toISO(d.viaje?.salida));

@@ -83,7 +83,7 @@ function buildQuoteHTML(d){
   let H=`<div id="qwrap">
   <div class="q-cover">
     ${coverUrl?`<img class="q-cover-img" src="${coverUrl}" alt="">`:''}
-    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,18,15,0.1) 0%,rgba(13,18,15,0.85) 100%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.0) 0%,rgba(10,26,18,0.55) 60%,rgba(13,18,15,0.75) 100%);pointer-events:none"></div>
     <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(27,158,143,0.45) 0%,transparent 60%)"></div>
     <div style="position:absolute;top:0;left:0;right:0;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;z-index:1">
       <div>${buildPdfWordmark(22)}</div>
@@ -130,6 +130,9 @@ function buildQuoteHTML(d){
 
   // ── DESCRIPCIÓN ────────────────────────────────────────────────────────────
   H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">${L(LI.clip)}</div><div><div class="q-sec-ttl">Descripción del viaje</div></div></div>`;
+  if(vi.descripcion&&vi.descripcion.trim()){
+    H+=`<div style="font-size:12px;line-height:1.7;color:#3D2E22;margin:0 0 14px 0;white-space:pre-line">${vi.descripcion.trim()}</div>`;
+  }
   if((d.vuelos||[]).length)H+=`<div class="desc-item">${L(LI.plane,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Transporte aéreo:</strong> ${d.vuelos[0].origen} → ${d.vuelos[d.vuelos.length-1].destino||d.vuelos[0].destino}</span></div>`;
   (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>H+=`<div class="desc-item">${L(LI.hotel,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">${h.noches?h.noches+' noches':'Hotel'}:</strong> ${h.nombre}${h.regimen?', '+h.regimen:''}.</span></div>`);
   (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>H+=`<div class="desc-item">${L(LI.ticket,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Excursión:</strong> ${e.nombre}</span></div>`);

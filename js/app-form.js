@@ -167,11 +167,10 @@ const _DEST_LIST=[
 ];
 
 function _initDestCards(){
-  const cont=document.getElementById('vuelos-cont');
-  if(!cont||cont.previousElementSibling?.classList.contains('dest-strip')) return;
-  const strip=document.createElement('div');
-  strip.className='dest-strip';
-  strip.title='Clic para completar destino';
+  // Inyectar en pantalla Inicio (NO en el formulario)
+  const strip=document.getElementById('inicio-dest-strip');
+  if(!strip) return;
+  if(strip.children.length>0) return; // ya inicializado
   strip.innerHTML=_DEST_LIST.map(d=>`
     <button class="dest-card" onclick="_selectDest('${d.nm.replace(/'/g,"\\'")}')">
       <img class="dest-card-img" src="${d.img}" alt="${d.nm}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
@@ -179,7 +178,6 @@ function _initDestCards(){
       <span class="dest-card-lbl">${d.nm}</span>
     </button>
   `).join('');
-  cont.parentElement.insertBefore(strip,cont);
 }
 
 function _gradStops(grad){
@@ -229,6 +227,8 @@ function _selectDest(nm){
   const hPai=document.getElementById('h1-pai');
   if(hCiu&&!hCiu.value&&ciudad) hCiu.value=ciudad;
   if(hPai&&!hPai.value&&PAISES[nm]) hPai.value=PAISES[nm];
+  // Navegar al formulario
+  if(typeof switchTab==='function') switchTab('form');
 }
 
 // ── Logos de aerolíneas — CDN Google Flights ──
@@ -298,7 +298,7 @@ function addVuelo(d){
   d=d||{};const id=++vc;
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#0EA5E9,#1565C0)">
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0EA5E9,#1565C0)">
     <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
     <div class="sec-photo-bar">
       <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Vuelos</div>
@@ -431,7 +431,7 @@ function addHotel(d){
   d=d||{};const id=++hc;const isD=d.tipo==='disney',isU=d.tipo==='universal';
   const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#FF8E53,#E65100)">
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8E53,#E65100)">
     <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
     <div class="sec-photo-bar">
       <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Alojamiento</div>
@@ -541,7 +541,7 @@ function addTraslado(d){
   d=d||{};const id=++tc;
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#E8826A,#C2185B)">
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#E8826A,#C2185B)">
     <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
     <div class="sec-photo-bar">
       <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg>Traslados</div>
@@ -591,10 +591,10 @@ function addExcursion(d){
   d=d||{};const id=++ec;
   const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#43A047,#1B5E20)">
-    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
     <div class="sec-photo-bar">
-      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>Excursiones</div>
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Excursiones</div>
       <div class="sec-photo-badge">ACTIVIDAD ${id}</div>
     </div>
   </div>
@@ -642,7 +642,7 @@ function addAuto(d){
   d=d||{};const id=++ac_cnt;
   const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#FF8F00,#E65100)">
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8F00,#E65100)">
     <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
     <div class="sec-photo-bar">
       <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>Alquiler de Auto</div>
@@ -707,7 +707,7 @@ function addCrucero(d){
   d=d||{};const id=++crc_cnt;
   const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
   el.innerHTML=`
-  <div class="sec-photo-hd" style="background:linear-gradient(135deg,#0288D1,#01579B)">
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1548574505-5e239809ee19?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0288D1,#01579B)">
     <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div>
     <div class="sec-photo-bar">
       <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>Crucero</div>
@@ -840,7 +840,7 @@ function collectForm(){
   return{refId,ts:Date.now(),_clientId:document.getElementById('_clientId')?.value||null,
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
-    viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches},
+    viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches,descripcion:gv('m-desc')},
     vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},

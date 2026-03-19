@@ -33,4 +33,77 @@ function showIAErr(m){const e=document.getElementById('ia-err');e.textContent=m;
 function saveKey(){localStorage.setItem('mp_key',document.getElementById('api-key').value.trim());toast('✓ API Key guardada');}
 
 // ═══════════════════════════════════════════
+// GENERAR DESCRIPCIÓN TURÍSTICA CON IA
+// ═══════════════════════════════════════════
+async function generarDescIA(){
+  const destEl=document.getElementById('m-dest');
+  const descEl=document.getElementById('m-desc');
+  const btn=document.getElementById('btn-ia-desc');
+  const btnTxt=document.getElementById('btn-ia-desc-txt');
+  if(!destEl||!descEl||!btn) return;
+
+  const destino=destEl.value.trim();
+  if(!destino){
+    toast('Ingresá el destino primero.',false);
+    destEl.focus();
+    return;
+  }
+  const key=localStorage.getItem('mp_key')||'';
+  if(!key){
+    toast('Guardá tu API Key en la sección IA primero.',false);
+    return;
+  }
+
+  // Si ya hay contenido — preguntar reemplazar o agregar
+  let _modoAgregar=false;
+  if(descEl.value.trim()){
+    const _reemplazar=confirm('Ya hay una descripción. ¿Reemplazarla con la nueva generada por IA?\n(Cancelá para agregar al final)');
+    _modoAgregar=!_reemplazar;
+  }
+
+  btn.disabled=true;
+  btnTxt.textContent='Generando...';
+
+  try{
+    const prompt=`Genera una descripción turística de ${destino} para incluir en una cotización de viaje profesional. Incluí: clima ideal para visitar, principales atractivos, qué hace especial este destino. Máximo 3 párrafos cortos. Tono cálido y vendedor. En español.`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    if(data.error){
+      const ec=data.error.type||'';
+      if(ec==='authentication_error') throw new Error('API Key inválida. Verificala en la sección IA.');
+      if(ec==='overloaded_error') throw new Error('Servidor ocupado. Intentá en unos segundos.');
+      throw new Error(data.error.message||'Error de la API');
+    }
+    const texto=(data.content?.[0]?.text||'').trim();
+    if(!texto) throw new Error('La IA no devolvió texto.');
+
+    // Insertar — reemplazar o agregar
+    if(_modoAgregar){
+      descEl.value=descEl.value.trimEnd()+'\n\n'+texto;
+    } else {
+      descEl.value=texto;
+    }
+    toast('Descripción generada correctamente.');
+  }catch(e){
+    toast('Error IA: '+(e.message||'intenta de nuevo'),false);
+  }finally{
+    btn.disabled=false;
+    btnTxt.textContent='Generar descripción';
+  }
+}
+
+// ═══════════════════════════════════════════
 // COVER & LOGO

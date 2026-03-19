@@ -13,7 +13,7 @@ function updateLogoPreview(){
 function updateHeader(){
   // El logo de agente solo aparece en el PDF — el header siempre muestra el wordmark ermix
   // buildWordmark() es llamado desde app-core.js en fonts.ready
-  document.fonts.ready.then(function(){ buildWordmark('hdr-wm',28,'white','grad'); });
+  document.fonts.ready.then(function(){ buildWordmark('hdr-wm',22,'currentColor','grad'); });
 }
 
 // ═══════════════════════════════════════════

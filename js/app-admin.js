@@ -215,6 +215,13 @@ function addTicket(d){
   d=d||{};const id=++tkc;
   const el=document.createElement('div');el.className='rep';el.id='tkb-'+id;
   el.innerHTML=`
+  <div class="sec-photo-hd" style="background:url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
+    <div class="sec-photo-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
+    <div class="sec-photo-bar">
+      <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Ticket</div>
+      <div class="sec-photo-badge">ENTRADA ${id}</div>
+    </div>
+  </div>
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Ticket ${id}</div>
     <button class="btn btn-del btn-xs" onclick="this.closest('.rep').remove()">✕</button></div>
   <div class="g3">
