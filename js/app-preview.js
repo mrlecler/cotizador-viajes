@@ -20,10 +20,12 @@ function updateHeader(){
 // CONFIG
 // ═══════════════════════════════════════════
 function saveCfg(){
-  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc')};
+  const rawPais=(gv('cfg-pais')||'').toUpperCase().trim().slice(0,3);
+  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR'};
   localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
+  window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase
-  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||''}).eq('email',currentUser.email);
+  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||'',pais_cod:agCfg.pais_cod}).eq('email',currentUser.email);
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
 }
@@ -41,7 +43,7 @@ async function changePassword(){
   toast('Contraseña actualizada');
 }
 function loadCfg(){
-  [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+  [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
 }
 
 // ═══════════════════════════════════════════

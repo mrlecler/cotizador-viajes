@@ -742,6 +742,11 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
         <div class="fg"><label class="lbl">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
         <div class="fg"><label class="lbl">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com"></div>
         <div class="fg"><label class="lbl">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040"></div>
+        <div class="fg"><label class="lbl">País <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(código ISO)</span></label>
+          <input class="finput" id="cfg-pais" list="cfg-pais-list" maxlength="3" placeholder="AR" style="text-transform:uppercase">
+          <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">España</option><option value="MX">México</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Perú</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panamá</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotización · ej: AR-0001-00001</div>
+        </div>
         <div class="fg full"><label class="lbl">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
       </div>
       <button class="btn btn-pri" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>

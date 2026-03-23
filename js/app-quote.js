@@ -132,6 +132,48 @@ function buildQuoteHTML(d){
     </div>`;
   }
 
+  // ── ITINERARIO ─────────────────────────────────────────────────────────────
+  const _fmtD=(s)=>{if(!s)return'';try{const d=new Date(s.includes('/')?s.split('/').reverse().join('-'):s);return isNaN(d)?s:d.toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'});}catch{return s;}};
+  const _inRange=(fecha,from,to)=>{if(!fecha||!from)return true;try{const f=new Date(fecha.includes('/')?fecha.split('/').reverse().join('-'):fecha);const a=new Date(from.includes('/')?from.split('/').reverse().join('-'):from);const b=to?new Date(to.includes('/')?to.split('/').reverse().join('-'):to):null;return f>=a&&(!b||f<=b);}catch{return true;}};
+  const itiStops=[];
+  (d.hoteles||[]).filter(h=>h.nombre).forEach((h,i)=>{
+    const n=h.noches||(h.checkin&&h.checkout?Math.max(0,Math.round((new Date(h.checkout.includes('/')?h.checkout.split('/').reverse().join('-'):h.checkout)-new Date(h.checkin.includes('/')?h.checkin.split('/').reverse().join('-'):h.checkin))/86400000)):0);
+    const tras=(d.traslados||[]).filter(t=>(t.origen||t.destino)&&_inRange(t.fecha,h.checkin,h.checkout));
+    const acts=[...(d.excursiones||[]).filter(e=>e.nombre&&_inRange(e.fecha,h.checkin,h.checkout)).map(e=>e.nombre),...(d.tickets||[]).filter(t=>t.nombre).map(t=>t.nombre)];
+    itiStops.push({num:i+1,ciudad:h.ciudad||(i===0?vi.destino:''),pais:h.pais||(i===0?vi.pais:''),fechaIn:h.checkin,fechaOut:h.checkout,noches:n,alojamiento:h.nombre,regimen:h.regimen,tras,acts});
+  });
+  if(!itiStops.length&&(vi.destino||vi.salida)){
+    itiStops.push({num:1,ciudad:vi.destino||'',pais:vi.pais||'',fechaIn:vi.salida,fechaOut:vi.regreso,noches:vi.noches||0,alojamiento:null,regimen:null,tras:(d.traslados||[]).filter(t=>t.origen||t.destino),acts:[...(d.excursiones||[]).filter(e=>e.nombre).map(e=>e.nombre),...(d.tickets||[]).filter(t=>t.nombre).map(t=>t.nombre)]});
+  }
+  if(itiStops.length){
+    const pinSvg=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    const moonSvg=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+    H+=`<div class="q-sec q-iti-sec" style="break-before:page">
+  <div class="q-iti-heading">Itinerario</div>
+  <div class="q-iti-underline"></div>
+  <div style="height:24px"></div>
+  <div style="text-align:right;font-size:10px;font-weight:700;color:#374151;margin-bottom:12px">Inicio del viaje</div>
+  ${itiStops.map((s,si)=>`
+  <div class="q-iti-stop" ${si>0?'style="margin-top:4px"':''}>
+    <div class="q-iti-num-col">
+      <div class="q-iti-circle">${s.num}</div>
+      ${si<itiStops.length-1?`<div class="q-iti-connector"></div>`:''}
+    </div>
+    <div class="q-iti-info-col">
+      <div class="q-iti-loc">${pinSvg}<strong>${s.ciudad||'—'}</strong>${s.pais?`<span style="font-size:11px;color:#6b7280;margin-left:3px">${s.pais}</span>`:''}</div>
+      ${(s.fechaIn||s.fechaOut)?`<div class="q-iti-dates"><strong>${_fmtD(s.fechaIn)||'—'}</strong> → <strong>${_fmtD(s.fechaOut)||'—'}</strong></div>`:''}
+      ${s.alojamiento?`<div class="q-iti-detail"><strong>Alojamiento:</strong> ${s.alojamiento}${s.regimen?', '+s.regimen:''}</div>`:''}
+      ${s.tras.map(t=>`<div class="q-iti-detail"><strong>Traslado:</strong> ${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' en '+t.vehiculo:''}</div>`).join('')}
+      ${s.acts.length?`<div class="q-iti-detail"><strong>Actividades:</strong> ${s.acts.join(', ')}</div>`:''}
+    </div>
+    <div class="q-iti-nights-col">
+      ${s.noches?`<span class="q-iti-nights-val">${s.noches}</span><div class="q-iti-nights-lbl">${moonSvg} Noches</div>`:''}
+    </div>
+  </div>`).join('')}
+  <div style="text-align:right;font-size:10px;font-weight:700;color:#374151;margin-top:16px">El final del viaje</div>
+</div>`;
+  }
+
   // ── DESCRIPCIÓN ────────────────────────────────────────────────────────────
   H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">${L(LI.clip)}</div><div><div class="q-sec-ttl">Descripción del viaje</div></div></div>`;
   if(vi.descripcion&&vi.descripcion.trim()){
