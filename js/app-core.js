@@ -301,7 +301,7 @@ async function dbSaveQuote(d, supabaseId){
   if(!d.refId && !supabaseId){
     const {count} = await sb.from('cotizaciones').select('id',{count:'exact',head:true}).eq('agente_id',agId||'');
     const seq = (count||0) + 1;
-    const pais = window._agentePaisCod || agCfg.pais_cod || '54';
+    const pais = window._agentePaisCod || agCfg.pais_cod || 'AR';
     const num = window._agenteNum || 1;
     d.refId = `${pais}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
   }
