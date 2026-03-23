@@ -785,12 +785,9 @@ function collectForm(){
   });
   const s=gv('m-sal'),e=gv('m-reg');
   const noches=s&&e?Math.round((new Date(e)-new Date(s))/86400000):0;
-  // Si estamos editando, preservar el ref_id original del formulario.
-  // Si es cotización NUEVA (editingQuoteId===null), siempre generar uno nuevo
-  // para evitar colisiones aunque m-ref tenga un valor residual.
-  const refId = editingQuoteId
-    ? (gv('m-ref') || Math.floor(Math.random()*90000000+10000000))
-    : Math.floor(Math.random()*90000000+10000000);
+  // Si estamos editando, preservar el ref_id original.
+  // Si es cotización NUEVA, dejar null para que dbSaveQuote genere el ID estructurado.
+  const refId = gv('m-ref') || null;
   // Calcular comisión total (solo valores en USD o numéricas)
   const calcCom=(arr)=>arr.reduce((sum,x)=>sum+(x.comision&&x.com_cur!=='%'?x.comision:0),0);
   const segCom=(gv('seg-com-cur')!=='%'?gn('seg-com'):0);
