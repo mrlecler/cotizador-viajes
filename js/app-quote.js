@@ -64,6 +64,7 @@ function buildQuoteHTML(d){
     info:    `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
     car:     `<path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/>`,
     ship:    `<path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M10 3.3 12 2l2 1.3"/><path d="M12 2v7"/>`,
+    clock:   `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
   };
 
   // Helper: precio en gradiente (inline — para evitar conflictos con dark theme)
@@ -280,35 +281,89 @@ function buildQuoteHTML(d){
       if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-top:8px">${nl.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:11px;font-weight:700;color:#2D1F14;margin:6px 0 4px">${c}</div>`:`<div style="font-size:10px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
     } else {
       const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
-      H+=`<div class="q-card">
-        <div class="q-card-l">
-          <div class="q-card-nm">${h.nombre}</div>
-          <div class="q-card-dt">${[h.hab,h.regimen,h.noches?h.noches+' noches':'',h.ci&&h.co?h.ci+' – '+h.co:''].filter(Boolean).join(' · ')}</div>
-          ${h.estrellas&&h.estrellas!=='—'?`<div style="font-size:9px;margin-top:4px">★ ${h.estrellas} estrellas</div>`:''}
-          ${allAm.length?`<div class="am-grid">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`:''}
-        </div>
-        ${h.precio>0?`<div style="border:1px solid rgba(212,160,23,0.2);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:#FFF8E3"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16,'linear-gradient(135deg,#D4A017,#E8826A)')}</div>`:''}
-      </div>`;
+      const stars=parseInt(h.estrellas)||0;
+      const starsHtml=stars>0?`<span style="color:#D4A017;font-size:10px;letter-spacing:1px">${'★'.repeat(stars)}</span><span style="font-size:9px;color:rgba(45,31,20,0.45);margin-left:3px">${stars} estrellas</span>`:'';
+      H+=`<div style="border-radius:10px;overflow:hidden;border:1px solid rgba(212,160,23,0.18);background:#FFF8E3;margin-bottom:4px">`;
+      // Foto banner
+      if(h.foto_url){
+        H+=`<div style="position:relative;height:150px;overflow:hidden;flex-shrink:0">
+          <img src="${h.foto_url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="eager">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,transparent 55%)"></div>
+          <div style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-end">
+            <div><div style="color:white;font-size:14px;font-weight:700;line-height:1.2;text-shadow:0 1px 4px rgba(0,0,0,0.4)">${h.nombre}</div>${starsHtml?`<div style="margin-top:3px;color:rgba(255,255,255,0.85);font-size:9px">${stars>0?'★'.repeat(stars)+' '+stars+' estrellas':''}</div>`:''}</div>
+            ${h.noches?`<div style="background:rgba(212,160,23,0.92);color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;white-space:nowrap">${h.noches} NOCHES</div>`:''}
+          </div>
+        </div>`;
+      }
+      H+=`<div style="padding:12px 14px">`;
+      // Header sin foto
+      if(!h.foto_url){
+        H+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div style="font-size:14px;font-weight:700;color:#2D1F14;line-height:1.2">${h.nombre}</div>${starsHtml?`<div style="margin-top:3px">${starsHtml}</div>`:''}</div>
+          ${h.noches?`<div style="background:linear-gradient(135deg,#D4A017,#E8826A);color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:10px;white-space:nowrap">${h.noches} NOCHES</div>`:''}
+        </div>`;
+      }
+      // Info chips
+      const infoChips=[
+        h.ciudad||h.pais?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${L(LI.pin,9,'rgba(45,31,20,0.4)')} ${[h.ciudad,h.pais].filter(Boolean).join(', ')}</span>`:'',
+        h.ci&&h.co?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Check-in ${h.ci} · Check-out ${h.co}</span>`:'',
+        h.hab?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${h.hab}</span>`:'',
+        h.regimen?`<span style="font-size:9px;font-weight:600;color:#B45309;background:rgba(212,160,23,0.1);border-radius:4px;padding:2px 8px">${h.regimen}</span>`:''
+      ].filter(Boolean);
+      if(infoChips.length)H+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:${allAm.length?'8px':'10px'}">${infoChips.join('')}</div>`;
+      // Amenities
+      if(allAm.length)H+=`<div class="am-grid" style="margin-bottom:10px">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`;
+      // Notes
+      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:rgba(255,251,235,0.8);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin-bottom:10px">${nl.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:10px;font-weight:700;color:#2D1F14;margin:6px 0 3px">${c}</div>`:`<div style="font-size:9px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
+      // Price
+      if(h.precio>0)H+=`<div style="display:flex;justify-content:flex-end"><div style="border:1px solid rgba(212,160,23,0.25);border-radius:8px;padding:8px 14px;text-align:right;background:rgba(212,160,23,0.06)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:2px">PRECIO ALOJAMIENTO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16,'linear-gradient(135deg,#D4A017,#E8826A)')}</div></div>`;
+      H+=`</div></div>`;
     }
     H+=`</div>`;
   });
 
   // ── EXCURSIONES ────────────────────────────────────────────────────────────
   (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('excursiones','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> ${e.nombre}</div><div class="q-ph-badge">${e.categoria||'EXCURSIÓN'}</div></div></div>`;
-    H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
-      ${e.desc?`<div style="font-size:10px;line-height:1.65;color:rgba(45,31,20,0.55);margin-bottom:10px">${e.desc}</div>`:''}
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:${(e.inc||e.noinc)?'0':'0'}">
-        ${e.prov?`<div style="font-size:9px;color:rgba(45,31,20,0.5);display:flex;align-items:center;gap:4px">${L(LI.building,10,'rgba(45,31,20,0.35)')} ${e.prov}</div>`:''}
-        ${e.punto?`<div style="font-size:9px;color:rgba(45,31,20,0.5);display:flex;align-items:center;gap:4px">${L(LI.pin,10,'rgba(45,31,20,0.35)')} ${e.punto}</div>`:''}
+    H+=`<div class="q-sec" style="overflow:hidden">`;
+    // Photo header con foto propia si existe, sino el header estándar con foto de sección
+    if(e.foto_url){
+      H+=`<div style="position:relative;height:160px;overflow:hidden">
+        <img src="${e.foto_url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="eager">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.2) 60%,transparent 100%)"></div>
+        <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(67,160,71,0.9);color:white;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase">${e.categoria||'EXCURSIÓN'}</span></div>
+        <div style="position:absolute;bottom:12px;left:14px;right:14px">
+          <div style="color:white;font-size:15px;font-weight:700;line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,0.5)">${e.nombre}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:5px">
+            ${e.dur?`<span style="color:rgba(255,255,255,0.8);font-size:9px;display:flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(255,255,255,0.7)')} ${e.dur}</span>`:''}
+            ${e.fecha?`<span style="color:rgba(255,255,255,0.8);font-size:9px">${e.fecha}</span>`:''}
+            ${e.hora?`<span style="color:rgba(255,255,255,0.8);font-size:9px">Hora: ${e.hora}</span>`:''}
+          </div>
+        </div>
       </div>`;
+    } else {
+      H+=`<div class="q-ph" style="background:${sphBg('excursiones','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> ${e.nombre}</div><div class="q-ph-badge">${e.categoria||'EXCURSIÓN'}</div></div></div>`;
+    }
+    H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">`;
+    // Metadata chips (solo si no hay foto o si hay pero falta info)
+    if(!e.foto_url){
+      const metaChips=[
+        e.dur?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(67,160,71,0.08);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(67,160,71,0.6)')} ${e.dur}</span>`:'',
+        e.fecha?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${e.fecha}</span>`:'',
+        e.hora?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Hora: ${e.hora}</span>`:'',
+        e.prov?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.building,9,'rgba(45,31,20,0.4)')} ${e.prov}</span>`:'',
+      ].filter(Boolean);
+      if(metaChips.length)H+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:${e.desc?'8px':'0'}">${metaChips.join('')}</div>`;
+    }
+    if(e.desc)H+=`<div style="font-size:10px;line-height:1.7;color:rgba(45,31,20,0.6);margin-bottom:${(e.punto||e.inc||e.noinc)?'10px':'0'}">${e.desc}</div>`;
+    if(e.punto)H+=`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(45,31,20,0.55);margin-bottom:8px">${L(LI.pin,10,'rgba(67,160,71,0.6)')} <strong style="color:#2D1F14">Encuentro:</strong> ${e.punto}</div>`;
     if(e.inc||e.noinc){
-      H+=`<div class="ie-grid" style="margin-top:10px">
+      H+=`<div class="ie-grid" style="margin-top:4px">
         ${e.inc?`<div><div class="ie-ttl" style="color:#059669">${L(LI.check,10,'#059669')} Incluido</div>${e.inc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.check,9,'#059669')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}
         ${e.noinc?`<div><div class="ie-ttl" style="color:#DC2626">${L(LI.xmark,10,'#DC2626')} No incluido</div>${e.noinc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.xmark,9,'#DC2626')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}
       </div>`;
     }
-    if(e.precio>0)H+=`<div style="display:flex;justify-content:flex-end;margin-top:8px"><div class="ptag-box"><div class="ptag-l">Precio total</div><div class="ptag-v">${fmtMoney(e.precio,e.moneda)}</div></div></div>`;
+    if(e.obs)H+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-top:8px;font-style:italic">${e.obs}</div>`;
+    if(e.precio>0)H+=`<div style="display:flex;justify-content:flex-end;margin-top:10px"><div style="border:1px solid rgba(67,160,71,0.2);border-radius:8px;padding:8px 14px;text-align:right;background:rgba(67,160,71,0.05)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(67,160,71,0.7);margin-bottom:2px">PRECIO TOTAL</div>${gradPrice(fmtMoney(e.precio,e.moneda),16,'linear-gradient(135deg,#43A047,#1B5E20)')}</div></div>`;
     H+=`</div></div>`;
   });
 
