@@ -254,8 +254,9 @@ async function showApp(user){
   } catch(e) {
     console.warn('Supabase init warning (non-fatal):', e.message);
   }
-  // Cargar métricas de la pantalla Inicio
+  // Cargar métricas y promociones de la pantalla Inicio
   loadDashboardMetrics();
+  if(typeof renderHomePromos==='function') renderHomePromos();
 }
 
 // ═══════════════════════════════════════════
@@ -439,7 +440,7 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,clients:5,dashboard:6,admin:7,config:8};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9};
 function switchTab(id){
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
@@ -463,10 +464,11 @@ function switchTab(id){
     if(typeof _applySecPhotos==='function') _applySecPhotos();
   }
   if(id==='history') renderHistory();
+  if(id==='promos') renderPromos();
   if(id==='clients') renderClients();
   if(id==='admin'){renderAdmin();if(typeof _loadSecPhotoAdmin==='function')_loadSecPhotoAdmin();}
   if(id==='dashboard') renderDashboard();
-  if(id==='inicio') loadDashboardMetrics();
+  if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }
 
 // BUG3 — restore simple fields from draft

@@ -1486,3 +1486,34 @@ a:hover{color:var(--secondary)}
 .empty-state small{font-size:.75rem;color:var(--g4);display:block;margin-top:4px}
 .hist-filters{display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;align-items:center;margin-bottom:14px}
 @media(max-width:640px){.hist-filters{grid-template-columns:1fr 1fr}}
+
+/* ── PROMO CARDS ─────────────────────────────────────────────────────────── */
+.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;padding:4px 0}
+.promo-card{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;cursor:pointer;background-size:cover;background-position:center;transition:transform .22s,box-shadow .22s}
+.promo-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(0,0,0,0.28)}
+.promo-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.15) 55%,transparent 100%);transition:opacity .22s}
+.promo-card:hover .promo-card-overlay{opacity:.92}
+.promo-card-body{position:absolute;bottom:0;left:0;right:0;padding:16px 14px}
+.promo-card-title{font-weight:700;font-size:.95rem;color:#fff;line-height:1.3;margin-bottom:7px;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.promo-card-chips{display:flex;flex-wrap:wrap;gap:5px}
+.promo-chip{font-size:.67rem;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.18);color:#fff;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12)}
+.promo-chip-tq{background:rgba(27,158,143,.75);border-color:transparent}
+.promo-card-del{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.5);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .15s,background .15s;z-index:2;padding:0}
+.promo-card:hover .promo-card-del{opacity:1}
+.promo-card-del:hover{background:rgba(220,38,38,.75)}
+
+/* Home promos grid */
+.home-promos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.home-promos-grid .promo-card{aspect-ratio:3/2}
+@media(max-width:700px){.home-promos-grid{grid-template-columns:1fr}}
+
+/* Promo modal — image tabs */
+.promo-img-tabs{display:flex;gap:4px;margin-bottom:2px;margin-top:8px}
+.promo-img-tab{padding:5px 14px;border:1px solid var(--border2);border-radius:var(--r2);background:transparent;font-size:.74rem;font-weight:600;color:var(--g4);cursor:pointer;transition:all .15s}
+.promo-img-tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.promo-upload-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid var(--border2);border-radius:var(--r2);cursor:pointer;font-size:.78rem;color:var(--text);background:var(--surface2);transition:all .15s}
+.promo-upload-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Btn guardar como promo en sticky bar */
+.btn-promo{background:rgba(27,158,143,0.1);color:var(--primary);border:1px solid rgba(27,158,143,0.25)}
+.btn-promo:hover{background:rgba(27,158,143,0.18);border-color:var(--primary)}

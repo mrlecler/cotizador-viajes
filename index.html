@@ -91,6 +91,12 @@
     <span class="sb-lbl">Historial</span>
   </button>
 
+  <!-- Promociones -->
+  <button class="sb-item" onclick="switchTab('promos')" title="Promociones" data-tab="promos">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span class="sb-lbl">Promociones</span>
+  </button>
+
   <!-- Clientes -->
   <button class="sb-item" onclick="switchTab('clients')" title="Clientes" data-tab="clients">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -227,16 +233,32 @@
       </div>
     </div>
   </div>
-  <!-- Destinations -->
+  <!-- Promociones -->
   <div class="card" style="margin-bottom:20px">
     <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div>
-      <div><div class="card-ttl">Destinos populares</div><div class="card-sub">Clic en un destino para pre-completar el formulario</div></div>
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div><div class="card-ttl">Mis Promociones</div><div class="card-sub">Clic en una para cargar la cotización</div></div>
+      <button class="btn btn-out btn-xs" onclick="switchTab('promos')" style="margin-left:auto">Ver todas</button>
     </div>
     <div class="card-body" style="padding-top:10px;padding-bottom:14px">
-      <div id="inicio-dest-strip" class="dest-strip"></div>
+      <div id="home-promos-grid" class="home-promos-grid"></div>
     </div>
   </div>
+</div>
+
+<!-- ═══ PROMOCIONES ═══ -->
+<div id="tab-promos" class="panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text)">Mis Promociones</div>
+      <div style="font-size:.78rem;color:var(--g4);margin-top:2px">Paquetes tipo listos para cargar y personalizar</div>
+    </div>
+    <button class="btn btn-pri" onclick="switchTab('form')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva cotización
+    </button>
+  </div>
+  <div id="promos-grid" class="promo-grid"></div>
 </div>
 
 <!-- ═══ FORM ═══ -->
@@ -245,6 +267,10 @@
   <div id="form-sticky-bar">
     <span class="fsb-title" id="fsb-title">Nueva cotización</span>
     <div class="fsb-right">
+      <button class="btn btn-promo btn-xs" onclick="openSavePromoModal()" title="Guardar como Promoción">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="hide-xs">Promo</span>
+      </button>
       <button class="btn btn-out btn-xs" onclick="loadTestData()" title="Cargar datos de prueba" style="opacity:.7">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>
         <span class="hide-xs">Prueba</span>
@@ -779,5 +805,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 <script src="js/app-history.js?v=4"></script>
 <script src="js/app-admin.js?v=4"></script>
 <script src="js/app-quote.js?v=4"></script>
+<script src="js/app-promos.js?v=1"></script>
 </body>
 </html>
