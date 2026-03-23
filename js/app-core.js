@@ -226,10 +226,12 @@ async function showApp(user){
   init();
   // Then load Supabase data in background (non-blocking)
   try {
-    const {data} = await sb.from('agentes').select('rol,nombre,logo_url').eq('email', user.email).maybeSingle();
+    const {data} = await sb.from('agentes').select('rol,nombre,logo_url,agente_num,pais_cod').eq('email', user.email).maybeSingle();
     if(data){
       isAdmin = data.rol === 'admin';
       if(data.nombre && !agCfg.nm){ agCfg.nm = data.nombre; loadCfg(); }
+      if(data.agente_num) window._agenteNum = data.agente_num;
+      if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
       // Actualizar avatar del sidebar y saludo con nombre real
       if(data.nombre){
@@ -277,8 +279,6 @@ function init(){
 // ═══════════════════════════════════════════
 async function dbSaveQuote(d, supabaseId){
   if(!currentUser) throw new Error('No hay sesión activa. Iniciá sesión para guardar.');
-  // Ensure refId exists
-  if(!d.refId) d.refId = Math.floor(Math.random()*90000000+10000000);
   // Save/update client
   let clientId = d._clientId;
   if(!clientId && d.cliente?.nombre){
@@ -289,12 +289,22 @@ async function dbSaveQuote(d, supabaseId){
       if(nc) clientId = nc.id;
     }
   }
-  // Get agente id (non-fatal if not found)
+  // Get agente id + num + pais_cod (non-fatal if not found)
   let agId = null;
   try {
-    const {data:ag} = await sb.from('agentes').select('id').eq('email',currentUser.email).maybeSingle();
+    const {data:ag} = await sb.from('agentes').select('id,agente_num,pais_cod').eq('email',currentUser.email).maybeSingle();
     agId = ag?.id || null;
+    if(ag?.agente_num) window._agenteNum = ag.agente_num;
+    if(ag?.pais_cod) window._agentePaisCod = ag.pais_cod;
   } catch(e) { console.warn('agente lookup warning:', e.message); }
+  // Generate structured ref_id for NEW quotes: {pais_cod}-{agente_num_4d}-{seq_5d}
+  if(!d.refId && !supabaseId){
+    const {count} = await sb.from('cotizaciones').select('id',{count:'exact',head:true}).eq('agente_id',agId||'');
+    const seq = (count||0) + 1;
+    const pais = window._agentePaisCod || agCfg.pais_cod || '54';
+    const num = window._agenteNum || 1;
+    d.refId = `${pais}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
+  }
   const row = {
     ref_id: String(d.refId),
     cliente_id: clientId||null,

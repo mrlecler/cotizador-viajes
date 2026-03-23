@@ -32,8 +32,8 @@ async function renderHistory(){
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
-        <div class="hist-meta">Ref: ${r.ref_id} · ${r.pasajeros||''} · ${r.fecha_sal||''}</div>
-        <div class="hist-meta">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}</div>
+        <div class="hist-meta">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
