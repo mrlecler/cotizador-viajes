@@ -220,6 +220,21 @@ function buildQuoteHTML(d){
     H+=`</div></div>`;
   }
 
+  // ── GALERIA (right after hotels) ──
+  {
+    const hpKeys=Object.keys(hotelPhotos||{}).filter(k=>(hotelPhotos[k]||[]).some(f=>f?.url));
+    if(hpKeys.length){
+      const hotNombres=(d.hoteles||[]).map(h=>h.nombre||'Hotel');
+      H+=`<div class="qp-page" style="break-before:page">${darkHd('GALERÍA DE FOTOS','Alojamiento','Imágenes de referencia')}<div style="padding:20px 32px">`;
+      hpKeys.forEach(hi=>{
+        const fotos=(hotelPhotos[hi]||[]).filter(f=>f?.url);
+        if(!fotos.length)return;
+        H+=`<div style="margin-bottom:20px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:10px">${hotNombres[parseInt(hi)]||'Hotel'}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${fotos.map(f=>`<div style="position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:8px"><img src="${f.url}" style="width:100%;height:100%;object-fit:cover;display:block">${f.label?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 80%);padding:6px 8px"><span style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.85)">${f.label}</span></div>`:''}</div>`).join('')}</div></div>`;
+      });
+      H+=`</div></div>`;
+    }
+  }
+
   // ── TRASLADOS ──
   const trsOk=(d.traslados||[]).filter(t=>t.origen||t.destino);
   if(trsOk.length){
@@ -304,21 +319,6 @@ function buildQuoteHTML(d){
       if(t.precio>0)info+=`<div style="display:flex;justify-content:flex-end"><div style="background:rgba(67,160,71,0.05);border:1px solid rgba(67,160,71,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(67,160,71,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),15)}</div></div>`;
       else info+=`<div style="font-size:10px;font-weight:600;color:#059669">Incluido</div>`;
       H+=itemCard(null,opBadge(t.opcion),info);
-    });
-    H+=`</div></div>`;
-  }
-
-  // ════════════════════════════════════════════════
-  // GALERÍA (conditional)
-  // ════════════════════════════════════════════════
-  const hpKeys=Object.keys(hotelPhotos||{}).filter(k=>(hotelPhotos[k]||[]).some(f=>f?.url));
-  if(hpKeys.length){
-    const hotNombres=(d.hoteles||[]).map(h=>h.nombre||'Hotel');
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('GALERÍA DE FOTOS','Alojamiento','Imágenes de referencia')}<div style="padding:20px 32px">`;
-    hpKeys.forEach(hi=>{
-      const fotos=(hotelPhotos[hi]||[]).filter(f=>f?.url);
-      if(!fotos.length)return;
-      H+=`<div style="margin-bottom:20px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:10px">${hotNombres[parseInt(hi)]||'Hotel'}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${fotos.map(f=>`<div style="position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:8px"><img src="${f.url}" style="width:100%;height:100%;object-fit:cover;display:block">${f.label?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 80%);padding:6px 8px"><span style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.85)">${f.label}</span></div>`:''}</div>`).join('')}</div></div>`;
     });
     H+=`</div></div>`;
   }

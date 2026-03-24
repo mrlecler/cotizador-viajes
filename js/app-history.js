@@ -124,7 +124,13 @@ function _showEditBanner(refId){
     const formPanel = document.getElementById('tab-form');
     if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
   }
-  banner.innerHTML = '<span>Editando Ref: <strong>' + refId + '</strong> — Al guardar se actualizará en Supabase. Esta es una cotización existente.</span><button onclick="cancelEdit()" class="edit-banner-btn">Descartar y crear nueva</button>';
+  banner.innerHTML =
+    '<div class="edit-banner-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>' +
+    '<div class="edit-banner-body">' +
+      '<div class="edit-banner-ttl">Editando cotización <strong>' + refId + '</strong></div>' +
+      '<div class="edit-banner-sub">Los cambios se guardarán sobre esta cotización al presionar Guardar.</div>' +
+    '</div>' +
+    '<button onclick="cancelEdit()" class="edit-banner-btn">Descartar cambios</button>';
   banner.style.display = 'flex';
 }
 
@@ -133,7 +139,26 @@ function _hideEditBanner(){
   if(banner) banner.style.display = 'none';
 }
 
+function _confirmDialog(msg, yesLbl, noLbl, onYes){
+  const ov = document.createElement('div');
+  ov.className = 'modal-overlay';
+  ov.style.display = 'flex';
+  ov.innerHTML = '<div class="modal" style="width:360px;max-width:90vw"><div class="modal-body" style="padding:24px 22px 18px"><div style="font-size:.88rem;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:20px">'+msg+'</div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-out btn-sm" id="_cd-no">'+noLbl+'</button><button class="btn btn-save btn-sm" id="_cd-yes">'+yesLbl+'</button></div></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#_cd-no').addEventListener('click', () => ov.remove());
+  ov.querySelector('#_cd-yes').addEventListener('click', () => { ov.remove(); onYes(); });
+}
+
 function cancelEdit(){
+  _confirmDialog(
+    '¿Descartás los cambios? La cotización original no se modificará.',
+    'Sí, descartar',
+    'Seguir editando',
+    _doCancelEdit
+  );
+}
+
+function _doCancelEdit(){
   // ── RESET completo del modo edición ──────────────────────────────
   editingQuoteId = null;
   formDraft = null;

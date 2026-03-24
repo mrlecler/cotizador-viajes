@@ -26,7 +26,7 @@ function saveCfg(){
   localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
   window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase
-  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('email',currentUser.email);
+  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||'',agencia:agCfg.ag||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('email',currentUser.email);
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
 }
@@ -36,7 +36,7 @@ async function changePassword(){
   if(!p1||p1.length<6){toast('La contraseña debe tener al menos 6 caracteres',false);return;}
   if(p1!==p2){toast('Las contraseñas no coinciden',false);return;}
   const {error}=await sb.auth.updateUser({password:p1});
-  if(error){toast(error.message,false);return;}
+  if(error){toast('No se pudo actualizar la contraseña, intentá de nuevo',false);return;}
   document.getElementById('pw-new').value='';
   document.getElementById('pw-conf').value='';
   const ok=document.getElementById('pw-ok');
@@ -69,12 +69,12 @@ function selectPdfTheme(n){
 function buildAndPreview(){
   console.log('click buildAndPreview');
   try{qData=collectForm();renderPreview(qData);switchTab('preview');}
-  catch(e){toast('Error al generar vista: '+e.message,false);console.error(e);}
+  catch(e){toast('Hubo un error al generar la vista previa',false);console.error(e);}
 }
 function buildAndPrint(){
   console.log('click buildAndPrint');
   try{qData=collectForm();renderPreview(qData);switchTab('preview');setTimeout(doPrint,600);}
-  catch(e){toast('Error al generar PDF: '+e.message,false);console.error(e);}
+  catch(e){toast('Hubo un error al generar el PDF',false);console.error(e);}
 }
 function doPrint(){
   if(!qData){toast('Primero generá la vista previa.',false);return;}

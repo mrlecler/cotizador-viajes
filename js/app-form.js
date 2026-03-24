@@ -816,7 +816,7 @@ async function saveQuote(){
   }
   let d;
   try{ d=collectForm(); }
-  catch(err){ toast('Error al leer formulario: '+err.message,false); console.error('collectForm error:',err); return; }
+  catch(err){ toast('Hubo un error al procesar el formulario, revisá los campos',false); console.error('collectForm error:',err); return; }
   qData=d;
   try{ renderPreview(qData); }catch(err){ console.warn('renderPreview warning:',err); }
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
@@ -835,7 +835,7 @@ async function saveQuote(){
     toast(wasEditing ? '✓ Cotización actualizada en la nube' : '✓ Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
-    toast('Error al guardar: '+(e.message||JSON.stringify(e)),false);
+    toast('No se pudo guardar la cotización, intentá de nuevo',false);
   }
   finally{ 
     const b0=document.getElementById('btn-save-main');

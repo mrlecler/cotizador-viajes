@@ -146,14 +146,14 @@ async function doLoginGoogle(){
     provider:'google',
     options:{redirectTo:'https://mrlecler.github.io/cotizador-viajes/'}
   });
-  if(error) setLoginStatus('Error Google: '+error.message,'var(--red)');
+  if(error) setLoginStatus('No se pudo iniciar sesión con Google, intentá de nuevo','var(--red)');
 }
 
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
   if(!email){setLoginStatus('Ingresá tu email primero','var(--amber)');return;}
   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
-  if(error) setLoginStatus('Error: '+error.message,'var(--red)');
+  if(error) setLoginStatus('No se pudo enviar el email, intentá de nuevo','var(--red)');
   else setLoginStatus('Email enviado — revisá tu casilla','var(--green)');
 }
 
@@ -162,6 +162,7 @@ async function doLogout(){
   currentUser=null;isAdmin=false;
   document.getElementById('ui').style.display='none';
   document.getElementById('login-wall').style.display='flex';
+  const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.style.display='none';
   document.getElementById('li-pass').value='';
   setLoginStatus('Sesión cerrada.','var(--muted)');
 }
@@ -184,7 +185,7 @@ async function doResetPassword(){
   const pass=document.getElementById('li-pass').value;
   if(pass.length<6){setLoginStatus('Mínimo 6 caracteres','var(--red)');return;}
   const {error}=await sb.auth.updateUser({password:pass});
-  if(error) setLoginStatus('Error: '+error.message,'var(--red)');
+  if(error) setLoginStatus('No se pudo actualizar la contraseña, intentá de nuevo','var(--red)');
   else { setLoginStatus('Contraseña actualizada','var(--green)'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
 }
 
@@ -197,10 +198,11 @@ async function showApp(user){
   currentUser = user;
   editingQuoteId = null;
   formDraft = null;
-  // Mostrar app y sidebar
+  // Mostrar app, sidebar y bottom nav
   document.getElementById('login-wall').style.display='none';
   document.getElementById('ui').style.display='block';
   document.getElementById('sidebar').style.display='flex';
+  const _bnav=document.getElementById('bottom-nav');if(_bnav)_bnav.style.display='';
   // Restaurar estado expandido del sidebar
   if(localStorage.getItem('sb-open')){
     document.getElementById('sidebar').classList.add('open');
@@ -226,13 +228,20 @@ async function showApp(user){
   init();
   // Then load Supabase data in background (non-blocking)
   try {
-    const {data} = await sb.from('agentes').select('rol,nombre,logo_url,agente_num,pais_cod').eq('email', user.email).maybeSingle();
+    const {data} = await sb.from('agentes').select('rol,nombre,agencia,telefono,soc,logo_url,agente_num,pais_cod,pdf_theme').eq('email', user.email).maybeSingle();
     if(data){
       isAdmin = data.rol === 'admin';
-      if(data.nombre && !agCfg.nm){ agCfg.nm = data.nombre; loadCfg(); }
+      if(data.nombre)   agCfg.nm  = agCfg.nm  || data.nombre;
+      if(data.agencia)  agCfg.ag  = agCfg.ag  || data.agencia;
+      if(data.telefono) agCfg.tel = agCfg.tel || data.telefono;
+      if(data.soc)      agCfg.soc = agCfg.soc || data.soc;
+      if(data.pais_cod) agCfg.pais_cod = agCfg.pais_cod || data.pais_cod;
+      if(data.pdf_theme && !agCfg.pdf_theme) agCfg.pdf_theme = data.pdf_theme;
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
+      localStorage.setItem('mp_cfg', JSON.stringify(agCfg));
+      loadCfg();
       // Actualizar avatar del sidebar y saludo con nombre real
       if(data.nombre){
         const av=document.getElementById('sb-avatar');
@@ -462,6 +471,10 @@ function switchTab(id){
   document.getElementById('tab-'+id)?.classList.add('on');
   // Sidebar items — activar por data-tab
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
+    b.classList.toggle('on', b.dataset.tab===id);
+  });
+  // Bottom nav items (mobile)
+  document.querySelectorAll('#bottom-nav .bnav-item').forEach(b=>{
     b.classList.toggle('on', b.dataset.tab===id);
   });
   // Legacy ntab compat (por si algún módulo depende)
