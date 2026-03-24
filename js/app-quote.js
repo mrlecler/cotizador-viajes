@@ -39,474 +39,326 @@ function buildQuoteHTML(d){
   const pr=d.precios||{},cl=d.cliente||{},vi=d.viaje||{};
   const ini=(ag.nm||'M').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'M';
 
-  // Helper: background de sección con foto personalizada
   const _sph=JSON.parse(localStorage.getItem('mp_sec_photos')||'{}');
   const sphBg=(k,fb)=>{const u=(_sph[k]?.url||'').trim(),p=_sph[k]?.pos||'center center';return u?`url('${u}') ${p}/cover no-repeat,${fb}`:fb;};
-
-  // Helper Lucide SVG: L(pathContent, size, stroke)
   const L=(p,sz=15,col='#1B9E8F')=>`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const LI={
-    pin:     `<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>`,
-    hotel:   `<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>`,
-    plane:   `<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/>`,
-    ticket:  `<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/>`,
-    bus:     `<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
-    moon:    `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`,
-    shield:  `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
-    clip:    `<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>`,
-    luggage: `<path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2Z"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="12" y1="12" x2="12.01" y2="12"/>`,
-    check:   `<polyline points="20 6 9 17 4 12"/>`,
-    xmark:   `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
-    arrow:   `<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>`,
+    pin:`<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>`,
+    hotel:`<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M10 6h4"/><path d="M10 10h4"/>`,
+    plane:`<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/>`,
+    ticket:`<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/>`,
+    bus:`<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
+    moon:`<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`,
+    shield:`<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
+    clip:`<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>`,
+    luggage:`<path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2Z"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="12" y1="12" x2="12.01" y2="12"/>`,
+    check:`<polyline points="20 6 9 17 4 12"/>`,
+    xmark:`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
+    arrow:`<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>`,
     building:`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
-    map:     `<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/>`,
-    med:     `<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
-    info:    `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
-    car:     `<path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/>`,
-    ship:    `<path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M10 3.3 12 2l2 1.3"/><path d="M12 2v7"/>`,
-    clock:   `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+    map:`<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15"/><path d="M15 6v15"/>`,
+    med:`<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>`,
+    info:`<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+    car:`<path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/>`,
+    ship:`<path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/>`,
+    clock:`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
   };
-
-  // Helper: precio en gradiente (inline — para evitar conflictos con dark theme)
   const gradPrice=(amt,sz=15,gr='linear-gradient(135deg,#1B9E8F,#0BC5B8)')=>amt?`<div style="font-size:${sz}px;font-weight:900;background:${gr};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2">${amt}</div>`:'';
 
-  // Gloss items
-  const gloss=[
-    {n:vi.destino?1:0,         l:'Destinos',      i:LI.pin},
-    {n:(d.hoteles||[]).filter(h=>h.nombre).length, l:'Alojamientos',i:LI.hotel},
-    {n:(d.vuelos||[]).length,  l:'Vuelos',         i:LI.plane},
-    {n:(d.excursiones||[]).filter(e=>e.nombre).length,l:'Excursiones',i:LI.ticket},
-    {n:(d.tickets||[]).filter(t=>t.nombre).length, l:'Tickets',     i:LI.ticket},
-    {n:(d.traslados||[]).filter(t=>t.origen||t.destino).length,l:'Transfers',i:LI.bus},
-    {n:(d.autos||[]).filter(a=>a.proveedor).length,     l:'Autos',          i:LI.car},
-    {n:(d.cruceros||[]).filter(c=>c.naviera).length,    l:'Cruceros',       i:LI.ship},
-    {n:vi.noches||0,           l:'Noches',         i:LI.moon},
-    {n:d.seguro?.nombre?1:0,   l:'Seguros',        i:LI.shield},
-  ].filter(g=>g.n>0);
+  // ── Date helpers ──
+  const _pd=(s)=>{if(!s)return null;try{if(s.includes('/')){const[dd,mm,yy]=s.split('/');return new Date(yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0'));}const dt=new Date(s);return isNaN(dt)?null:dt;}catch{return null;}};
+  const _sameDayKey=(dt)=>dt?dt.toISOString().slice(0,10):'';
+  const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
-  // ── PORTADA ────────────────────────────────────────────────────────────────
+  // ── Badge helper ──
+  const opBadge=(op)=>{if(!op)return'';const map={'OPCIÓN A':'background:linear-gradient(135deg,#0288D1,#01579B);color:white','OPCIÓN B':'background:linear-gradient(135deg,#546E7A,#263238);color:white','RECOMENDADO':'background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white','OPCIONAL':'background:linear-gradient(135deg,#FF8F00,#E65100);color:white','PROMO':'background:linear-gradient(135deg,#E65100,#BF360C);color:white'};const st=map[op.toUpperCase()]||'background:rgba(45,31,20,0.08);color:#2D1F14';return `<span style="font-size:8px;font-weight:800;letter-spacing:1.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase;display:inline-block;margin-bottom:8px;${st}">${op}</span>`;};
+
+  // ── Page-level dark header ──
+  const darkHd=(meta,title,sub)=>`<div class="qp-dark-hd">${meta?`<div class="qp-dark-hd-meta">${meta}</div>`:''}<div class="qp-dark-hd-title">${title}</div>${sub?`<div class="qp-dark-hd-sub">${sub}</div>`:''}</div>`;
+
+  // ── Item card (photo left + info right) ──
+  const itemCard=(photoUrl,badgeHtml,infoHtml)=>`<div class="qp-item-card">${badgeHtml||''}<div style="display:flex;gap:0;border-radius:10px;overflow:hidden;background:#fff;border:1px solid rgba(45,31,20,0.08)">${photoUrl?`<div style="flex:0 0 200px;position:relative;overflow:hidden"><img src="${photoUrl}" style="width:100%;height:100%;min-height:160px;object-fit:cover;display:block"></div>`:''}<div style="flex:1;padding:14px 16px;min-width:0">${infoHtml}</div></div></div>`;
+
+  // ── Total amount ──
+  const totalAmt=pr.total>0?fmtMoney(pr.total,pr.moneda2):pr.por_persona>0?fmtMoney(pr.por_persona,pr.moneda)+' /pax':'';
+
+  // ════════════════════════════════════════════════
+  // PAGE 1: PORTADA
+  // ════════════════════════════════════════════════
+  const dests=[...new Set([vi.destino,vi.pais,...(d.hoteles||[]).map(h=>h.ciudad).filter(Boolean)].filter(Boolean))];
   let H=`<div id="qwrap">
-  <div class="q-cover">
-    ${coverUrl?`<img class="q-cover-img" src="${coverUrl}" alt="">`:''}
-    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.0) 0%,rgba(10,26,18,0.55) 60%,rgba(13,18,15,0.75) 100%);pointer-events:none"></div>
-    <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(27,158,143,0.45) 0%,transparent 60%)"></div>
-    <div style="position:absolute;top:0;left:0;right:0;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;z-index:1">
-      <div>${buildPdfWordmark(22)}</div>
-      <div style="display:flex;align-items:center;gap:9px">
-        <div style="text-align:right;line-height:1.3">
-          <div style="font-size:13px;font-weight:700;color:white">${ag.nm||'Agente'}</div>
-          ${ag.ag?`<div style="font-size:11px;color:rgba(255,255,255,0.6)">${ag.ag}</div>`:''}
-        </div>
+  <div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(27,158,143,0.32) 0%,transparent 65%);pointer-events:none"></div>
+    <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+      <div style="display:flex;align-items:center;gap:14px">
+        ${buildPdfWordmark(24)}
+        ${ag.nm?`<div style="width:1px;height:20px;background:rgba(255,255,255,.18)"></div><div style="line-height:1.3"><div style="font-size:11px;font-weight:700;color:white;letter-spacing:.3px">${ag.nm}</div>${ag.ag?`<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag}</div>`:''}</div>`:''}
+      </div>
+      ${d.refId?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.5px">${d.refId}</div>`:''}
+    </div>
+    <div style="position:absolute;top:50%;left:36px;right:36px;transform:translateY(-55%);z-index:2">
+      ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(27,158,143,0.22);border:1px solid rgba(27,158,143,0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
+      ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:#1B9E8F;flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
+        ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+        ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
       </div>
     </div>
-    <div style="position:absolute;bottom:28px;left:32px;right:32px;z-index:1">
-      ${cl.nombre?`<div style="display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;background:rgba(27,158,143,0.2);border:1px solid rgba(27,158,143,0.4);border-radius:10px;padding:6px 14px;margin-bottom:14px"><span style="font-size:8px;font-weight:500;letter-spacing:0.5px;color:rgba(255,255,255,0.6);text-transform:lowercase">cotización para</span><span style="font-size:14px;font-weight:800;color:#0BC5B8;letter-spacing:-0.3px;line-height:1.2">${cl.nombre}</span></div>`:''}
-      <div style="font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:8px">SU VIAJE A</div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:900;letter-spacing:-2px;color:#FFFFFF;line-height:1">${vi.destino||'Destino'}${vi.pais?', '+vi.pais:''}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);margin-top:8px">Cotización: ${d.refId||'pendiente'} · ${today}</div>
-    </div>
-  </div>
-
-  <!-- ── BARRA DE DATOS ── -->
-  <div class="q-bar">
-    <div>
-      <div class="qb-l">PRESUPUESTO</div>
-      ${cl.nombre?`<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:2px">${cl.nombre}</div>`:''}
-      <div class="qb-v">${cl.pasajeros||'—'}</div>
-      ${vi.salida&&vi.regreso?`<div style="font-size:9px;color:rgba(255,255,255,.5);margin-top:1px">${vi.salida} – ${vi.regreso}${vi.noches?' ('+vi.noches+' noches)':''}</div>`:''}
-    </div>
-    <div>
-      <div class="qb-l">VALIDEZ</div>
-      <div class="qb-v">${pr.validez||'24 horas'}</div>
-    </div>
-    <div>
-      <div class="qb-l">NRO. COTIZACIÓN</div>
-      <div class="qb-v q-ref-val">${d.refId||'—'}</div>
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;background:linear-gradient(135deg,rgba(27,158,143,0.92),rgba(11,197,184,0.88));padding:16px 36px;display:flex;align-items:center;gap:0">
+      ${totalAmt?`<div style="flex:0 0 auto;padding-right:24px;border-right:1px solid rgba(255,255,255,.25)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">PRECIO REFERENCIA</div><div style="font-size:18px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div></div>`:''}
+      ${vi.descripcion?`<div style="flex:1;padding:0 ${totalAmt?'24':'0'}px${ag.nm?';border-right:1px solid rgba(255,255,255,.25)':''}"><div style="font-size:9px;color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${vi.descripcion.trim().substring(0,200)}</div></div>`:`<div style="flex:1"></div>`}
+      ${ag.nm?`<div style="flex:0 0 auto;padding-left:24px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">AGENTE</div><div style="font-size:12px;font-weight:700;color:white">${ag.nm}</div><div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px">${today}</div></div>`:''}
     </div>
   </div>`;
 
-  // ── GLOSS ──────────────────────────────────────────────────────────────────
-  if(gloss.length){
-    H+=`<div class="q-gloss">
-      <span class="q-gloss-l">INCLUYE:</span>
-      ${gloss.map(g=>`<div class="qg-item">${L(g.i,11)}<span class="qg-n">&nbsp;${g.n}&nbsp;</span><span class="qg-l">${g.l}</span></div>`).join('')}
-    </div>`;
-  }
+  // ════════════════════════════════════════════════
+  // PAGE 2: ITINERARIO DÍA A DÍA
+  // ════════════════════════════════════════════════
+  const allDates=[];
+  const pushD=(s)=>{const dt=_pd(s);if(dt&&!isNaN(dt))allDates.push(dt);};
+  pushD(vi.salida);pushD(vi.regreso);
+  (d.hoteles||[]).forEach(h=>{pushD(h.checkin);pushD(h.checkout);});
+  (d.vuelos||[]).forEach(v=>{pushD(v.fs);pushD(v.fl);if(v.mod==='idavuelta'){pushD(v.fs2);pushD(v.fl2);}});
 
-  // ── ITINERARIO ─────────────────────────────────────────────────────────────
-  const _fmtD=(s)=>{if(!s)return'';try{const d=new Date(s.includes('/')?s.split('/').reverse().join('-'):s);return isNaN(d)?s:d.toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'});}catch{return s;}};
-  const _inRange=(fecha,from,to)=>{if(!fecha||!from)return true;try{const f=new Date(fecha.includes('/')?fecha.split('/').reverse().join('-'):fecha);const a=new Date(from.includes('/')?from.split('/').reverse().join('-'):from);const b=to?new Date(to.includes('/')?to.split('/').reverse().join('-'):to):null;return f>=a&&(!b||f<=b);}catch{return true;}};
-  const itiStops=[];
-  (d.hoteles||[]).filter(h=>h.nombre).forEach((h,i)=>{
-    const n=h.noches||(h.checkin&&h.checkout?Math.max(0,Math.round((new Date(h.checkout.includes('/')?h.checkout.split('/').reverse().join('-'):h.checkout)-new Date(h.checkin.includes('/')?h.checkin.split('/').reverse().join('-'):h.checkin))/86400000)):0);
-    const tras=(d.traslados||[]).filter(t=>(t.origen||t.destino)&&_inRange(t.fecha,h.checkin,h.checkout));
-    const acts=[...(d.excursiones||[]).filter(e=>e.nombre&&_inRange(e.fecha,h.checkin,h.checkout)).map(e=>e.nombre),...(d.tickets||[]).filter(t=>t.nombre).map(t=>t.nombre)];
-    itiStops.push({num:i+1,ciudad:h.ciudad||(i===0?vi.destino:''),pais:h.pais||(i===0?vi.pais:''),fechaIn:h.checkin,fechaOut:h.checkout,noches:n,alojamiento:h.nombre,regimen:h.regimen,tras,acts});
-  });
-  if(!itiStops.length&&(vi.destino||vi.salida)){
-    itiStops.push({num:1,ciudad:vi.destino||'',pais:vi.pais||'',fechaIn:vi.salida,fechaOut:vi.regreso,noches:vi.noches||0,alojamiento:null,regimen:null,tras:(d.traslados||[]).filter(t=>t.origen||t.destino),acts:[...(d.excursiones||[]).filter(e=>e.nombre).map(e=>e.nombre),...(d.tickets||[]).filter(t=>t.nombre).map(t=>t.nombre)]});
-  }
-  if(itiStops.length){
-    const pinSvg=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-    const moonSvg=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-    H+=`<div class="q-sec q-iti-sec" style="break-before:page">
-  <div class="q-iti-heading">Itinerario</div>
-  <div class="q-iti-underline"></div>
-  <div style="height:24px"></div>
-  <div style="text-align:right;font-size:10px;font-weight:700;color:#374151;margin-bottom:12px">Inicio del viaje</div>
-  ${itiStops.map((s,si)=>`
-  <div class="q-iti-stop" ${si>0?'style="margin-top:4px"':''}>
-    <div class="q-iti-num-col">
-      <div class="q-iti-circle">${s.num}</div>
-      ${si<itiStops.length-1?`<div class="q-iti-connector"></div>`:''}
-    </div>
-    <div class="q-iti-info-col">
-      <div class="q-iti-loc">${pinSvg}<strong>${s.ciudad||'—'}</strong>${s.pais?`<span style="font-size:11px;color:#6b7280;margin-left:3px">${s.pais}</span>`:''}</div>
-      ${(s.fechaIn||s.fechaOut)?`<div class="q-iti-dates"><strong>${_fmtD(s.fechaIn)||'—'}</strong> → <strong>${_fmtD(s.fechaOut)||'—'}</strong></div>`:''}
-      ${s.alojamiento?`<div class="q-iti-detail"><strong>Alojamiento:</strong> ${s.alojamiento}${s.regimen?', '+s.regimen:''}</div>`:''}
-      ${s.tras.map(t=>`<div class="q-iti-detail"><strong>Traslado:</strong> ${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' en '+t.vehiculo:''}</div>`).join('')}
-      ${s.acts.length?`<div class="q-iti-detail"><strong>Actividades:</strong> ${s.acts.join(', ')}</div>`:''}
-    </div>
-    <div class="q-iti-nights-col">
-      ${s.noches?`<span class="q-iti-nights-val">${s.noches}</span><div class="q-iti-nights-lbl">${moonSvg} Noches</div>`:''}
-    </div>
-  </div>`).join('')}
-  <div style="text-align:right;font-size:10px;font-weight:700;color:#374151;margin-top:16px">El final del viaje</div>
-</div>`;
-  }
-
-  // ── DESCRIPCIÓN ────────────────────────────────────────────────────────────
-  H+=`<div class="q-sec"><div class="q-sec-hd"><div class="q-sec-ico">${L(LI.clip)}</div><div><div class="q-sec-ttl">Descripción del viaje</div></div></div>`;
-  if(vi.descripcion&&vi.descripcion.trim()){
-    H+=`<div style="font-size:12px;line-height:1.7;color:#3D2E22;margin:0 0 14px 0;white-space:pre-line">${vi.descripcion.trim()}</div>`;
-  }
-  if((d.vuelos||[]).length)H+=`<div class="desc-item">${L(LI.plane,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Transporte aéreo:</strong> ${d.vuelos[0].origen} → ${d.vuelos[d.vuelos.length-1].destino||d.vuelos[0].destino}</span></div>`;
-  (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>H+=`<div class="desc-item">${L(LI.hotel,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">${h.noches?h.noches+' noches':'Hotel'}:</strong> ${h.nombre}${h.regimen?', '+h.regimen:''}.</span></div>`);
-  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>H+=`<div class="desc-item">${L(LI.ticket,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Excursión:</strong> ${e.nombre}</span></div>`);
-  (d.tickets||[]).filter(t=>t.nombre).forEach(t=>H+=`<div class="desc-item">${L(LI.ticket,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Ticket:</strong> ${t.nombre}</span></div>`);
-  (d.traslados||[]).filter(t=>t.origen||t.destino).forEach(t=>H+=`<div class="desc-item">${L(LI.bus,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Traslado:</strong> ${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' en '+t.vehiculo:''}.</span></div>`);
-  if(d.seguro?.nombre)H+=`<div class="desc-item">${L(LI.shield,12,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Seguro:</strong> ${d.seguro.nombre}</span></div>`;
-  H+=`</div>`;
-
-  // ── VUELOS ─────────────────────────────────────────────────────────────────
-  if((d.vuelos||[]).length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('vuelos','linear-gradient(135deg,#0EA5E9,#1565C0)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 6.2c-.5.1-.9.6-.9 1.1l1 4c.1.5.5.8 1 .8L8 12l-2 2-1 1 1 1 2 2 1 1 1-1 2-2 .2 5.1c0 .5.3.9.8 1l4 1c.5.1 1-.3 1.1-.9L17.8 19.2z"/></svg> Vuelos</div><div class="q-ph-badge">TRANSPORTE AÉREO</div></div></div>`;
-    const rBP=(label,isRet,or,io,hs,fs,de,id2,hl,fl,al,num,esc,tesc,dur)=>`
-    <div class="q-bp">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-size:10px;font-weight:700;color:#374151">${or} → ${de}</span>
-        <span class="q-bp-chip${isRet?' ret':''}">${label}</span>
-      </div>
-      <div class="q-bp-grid">
-        <div>
-          <div class="q-bp-time">${hs||'–'}</div>
-          <div class="q-iata">${io||or}</div>
-          <div class="q-bp-city">${or}</div>
-          ${fs?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fs)}</div>`:''}
-        </div>
-        <div class="q-bp-mid">
-          <div class="q-bp-escl">${esc?'con escala':'directo'}</div>
-          <div class="q-bp-line"></div>
-          ${esc?`<div class="q-bp-via">${L(LI.arrow,8)} ${esc}${tesc?' · '+tesc:''}</div>`:''}
-          ${dur?`<div class="q-bp-dur">${dur}</div>`:''}
-        </div>
-        <div style="text-align:right">
-          <div class="q-bp-time">${hl||'–'}</div>
-          <div class="q-iata">${id2||de}</div>
-          <div class="q-bp-city">${de}</div>
-          ${fl?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fl)}</div>`:''}
-        </div>
-      </div>
-      <div class="q-bp-footer">
-        <span class="q-bp-meta">${al||''}${num?' · '+num:''}</span>
-        ${gradPrice('',0)}
-      </div>
-    </div>`;
-    d.vuelos.forEach(v=>{
-      // ── Logo + nombre aerolínea IDA (Superficies 2 y 3) ──
-      const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
-      if(v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
-        <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${v.aerolinea}</div></div></div>`;
-      H+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
-      if(v.mod==='idavuelta'){
-        const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';
-        const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
-        // ── Logo aerolínea VUELTA (solo si difiere de IDA) ──
-        const retAl=v.al2||v.aerolinea;
-        const retAiata=v.al2_iata||_extractAirlineIata(retAl,v.num2||v.numero);
-        if(retAl&&retAl!==v.aerolinea)H+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px;flex-shrink:0" onerror="this.style.display='none'">`:''}
-          <div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${retAl}</div></div></div>`;
-        H+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',retAl,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
-      }
-      if(v.tarifa||v.equipaje)H+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-        ${v.tarifa?`<span style="background:#1B9E8F;color:white;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:4px;text-transform:uppercase">${v.tarifa}</span>`:''}
-        ${v.equipaje?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.5)">${L(LI.luggage,10,'rgba(45,31,20,0.35)')} ${v.equipaje}</span>`:''}
-      </div>`;
-      if(v.precio>0)H+=`<div class="ptag"><div class="ptag-box"><div class="ptag-l">Precio vuelos${v.fin?' · '+v.fin:''}</div><div class="ptag-v">${fmtMoney(v.precio,v.moneda)}</div></div></div>`;
+  if(allDates.length>=2){
+    const minD=new Date(Math.min(...allDates.map(x=>x.getTime())));
+    const maxD=new Date(Math.max(...allDates.map(x=>x.getTime())));
+    const evMap={};
+    const addEv=(s,type,desc,color)=>{let k=s;if(typeof s!=='string')k=_sameDayKey(s);else k=_sameDayKey(_pd(s));if(!k)return;if(!evMap[k])evMap[k]=[];evMap[k].push({type,desc,color});};
+    (d.vuelos||[]).forEach(v=>{
+      if(v.fs)addEv(v.fs,'VUELO',`${v.origen||''}${v.destino?' → '+v.destino:''}${v.aerolinea?' · '+v.aerolinea:''}`.trim(),'#1B9E8F');
+      if(v.mod==='idavuelta'&&v.fs2)addEv(v.fs2,'VUELO',`${v.destino||''}${v.origen?' → '+v.origen:''}${(v.al2||v.aerolinea)?' · '+(v.al2||v.aerolinea):''}`.trim(),'#1B9E8F');
     });
-    H+=`</div>`;
+    (d.traslados||[]).filter(t=>t.origen||t.destino).forEach(t=>{if(t.fecha)addEv(t.fecha,'TRASLADO',`${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' · '+t.vehiculo:''}`.trim(),'#E8826A');});
+    (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{if(e.fecha){const cat=(e.categoria||'EXCURSIÓN').toUpperCase();const cc={'PARQUE':'#D4A017','PLAYA':'#0288D1','PASEO':'#6A1B9A','RELAX':'#43A047','NAVIDAD':'#C62828','TOUR':'#E8826A','EXCURSIÓN':'#D4A017'}[cat]||'#D4A017';addEv(e.fecha,cat,e.nombre,cc);}});
+    (d.hoteles||[]).filter(h=>h.nombre&&h.checkin&&h.checkout).forEach(h=>{
+      const ci=_pd(h.checkin),co=_pd(h.checkout);if(!ci||!co)return;
+      let cur=new Date(ci);
+      while(cur<co){const k=_sameDayKey(cur);if(!evMap[k])evMap[k]=[{type:'RELAX',desc:`Libre en ${h.ciudad||h.nombre}`,color:'#43A047'}];cur=new Date(cur);cur.setDate(cur.getDate()+1);}
+    });
+    const rows=[];let cur=new Date(minD);
+    while(cur<=maxD){const k=_sameDayKey(cur);rows.push({k,date:new Date(cur),evs:evMap[k]||[{type:'—',desc:vi.destino||'En destino',color:'#9CA3AF'}]});cur=new Date(cur);cur.setDate(cur.getDate()+1);}
+    if(rows.length>0&&rows.length<=60){
+      H+=`<div class="qp-page" style="break-before:page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}
+  <div style="padding:0 32px 20px">
+    <table class="qp-iti-table">
+      <thead><tr><th style="width:80px">FECHA</th><th>ACTIVIDAD</th><th style="width:110px">TIPO</th></tr></thead>
+      <tbody>${rows.map((r,ri)=>`<tr class="${ri%2===0?'qp-iti-even':'qp-iti-odd'}"><td class="qp-iti-date"><div style="font-size:15px;font-weight:800;color:#2D1F14;line-height:1">${String(r.date.getDate()).padStart(2,'0')}/${String(r.date.getMonth()+1).padStart(2,'0')}</div><div style="font-size:8px;font-weight:600;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;margin-top:2px">${DIAS[r.date.getDay()]}</div></td><td class="qp-iti-act">${r.evs.map(ev=>`<div style="display:flex;align-items:center;gap:7px;${r.evs.length>1?'margin-bottom:3px':''}"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ev.color};flex-shrink:0"></span><span style="font-size:10px;color:#374151">${ev.desc}</span></div>`).join('')}</td><td class="qp-iti-type">${r.evs.map(ev=>`<div style="${r.evs.length>1?'margin-bottom:3px':''}"><span style="background:${ev.color};color:white;font-size:7.5px;font-weight:800;letter-spacing:1.5px;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap">${ev.type}</span></div>`).join('')}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div></div>`;
+    }
   }
 
-  // ── HOTELES ────────────────────────────────────────────────────────────────
-  (d.hoteles||[]).filter(h=>h.nombre).forEach(h=>{
-    const isP=h.tipo==='disney'||h.tipo==='universal';
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('hotel','linear-gradient(135deg,#FF8E53,#E65100)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> ${h.nombre}</div><div class="q-ph-badge">${h.noches?h.noches+' NOCHES':'ALOJAMIENTO'}</div></div></div>`;
-    if(isP){
-      H+=`<div style="display:inline-flex;align-items:center;gap:5px;background:${h.tipo==='universal'?'linear-gradient(135deg,#374151,#111827)':'linear-gradient(135deg,#FF8E53,#E65100)'};color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:10px;text-transform:uppercase">${h.tipo==='universal'?'Paquete Universal':'Paquete Disney'}</div>`;
-      H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-          ${h.hab?`<span style="font-size:10px;font-weight:600;color:#374151">${h.hab}</span>`:''}
-          ${h.regimen?`<span class="am-tag">${h.regimen}</span>`:''}
-          ${h.estrellas&&h.estrellas!=='—'?`<span style="font-size:10px">★ ${h.estrellas}</span>`:''}
-        </div>`;
-      if(h.tickets)H+=`<div class="desc-item">${L(LI.ticket,11,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Tickets:</strong> ${h.tickets}${h.dias_tkt?' ('+h.dias_tkt+' días)':''}</span></div>`;
-      if(h.parques?.length)H+=`<div class="desc-item">${L(LI.map,11,'rgba(0,0,0,.35)')}<span><strong style="color:#2D1F14">Parques:</strong> ${h.parques.join(', ')}</span></div>`;
-      if(h.beneficios?.length)H+=`<div style="margin-top:8px"><div class="am-grid">${h.beneficios.map(b=>`<span class="am-tag"><span class="ck">✓</span>${b}</span>`).join('')}</div></div>`;
-      H+=`</div>`;
-      if(h.mp&&h.mp_pr>0){
-        H+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-          <div style="background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:12px">
-            <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:4px">Sin plan de comidas</div>
-            ${gradPrice(fmtMoney(h.precio,h.moneda),15,'linear-gradient(135deg,#D4A017,#E8826A)')}
-          </div>
-          <div style="background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:12px">
-            <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:4px">${h.mp}</div>
-            ${gradPrice(fmtMoney(h.mp_pr,h.mp_cur||h.moneda),15,'linear-gradient(135deg,#D4A017,#E8826A)')}
-          </div>
-        </div>`;
-        if(h.mp_desc){const lines=h.mp_desc.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFF8E3;border-radius:0 8px 8px 0;border-left:2px solid #D4A017;padding:12px;margin-top:8px">${lines.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:11px;font-weight:700;color:#2D1F14;margin:8px 0 4px">${c}</div>`:`<div style="font-size:10px;color:rgba(45,31,20,.5);margin-bottom:2px;display:flex;gap:6px"><span style="color:#D4A017;font-weight:700">✓</span><span>${c}</span></div>`;}).join('')}</div>`;}
-      } else if(h.precio>0){
-        H+=`<div class="ptag"><div style="display:inline-flex;flex-direction:column;align-items:flex-end;background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:8px 14px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:2px">Precio</div>${gradPrice(fmtMoney(h.precio,h.moneda),15,'linear-gradient(135deg,#D4A017,#E8826A)')}</div></div>`;
-      }
-      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px;margin-top:8px">${nl.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:11px;font-weight:700;color:#2D1F14;margin:6px 0 4px">${c}</div>`:`<div style="font-size:10px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
-    } else {
-      const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
-      const stars=parseInt(h.estrellas)||0;
-      const starsHtml=stars>0?`<span style="color:#D4A017;font-size:10px;letter-spacing:1px">${'★'.repeat(stars)}</span><span style="font-size:9px;color:rgba(45,31,20,0.45);margin-left:3px">${stars} estrellas</span>`:'';
-      H+=`<div style="border-radius:10px;overflow:hidden;border:1px solid rgba(212,160,23,0.18);background:#FFF8E3;margin-bottom:4px">`;
-      // Foto banner
-      if(h.foto_url){
-        H+=`<div style="position:relative;height:150px;overflow:hidden;flex-shrink:0">
-          <img src="${h.foto_url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="eager">
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,transparent 55%)"></div>
-          <div style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-end">
-            <div><div style="color:white;font-size:14px;font-weight:700;line-height:1.2;text-shadow:0 1px 4px rgba(0,0,0,0.4)">${h.nombre}</div>${starsHtml?`<div style="margin-top:3px;color:rgba(255,255,255,0.85);font-size:9px">${stars>0?'★'.repeat(stars)+' '+stars+' estrellas':''}</div>`:''}</div>
-            ${h.noches?`<div style="background:rgba(212,160,23,0.92);color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;white-space:nowrap">${h.noches} NOCHES</div>`:''}
-          </div>
-        </div>`;
-      }
-      H+=`<div style="padding:12px 14px">`;
-      // Header sin foto
-      if(!h.foto_url){
-        H+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-          <div><div style="font-size:14px;font-weight:700;color:#2D1F14;line-height:1.2">${h.nombre}</div>${starsHtml?`<div style="margin-top:3px">${starsHtml}</div>`:''}</div>
-          ${h.noches?`<div style="background:linear-gradient(135deg,#D4A017,#E8826A);color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:10px;white-space:nowrap">${h.noches} NOCHES</div>`:''}
-        </div>`;
-      }
-      // Info chips
-      const infoChips=[
-        h.ciudad||h.pais?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${L(LI.pin,9,'rgba(45,31,20,0.4)')} ${[h.ciudad,h.pais].filter(Boolean).join(', ')}</span>`:'',
-        h.ci&&h.co?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Check-in ${h.ci} · Check-out ${h.co}</span>`:'',
-        h.hab?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${h.hab}</span>`:'',
-        h.regimen?`<span style="font-size:9px;font-weight:600;color:#B45309;background:rgba(212,160,23,0.1);border-radius:4px;padding:2px 8px">${h.regimen}</span>`:''
-      ].filter(Boolean);
-      if(infoChips.length)H+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:${allAm.length?'8px':'10px'}">${infoChips.join('')}</div>`;
-      // Amenities
-      if(allAm.length)H+=`<div class="am-grid" style="margin-bottom:10px">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`;
-      // Notes
-      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());H+=`<div style="background:rgba(255,251,235,0.8);border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin-bottom:10px">${nl.map(l=>{const c=l.replace(/^\s*(?:## |[•·\-\*])\s*/,'').trim();return l.match(/^## /)?`<div style="font-size:10px;font-weight:700;color:#2D1F14;margin:6px 0 3px">${c}</div>`:`<div style="font-size:9px;color:#78350F;margin-bottom:2px;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${c}</span></div>`;}).join('')}</div>`;}
-      // Price
-      if(h.precio>0)H+=`<div style="display:flex;justify-content:flex-end"><div style="border:1px solid rgba(212,160,23,0.25);border-radius:8px;padding:8px 14px;text-align:right;background:rgba(212,160,23,0.06)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:2px">PRECIO ALOJAMIENTO</div>${gradPrice(fmtMoney(h.precio,h.moneda),16,'linear-gradient(135deg,#D4A017,#E8826A)')}</div></div>`;
-      H+=`</div></div>`;
-    }
-    H+=`</div>`;
-  });
+  // ════════════════════════════════════════════════
+  // PAGES 3..N: SERVICE SECTIONS
+  // ════════════════════════════════════════════════
 
-  // ── EXCURSIONES ────────────────────────────────────────────────────────────
-  (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{
-    H+=`<div class="q-sec" style="overflow:hidden">`;
-    // Photo header con foto propia si existe, sino el header estándar con foto de sección
-    if(e.foto_url){
-      H+=`<div style="position:relative;height:160px;overflow:hidden">
-        <img src="${e.foto_url}" style="width:100%;height:100%;object-fit:cover;display:block" loading="eager">
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.78) 0%,rgba(0,0,0,0.2) 60%,transparent 100%)"></div>
-        <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(67,160,71,0.9);color:white;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase">${e.categoria||'EXCURSIÓN'}</span></div>
-        <div style="position:absolute;bottom:12px;left:14px;right:14px">
-          <div style="color:white;font-size:15px;font-weight:700;line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,0.5)">${e.nombre}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:5px">
-            ${e.dur?`<span style="color:rgba(255,255,255,0.8);font-size:9px;display:flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(255,255,255,0.7)')} ${e.dur}</span>`:''}
-            ${e.fecha?`<span style="color:rgba(255,255,255,0.8);font-size:9px">${e.fecha}</span>`:''}
-            ${e.hora?`<span style="color:rgba(255,255,255,0.8);font-size:9px">Hora: ${e.hora}</span>`:''}
-          </div>
-        </div>
-      </div>`;
-    } else {
-      H+=`<div class="q-ph" style="background:${sphBg('excursiones','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> ${e.nombre}</div><div class="q-ph-badge">${e.categoria||'EXCURSIÓN'}</div></div></div>`;
-    }
-    H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">`;
-    // Metadata chips (solo si no hay foto o si hay pero falta info)
-    if(!e.foto_url){
-      const metaChips=[
-        e.dur?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(67,160,71,0.08);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(67,160,71,0.6)')} ${e.dur}</span>`:'',
-        e.fecha?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${e.fecha}</span>`:'',
-        e.hora?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Hora: ${e.hora}</span>`:'',
-        e.prov?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.building,9,'rgba(45,31,20,0.4)')} ${e.prov}</span>`:'',
-      ].filter(Boolean);
-      if(metaChips.length)H+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:${e.desc?'8px':'0'}">${metaChips.join('')}</div>`;
-    }
-    if(e.desc)H+=`<div style="font-size:10px;line-height:1.7;color:rgba(45,31,20,0.6);margin-bottom:${(e.punto||e.inc||e.noinc)?'10px':'0'}">${e.desc}</div>`;
-    if(e.punto)H+=`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(45,31,20,0.55);margin-bottom:8px">${L(LI.pin,10,'rgba(67,160,71,0.6)')} <strong style="color:#2D1F14">Encuentro:</strong> ${e.punto}</div>`;
-    if(e.inc||e.noinc){
-      H+=`<div class="ie-grid" style="margin-top:4px">
-        ${e.inc?`<div><div class="ie-ttl" style="color:#059669">${L(LI.check,10,'#059669')} Incluido</div>${e.inc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.check,9,'#059669')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}
-        ${e.noinc?`<div><div class="ie-ttl" style="color:#DC2626">${L(LI.xmark,10,'#DC2626')} No incluido</div>${e.noinc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.xmark,9,'#DC2626')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}
-      </div>`;
-    }
-    if(e.obs)H+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-top:8px;font-style:italic">${e.obs}</div>`;
-    if(e.precio>0)H+=`<div style="display:flex;justify-content:flex-end;margin-top:10px"><div style="border:1px solid rgba(67,160,71,0.2);border-radius:8px;padding:8px 14px;text-align:right;background:rgba(67,160,71,0.05)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(67,160,71,0.7);margin-bottom:2px">PRECIO TOTAL</div>${gradPrice(fmtMoney(e.precio,e.moneda),16,'linear-gradient(135deg,#43A047,#1B5E20)')}</div></div>`;
+  // ── VUELOS ──
+  if((d.vuelos||[]).length){
+    const rBP=(label,isRet,or,io,hs,fss,de,id2,hl,fl,al,num,esc,tesc,dur)=>`<div class="q-bp"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:10px;font-weight:700;color:#374151">${or} → ${de}</span><span class="q-bp-chip${isRet?' ret':''}">${label}</span></div><div class="q-bp-grid"><div><div class="q-bp-time">${hs||'–'}</div><div class="q-iata">${io||or}</div><div class="q-bp-city">${or}</div>${fss?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fss)}</div>`:''}</div><div class="q-bp-mid"><div class="q-bp-escl">${esc?'con escala':'directo'}</div><div class="q-bp-line"></div>${esc?`<div class="q-bp-via">${L(LI.arrow,8)} ${esc}${tesc?' · '+tesc:''}</div>`:''}${dur?`<div class="q-bp-dur">${dur}</div>`:''}</div><div style="text-align:right"><div class="q-bp-time">${hl||'–'}</div><div class="q-iata">${id2||de}</div><div class="q-bp-city">${de}</div>${fl?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fl)}</div>`:''}</div></div><div class="q-bp-footer"><span class="q-bp-meta">${al||''}${num?' · '+num:''}</span></div></div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('TRANSPORTE AÉREO','Vuelos',d.vuelos.length+' tramo'+( d.vuelos.length>1?'s':''))}<div class="qp-items">`;
+    d.vuelos.forEach(v=>{
+      const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
+      let info='';
+      if(v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${v.aerolinea}</div></div></div>`;
+      info+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
+      if(v.mod==='idavuelta'){
+        const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
+        const retAl=v.al2||v.aerolinea;const retAiata=v.al2_iata||_extractAirlineIata(retAl,v.num2||v.numero);
+        if(retAl&&retAl!==v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${retAl}</div></div></div>`;
+        info+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',retAl,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
+      }
+      if(v.tarifa||v.equipaje)info+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${v.tarifa?`<span style="background:#1B9E8F;color:white;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:4px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.5)">${L(LI.luggage,10,'rgba(45,31,20,0.35)')} ${v.equipaje}</span>`:''}</div>`;
+      if(v.precio>0)info+=`<div style="display:flex;justify-content:flex-end;margin-top:10px"><div style="background:#E8F7F3;border:1px solid rgba(27,158,143,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(27,158,143,0.7);margin-bottom:2px">PRECIO VUELOS${v.fin?' · '+v.fin:''}</div>${gradPrice(fmtMoney(v.precio,v.moneda),15,'linear-gradient(135deg,#1B9E8F,#0BC5B8)')}</div></div>`;
+      H+=itemCard(null,opBadge(v.opcion),info);
+    });
     H+=`</div></div>`;
-  });
+  }
 
-  // ── TRASLADOS ──────────────────────────────────────────────────────────────
+  // ── HOTELES ──
+  const hotOk=(d.hoteles||[]).filter(h=>h.nombre);
+  if(hotOk.length){
+    const hotCities=[...new Set(hotOk.map(h=>h.ciudad).filter(Boolean))].join(', ');
+    const hotDates=hotOk[0]?.checkin?fd(hotOk[0].checkin)+(hotOk[hotOk.length-1].checkout?' – '+fd(hotOk[hotOk.length-1].checkout):''):'';
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('ALOJAMIENTO'+(hotCities?' · '+hotCities.toUpperCase():'')+(hotDates?' · '+hotDates:''),'Alojamiento',hotOk.length+' hotel'+(hotOk.length>1?'es':''))}<div class="qp-items">`;
+    hotOk.forEach((h)=>{
+      const isP=h.tipo==='disney'||h.tipo==='universal';
+      const stars=parseInt(h.estrellas)||0;
+      const starsHtml=stars>0?`<span style="color:#D4A017">${'★'.repeat(stars)}</span> <span style="font-size:9px;color:rgba(45,31,20,0.45)">${stars} estrellas</span>`:'';
+      let info='';
+      if(isP){
+        info+=`<div style="display:inline-flex;background:${h.tipo==='universal'?'linear-gradient(135deg,#374151,#111827)':'linear-gradient(135deg,#FF8E53,#E65100)'};color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:8px;text-transform:uppercase">${h.tipo==='universal'?'Universal':'Disney'}</div>`;
+        info+=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${h.nombre}</div>`;
+        const chips=[h.hab,h.regimen,stars>0?'★ '+h.estrellas:''].filter(Boolean);
+        if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.map(c=>`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${c}</span>`).join('')}</div>`;
+        if(h.tickets)info+=`<div style="font-size:10px;color:rgba(45,31,20,0.6);margin-bottom:4px">Tickets: ${h.tickets}${h.dias_tkt?' ('+h.dias_tkt+' días)':''}</div>`;
+        if(h.parques?.length)info+=`<div style="font-size:10px;color:rgba(45,31,20,0.6);margin-bottom:4px">Parques: ${h.parques.join(', ')}</div>`;
+        if(h.beneficios?.length)info+=`<div style="margin-top:6px"><div class="am-grid">${h.beneficios.map(b=>`<span class="am-tag"><span class="ck">✓</span>${b}</span>`).join('')}</div></div>`;
+      } else {
+        info+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><div style="font-size:14px;font-weight:700;color:#2D1F14;line-height:1.2">${h.nombre}</div>${starsHtml?`<div style="margin-top:3px">${starsHtml}</div>`:''}</div>${h.noches?`<div style="background:linear-gradient(135deg,#D4A017,#E8826A);color:white;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:8px;white-space:nowrap">${h.noches} NOCHES</div>`:''}</div>`;
+        const chips=[[h.ciudad,h.pais].filter(Boolean).join(', ')?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.pin,9,'rgba(45,31,20,0.4)')} ${[h.ciudad,h.pais].filter(Boolean).join(', ')}</span>`:'',h.ci&&h.co?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Check-in ${h.ci} · Check-out ${h.co}</span>`:'',h.checkin&&h.checkout&&!h.ci?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${fd(h.checkin)} → ${fd(h.checkout)}</span>`:'',h.hab?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${h.hab}</span>`:'',h.regimen?`<span style="font-size:9px;font-weight:600;color:#B45309;background:rgba(212,160,23,0.1);border-radius:4px;padding:2px 8px">${h.regimen}</span>`:''].filter(Boolean);
+        if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.join('')}</div>`;
+        const allAm=[...(h.amenities||[]),h.am_x].filter(Boolean);
+        if(allAm.length)info+=`<div class="am-grid" style="margin-bottom:8px">${allAm.map(a=>`<span class="am-tag"><span class="ck">✓</span> ${a}</span>`).join('')}</div>`;
+      }
+      if(h.mp&&h.mp_pr>0){info+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><div style="background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:10px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:4px">Sin plan</div>${gradPrice(fmtMoney(h.precio,h.moneda),14,'linear-gradient(135deg,#D4A017,#E8826A)')}</div><div style="background:#FFF8E3;border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:10px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:4px">${h.mp}</div>${gradPrice(fmtMoney(h.mp_pr,h.mp_cur||h.moneda),14,'linear-gradient(135deg,#D4A017,#E8826A)')}</div></div>`;}
+      else if(h.precio>0)info+=`<div style="display:flex;justify-content:flex-end;margin-top:8px"><div style="background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(212,160,23,0.7);margin-bottom:2px">PRECIO ALOJAMIENTO</div>${gradPrice(fmtMoney(h.precio,h.moneda),15,'linear-gradient(135deg,#D4A017,#E8826A)')}</div></div>`;
+      if(h.notes){const nl=h.notes.split(/\n/).filter(l=>l.trim());info+=`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px;margin-top:8px">${nl.map(l=>`<div style="font-size:9px;color:#78350F;display:flex;gap:5px"><span style="color:#D97706">•</span><span>${l.replace(/^\s*[•·\-\*]\s*/,'').trim()}</span></div>`).join('')}</div>`;}
+      H+=itemCard(h.foto_url,opBadge(h.opcion),info);
+    });
+    H+=`</div></div>`;
+  }
+
+  // ── TRASLADOS ──
   const trsOk=(d.traslados||[]).filter(t=>t.origen||t.destino);
   if(trsOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('traslados','linear-gradient(135deg,#E8826A,#C2185B)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/></svg> Traslados</div><div class="q-ph-badge">TRANSFERS</div></div></div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('TRANSFERS Y TRASLADOS','Traslados',trsOk.length+' traslado'+(trsOk.length>1?'s':''))}<div class="qp-items">`;
     trsOk.forEach(t=>{
-      H+=`<div class="q-card">
-        <div class="q-card-l">
-          <div class="q-card-nm">${t.origen||''}${t.destino?' → '+t.destino:''}</div>
-          <div class="q-card-dt">${[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov].filter(Boolean).join(' · ')}</div>
-          ${t.notas?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:2px">${t.notas}</div>`:''}
-        </div>
-        ${t.precio>0?`<div style="border:1px solid rgba(232,130,106,0.2);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:#FFF0EC"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(232,130,106,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),16,'linear-gradient(135deg,#E8826A,#C2185B)')}</div>`:`<div style="font-size:10px;font-weight:600;color:#059669;flex-shrink:0;margin-left:12px">Incluido</div>`}
-      </div>`;
+      let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${t.origen||''}${t.destino?' → '+t.destino:''}</div>`;
+      const chips=[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov,t.fecha?fd(t.fecha):''].filter(Boolean);
+      if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.map(c=>`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(232,130,106,0.08);border-radius:4px;padding:2px 8px">${c}</span>`).join('')}</div>`;
+      if(t.notas)info+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-bottom:8px">${t.notas}</div>`;
+      if(t.precio>0)info+=`<div style="display:flex;justify-content:flex-end"><div style="background:#FFF0EC;border:1px solid rgba(232,130,106,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(232,130,106,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),15,'linear-gradient(135deg,#E8826A,#C2185B)')}</div></div>`;
+      else info+=`<div style="font-size:10px;font-weight:600;color:#059669">Incluido</div>`;
+      H+=itemCard(null,opBadge(t.opcion),info);
     });
-    H+=`</div>`;
+    H+=`</div></div>`;
   }
 
-  // ── AUTOS ──────────────────────────────────────────────────────────────────
+  // ── EXCURSIONES ──
+  const excOk=(d.excursiones||[]).filter(e=>e.nombre);
+  if(excOk.length){
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('EXCURSIONES Y ACTIVIDADES','Excursiones',excOk.length+' actividad'+(excOk.length>1?'es':''))}<div class="qp-items">`;
+    excOk.forEach(e=>{
+      let info=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div style="font-size:14px;font-weight:700;color:#2D1F14;line-height:1.2">${e.nombre}</div>${e.categoria?`<span style="background:rgba(67,160,71,0.1);color:#43A047;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:8px">${e.categoria}</span>`:''}</div>`;
+      const chips=[e.dur?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(67,160,71,0.08);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(67,160,71,0.6)')} ${e.dur}</span>`:'',e.fecha?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${e.fecha}</span>`:'',e.hora?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Hora: ${e.hora}</span>`:'',e.prov?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.building,9,'rgba(45,31,20,0.4)')} ${e.prov}</span>`:''].filter(Boolean);
+      if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.join('')}</div>`;
+      if(e.desc)info+=`<div style="font-size:10px;line-height:1.7;color:rgba(45,31,20,0.6);margin-bottom:8px">${e.desc}</div>`;
+      if(e.punto)info+=`<div style="display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(45,31,20,0.55);margin-bottom:8px">${L(LI.pin,10,'rgba(67,160,71,0.6)')} <strong style="color:#2D1F14">Encuentro:</strong> ${e.punto}</div>`;
+      if(e.inc||e.noinc)info+=`<div class="ie-grid" style="margin-top:4px">${e.inc?`<div><div class="ie-ttl" style="color:#059669">${L(LI.check,10,'#059669')} Incluido</div>${e.inc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.check,9,'#059669')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}${e.noinc?`<div><div class="ie-ttl" style="color:#DC2626">${L(LI.xmark,10,'#DC2626')} No incluido</div>${e.noinc.split(/[,\n]+/).filter(s=>s.trim().length>1).map(x=>`<div class="ie-item"><span>${L(LI.xmark,9,'#DC2626')}</span><span>${x.trim()}</span></div>`).join('')}</div>`:``}</div>`;
+      if(e.obs)info+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-top:8px;font-style:italic">${e.obs}</div>`;
+      if(e.precio>0)info+=`<div style="display:flex;justify-content:flex-end;margin-top:8px"><div style="background:rgba(67,160,71,0.05);border:1px solid rgba(67,160,71,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(67,160,71,0.7);margin-bottom:2px">PRECIO TOTAL</div>${gradPrice(fmtMoney(e.precio,e.moneda),15,'linear-gradient(135deg,#43A047,#1B5E20)')}</div></div>`;
+      H+=itemCard(e.foto_url,opBadge(e.opcion),info);
+    });
+    H+=`</div></div>`;
+  }
+
+  // ── AUTOS ──
   const autosOk=(d.autos||[]).filter(a=>a.proveedor);
   if(autosOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('autos','linear-gradient(135deg,#FF8F00,#E65100)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/></svg> Alquiler de Autos</div><div class="q-ph-badge">RENT A CAR</div></div></div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('ALQUILER DE AUTOS','Rent a Car',autosOk.length+' vehículo'+(autosOk.length>1?'s':''))}<div class="qp-items">`;
     autosOk.forEach(a=>{
-      const retiro=[a.retiro_fecha,a.retiro_hora].filter(Boolean).join(' ');
-      const devol=[a.devolucion_fecha,a.devolucion_hora].filter(Boolean).join(' ');
-      H+=`<div class="q-card">
-        <div class="q-card-l">
-          <div class="q-card-nm">${a.proveedor}${a.categoria?' — '+a.categoria:''}</div>
-          <div class="q-card-dt">${[a.retiro_lugar,retiro?'Retiro: '+retiro:''].filter(Boolean).join(' · ')}</div>
-          ${a.devolucion_lugar&&a.devolucion_lugar!==a.retiro_lugar?`<div class="q-card-dt">Devolución: ${a.devolucion_lugar}${devol?' '+devol:''}</div>`:''}
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-            ${a.conductor_adicional?`<span class="am-tag"><span class="ck">✓</span> Conductor adicional</span>`:''}
-            ${a.incluye_seguro?`<span class="am-tag"><span class="ck">✓</span> Seguro incluido</span>`:''}
-          </div>
-          ${a.notas?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:3px">${a.notas}</div>`:''}
-        </div>
-        ${a.precio>0?`<div style="border:1px solid rgba(232,130,106,0.2);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;margin-left:12px;background:#FFF0EC"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(232,130,106,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(a.precio,a.moneda),16,'linear-gradient(135deg,#FF8F00,#E65100)')}</div>`:''}
-      </div>`;
+      let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${a.proveedor}${a.categoria?' — '+a.categoria:''}</div>`;
+      const retiro=[a.retiro_fecha,a.retiro_hora].filter(Boolean).join(' ');const devol=[a.devolucion_fecha,a.devolucion_hora].filter(Boolean).join(' ');
+      const chips=[a.retiro_lugar?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(232,130,106,0.08);border-radius:4px;padding:2px 8px">${'Retiro: '+a.retiro_lugar+(retiro?' '+retiro:'')}</span>`:'',a.devolucion_lugar&&a.devolucion_lugar!==a.retiro_lugar?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Dev: ${a.devolucion_lugar+(devol?' '+devol:'')}</span>`:'',a.conductor_adicional?`<span class="am-tag"><span class="ck">✓</span> Conductor adicional</span>`:'',a.incluye_seguro?`<span class="am-tag"><span class="ck">✓</span> Seguro incluido</span>`:''].filter(Boolean);
+      if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.join('')}</div>`;
+      if(a.notas)info+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-bottom:8px">${a.notas}</div>`;
+      if(a.precio>0)info+=`<div style="display:flex;justify-content:flex-end"><div style="background:#FFF0EC;border:1px solid rgba(232,130,106,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(232,130,106,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(a.precio,a.moneda),15,'linear-gradient(135deg,#FF8F00,#E65100)')}</div></div>`;
+      H+=itemCard(null,opBadge(a.opcion),info);
     });
-    H+=`</div>`;
+    H+=`</div></div>`;
   }
 
-  // ── CRUCEROS ───────────────────────────────────────────────────────────────
+  // ── CRUCEROS ──
   const crucOk=(d.cruceros||[]).filter(c=>c.naviera);
   if(crucOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('cruceros','linear-gradient(135deg,#0288D1,#01579B)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1"/></svg> Crucero</div><div class="q-ph-badge">CRUCERO</div></div></div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('CRUCERO · NAVEGACIÓN','Crucero',crucOk[0].naviera)}<div class="qp-items">`;
     crucOk.forEach(c=>{
       const escalasArr=c.escalas?c.escalas.split(/\n/).filter(s=>s.trim()):[];
-      H+=`<div class="q-card" style="flex-direction:column;align-items:stretch">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-          <div style="flex:1">
-            <div class="q-card-nm">${c.naviera}${c.barco?' — '+c.barco:''}</div>
-            <div class="q-card-dt">${[c.embarque_puerto&&c.desembarque_puerto?c.embarque_puerto+' → '+c.desembarque_puerto:'',c.embarque_fecha,c.cabina,c.regimen].filter(Boolean).join(' · ')}</div>
-            ${escalasArr.length?`<div style="margin-top:8px"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(45,31,20,.4);margin-bottom:4px">PUERTOS DE ESCALA</div><div style="display:flex;flex-wrap:wrap;gap:4px">${escalasArr.map(e=>`<span class="am-tag">${L(LI.pin,9,'#0288D1')} ${e.trim()}</span>`).join('')}</div></div>`:''}
-            ${c.notas?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:4px">${c.notas}</div>`:''}
-          </div>
-          ${(c.precio_total||c.precio_pp)>0?`<div style="border:1px solid rgba(14,165,233,0.2);border-radius:10px;padding:8px 16px;text-align:right;min-width:110px;flex-shrink:0;background:#E8F4FD"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(14,165,233,0.7);margin-bottom:2px">PRECIO${c.pasajeros>1?' TOTAL':''}</div>${gradPrice(fmtMoney(c.precio_total||c.precio_pp,c.moneda),16,'linear-gradient(135deg,#0288D1,#01579B)')}${c.pasajeros>1&&c.precio_pp>0?`<div style="font-size:8px;color:rgba(45,31,20,.35);margin-top:2px">${fmtMoney(c.precio_pp,c.moneda)}/pax × ${c.pasajeros}</div>`:''}</div>`:'' }
-        </div>
-      </div>`;
+      let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${c.naviera}${c.barco?' — '+c.barco:''}</div>`;
+      const chips=[c.embarque_puerto&&c.desembarque_puerto?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(14,165,233,0.08);border-radius:4px;padding:2px 8px">${c.embarque_puerto} → ${c.desembarque_puerto}</span>`:'',c.embarque_fecha?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${c.embarque_fecha}</span>`:'',c.cabina?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${c.cabina}</span>`:'',c.regimen?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${c.regimen}</span>`:''].filter(Boolean);
+      if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.join('')}</div>`;
+      if(escalasArr.length)info+=`<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(45,31,20,.4);margin-bottom:4px">PUERTOS DE ESCALA</div><div style="display:flex;flex-wrap:wrap;gap:4px">${escalasArr.map(e=>`<span class="am-tag">${L(LI.pin,9,'#0288D1')} ${e.trim()}</span>`).join('')}</div></div>`;
+      if(c.notas)info+=`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-bottom:8px">${c.notas}</div>`;
+      if((c.precio_total||c.precio_pp)>0)info+=`<div style="display:flex;justify-content:flex-end"><div style="background:#E8F4FD;border:1px solid rgba(14,165,233,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(14,165,233,0.7);margin-bottom:2px">PRECIO${c.pasajeros>1?' TOTAL':''}</div>${gradPrice(fmtMoney(c.precio_total||c.precio_pp,c.moneda),15,'linear-gradient(135deg,#0288D1,#01579B)')}${c.pasajeros>1&&c.precio_pp>0?`<div style="font-size:8px;color:rgba(45,31,20,.35);margin-top:2px">${fmtMoney(c.precio_pp,c.moneda)}/pax × ${c.pasajeros}</div>`:''}</div></div>`;
+      H+=itemCard(null,opBadge(c.opcion),info);
     });
-    H+=`</div>`;
+    H+=`</div></div>`;
   }
 
-  // ── SEGURO ─────────────────────────────────────────────────────────────────
+  // ── SEGURO ──
   if(d.seguro?.nombre){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('seguro','linear-gradient(135deg,#9B7FD4,#6D28D9)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Asistencia al viajero — ${d.seguro.nombre}</div><div class="q-ph-badge">SEGURO</div></div></div>
-    <div class="seg-grid">${[
-      [LI.med,'Cobertura médica',d.seguro.cobertura_medica],
-      [LI.luggage,'Equipaje',d.seguro.equipaje_seg],
-      [LI.check,'Preexistencias',d.seguro.preexistencias],
-      [LI.clip,'Beneficios',d.seguro.extra]
-    ].filter(r=>r[2]).map(r=>`<div class="seg-cell"><div style="margin-bottom:4px">${L(r[0],14,'#9B7FD4')}</div><div class="lbl2">${r[1]}</div><div class="val">${r[2]}</div></div>`).join('')}</div>
-    ${d.seguro.precio>0?`<div class="ptag"><div style="display:inline-flex;flex-direction:column;align-items:flex-end;background:#F0EEF9;border:1px solid rgba(155,127,212,0.2);border-radius:8px;padding:8px 14px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(155,127,212,0.7);margin-bottom:2px">Precio${d.seguro.fin?' · '+d.seguro.fin:''}</div>${gradPrice(fmtMoney(d.seguro.precio,d.seguro.moneda),15,'linear-gradient(135deg,#9B7FD4,#C4B5FD)')}</div></div>`:''}
-    </div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('ASISTENCIA AL VIAJERO','Cobertura',d.seguro.nombre)}<div class="qp-items"><div class="qp-item-card"><div class="seg-grid">${[[LI.med,'Cobertura médica',d.seguro.cobertura_medica],[LI.luggage,'Equipaje',d.seguro.equipaje_seg],[LI.check,'Preexistencias',d.seguro.preexistencias],[LI.clip,'Beneficios',d.seguro.extra]].filter(r=>r[2]).map(r=>`<div class="seg-cell"><div style="margin-bottom:4px">${L(r[0],14,'#9B7FD4')}</div><div class="lbl2">${r[1]}</div><div class="val">${r[2]}</div></div>`).join('')}</div>${d.seguro.precio>0?`<div class="ptag"><div style="display:inline-flex;flex-direction:column;align-items:flex-end;background:#F0EEF9;border:1px solid rgba(155,127,212,0.2);border-radius:8px;padding:8px 14px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(155,127,212,0.7);margin-bottom:2px">Precio${d.seguro.fin?' · '+d.seguro.fin:''}</div>${gradPrice(fmtMoney(d.seguro.precio,d.seguro.moneda),15,'linear-gradient(135deg,#9B7FD4,#C4B5FD)')}</div></div>`:''}</div></div></div>`;
   }
 
-  // ── TICKETS ────────────────────────────────────────────────────────────────
+  // ── TICKETS ──
   const tksOk=(d.tickets||[]).filter(t=>t.nombre);
   if(tksOk.length){
-    H+=`<div class="q-sec"><div class="q-ph" style="background:${sphBg('tickets','linear-gradient(135deg,#43A047,#1B5E20)')}"><div class="q-ph-deco"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div class="q-ph-bar"><div class="q-ph-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg> Tickets y Entradas</div><div class="q-ph-badge">TICKETS</div></div></div>`;
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('TICKETS Y ENTRADAS','Tickets',tksOk.length+' entrada'+(tksOk.length>1?'s':''))}<div class="qp-items">`;
     tksOk.forEach(t=>{
-      H+=`<div class="q-card">
-        <div class="q-card-l">
-          <div class="q-card-nm">${t.nombre}</div>
-          <div class="q-card-dt">${[t.tipo,t.prov,t.fecha?fd(t.fecha):''].filter(Boolean).join(' · ')}</div>
-          ${t.desc?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:2px">${t.desc}</div>`:''}
-        </div>
-        <div class="q-card-r">
-          ${t.precio>0?`<div class="q-card-pl">Precio</div>${gradPrice(fmtMoney(t.precio,t.moneda),14)}`:`<div style="font-size:10px;font-weight:600;color:#059669">Incluido</div>`}
-        </div>
-      </div>`;
+      let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${t.nombre}</div>`;
+      const chips=[t.tipo,t.prov,t.fecha?fd(t.fecha):''].filter(Boolean);
+      if(chips.length)info+=`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${chips.map(c=>`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(67,160,71,0.08);border-radius:4px;padding:2px 8px">${c}</span>`).join('')}</div>`;
+      if(t.desc)info+=`<div style="font-size:9px;color:rgba(45,31,20,0.5);margin-bottom:8px">${t.desc}</div>`;
+      if(t.precio>0)info+=`<div style="display:flex;justify-content:flex-end"><div style="background:rgba(67,160,71,0.05);border:1px solid rgba(67,160,71,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(67,160,71,0.7);margin-bottom:2px">PRECIO</div>${gradPrice(fmtMoney(t.precio,t.moneda),15)}</div></div>`;
+      else info+=`<div style="font-size:10px;font-weight:600;color:#059669">Incluido</div>`;
+      H+=itemCard(null,opBadge(t.opcion),info);
     });
-    H+=`</div>`;
+    H+=`</div></div>`;
   }
 
-  // ── T&C ────────────────────────────────────────────────────────────────────
-  if(pr.tyc){
-    const lines=pr.tyc.split(/\n/).filter(l=>l.trim());
-    H+=`<div class="tyc-box">
-      <div class="tyc-ttl">Aclaraciones y condiciones</div>
-      ${lines.map(l=>{
-        const c=l.replace(/^\s*(?:## |=== |[•·\-\*])\s*/,'').trim();
-        if(!c)return'';
-        if(l.match(/^## /))return`<div class="tyc-ttl">${c}</div>`;
-        if(l.match(/^=== /))return`<div class="tyc-cta">${c}</div>`;
-        return`<div class="tyc-item">${L(LI.info,11)}<span>${c}</span></div>`;
-      }).join('')}
-    </div>`;
+  // ════════════════════════════════════════════════
+  // GALERÍA (conditional)
+  // ════════════════════════════════════════════════
+  const hpKeys=Object.keys(hotelPhotos||{}).filter(k=>(hotelPhotos[k]||[]).some(f=>f?.url));
+  if(hpKeys.length){
+    const hotNombres=(d.hoteles||[]).map(h=>h.nombre||'Hotel');
+    H+=`<div class="qp-page" style="break-before:page">${darkHd('GALERÍA DE FOTOS','Alojamiento','Imágenes de referencia')}<div style="padding:20px 32px">`;
+    hpKeys.forEach(hi=>{
+      const fotos=(hotelPhotos[hi]||[]).filter(f=>f?.url);
+      if(!fotos.length)return;
+      H+=`<div style="margin-bottom:20px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:10px">${hotNombres[parseInt(hi)]||'Hotel'}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${fotos.map(f=>`<div style="position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:8px"><img src="${f.url}" style="width:100%;height:100%;object-fit:cover;display:block">${f.label?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 80%);padding:6px 8px"><span style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.85)">${f.label}</span></div>`:''}</div>`).join('')}</div></div>`;
+    });
+    H+=`</div></div>`;
   }
 
-  // ── TOTAL ──────────────────────────────────────────────────────────────────
-  const totalAmt=pr.total>0?fmtMoney(pr.total,pr.moneda2):pr.por_persona>0?fmtMoney(pr.por_persona,pr.moneda)+'/pax':'—';
-  H+=`<div class="q-total">
-    <div class="q-total-l">
-      <div class="tl">Precio total del paquete</div>
-      ${pr.reserva>0?`<div class="detail">Reserva: ${fmtMoney(pr.reserva,pr.moneda3)}${pr.cuotas?' · '+pr.cuotas:''}</div>`:''}
-      ${pr.cancelacion?`<div class="detail">Cancelación gratuita hasta: ${fd(pr.cancelacion)}</div>`:''}
-      <div class="detail">Válida por ${pr.validez||'24 horas'}</div>
-    </div>
-    <div class="q-total-r">
-      <div class="q-total-amt">${totalAmt}</div>
-      ${pr.cuotas?`<div class="q-total-cuotas">${pr.cuotas}</div>`:''}
-    </div>
-  </div>
+  // ════════════════════════════════════════════════
+  // RESUMEN ECONÓMICO
+  // ════════════════════════════════════════════════
+  H+=`<div class="qp-page" style="break-before:page">${darkHd('RESUMEN ECONÓMICO','Condiciones y Precios',pr.validez?'Validez: '+pr.validez:'Válido por 24 horas')}<div style="padding:20px 32px">`;
+  const prLines=[
+    ...(d.vuelos||[]).filter(v=>v.precio>0).map(v=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Vuelos${v.aerolinea?' · '+v.aerolinea:''}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(v.precio,v.moneda)}</td></tr>`),
+    ...(d.hoteles||[]).filter(h=>h.nombre&&h.precio>0).map(h=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Alojamiento · ${h.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(h.precio,h.moneda)}</td></tr>`),
+    ...(d.traslados||[]).filter(t=>(t.origen||t.destino)&&t.precio>0).map(t=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Traslado: ${t.origen||''}${t.destino?' → '+t.destino:''}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(t.precio,t.moneda)}</td></tr>`),
+    ...(d.excursiones||[]).filter(e=>e.nombre&&e.precio>0).map(e=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Excursión: ${e.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(e.precio,e.moneda)}</td></tr>`),
+    ...(d.autos||[]).filter(a=>a.proveedor&&a.precio>0).map(a=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Auto: ${a.proveedor}${a.categoria?' '+a.categoria:''}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(a.precio,a.moneda)}</td></tr>`),
+    ...(d.cruceros||[]).filter(c=>c.naviera&&(c.precio_total||c.precio_pp)>0).map(c=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Crucero: ${c.naviera}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(c.precio_total||c.precio_pp,c.moneda)}</td></tr>`),
+    d.seguro?.precio>0?`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Asistencia: ${d.seguro.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(d.seguro.precio,d.seguro.moneda)}</td></tr>`:'',
+    ...(d.tickets||[]).filter(t=>t.nombre&&t.precio>0).map(t=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Ticket: ${t.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(t.precio,t.moneda)}</td></tr>`),
+  ].filter(Boolean);
+  if(prLines.length)H+=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px"><thead><tr><th style="text-align:left;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(27,158,143,0.25)">CONCEPTO</th><th style="text-align:right;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(27,158,143,0.25)">IMPORTE</th></tr></thead><tbody>${prLines.join('')}</tbody></table>`;
+  if(pr.total>0||pr.por_persona>0)H+=`<div style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65)">PRECIO TOTAL DEL PAQUETE</div>${pr.cuotas?`<div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:4px">${pr.cuotas}</div>`:''}</div><div style="text-align:right"><div style="font-size:22px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div>${pr.por_persona>0&&pr.total>0?`<div style="font-size:9px;color:rgba(255,255,255,.6);margin-top:2px">${fmtMoney(pr.por_persona,pr.moneda)}/pax</div>`:''}</div></div>`;
+  if(pr.reserva>0)H+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"><div style="flex:1;background:#F5F0E8;border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:4px">RESERVA</div><div style="font-size:14px;font-weight:800;color:#2D1F14">${fmtMoney(pr.reserva,pr.moneda3||pr.moneda)}</div></div>${pr.cancelacion?`<div style="flex:1;background:#F5F0E8;border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:4px">CANCELACIÓN GRATUITA</div><div style="font-size:14px;font-weight:800;color:#2D1F14">${fd(pr.cancelacion)}</div></div>`:''}</div>`;
+  if(pr.tyc){const lines=pr.tyc.split(/\n/).filter(l=>l.trim());H+=`<div class="tyc-box"><div class="tyc-ttl">Aclaraciones y condiciones</div>${lines.map(l=>{const c=l.replace(/^\s*(?:## |=== |[•·\-\*])\s*/,'').trim();if(!c)return'';if(l.match(/^## /))return`<div class="tyc-ttl">${c}</div>`;if(l.match(/^=== /))return`<div class="tyc-cta">${c}</div>`;return`<div class="tyc-item">${L(LI.info,11)}<span>${c}</span></div>`;}).join('')}</div>`;}
+  H+=`</div></div>`;
 
-  <!-- ── FOOTER AGENTE ── -->
-  <div class="q-agent">
-    ${logoUrl?`<img src="${logoUrl}" style="max-height:60px;max-width:120px;object-fit:contain;border-radius:12px;flex-shrink:0;background:rgba(255,255,255,0.1)" alt="logo">`:`<div class="q-agent-av">${ini}</div>`}
-    <div>
-      <div class="q-agent-nm">${ag.nm||'Tu Agente'}</div>
-      ${ag.ag?`<div class="q-agent-ag">${ag.ag}</div>`:''}
-      <div class="q-agent-ct">${[ag.em,ag.tel,ag.soc].filter(Boolean).join('  ·  ')}</div>
+  // ════════════════════════════════════════════════
+  // CLOSING PAGE
+  // ════════════════════════════════════════════════
+  H+=`<div class="qp-closing" style="break-before:page;${closingUrl?`background:url('${closingUrl}') center/cover no-repeat`:''};position:relative">
+    ${!closingUrl?`<div style="position:absolute;inset:0;background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)"></div>`:''}
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.72) 100%);pointer-events:none"></div>
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:48px 36px">
+      <div style="margin-bottom:36px">${buildPdfWordmark(32)}</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:40px">
+        ${ag.nm?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">AGENTE</div><div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.3px">${ag.nm}</div></div>`:''}
+        ${ag.ag?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">AGENCIA</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.82)">${ag.ag}</div></div>`:''}
+        <div style="width:48px;height:1px;background:rgba(27,158,143,0.5);margin:4px 0"></div>
+        ${ag.em?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">EMAIL</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.em}</div></div>`:''}
+        ${ag.tel?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">WHATSAPP</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.tel}</div></div>`:''}
+        ${ag.soc?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">INSTAGRAM</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.soc}</div></div>`:''}
+      </div>
+      <div style="font-size:8px;color:rgba(255,255,255,0.28);text-align:center;letter-spacing:1px;max-width:400px">Esta cotización es confidencial y fue elaborada exclusivamente para ${cl.nombre||'el cliente'}. Precios sujetos a disponibilidad al momento de la reserva.</div>
     </div>
-    <div style="margin-left:auto;text-align:right;opacity:.55">
-      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,.4);margin-bottom:3px">powered by</div>
-      <div style="font-size:11px;font-weight:800;color:#1B9E8F;letter-spacing:-.3px">ermix</div>
-    </div>
-  </div>
   </div>`;
+
+  H+=`</div>`;
   return H;
 }
+
 
 window.onbeforeprint=()=>{if(qData)document.getElementById('qprint').innerHTML=buildQuoteHTML(qData);};
 // ═══════════════════════════════════════════

@@ -1,0 +1,5 @@
+# No subir fotos locales
+Fotos/
+
+# Mac
+.DS_Store

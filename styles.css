@@ -1016,6 +1016,93 @@ input:focus,textarea:focus,select:focus{
 /* bloque antiguo de dashboard eliminado — ver DASHBOARD METRICS v3 más abajo */
 
 /* ══════════════════════════
+   PDF FERRARO — NUEVAS PÁGINAS
+══════════════════════════ */
+
+/* Cover page — A4 height full bleed */
+.qp-cover{
+  height:297mm;
+  position:relative;overflow:hidden;
+  break-after:page
+}
+
+/* Standard page — full A4 with top padding for content */
+.qp-page{
+  background:#FFFFFF!important;
+  min-height:0;
+  break-inside:auto
+}
+
+/* Dark page header */
+.qp-dark-hd{
+  background:linear-gradient(135deg,#0D2B1E 0%,#0A1A12 60%,#0D120F 100%)!important;
+  padding:22px 32px 20px;
+  border-bottom:none
+}
+.qp-dark-hd-meta{
+  font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(27,158,143,0.85)!important;margin-bottom:6px
+}
+.qp-dark-hd-title{
+  font-size:28px;font-weight:900;letter-spacing:-1px;
+  color:#FFFFFF!important;line-height:1;margin-bottom:5px
+}
+.qp-dark-hd-sub{
+  font-size:11px;font-weight:500;
+  color:rgba(255,255,255,0.5)!important
+}
+
+/* Items container */
+.qp-items{padding:16px 32px 20px}
+
+/* Item card */
+.qp-item-card{
+  margin-bottom:14px;
+  break-inside:avoid
+}
+.qp-item-card:last-child{margin-bottom:0}
+
+/* Closing page — A4 height */
+.qp-closing{
+  height:297mm;
+  position:relative;overflow:hidden
+}
+
+/* Itinerary table */
+.qp-iti-table{
+  width:100%;border-collapse:collapse;
+  font-family:'DM Sans',sans-serif
+}
+.qp-iti-table thead th{
+  text-align:left;padding:8px 12px;
+  font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(45,31,20,0.4)!important;
+  border-bottom:2px solid rgba(27,158,143,0.2)
+}
+.qp-iti-table thead th:last-child{text-align:center}
+.qp-iti-even td{background:#FAFAF9!important}
+.qp-iti-odd td{background:#FFFFFF!important}
+.qp-iti-date{
+  padding:9px 12px;vertical-align:middle;
+  border-bottom:1px solid rgba(45,31,20,0.05)
+}
+.qp-iti-act{
+  padding:9px 12px;vertical-align:middle;
+  border-bottom:1px solid rgba(45,31,20,0.05)
+}
+.qp-iti-type{
+  padding:9px 12px;vertical-align:middle;text-align:center;
+  border-bottom:1px solid rgba(45,31,20,0.05)
+}
+
+/* Page break rules for new structure */
+#qwrap .qp-cover{break-after:page}
+#qwrap .qp-page{break-inside:auto}
+#qwrap .qp-dark-hd{break-after:avoid;break-inside:avoid}
+#qwrap .qp-item-card{break-inside:avoid}
+#qwrap .qp-closing{break-before:page}
+
+/* ══════════════════════════
    PRINT
 ══════════════════════════ */
 @media print{
