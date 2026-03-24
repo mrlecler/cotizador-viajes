@@ -3,3 +3,9 @@ Fotos/
 
 # Mac
 .DS_Store
+
+# Config local — credenciales y MCP
+.mcp.json
+pdf_muestra/
+*.pdf
+update.md
