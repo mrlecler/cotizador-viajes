@@ -1725,8 +1725,8 @@ body{overflow-x:hidden}
 
 /* ── .bn-lbl: mobile-only label (avatar bottom nav) ── */
 .bn-lbl{display:none}
-/* Bottom nav: hidden on desktop/tablet, shown only in mobile media query */
-#bottom-nav{display:none}
+/* Bottom nav: always hidden on desktop/tablet */
+@media(min-width:768px){#bottom-nav{display:none!important}}
 
 
 /* ─────────────────────────────────────────────────────────────
@@ -1778,7 +1778,7 @@ body{overflow-x:hidden}
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      BOTTOM NAVIGATION BAR
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-  #bottom-nav{
+  #bottom-nav.active{
     display:flex!important;
     position:fixed;
     bottom:0;left:0;right:0;

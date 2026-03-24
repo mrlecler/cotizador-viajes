@@ -162,7 +162,7 @@ async function doLogout(){
   currentUser=null;isAdmin=false;
   document.getElementById('ui').style.display='none';
   document.getElementById('login-wall').style.display='flex';
-  const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.style.display='none';
+  const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.classList.remove('active');
   document.getElementById('li-pass').value='';
   setLoginStatus('Sesión cerrada.','var(--muted)');
 }
@@ -202,7 +202,7 @@ async function showApp(user){
   document.getElementById('login-wall').style.display='none';
   document.getElementById('ui').style.display='block';
   document.getElementById('sidebar').style.display='flex';
-  const _bnav=document.getElementById('bottom-nav');if(_bnav)_bnav.style.display='';
+  const _bnav=document.getElementById('bottom-nav');if(_bnav)_bnav.classList.add('active');
   // Restaurar estado expandido del sidebar
   if(localStorage.getItem('sb-open')){
     document.getElementById('sidebar').classList.add('open');
