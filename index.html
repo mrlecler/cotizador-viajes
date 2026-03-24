@@ -535,6 +535,12 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <input type="file" id="closing-f" accept="image/*" style="display:none" onchange="uploadClosing(this)">
       <button class="btn btn-out btn-sm" onclick="openSecPhotosPanel()" title="Fotos por sección"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Secciones</button>
       <button class="btn btn-out btn-sm" onclick="openGalleryPanel()" title="Galería de fotos por hotel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Galería</button>
+      <div style="width:1px;height:24px;background:var(--border2);flex-shrink:0;margin:0 2px"></div>
+      <button type="button" class="pdf-sw tb-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Tema: Turquesa ermix"></button>
+      <button type="button" class="pdf-sw tb-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Tema: Azul marino"></button>
+      <button type="button" class="pdf-sw tb-sw" data-t="3" onclick="selectPdfTheme(3)" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)" title="Tema: Negro y dorado"></button>
+      <button type="button" class="pdf-sw tb-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Tema: Verde selva"></button>
+      <button type="button" class="pdf-sw tb-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Tema: Borgoña premium"></button>
       <div style="flex:1"></div>
       <button class="btn btn-out btn-sm" onclick="switchTab('form')">← Editar</button>
       <button class="btn btn-save btn-sm" id="btn-save-prev" onclick="saveQuote()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar</button>
@@ -755,6 +761,20 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
         </div>
         <div class="fg full"><label class="lbl">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
       </div>
+      <!-- Tema del PDF -->
+      <div class="fg full" style="margin-top:8px">
+        <label class="lbl">Tema del PDF</label>
+        <input type="hidden" id="cfg-pdf-theme" value="1">
+        <div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">
+          <button type="button" class="pdf-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Turquesa ermix"></button>
+          <button type="button" class="pdf-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Azul marino"></button>
+          <button type="button" class="pdf-sw" data-t="3" onclick="selectPdfTheme(3)" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)" title="Negro y dorado"></button>
+          <button type="button" class="pdf-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Verde selva"></button>
+          <button type="button" class="pdf-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Borgoña premium"></button>
+          <span id="pdf-theme-lbl" style="font-size:.72rem;color:var(--g4);margin-left:4px">Turquesa ermix</span>
+        </div>
+        <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Se aplica a barras de color, badges, precios y acentos del PDF generado.</div>
+      </div>
       <button class="btn btn-pri" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
     </div>
@@ -823,10 +843,10 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 <script src="js/app-core.js?v=6"></script>
 <script src="js/app-form.js?v=6"></script>
 <script src="js/app-ia.js?v=6"></script>
-<script src="js/app-preview.js?v=6"></script>
+<script src="js/app-preview.js?v=7"></script>
 <script src="js/app-history.js?v=5"></script>
 <script src="js/app-admin.js?v=5"></script>
-<script src="js/app-quote.js?v=6"></script>
+<script src="js/app-quote.js?v=7"></script>
 <script src="js/app-promos.js?v=2"></script>
 </body>
 </html>

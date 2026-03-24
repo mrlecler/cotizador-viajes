@@ -8,6 +8,13 @@ function _extractAirlineIata(name,flightNum){
   return'';
 }
 
+const PDF_THEMES={
+  1:{name:'Turquesa ermix', primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143',rgb2:'11,197,184'},
+  2:{name:'Azul marino',    primary:'#1E3A5F',secondary:'#2E5C8A',accent:'#4A90C4',grad:'linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)',text:'#ffffff',rgb:'30,58,95',  rgb2:'46,92,138'},
+  3:{name:'Negro y dorado', primary:'#1A1A1A',secondary:'#2D2D2D',accent:'#C9A84C',grad:'linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)',text:'#C9A84C',rgb:'26,26,26',rgb2:'45,45,45'},
+  4:{name:'Verde selva',    primary:'#1B4332',secondary:'#2D6A4F',accent:'#52B788',grad:'linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)',text:'#ffffff',rgb:'27,67,50',  rgb2:'45,106,79'},
+  5:{name:'Borgoña premium',primary:'#6B1A2A',secondary:'#8B2635',accent:'#C4445A',grad:'linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)',text:'#ffffff',rgb:'107,26,42',rgb2:'139,38,53'},
+};
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
   const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
@@ -35,13 +42,14 @@ function buildPdfWordmark(fontSize){
 // ─── Generador HTML del documento de cotización ───────────────────────────────
 function buildQuoteHTML(d){
   const ag=agCfg;
+  const th=PDF_THEMES[ag.pdf_theme||1]||PDF_THEMES[1];
   const today=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
   const pr=d.precios||{},cl=d.cliente||{},vi=d.viaje||{};
   const ini=(ag.nm||'M').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'M';
 
   const _sph=JSON.parse(localStorage.getItem('mp_sec_photos')||'{}');
   const sphBg=(k,fb)=>{const u=(_sph[k]?.url||'').trim(),p=_sph[k]?.pos||'center center';return u?`url('${u}') ${p}/cover no-repeat,${fb}`:fb;};
-  const L=(p,sz=15,col='#1B9E8F')=>`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const L=(p,sz=15,col=th.primary)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const LI={
     pin:`<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>`,
     hotel:`<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M10 6h4"/><path d="M10 10h4"/>`,
@@ -63,7 +71,7 @@ function buildQuoteHTML(d){
     ship:`<path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/>`,
     clock:`<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
   };
-  const gradPrice=(amt,sz=15,gr='linear-gradient(135deg,#1B9E8F,#0BC5B8)')=>amt?`<div style="font-size:${sz}px;font-weight:900;background:${gr};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2">${amt}</div>`:'';
+  const gradPrice=(amt,sz=15,gr=th.grad)=>amt?`<div style="font-size:${sz}px;font-weight:900;background:${gr};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2">${amt}</div>`:'';
 
   // ── Date helpers ──
   const _pd=(s)=>{if(!s)return null;try{if(s.includes('/')){const[dd,mm,yy]=s.split('/');return new Date(yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0'));}const dt=new Date(s);return isNaN(dt)?null:dt;}catch{return null;}};
@@ -71,7 +79,7 @@ function buildQuoteHTML(d){
   const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
   // ── Badge helper ──
-  const opBadge=(op)=>{if(!op)return'';const map={'OPCIÓN A':'background:linear-gradient(135deg,#0288D1,#01579B);color:white','OPCIÓN B':'background:linear-gradient(135deg,#546E7A,#263238);color:white','RECOMENDADO':'background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white','OPCIONAL':'background:linear-gradient(135deg,#FF8F00,#E65100);color:white','PROMO':'background:linear-gradient(135deg,#E65100,#BF360C);color:white'};const st=map[op.toUpperCase()]||'background:rgba(45,31,20,0.08);color:#2D1F14';return `<span style="font-size:8px;font-weight:800;letter-spacing:1.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase;display:inline-block;margin-bottom:8px;${st}">${op}</span>`;};
+  const opBadge=(op)=>{if(!op)return'';const map={'OPCIÓN A':'background:linear-gradient(135deg,#0288D1,#01579B);color:white','OPCIÓN B':'background:linear-gradient(135deg,#546E7A,#263238);color:white',RECOMENDADO:`background:${th.grad};color:${th.text}`,'OPCIONAL':'background:linear-gradient(135deg,#FF8F00,#E65100);color:white','PROMO':'background:linear-gradient(135deg,#E65100,#BF360C);color:white'};const st=map[op.toUpperCase()]||'background:rgba(45,31,20,0.08);color:#2D1F14';return `<span style="font-size:8px;font-weight:800;letter-spacing:1.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase;display:inline-block;margin-bottom:8px;${st}">${op}</span>`;};
 
   // ── Page-level dark header ──
   const darkHd=(meta,title,sub)=>`<div class="qp-dark-hd">${meta?`<div class="qp-dark-hd-meta">${meta}</div>`:''}<div class="qp-dark-hd-title">${title}</div>${sub?`<div class="qp-dark-hd-sub">${sub}</div>`:''}</div>`;
@@ -89,7 +97,7 @@ function buildQuoteHTML(d){
   let H=`<div id="qwrap">
   <div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
     <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none"></div>
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(27,158,143,0.32) 0%,transparent 65%);pointer-events:none"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none"></div>
     <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
       <div style="display:flex;align-items:center;gap:14px">
         ${buildPdfWordmark(24)}
@@ -98,15 +106,15 @@ function buildQuoteHTML(d){
       ${d.refId?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.5px">${d.refId}</div>`:''}
     </div>
     <div style="position:absolute;top:50%;left:36px;right:36px;transform:translateY(-55%);z-index:2">
-      ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(27,158,143,0.22);border:1px solid rgba(27,158,143,0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
+      ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
       ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
       <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-        ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:#1B9E8F;flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
+        ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
         ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
         ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
       </div>
     </div>
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;background:linear-gradient(135deg,rgba(27,158,143,0.92),rgba(11,197,184,0.88));padding:16px 36px;display:flex;align-items:center;gap:0">
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;background:${th.grad};padding:16px 36px;display:flex;align-items:center;gap:0">
       ${totalAmt?`<div style="flex:0 0 auto;padding-right:24px;border-right:1px solid rgba(255,255,255,.25)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">PRECIO REFERENCIA</div><div style="font-size:18px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div></div>`:''}
       ${vi.descripcion?`<div style="flex:1;padding:0 ${totalAmt?'24':'0'}px${ag.nm?';border-right:1px solid rgba(255,255,255,.25)':''}"><div style="font-size:9px;color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${vi.descripcion.trim().substring(0,200)}</div></div>`:`<div style="flex:1"></div>`}
       ${ag.nm?`<div style="flex:0 0 auto;padding-left:24px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">AGENTE</div><div style="font-size:12px;font-weight:700;color:white">${ag.nm}</div><div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px">${today}</div></div>`:''}
@@ -128,8 +136,8 @@ function buildQuoteHTML(d){
     const evMap={};
     const addEv=(s,type,desc,color)=>{let k=s;if(typeof s!=='string')k=_sameDayKey(s);else k=_sameDayKey(_pd(s));if(!k)return;if(!evMap[k])evMap[k]=[];evMap[k].push({type,desc,color});};
     (d.vuelos||[]).forEach(v=>{
-      if(v.fs)addEv(v.fs,'VUELO',`${v.origen||''}${v.destino?' → '+v.destino:''}${v.aerolinea?' · '+v.aerolinea:''}`.trim(),'#1B9E8F');
-      if(v.mod==='idavuelta'&&v.fs2)addEv(v.fs2,'VUELO',`${v.destino||''}${v.origen?' → '+v.origen:''}${(v.al2||v.aerolinea)?' · '+(v.al2||v.aerolinea):''}`.trim(),'#1B9E8F');
+      if(v.fs)addEv(v.fs,'VUELO',`${v.origen||''}${v.destino?' → '+v.destino:''}${v.aerolinea?' · '+v.aerolinea:''}`.trim(),th.primary);
+      if(v.mod==='idavuelta'&&v.fs2)addEv(v.fs2,'VUELO',`${v.destino||''}${v.origen?' → '+v.origen:''}${(v.al2||v.aerolinea)?' · '+(v.al2||v.aerolinea):''}`.trim(),th.primary);
     });
     (d.traslados||[]).filter(t=>t.origen||t.destino).forEach(t=>{if(t.fecha)addEv(t.fecha,'TRASLADO',`${t.origen||''}${t.destino?' → '+t.destino:''}${t.vehiculo?' · '+t.vehiculo:''}`.trim(),'#E8826A');});
     (d.excursiones||[]).filter(e=>e.nombre).forEach(e=>{if(e.fecha){const cat=(e.categoria||'EXCURSIÓN').toUpperCase();const cc={'PARQUE':'#D4A017','PLAYA':'#0288D1','PASEO':'#6A1B9A','RELAX':'#43A047','NAVIDAD':'#C62828','TOUR':'#E8826A','EXCURSIÓN':'#D4A017'}[cat]||'#D4A017';addEv(e.fecha,cat,e.nombre,cc);}});
@@ -163,16 +171,16 @@ function buildQuoteHTML(d){
     d.vuelos.forEach(v=>{
       const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
       let info='';
-      if(v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${v.aerolinea}</div></div></div>`;
+      if(v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${vAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${vAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(${th.rgb},0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${v.aerolinea}</div></div></div>`;
       info+=rBP(v.mod==='idavuelta'?'IDA':v.mod==='interno'?'INTERNO':'TRAMO',false,v.origen,v.iata_o,v.hs,v.fs,v.destino,v.iata_d,v.hl,v.fl,v.aerolinea,v.numero,v.escala,v.t_escala,v.duracion);
       if(v.mod==='idavuelta'){
         const vOr=v.or2||v.destino||'';const vIo=v.io2||v.iata_d||'';const vDe=v.de2||v.origen||'';const vId=v.id2||v.iata_o||'';
         const retAl=v.al2||v.aerolinea;const retAiata=v.al2_iata||_extractAirlineIata(retAl,v.num2||v.numero);
-        if(retAl&&retAl!==v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(27,158,143,0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${retAl}</div></div></div>`;
+        if(retAl&&retAl!==v.aerolinea)info+=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0">${retAiata?`<img src="https://www.gstatic.com/flights/airline_logos/70px/${retAiata}.png" width="28" height="28" style="object-fit:contain;border-radius:6px;background:rgba(${th.rgb},0.07);padding:2px" onerror="this.style.display='none'">`:''}<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.5)">AEROLÍNEA VUELTA</div><div style="font-size:13px;font-weight:700;color:#2D1F14">${retAl}</div></div></div>`;
         info+=rBP('VUELTA',true,vOr,vIo,v.hs2||'',v.fs2||'',vDe,vId,v.hl2||'',v.fl2||'',retAl,v.num2||'',v.esc2||'',v.tesc2||'',v.dur2||'');
       }
-      if(v.tarifa||v.equipaje)info+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${v.tarifa?`<span style="background:#1B9E8F;color:white;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:4px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.5)">${L(LI.luggage,10,'rgba(45,31,20,0.35)')} ${v.equipaje}</span>`:''}</div>`;
-      if(v.precio>0)info+=`<div style="display:flex;justify-content:flex-end;margin-top:10px"><div style="background:#E8F7F3;border:1px solid rgba(27,158,143,0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(27,158,143,0.7);margin-bottom:2px">PRECIO VUELOS${v.fin?' · '+v.fin:''}</div>${gradPrice(fmtMoney(v.precio,v.moneda),15,'linear-gradient(135deg,#1B9E8F,#0BC5B8)')}</div></div>`;
+      if(v.tarifa||v.equipaje)info+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${v.tarifa?`<span style="background:${th.primary};color:${th.text};font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:4px;text-transform:uppercase">${v.tarifa}</span>`:''}${v.equipaje?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;color:rgba(45,31,20,0.5)">${L(LI.luggage,10,'rgba(45,31,20,0.35)')} ${v.equipaje}</span>`:''}</div>`;
+      if(v.precio>0)info+=`<div style="display:flex;justify-content:flex-end;margin-top:10px"><div style="background:rgba(${th.rgb},0.08);border:1px solid rgba(${th.rgb},0.2);border-radius:8px;padding:8px 14px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(${th.rgb},0.7);margin-bottom:2px">PRECIO VUELOS${v.fin?' · '+v.fin:''}</div>${gradPrice(fmtMoney(v.precio,v.moneda),15)}</div></div>`;
       H+=itemCard(null,opBadge(v.opcion),info);
     });
     H+=`</div></div>`;
@@ -329,8 +337,8 @@ function buildQuoteHTML(d){
     d.seguro?.precio>0?`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Asistencia: ${d.seguro.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(d.seguro.precio,d.seguro.moneda)}</td></tr>`:'',
     ...(d.tickets||[]).filter(t=>t.nombre&&t.precio>0).map(t=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Ticket: ${t.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(t.precio,t.moneda)}</td></tr>`),
   ].filter(Boolean);
-  if(prLines.length)H+=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px"><thead><tr><th style="text-align:left;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(27,158,143,0.25)">CONCEPTO</th><th style="text-align:right;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(27,158,143,0.25)">IMPORTE</th></tr></thead><tbody>${prLines.join('')}</tbody></table>`;
-  if(pr.total>0||pr.por_persona>0)H+=`<div style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65)">PRECIO TOTAL DEL PAQUETE</div>${pr.cuotas?`<div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:4px">${pr.cuotas}</div>`:''}</div><div style="text-align:right"><div style="font-size:22px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div>${pr.por_persona>0&&pr.total>0?`<div style="font-size:9px;color:rgba(255,255,255,.6);margin-top:2px">${fmtMoney(pr.por_persona,pr.moneda)}/pax</div>`:''}</div></div>`;
+  if(prLines.length)H+=`<table style="width:100%;border-collapse:collapse;margin-bottom:16px"><thead><tr><th style="text-align:left;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(${th.rgb},0.25)">CONCEPTO</th><th style="text-align:right;padding:0 0 8px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.35);border-bottom:2px solid rgba(${th.rgb},0.25)">IMPORTE</th></tr></thead><tbody>${prLines.join('')}</tbody></table>`;
+  if(pr.total>0||pr.por_persona>0)H+=`<div style="background:${th.grad};border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65)">PRECIO TOTAL DEL PAQUETE</div>${pr.cuotas?`<div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:4px">${pr.cuotas}</div>`:''}</div><div style="text-align:right"><div style="font-size:22px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div>${pr.por_persona>0&&pr.total>0?`<div style="font-size:9px;color:rgba(255,255,255,.6);margin-top:2px">${fmtMoney(pr.por_persona,pr.moneda)}/pax</div>`:''}</div></div>`;
   if(pr.reserva>0)H+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"><div style="flex:1;background:#F5F0E8;border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:4px">RESERVA</div><div style="font-size:14px;font-weight:800;color:#2D1F14">${fmtMoney(pr.reserva,pr.moneda3||pr.moneda)}</div></div>${pr.cancelacion?`<div style="flex:1;background:#F5F0E8;border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:12px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:4px">CANCELACIÓN GRATUITA</div><div style="font-size:14px;font-weight:800;color:#2D1F14">${fd(pr.cancelacion)}</div></div>`:''}</div>`;
   if(pr.tyc){const lines=pr.tyc.split(/\n/).filter(l=>l.trim());H+=`<div class="tyc-box"><div class="tyc-ttl">Aclaraciones y condiciones</div>${lines.map(l=>{const c=l.replace(/^\s*(?:## |=== |[•·\-\*])\s*/,'').trim();if(!c)return'';if(l.match(/^## /))return`<div class="tyc-ttl">${c}</div>`;if(l.match(/^=== /))return`<div class="tyc-cta">${c}</div>`;return`<div class="tyc-item">${L(LI.info,11)}<span>${c}</span></div>`;}).join('')}</div>`;}
   H+=`</div></div>`;
@@ -344,12 +352,12 @@ function buildQuoteHTML(d){
     <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:48px 36px">
       <div style="margin-bottom:36px">${buildPdfWordmark(32)}</div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:40px">
-        ${ag.nm?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">AGENTE</div><div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.3px">${ag.nm}</div></div>`:''}
-        ${ag.ag?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">AGENCIA</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.82)">${ag.ag}</div></div>`:''}
-        <div style="width:48px;height:1px;background:rgba(27,158,143,0.5);margin:4px 0"></div>
-        ${ag.em?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">EMAIL</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.em}</div></div>`:''}
-        ${ag.tel?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">WHATSAPP</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.tel}</div></div>`:''}
-        ${ag.soc?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#0BC5B8;margin-bottom:4px">INSTAGRAM</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.soc}</div></div>`:''}
+        ${ag.nm?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">AGENTE</div><div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.3px">${ag.nm}</div></div>`:''}
+        ${ag.ag?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">AGENCIA</div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.82)">${ag.ag}</div></div>`:''}
+        <div style="width:48px;height:1px;background:rgba(${th.rgb},0.5);margin:4px 0"></div>
+        ${ag.em?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">EMAIL</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.em}</div></div>`:''}
+        ${ag.tel?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">WHATSAPP</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.tel}</div></div>`:''}
+        ${ag.soc?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">INSTAGRAM</div><div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.78)">${ag.soc}</div></div>`:''}
       </div>
       <div style="font-size:8px;color:rgba(255,255,255,0.28);text-align:center;letter-spacing:1px;max-width:400px">Esta cotización es confidencial y fue elaborada exclusivamente para ${cl.nombre||'el cliente'}. Precios sujetos a disponibilidad al momento de la reserva.</div>
     </div>

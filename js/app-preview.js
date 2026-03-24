@@ -21,11 +21,12 @@ function updateHeader(){
 // ═══════════════════════════════════════════
 function saveCfg(){
   const rawPais=(gv('cfg-pais')||'').toUpperCase().trim().slice(0,3);
-  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR'};
+  const rawTheme=parseInt(document.getElementById('cfg-pdf-theme')?.value||'1')||1;
+  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR',pdf_theme:rawTheme};
   localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
   window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase
-  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||'',pais_cod:agCfg.pais_cod}).eq('email',currentUser.email);
+  if(currentUser) sb.from('agentes').update({nombre:agCfg.nm||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('email',currentUser.email);
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
 }
@@ -44,6 +45,22 @@ async function changePassword(){
 }
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+  if(agCfg.pdf_theme) selectPdfTheme(agCfg.pdf_theme);
+}
+
+// ═══════════════════════════════════════════
+// PDF THEME SELECTOR
+// ═══════════════════════════════════════════
+const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Azul marino',3:'Negro y dorado',4:'Verde selva',5:'Borgoña premium'};
+function selectPdfTheme(n){
+  n=parseInt(n)||1;
+  const inp=document.getElementById('cfg-pdf-theme');
+  if(inp)inp.value=n;
+  document.querySelectorAll('.pdf-sw').forEach(b=>b.classList.toggle('pdf-sw-on',parseInt(b.dataset.t)===n));
+  const lbl=document.getElementById('pdf-theme-lbl');
+  if(lbl)lbl.textContent=_PDF_THEME_NAMES[n]||'';
+  agCfg.pdf_theme=n;
+  if(qData)renderPreview(qData);
 }
 
 // ═══════════════════════════════════════════

@@ -1016,6 +1016,25 @@ input:focus,textarea:focus,select:focus{
 /* bloque antiguo de dashboard eliminado — ver DASHBOARD METRICS v3 más abajo */
 
 /* ══════════════════════════
+   PDF THEME SWATCHES
+══════════════════════════ */
+.pdf-sw{
+  width:32px;height:32px;border-radius:50%;border:2.5px solid transparent;
+  cursor:pointer;flex-shrink:0;
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+  outline:none;padding:0
+}
+.pdf-sw:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.pdf-sw-on{
+  border-color:var(--text)!important;
+  box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--text)!important;
+  transform:scale(1.08)
+}
+/* Swatches en toolbar — algo más pequeños */
+.tb-sw{width:22px;height:22px;border-width:2px}
+.tb-sw.pdf-sw-on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--text)!important}
+
+/* ══════════════════════════
    PDF FERRARO — NUEVAS PÁGINAS
 ══════════════════════════ */
 
