@@ -336,16 +336,25 @@
       <div class="fg"><label class="lbl">Notas internas</label>
         <textarea class="ftxt" id="m-notas" rows="2" placeholder="Preferencias, observaciones (no aparecen en el PDF)..."></textarea>
       </div>
+      <div class="fg" style="margin-top:4px">
+        <label class="lbl">Foto de portada</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <img id="cov-thumb" src="" style="display:none;height:48px;width:78px;object-fit:cover;border-radius:8px;border:2px solid var(--primary)" alt="">
+          <button class="btn btn-out btn-xs" onclick="document.getElementById('cov-f1').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto</button>
+          <button class="btn btn-out btn-xs" onclick="autoCover()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Por destino</button>
+          <button class="btn btn-del btn-xs" id="btn-rmcov" onclick="removeCover()" style="display:none">✕ Quitar</button>
+          <input type="file" id="cov-f1" accept="image/*" style="display:none" onchange="uploadCover(this)">
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-vuelos" style="background:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0EA5E9,#1565C0)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Vuelos</div>
-        <div class="sec-photo-badge">VUELOS</div>
-      </div>
+    <div class="form-sec-hd" id="sph-vuelos" style="background:#E8F7F3">
+      <div class="form-sec-ico" style="background:rgba(27,158,143,0.18)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+      <div class="form-sec-ttl">Vuelos</div>
+      <div class="form-sec-badge" style="color:#1B9E8F">VUELOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="vuelos-cont"></div>
@@ -354,12 +363,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-hotel" style="background:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8E53,#E65100)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Alojamiento</div>
-        <div class="sec-photo-badge">HOTEL</div>
-      </div>
+    <div class="form-sec-hd" id="sph-hotel" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="form-sec-ttl">Alojamiento</div>
+      <div class="form-sec-badge" style="color:#D4A017">HOTEL</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="hoteles-cont"></div>
@@ -368,12 +376,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-traslados" style="background:url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#E8826A,#C2185B)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg>Traslados</div>
-        <div class="sec-photo-badge">TRASLADOS</div>
-      </div>
+    <div class="form-sec-hd" id="sph-traslados" style="background:#FFF0EC">
+      <div class="form-sec-ico" style="background:rgba(232,130,106,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8826A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
+      <div class="form-sec-ttl">Traslados</div>
+      <div class="form-sec-badge" style="color:#E8826A">TRASLADOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="traslados-cont"></div>
@@ -382,12 +389,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-excursiones" style="background:url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Excursiones y Atracciones</div>
-        <div class="sec-photo-badge">EXCURSIONES</div>
-      </div>
+    <div class="form-sec-hd" id="sph-excursiones" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
+      <div class="form-sec-ttl">Excursiones y Atracciones</div>
+      <div class="form-sec-badge" style="color:#D4A017">EXCURSIONES</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="excursiones-cont"></div>
@@ -396,12 +402,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-tickets" style="background:url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#43A047,#1B5E20)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Tickets / Entradas</div>
-        <div class="sec-photo-badge">TICKETS</div>
-      </div>
+    <div class="form-sec-hd" id="sph-tickets" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
+      <div class="form-sec-ttl">Tickets y Entradas</div>
+      <div class="form-sec-badge" style="color:#D4A017">TICKETS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="tickets-cont"></div>
@@ -410,12 +415,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-autos" style="background:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#FF8F00,#E65100)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>Alquiler de Autos</div>
-        <div class="sec-photo-badge">AUTOS</div>
-      </div>
+    <div class="form-sec-hd" id="sph-autos" style="background:#FFF0EC">
+      <div class="form-sec-ico" style="background:rgba(232,130,106,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8826A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
+      <div class="form-sec-ttl">Alquiler de Autos</div>
+      <div class="form-sec-badge" style="color:#E8826A">AUTOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="autos-cont"></div>
@@ -424,12 +428,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-cruceros" style="background:url('https://images.unsplash.com/photo-1548574505-5e239809ee19?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#0288D1,#01579B)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>Crucero</div>
-        <div class="sec-photo-badge">CRUCEROS</div>
-      </div>
+    <div class="form-sec-hd" id="sph-cruceros" style="background:#E8F4FD">
+      <div class="form-sec-ico" style="background:rgba(14,165,233,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg></div>
+      <div class="form-sec-ttl">Crucero</div>
+      <div class="form-sec-badge" style="color:#0EA5E9">CRUCEROS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div id="cruceros-cont"></div>
@@ -438,12 +441,11 @@
   </div>
 
   <div class="card">
-    <div class="sec-photo-hd" id="sph-seguro" style="background:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80') center/cover no-repeat,linear-gradient(135deg,#9B7FD4,#6D28D9)">
-      <div class="sec-photo-deco"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <div class="sec-photo-bar">
-        <div class="sec-photo-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Asistencia al viajero</div>
-        <div class="sec-photo-badge">SEGURO</div>
-      </div>
+    <div class="form-sec-hd" id="sph-seguro" style="background:#F0EEF9">
+      <div class="form-sec-ico" style="background:rgba(155,127,212,0.18)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9B7FD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="form-sec-ttl">Asistencia al viajero</div>
+      <div class="form-sec-badge" style="color:#9B7FD4">SEGURO</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
     <div class="card-body">
       <div class="g3">
@@ -500,14 +502,13 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
   </div>
 
   <div class="card">
-    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div><div class="card-ttl">Foto de portada</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div><div class="card-ttl">Foto de cierre</div><div class="card-sub">Imagen final del PDF</div></div></div>
     <div class="card-body">
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <img id="cov-thumb" src="" style="display:none;height:56px;width:90px;object-fit:cover;border-radius:8px;border:2px solid var(--amber)" alt="">
-        <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f1').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto</button>
-        <button class="btn btn-out btn-sm" onclick="autoCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar por destino</button>
-        <button class="btn btn-del btn-xs" id="btn-rmcov" onclick="removeCover()" style="display:none">✕ Quitar</button>
-        <input type="file" id="cov-f1" accept="image/*" style="display:none" onchange="uploadCover(this)">
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('closing-f-form').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto de cierre</button>
+        <button class="btn btn-del btn-xs" id="btn-rmclosing-form" onclick="removeClosing()" style="display:none">✕ Quitar</button>
+        <input type="file" id="closing-f-form" accept="image/*" style="display:none" onchange="uploadClosing(this);document.getElementById('btn-rmclosing-form').style.display=''">
+        <span id="closing-form-name" style="font-size:.78rem;color:var(--g4)"></span>
       </div>
     </div>
   </div>
@@ -542,7 +543,7 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <button type="button" class="pdf-sw tb-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Tema: Verde selva"></button>
       <button type="button" class="pdf-sw tb-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Tema: Borgoña premium"></button>
       <div style="flex:1"></div>
-      <button class="btn btn-out btn-sm" onclick="switchTab('form')">← Editar</button>
+      <button class="btn btn-out btn-sm" onclick="_editFromPreview()">← Editar</button>
       <button class="btn btn-save btn-sm" id="btn-save-prev" onclick="saveQuote()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar</button>
       <button class="btn btn-pdf btn-sm" onclick="doPrint()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF</button>
     </div>
@@ -652,87 +653,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
-  <!-- IMÁGENES DE SECCIONES -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-      <div><div class="card-ttl">Imágenes de secciones</div><div class="card-sub">Pegá la URL de cada foto y ajustá la posición dentro del recuadro</div></div>
-    </div>
-    <div class="card-body">
-      <div style="display:grid;gap:14px">
-
-        <!-- VUELOS -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Vuelos</div>
-          <input class="finput" type="text" id="spc-vuelos-url" placeholder="https://..." oninput="_sphUpdatePreview('vuelos')" style="margin:0">
-          <select class="fsel" id="spc-vuelos-pos" onchange="_sphUpdatePreview('vuelos')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-vuelos-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#0EA5E9,#1565C0);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- ALOJAMIENTO -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Alojamiento</div>
-          <input class="finput" type="text" id="spc-hotel-url" placeholder="https://..." oninput="_sphUpdatePreview('hotel')" style="margin:0">
-          <select class="fsel" id="spc-hotel-pos" onchange="_sphUpdatePreview('hotel')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-hotel-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#FF8E53,#E65100);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- TRASLADOS -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Traslados</div>
-          <input class="finput" type="text" id="spc-traslados-url" placeholder="https://..." oninput="_sphUpdatePreview('traslados')" style="margin:0">
-          <select class="fsel" id="spc-traslados-pos" onchange="_sphUpdatePreview('traslados')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-traslados-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#E8826A,#C2185B);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- EXCURSIONES -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Excursiones</div>
-          <input class="finput" type="text" id="spc-excursiones-url" placeholder="https://..." oninput="_sphUpdatePreview('excursiones')" style="margin:0">
-          <select class="fsel" id="spc-excursiones-pos" onchange="_sphUpdatePreview('excursiones')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-excursiones-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#43A047,#1B5E20);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- TICKETS -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Tickets</div>
-          <input class="finput" type="text" id="spc-tickets-url" placeholder="https://..." oninput="_sphUpdatePreview('tickets')" style="margin:0">
-          <select class="fsel" id="spc-tickets-pos" onchange="_sphUpdatePreview('tickets')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-tickets-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#43A047,#1B5E20);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- AUTOS -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Alquiler de Autos</div>
-          <input class="finput" type="text" id="spc-autos-url" placeholder="https://..." oninput="_sphUpdatePreview('autos')" style="margin:0">
-          <select class="fsel" id="spc-autos-pos" onchange="_sphUpdatePreview('autos')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-autos-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#FF8F00,#E65100);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- CRUCEROS -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Cruceros</div>
-          <input class="finput" type="text" id="spc-cruceros-url" placeholder="https://..." oninput="_sphUpdatePreview('cruceros')" style="margin:0">
-          <select class="fsel" id="spc-cruceros-pos" onchange="_sphUpdatePreview('cruceros')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-cruceros-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#0288D1,#01579B);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-        <!-- SEGURO -->
-        <div style="display:grid;grid-template-columns:130px 1fr 150px 52px;gap:8px;align-items:center">
-          <div class="lbl" style="margin:0">Asistencia</div>
-          <input class="finput" type="text" id="spc-seguro-url" placeholder="https://..." oninput="_sphUpdatePreview('seguro')" style="margin:0">
-          <select class="fsel" id="spc-seguro-pos" onchange="_sphUpdatePreview('seguro')" style="margin:0"><option value="center center">Centro</option><option value="center top">Arriba</option><option value="center bottom">Abajo</option><option value="center 25%">Zona superior</option><option value="center 75%">Zona inferior</option><option value="left center">Izquierda</option><option value="right center">Derecha</option></select>
-          <div id="spc-seguro-prev" style="width:52px;height:36px;border-radius:6px;background:linear-gradient(135deg,#9B7FD4,#6D28D9);background-size:cover;background-position:center;border:1px solid var(--border2)"></div>
-        </div>
-
-      </div>
-      <div style="display:flex;gap:10px;margin-top:18px">
-        <button class="btn btn-pri btn-sm" onclick="_saveSecPhotos()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios</button>
-        <button class="btn btn-out btn-sm" onclick="_resetSecPhotos()">Restaurar predeterminadas</button>
-      </div>
-      <p style="font-size:.72rem;color:var(--g3);margin-top:10px;line-height:1.5">Pegá URLs de Unsplash, Google Drive (con acceso público) u otro servicio de imágenes. Los cambios se aplican inmediatamente al formulario de cotización.</p>
-    </div>
-  </div>
 </div>
 
 <!-- ═══ CONFIG ═══ -->
@@ -840,13 +760,13 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 </div>
 
 <!-- JS Modules -->
-<script src="js/app-core.js?v=6"></script>
-<script src="js/app-form.js?v=6"></script>
-<script src="js/app-ia.js?v=6"></script>
-<script src="js/app-preview.js?v=7"></script>
-<script src="js/app-history.js?v=5"></script>
-<script src="js/app-admin.js?v=5"></script>
-<script src="js/app-quote.js?v=7"></script>
-<script src="js/app-promos.js?v=2"></script>
+<script src="js/app-core.js?v=8"></script>
+<script src="js/app-form.js?v=8"></script>
+<script src="js/app-ia.js?v=8"></script>
+<script src="js/app-preview.js?v=8"></script>
+<script src="js/app-history.js?v=8"></script>
+<script src="js/app-admin.js?v=8"></script>
+<script src="js/app-quote.js?v=8"></script>
+<script src="js/app-promos.js?v=8"></script>
 </body>
 </html>

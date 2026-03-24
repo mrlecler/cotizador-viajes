@@ -405,29 +405,16 @@ function _resetSecPhotos(){
 }
 
 function _initSecCollapse(){
-  document.querySelectorAll('.sec-photo-hd').forEach(hd=>{
+  document.querySelectorAll('.form-sec-hd').forEach(hd=>{
     const card=hd.closest('.card');
     if(!card||card.dataset.secInit) return;
     card.dataset.secInit='1';
     card.classList.add('sec-card','collapsed');
-    hd.style.cursor='pointer';
     hd.addEventListener('click',()=>card.classList.toggle('collapsed'));
-    const bar=hd.querySelector('.sec-photo-bar');
-    if(bar){
-      const badge=bar.querySelector('.sec-photo-badge');
-      const right=document.createElement('div');
-      right.style.cssText='display:flex;align-items:center;gap:8px;margin-left:auto';
-      if(badge) right.appendChild(badge);
-      const chv=document.createElement('div');
-      chv.className='sec-ph-chv';
-      chv.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-      right.appendChild(chv);
-      bar.appendChild(right);
-    }
   });
 }
 
-document.addEventListener('DOMContentLoaded',()=>{ _initSecCollapse(); _applySecPhotos(); });
+document.addEventListener('DOMContentLoaded',()=>{ _initSecCollapse(); });
 
 // ═══════════════════════════════════════════
 // BUILD QUOTE HTML (PDF renderer)

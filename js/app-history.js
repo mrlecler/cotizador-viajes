@@ -39,6 +39,7 @@ async function renderHistory(){
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
           <button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+          <button class="btn btn-out btn-xs" onclick="event.stopPropagation();duplicateFromHistory('${r.ref_id}','${r.id}')" title="Duplicar cotización con nuevo número"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Duplicar</button>
           <button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Estado</button>
           <button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
         </div>
@@ -64,6 +65,7 @@ async function loadFromHistory(refId, id){
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data)return;
   qData=data.datos;
+  editingQuoteId=id;
   if(data.cover_url) coverUrl=data.cover_url;
   renderPreview(qData);switchTab('preview');
 }
@@ -87,6 +89,30 @@ async function editFromHistory(refId, id){
     _showEditBanner(refId);
     toast('Cotización cargada para editar — guardá para actualizar');
   }, 80);
+}
+
+async function duplicateFromHistory(refId, id){
+  const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
+  if(!data){ toast('No se encontró la cotización.',false); return; }
+  // Deep copy datos and clear ref + client so a new quote is created
+  const d=JSON.parse(JSON.stringify(data.datos||{}));
+  delete d.refId;
+  if(d.cliente){ d.cliente.nombre=''; d.cliente.celular=''; d.cliente.email=''; }
+  // Reset editing state — this will be a NEW quote
+  editingQuoteId=null;
+  _hideEditBanner();
+  if(data.cover_url) coverUrl=data.cover_url;
+  formDraft=d;
+  switchTab('form');
+  setTimeout(()=>{
+    if(formDraft) restoreDraft(formDraft);
+    formDraft=null;
+    const refEl=document.getElementById('m-ref'); if(refEl) refEl.value='';
+    const nmEl=document.getElementById('m-nombre'); if(nmEl) nmEl.value='';
+    const celEl=document.getElementById('m-cel'); if(celEl) celEl.value='';
+    const emEl=document.getElementById('m-email'); if(emEl) emEl.value='';
+    toast('Cotización duplicada — ingresá los datos del nuevo cliente y guardá');
+  },80);
 }
 
 function _showEditBanner(refId){

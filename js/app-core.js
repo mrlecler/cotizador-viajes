@@ -471,12 +471,11 @@ function switchTab(id){
   // Acciones por tab
   if(id==='form'){
     if(formDraft) restoreDraft(formDraft);
-    if(typeof _applySecPhotos==='function') _applySecPhotos();
   }
   if(id==='history') renderHistory();
   if(id==='promos') renderPromos();
   if(id==='clients') renderClients();
-  if(id==='admin'){renderAdmin();if(typeof _loadSecPhotoAdmin==='function')_loadSecPhotoAdmin();}
+  if(id==='admin'){renderAdmin();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }

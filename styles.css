@@ -1151,6 +1151,35 @@ input:focus,textarea:focus,select:focus{
 [data-theme="dark"] #modal-box{
   box-shadow:0 20px 60px rgba(0,0,0,0.5),0 4px 20px rgba(0,0,0,.3)!important
 }
+/* Floating modals (sec-photos-modal, gallery-modal, etc.) */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(45,31,20,0.42);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  z-index:2500;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal{
+  background:var(--surface);
+  border-radius:var(--r);
+  border:1px solid var(--border);
+  box-shadow:0 20px 60px rgba(45,31,20,0.18);
+}
+.modal-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 14px;
+  border-bottom:1px solid var(--border);
+}
+.modal-ttl{font-size:.95rem;font-weight:700;color:var(--text)}
+.modal-cls{
+  background:none;border:none;cursor:pointer;
+  color:var(--g3);font-size:1rem;padding:4px 8px;
+  border-radius:6px;transition:background .15s;line-height:1;
+}
+.modal-cls:hover{background:var(--g1);color:var(--text)}
+.modal-body{padding:18px 20px 22px}
+@media print{.modal-overlay{display:none!important}}
 
 /* ══════════════════════════
    MISC HELPERS
@@ -1288,6 +1317,35 @@ a:hover{color:var(--secondary)}
 .sec-card.collapsed .card-body{display:none}
 .sec-ph-chv{display:flex;align-items:center;transition:transform .22s ease;flex-shrink:0}
 .sec-card.collapsed .sec-ph-chv{transform:rotate(-90deg)}
+/* ── Form section headers (pastel design) ── */
+.form-sec-hd{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 18px 13px 16px;
+  cursor:pointer;user-select:none;
+  border-radius:var(--r) var(--r) 0 0;
+  transition:filter .15s;
+}
+.form-sec-hd:hover{filter:brightness(.97)}
+.sec-card.collapsed .form-sec-hd{border-radius:var(--r)}
+.form-sec-ico{
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.form-sec-ttl{
+  font-size:.9rem;font-weight:700;color:var(--text);flex:1;letter-spacing:-.2px;
+}
+.form-sec-badge{
+  font-size:7.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;background:rgba(0,0,0,.07);
+}
+.form-sec-chv{
+  display:flex;align-items:center;flex-shrink:0;
+  color:var(--g3);transition:transform .2s ease;margin-left:4px;
+}
+.sec-card.collapsed .form-sec-chv{transform:rotate(-90deg)}
+[data-theme="dark"] .form-sec-badge{background:rgba(255,255,255,.12)}
+[data-theme="dark"] .form-sec-hd{filter:brightness(.55) saturate(.8)}
+[data-theme="dark"] .form-sec-hd:hover{filter:brightness(.65) saturate(.9)}
 /* Form sticky actions bar */
 #form-sticky-bar{
   position:sticky;top:56px;z-index:49;

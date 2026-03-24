@@ -106,8 +106,8 @@ function updCovers(){
 // ═══════════════════════════════════════════
 // CIERRE PHOTO
 // ═══════════════════════════════════════════
-function uploadClosing(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{closingUrl=e.target.result;document.getElementById('btn-rmclosing').style.display='';if(qData)renderPreview(qData);};r.readAsDataURL(f);}
-function removeClosing(){closingUrl=null;document.getElementById('btn-rmclosing').style.display='none';if(qData)renderPreview(qData);}
+function uploadClosing(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{closingUrl=e.target.result;['btn-rmclosing','btn-rmclosing-form'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});if(qData)renderPreview(qData);};r.readAsDataURL(f);}
+function removeClosing(){closingUrl=null;['btn-rmclosing','btn-rmclosing-form'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});if(qData)renderPreview(qData);}
 
 // ═══════════════════════════════════════════
 // SECTION PHOTOS MODAL
@@ -206,6 +206,19 @@ function removeHotelGalleryPhoto(hi,fi){
   if(hotelPhotos[hi])hotelPhotos[hi][fi]=null;
   openGalleryPanel();
   if(qData)renderPreview(qData);
+}
+
+// ═══════════════════════════════════════════
+// EDIT FROM PREVIEW
+// ═══════════════════════════════════════════
+function _editFromPreview(){
+  if(qData){
+    formDraft=qData;
+  }
+  switchTab('form');
+  if(editingQuoteId&&qData){
+    setTimeout(()=>_showEditBanner(qData.refId||''),90);
+  }
 }
 
 // ═══════════════════════════════════════════
