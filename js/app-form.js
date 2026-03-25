@@ -813,7 +813,8 @@ function collectForm(){
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
     viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches,descripcion:gv('m-desc')},
-    itinerario:_itiCollect(),\n    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
+    itinerario:_itiCollect(),
+    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
     total_comision};

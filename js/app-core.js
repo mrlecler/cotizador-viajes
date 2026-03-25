@@ -231,12 +231,14 @@ async function showApp(user){
     const {data} = await sb.from('agentes').select('rol,nombre,agencia,telefono,soc,logo_url,agente_num,pais_cod,pdf_theme').eq('email', user.email).maybeSingle();
     if(data){
       isAdmin = data.rol === 'admin';
-      if(data.nombre)   agCfg.nm  = agCfg.nm  || data.nombre;
-      if(data.agencia)  agCfg.ag  = agCfg.ag  || data.agencia;
-      if(data.telefono) agCfg.tel = agCfg.tel || data.telefono;
-      if(data.soc)      agCfg.soc = agCfg.soc || data.soc;
-      if(data.pais_cod) agCfg.pais_cod = agCfg.pais_cod || data.pais_cod;
-      if(data.pdf_theme && !agCfg.pdf_theme) agCfg.pdf_theme = data.pdf_theme;
+      // Supabase es la fuente de verdad — siempre pisar localStorage al login
+      if(data.nombre)    agCfg.nm        = data.nombre;
+      if(data.agencia)   agCfg.ag        = data.agencia;
+      if(data.telefono)  agCfg.tel       = data.telefono;
+      if(data.soc)       agCfg.soc       = data.soc;
+      if(data.pais_cod)  agCfg.pais_cod  = data.pais_cod;
+      if(data.pdf_theme) agCfg.pdf_theme = data.pdf_theme;
+      agCfg.em = user.email;
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
