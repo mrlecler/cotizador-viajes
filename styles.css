@@ -450,10 +450,12 @@ input:focus,textarea:focus,select:focus{
   background:transparent;border:none;outline:none;
   font-size:.78rem;font-weight:700;color:var(--primary);cursor:pointer;width:100%
 }
+.money-cur select:focus{outline:none} /* ring en .money-wrap:focus-within */
 .money-inp{
   flex:1;padding:10px 12px;border:none;background:transparent;
   font-size:.87rem;color:var(--text);outline:none;font-family:inherit
 }
+.money-inp:focus{outline:none} /* ring en .money-wrap:focus-within */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
@@ -1065,6 +1067,7 @@ input:focus,textarea:focus,select:focus{
   transition:transform .15s,box-shadow .15s,border-color .15s;
   outline:none;padding:0
 }
+.pdf-sw:focus{outline:none} /* handled by :focus-visible */
 .pdf-sw:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .pdf-sw-on{
   border-color:var(--text)!important;
@@ -2036,6 +2039,38 @@ body{overflow-x:hidden}
 .alog-clear-btn{margin-left:auto;font-size:.68rem;font-weight:600;color:var(--g3);background:none;border:1px solid var(--border2);border-radius:var(--r2);padding:2px 8px;cursor:pointer;transition:all .15s}
 .alog-clear-btn:hover{color:var(--text);border-color:var(--g3)}
 .alog-item-err:hover{background:rgba(239,68,68,0.04)}
+
+/* ══════════════════════════
+   ACCESSIBILITY — focus-visible + touch targets + outlines
+══════════════════════════ */
+
+/* 1. Focus visible para navegación por teclado — botones y elementos interactivos */
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:2px
+}
+/* Inputs/textareas/selects usan box-shadow (ya definido en :focus) — solo silenciar outline */
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
+/* Dropdowns de dinero y swatches PDF carecían de focus replacement */
+.money-cur select:focus-visible,
+.money-inp:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:1px;
+  border-radius:3px
+}
+.pdf-sw:focus-visible{
+  outline:2px solid var(--primary)!important;
+  outline-offset:2px
+}
+
+/* 2. Touch targets mínimos para btn-sm y btn-xs en mobile */
+@media(max-width:767px){
+  .btn-sm{min-height:44px}
+  .btn-xs{min-height:40px;padding:5px 12px}
+}
 
 /* ══════════════════════════
    PRINT — override final (must be LAST)

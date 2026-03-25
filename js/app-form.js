@@ -315,88 +315,88 @@ function addVuelo(d){
   const el=document.createElement('div');el.className='rep';el.id='vb-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Vuelo ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g3" style="margin-bottom:4px">
-    <div class="fg"><label class="lbl">Modalidad</label>
+    <div class="fg"><label class="lbl" for="v${id}-mod">Modalidad</label>
       <select class="fsel" id="v${id}-mod" onchange="toggleRet(${id})">
         <option value="simple">Tramo único</option>
         <option value="idavuelta">Ida y vuelta (precio combinado)</option>
         <option value="interno">Vuelo interno</option>
       </select></div>
-    <div class="fg"><label class="lbl">Aerolínea IDA</label>
+    <div class="fg"><label class="lbl" for="v${id}-al">Aerolínea IDA</label>
       <div style="position:relative">
         <img id="v${id}-al-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
         <input class="finput" type="text" id="v${id}-al" placeholder="American Airlines" value="${d.aerolinea||''}">
       </div>
     </div>
-    <div class="fg"><label class="lbl">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
+    <div class="fg"><label class="lbl" for="v${id}-num">N° vuelo IDA</label><input class="finput" type="text" id="v${id}-num" placeholder="AA 930" value="${d.numero||''}"></div>
   </div>
   <div style="background:var(--g1);border-radius:var(--rs);padding:14px;margin-bottom:12px">
     <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g4);margin-bottom:12px">TRAMO IDA</div>
     <div class="g4">
-      <div class="fg"><label class="lbl">Ciudad origen</label><input class="finput" type="text" id="v${id}-or" placeholder="Buenos Aires (EZE)" value="${d.origen||''}"></div>
-      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-io" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.iata_o||''}"></div>
-      <div class="fg"><label class="lbl">Fecha salida</label><input class="finput" type="date" id="v${id}-fs" value="${d.fs||''}"></div>
-      <div class="fg"><label class="lbl">Hora salida</label><input class="finput" type="time" id="v${id}-hs" value="${d.hs||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-or">Ciudad origen</label><input class="finput" type="text" id="v${id}-or" placeholder="Buenos Aires (EZE)" value="${d.origen||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-io">IATA</label><input class="finput" type="text" id="v${id}-io" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.iata_o||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-fs">Fecha salida</label><input class="finput" type="date" id="v${id}-fs" value="${d.fs||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-hs">Hora salida</label><input class="finput" type="time" id="v${id}-hs" value="${d.hs||''}"></div>
     </div>
     <div class="g4">
-      <div class="fg"><label class="lbl">Ciudad destino</label><input class="finput" type="text" id="v${id}-de" placeholder="Orlando (MCO)" value="${d.destino||''}"></div>
-      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-id" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.iata_d||''}"></div>
-      <div class="fg"><label class="lbl">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl" value="${d.fl||''}"></div>
-      <div class="fg"><label class="lbl">Hora llegada</label><input class="finput" type="time" id="v${id}-hl" value="${d.hl||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-de">Ciudad destino</label><input class="finput" type="text" id="v${id}-de" placeholder="Orlando (MCO)" value="${d.destino||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-id">IATA</label><input class="finput" type="text" id="v${id}-id" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.iata_d||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-fl">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl" value="${d.fl||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-hl">Hora llegada</label><input class="finput" type="time" id="v${id}-hl" value="${d.hl||''}"></div>
     </div>
     <div class="g3">
-      <div class="fg"><label class="lbl">Escala (ciudad)</label><input class="finput" type="text" id="v${id}-esc" placeholder="Miami (MIA) — vacío si directo" value="${d.escala||''}"></div>
-      <div class="fg"><label class="lbl">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc" placeholder="2h 5min" value="${d.t_escala||''}"></div>
-      <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur" placeholder="17h 19min" value="${d.duracion||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-esc">Escala (ciudad)</label><input class="finput" type="text" id="v${id}-esc" placeholder="Miami (MIA) — vacío si directo" value="${d.escala||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-tesc">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc" placeholder="2h 5min" value="${d.t_escala||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-dur">Duración total</label><input class="finput" type="text" id="v${id}-dur" placeholder="17h 19min" value="${d.duracion||''}"></div>
     </div>
   </div>
   <div id="v${id}-ret-sec" style="display:none;background:rgba(27,158,143,0.06);border:1px solid rgba(27,158,143,0.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
     <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary3);margin-bottom:12px">↩ TRAMO VUELTA</div>
     <div class="g3">
-      <div class="fg"><label class="lbl">Aerolínea vuelta</label>
+      <div class="fg"><label class="lbl" for="v${id}-al2">Aerolínea vuelta</label>
         <div style="position:relative">
           <img id="v${id}-al2-logo" src="" width="24" height="24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);object-fit:contain;display:none;border-radius:3px;pointer-events:none;z-index:1" onerror="this.style.display='none'">
           <input class="finput" type="text" id="v${id}-al2" placeholder="Avianca" value="${d.al2||''}">
         </div>
       </div>
-      <div class="fg"><label class="lbl">N° vuelo vuelta</label><input class="finput" type="text" id="v${id}-num2" placeholder="AV 123" value="${d.num2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-num2">N° vuelo vuelta</label><input class="finput" type="text" id="v${id}-num2" placeholder="AV 123" value="${d.num2||''}"></div>
       <div class="fg"></div>
     </div>
     <div class="g4">
-      <div class="fg"><label class="lbl">Origen vuelta</label><input class="finput" type="text" id="v${id}-or2" placeholder="Orlando (MCO)" value="${d.or2||''}"></div>
-      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-io2" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.io2||''}"></div>
-      <div class="fg"><label class="lbl">Fecha salida</label><input class="finput" type="date" id="v${id}-fs2" value="${d.fs2||''}"></div>
-      <div class="fg"><label class="lbl">Hora salida</label><input class="finput" type="time" id="v${id}-hs2" value="${d.hs2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-or2">Origen vuelta</label><input class="finput" type="text" id="v${id}-or2" placeholder="Orlando (MCO)" value="${d.or2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-io2">IATA</label><input class="finput" type="text" id="v${id}-io2" placeholder="MCO" maxlength="3" style="text-transform:uppercase" value="${d.io2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-fs2">Fecha salida</label><input class="finput" type="date" id="v${id}-fs2" value="${d.fs2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-hs2">Hora salida</label><input class="finput" type="time" id="v${id}-hs2" value="${d.hs2||''}"></div>
     </div>
     <div class="g4">
-      <div class="fg"><label class="lbl">Destino vuelta</label><input class="finput" type="text" id="v${id}-de2" placeholder="Buenos Aires (EZE)" value="${d.de2||''}"></div>
-      <div class="fg"><label class="lbl">IATA</label><input class="finput" type="text" id="v${id}-id2" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.id2||''}"></div>
-      <div class="fg"><label class="lbl">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl2" value="${d.fl2||''}"></div>
-      <div class="fg"><label class="lbl">Hora llegada</label><input class="finput" type="time" id="v${id}-hl2" value="${d.hl2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-de2">Destino vuelta</label><input class="finput" type="text" id="v${id}-de2" placeholder="Buenos Aires (EZE)" value="${d.de2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-id2">IATA</label><input class="finput" type="text" id="v${id}-id2" placeholder="EZE" maxlength="3" style="text-transform:uppercase" value="${d.id2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-fl2">Fecha llegada</label><input class="finput" type="date" id="v${id}-fl2" value="${d.fl2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-hl2">Hora llegada</label><input class="finput" type="time" id="v${id}-hl2" value="${d.hl2||''}"></div>
     </div>
     <div class="g3">
-      <div class="fg"><label class="lbl">Escala vuelta</label><input class="finput" type="text" id="v${id}-esc2" placeholder="Bogotá (BOG)" value="${d.esc2||''}"></div>
-      <div class="fg"><label class="lbl">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc2" placeholder="2h" value="${d.tesc2||''}"></div>
-      <div class="fg"><label class="lbl">Duración total</label><input class="finput" type="text" id="v${id}-dur2" placeholder="14h 30min" value="${d.dur2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-esc2">Escala vuelta</label><input class="finput" type="text" id="v${id}-esc2" placeholder="Bogotá (BOG)" value="${d.esc2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-tesc2">Tiempo escala</label><input class="finput" type="text" id="v${id}-tesc2" placeholder="2h" value="${d.tesc2||''}"></div>
+      <div class="fg"><label class="lbl" for="v${id}-dur2">Duración total</label><input class="finput" type="text" id="v${id}-dur2" placeholder="14h 30min" value="${d.dur2||''}"></div>
     </div>
   </div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Tarifa / Clase</label>
+    <div class="fg"><label class="lbl" for="v${id}-tar">Tarifa / Clase</label>
       <select class="fsel" id="v${id}-tar"><option>Economy Basic</option><option>Economy</option><option>Economy Flex</option><option>Premium Economy</option><option>Business</option><option>First Class</option></select></div>
-    <div class="fg"><label class="lbl">Precio</label>
+    <div class="fg"><label class="lbl" for="v${id}-pr">Precio</label>
       <div class="money-wrap"><div class="money-cur"><select id="v${id}-cur"><option>USD</option><option>ARS</option></select></div>
-      <input class="money-inp" data-precio type="number" id="v${id}-pr" placeholder="1985" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
+      <input class="money-inp" data-precio type="number" inputmode="decimal" id="v${id}-pr" placeholder="1985" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
-    <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="v${id}-fin" placeholder="Contado / cuotas" value="${d.fin||''}"></div>
+    <div class="fg"><label class="lbl" for="v${id}-fin">Financiación</label><input class="finput" type="text" id="v${id}-fin" placeholder="Contado / cuotas" value="${d.fin||''}"></div>
   </div>
-  <div class="fg"><label class="lbl">Equipaje</label>
+  <div class="fg"><label class="lbl" for="v${id}-eq-x">Equipaje</label>
     <div class="chk-grp" id="v${id}-eq">${[['b','Bolso personal'],['c','Carry-on'],['v23','Valija 23kg'],['v32','Valija 32kg'],['2v','2 valijas']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="v${id}-eq-x" placeholder="Detalle adicional..." style="margin-top:8px" value="${d.eq_x||''}">
   </div>
-  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+  <div class="fg"><label class="lbl" for="v${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="v${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-    <input class="money-inp" type="number" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    <input class="money-inp" type="number" inputmode="decimal" id="v${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('vuelos-cont').appendChild(el);
   // Autocomplete aeropuertos — tramo ida
@@ -441,34 +441,34 @@ function addHotel(d){
   const el=document.createElement('div');el.className='rep';el.id='hb-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Hotel ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g3">
-    <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
-    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">Hotel regular</option><option value="disney">Hotel Disney</option><option value="universal">Hotel Universal</option><option value="airbnb">Airbnb / Apart.</option><option value="crucero">Crucero</option></select></div>
-    <div class="fg"><label class="lbl">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
+    <div class="fg full"><label class="lbl" for="h${id}-nm">Nombre</label><input class="finput" type="text" id="h${id}-nm" placeholder="Disney's All-Star Sports Resort" value="${d.nombre||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-tipo">Tipo</label><select class="fsel" id="h${id}-tipo" onchange="onHotelType(${id})"><option value="regular">Hotel regular</option><option value="disney">Hotel Disney</option><option value="universal">Hotel Universal</option><option value="airbnb">Airbnb / Apart.</option><option value="crucero">Crucero</option></select></div>
+    <div class="fg"><label class="lbl" for="h${id}-est">Estrellas</label><select class="fsel" id="h${id}-est"><option value="">—</option><option value="3">3★</option><option value="4">4★</option><option value="5">5★</option></select></div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Ciudad</label><input class="finput" type="text" id="h${id}-ciu" placeholder="Orlando" value="${d.ciudad||''}"></div>
-    <div class="fg"><label class="lbl">País</label><input class="finput" type="text" id="h${id}-pai" placeholder="Estados Unidos" value="${d.pais||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-ciu">Ciudad</label><input class="finput" type="text" id="h${id}-ciu" placeholder="Orlando" value="${d.ciudad||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-pai">País</label><input class="finput" type="text" id="h${id}-pai" placeholder="Estados Unidos" value="${d.pais||''}"></div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
-    <div class="fg"><label class="lbl">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${d.co||''}"></div>
-    <div class="fg"><label class="lbl">Noches</label><input class="finput" type="number" id="h${id}-nc" placeholder="7" value="${d.noches||''}"></div>
-    <div class="fg"><label class="lbl">Precio base</label>
-      <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="h${id}-pr" placeholder="2717" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
+    <div class="fg"><label class="lbl" for="h${id}-ci">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-co">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${d.co||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-nc">Noches</label><input class="finput" type="number" inputmode="numeric" id="h${id}-nc" placeholder="7" value="${d.noches||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-pr">Precio base</label>
+      <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" inputmode="decimal" id="h${id}-pr" placeholder="2717" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Habitación</label><input class="finput" type="text" id="h${id}-hab" placeholder="Standard Room (4 personas)" value="${d.hab||''}"></div>
-    <div class="fg"><label class="lbl">Régimen</label><select class="fsel" id="h${id}-reg"><option value="">Sin especificar</option><option>Sin desayuno</option><option>Desayuno incluido</option><option>Media pensión</option><option>Pensión completa</option><option>Todo Incluido</option><option>Ultra Todo Incluido</option></select></div>
+    <div class="fg"><label class="lbl" for="h${id}-hab">Habitación</label><input class="finput" type="text" id="h${id}-hab" placeholder="Standard Room (4 personas)" value="${d.hab||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-reg">Régimen</label><select class="fsel" id="h${id}-reg"><option value="">Sin especificar</option><option>Sin desayuno</option><option>Desayuno incluido</option><option>Media pensión</option><option>Pensión completa</option><option>Todo Incluido</option><option>Ultra Todo Incluido</option></select></div>
   </div>
   <div id="h${id}-pk" style="${isD||isU?'':'display:none'}">
     <div class="disney-sec">
       <div class="disney-badge" id="h${id}-badge">${isU?'Paquete Universal':'Paquete Disney'}</div>
       <div class="g2">
-        <div class="fg"><label class="lbl">Tickets incluidos</label><input class="finput" type="text" id="h${id}-tkt" placeholder="4 Park Magic Ticket" value="${d.tickets||''}"></div>
-        <div class="fg"><label class="lbl">Días tickets</label><input class="finput" type="number" id="h${id}-tktd" placeholder="4" value="${d.dias_tkt||''}"></div>
+        <div class="fg"><label class="lbl" for="h${id}-tkt">Tickets incluidos</label><input class="finput" type="text" id="h${id}-tkt" placeholder="4 Park Magic Ticket" value="${d.tickets||''}"></div>
+        <div class="fg"><label class="lbl" for="h${id}-tktd">Días tickets</label><input class="finput" type="number" inputmode="numeric" id="h${id}-tktd" placeholder="4" value="${d.dias_tkt||''}"></div>
       </div>
       <div class="fg"><label class="lbl">Parques</label>
         <div class="chk-grp" id="h${id}-parques">${[['mk','Magic Kingdom'],['ep','EPCOT'],['ak','Animal Kingdom'],['hs','Hollywood Studios'],['us','Universal Studios'],['ia','Islands of Adventure'],['eu','Epic Universe'],['vb','Volcano Bay']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
@@ -479,28 +479,28 @@ function addHotel(d){
       <div style="background:var(--surface2);border-radius:var(--rs);padding:12px 14px;margin-top:8px;border:1px solid rgba(27,158,143,0.18)">
         <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--primary3);margin-bottom:10px">Plan de comidas</div>
         <div class="g3">
-          <div class="fg"><label class="lbl">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
-          <div class="fg"><label class="lbl">Precio con plan</label>
-            <div class="money-wrap"><div class="money-cur"><select id="h${id}-mp-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="h${id}-mp-pr" placeholder="3439" value="${d.mp_pr||''}"></div>
+          <div class="fg"><label class="lbl" for="h${id}-mp">Plan</label><select class="fsel" id="h${id}-mp"><option value="">Sin plan</option><option>Quick Service Dining Plan</option><option>Disney Dining Plan</option><option>Deluxe Dining Plan</option></select></div>
+          <div class="fg"><label class="lbl" for="h${id}-mp-pr">Precio con plan</label>
+            <div class="money-wrap"><div class="money-cur"><select id="h${id}-mp-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" inputmode="decimal" id="h${id}-mp-pr" placeholder="3439" value="${d.mp_pr||''}"></div>
           </div>
-          <div class="fg full"><label class="lbl">Descripción del plan</label>
+          <div class="fg full"><label class="lbl" for="h${id}-mp-desc">Descripción del plan</label>
             <textarea class="ftxt" id="h${id}-mp-desc" rows="4" placeholder="Este plan aporta:&#10;• Comodidad total&#10;• Sin pagos en restaurantes&#10;• Abonas en CUOTAS">${d.mp_desc||''}</textarea>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="fg"><label class="lbl">Notas / opcionales</label>
+  <div class="fg"><label class="lbl" for="h${id}-notes">Notas / opcionales</label>
     <textarea class="ftxt" id="h${id}-notes" rows="3" placeholder="Opcionales especiales, notas para el cliente..." value="">${d.notes||''}</textarea>
   </div>
-  <div class="fg"><label class="lbl">Amenities</label>
+  <div class="fg"><label class="lbl" for="h${id}-am-x">Amenities</label>
     <div class="chk-grp" id="h${id}-am">${[['wifi','WiFi'],['pool','Piscina'],['gym','Gimnasio'],['spa','Spa'],['bkf','Desayuno buffet'],['rest','Restaurante'],['bar','Bar'],['beach','Playa'],['park','Estacionamiento'],['kids','Área infantil']].map(([v,l])=>`<div class="chk" onclick="tglChk(this)"><input type="checkbox" value="${v}"><span class="chk-dot"></span>${l}</div>`).join('')}</div>
     <input class="finput" type="text" id="h${id}-am-x" placeholder="Otros amenities..." style="margin-top:8px" value="${d.am_x||''}">
   </div>
-  <div class="fg"><label class="lbl">Foto del hotel (URL opcional)</label><input class="finput" type="url" id="h${id}-foto" placeholder="https://..." value="${d.foto_url||''}"></div>
-  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+  <div class="fg"><label class="lbl" for="h${id}-foto">Foto del hotel (URL opcional)</label><input class="finput" type="url" id="h${id}-foto" placeholder="https://..." value="${d.foto_url||''}"></div>
+  <div class="fg"><label class="lbl" for="h${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="h${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-    <input class="money-inp" type="number" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    <input class="money-inp" type="number" inputmode="decimal" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>
   <div class="fg">
     <label class="lbl">Fotos de galería</label>
@@ -553,30 +553,30 @@ function addTraslado(d){
   const el=document.createElement('div');el.className='rep';el.id='tb-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Traslado ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">Aeropuerto → Hotel</option><option value="out">Hotel → Aeropuerto</option><option value="hoteles">Entre hoteles</option><option value="privado">Privado en destino</option><option value="ciudad">A otra ciudad</option></select></div>
-    <div class="fg"><label class="lbl">Origen</label><input class="finput" type="text" id="t${id}-or" placeholder="Aeropuerto MCO" value="${d.origen||''}"></div>
-    <div class="fg"><label class="lbl">Destino</label><input class="finput" type="text" id="t${id}-de" placeholder="Disney All-Star Sports" value="${d.destino||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-tipo">Tipo</label><select class="fsel" id="t${id}-tipo"><option value="in">Aeropuerto → Hotel</option><option value="out">Hotel → Aeropuerto</option><option value="hoteles">Entre hoteles</option><option value="privado">Privado en destino</option><option value="ciudad">A otra ciudad</option></select></div>
+    <div class="fg"><label class="lbl" for="t${id}-or">Origen</label><input class="finput" type="text" id="t${id}-or" placeholder="Aeropuerto MCO" value="${d.origen||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-de">Destino</label><input class="finput" type="text" id="t${id}-de" placeholder="Disney All-Star Sports" value="${d.destino||''}"></div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="t${id}-fe" value="${d.fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora recogida</label><input class="finput" type="time" id="t${id}-ho" value="${d.hora||''}"></div>
-    <div class="fg"><label class="lbl">Vehículo</label><select class="fsel" id="t${id}-veh"><option>Van privada</option><option>Auto privado</option><option>Minibús</option><option>Shuttle compartido</option></select></div>
-    <div class="fg"><label class="lbl">Precio</label>
-      <div class="money-wrap"><div class="money-cur"><select id="t${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="t${id}-pr" placeholder="65" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
+    <div class="fg"><label class="lbl" for="t${id}-fe">Fecha</label><input class="finput" type="date" id="t${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-ho">Hora recogida</label><input class="finput" type="time" id="t${id}-ho" value="${d.hora||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-veh">Vehículo</label><select class="fsel" id="t${id}-veh"><option>Van privada</option><option>Auto privado</option><option>Minibús</option><option>Shuttle compartido</option></select></div>
+    <div class="fg"><label class="lbl" for="t${id}-pr">Precio</label>
+      <div class="money-wrap"><div class="money-cur"><select id="t${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" inputmode="decimal" id="t${id}-pr" placeholder="65" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Proveedor</label>
+    <div class="fg"><label class="lbl" for="t${id}-sel">Proveedor</label>
       <select class="fsel prov-sel" id="t${id}-sel" onchange="onProvSel('t${id}-sel')" data-val=""><option value="">— Elegir proveedor —</option></select>
       <input class="finput" type="text" id="t${id}-inp" placeholder="Nombre del proveedor" style="display:none;margin-top:6px" value="">
     </div>
-    <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="t${id}-not" placeholder="Se abona en efectivo al finalizar" value="${d.notas||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-not">Notas</label><input class="finput" type="text" id="t${id}-not" placeholder="Se abona en efectivo al finalizar" value="${d.notas||''}"></div>
   </div>
-  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+  <div class="fg"><label class="lbl" for="t${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="t${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-    <input class="money-inp" type="number" id="t${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    <input class="money-inp" type="number" inputmode="decimal" id="t${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('traslados-cont').appendChild(el);
   // Autocomplete aeropuertos para origen/destino (IATA null — son lugares, no solo aeropuertos)
@@ -596,35 +596,35 @@ function addExcursion(d){
   const el=document.createElement('div');el.className='rep';el.id='eb-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Excursión ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g2">
-    <div class="fg full"><label class="lbl">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
-    <div class="fg"><label class="lbl">Categoría</label><select class="fsel" id="e${id}-cat" onchange="onExcCat(${id},this.value)"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option><option value="otros">Otros</option></select></div>
-    <div class="fg" id="e${id}-cat-otros-wrap" style="display:none"><label class="lbl">Título personalizado</label><input class="finput" type="text" id="e${id}-cat-otros" placeholder="Ej: Ticket de entrada, City Tour..." value="${d.cat_otros||''}"></div>
-    <div class="fg"><label class="lbl">Proveedor</label>
+    <div class="fg full"><label class="lbl" for="e${id}-nm">Nombre</label><input class="finput" type="text" id="e${id}-nm" placeholder="Excursión a Chichén Itzá" value="${d.nombre||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-cat">Categoría</label><select class="fsel" id="e${id}-cat" onchange="onExcCat(${id},this.value)"><option>Excursión guiada</option><option>Parque temático</option><option>Tour en barco</option><option>Actividad acuática</option><option>Tour cultural</option><option>Show / Espectáculo</option><option>Evento especial</option><option>Actividad de aventura</option><option value="otros">Otros</option></select></div>
+    <div class="fg" id="e${id}-cat-otros-wrap" style="display:none"><label class="lbl" for="e${id}-cat-otros">Título personalizado</label><input class="finput" type="text" id="e${id}-cat-otros" placeholder="Ej: Ticket de entrada, City Tour..." value="${d.cat_otros||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-sel">Proveedor</label>
       <select class="fsel prov-sel" id="e${id}-sel" onchange="onProvSel('e${id}-sel')" data-val=""><option value="">— Elegir proveedor —</option></select>
       <input class="finput" type="text" id="e${id}-inp" placeholder="Nombre del proveedor" style="display:none;margin-top:6px" value="">
     </div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${d.fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora</label><input class="finput" type="time" id="e${id}-ho" value="${d.hora||''}"></div>
-    <div class="fg"><label class="lbl">Duración</label><input class="finput" type="text" id="e${id}-dur" placeholder="12-13 horas" value="${d.dur||''}"></div>
-    <div class="fg"><label class="lbl">Precio total</label>
-      <div class="money-wrap"><div class="money-cur"><select id="e${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" id="e${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
+    <div class="fg"><label class="lbl" for="e${id}-fe">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-ho">Hora</label><input class="finput" type="time" id="e${id}-ho" value="${d.hora||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-dur">Duración</label><input class="finput" type="text" id="e${id}-dur" placeholder="12-13 horas" value="${d.dur||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-pr">Precio total</label>
+      <div class="money-wrap"><div class="money-cur"><select id="e${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" inputmode="decimal" id="e${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
-  <div class="fg"><label class="lbl">Punto de encuentro</label><input class="finput" type="text" id="e${id}-punto" placeholder="Lobby del hotel 7:00 AM" value="${d.punto||''}"></div>
+  <div class="fg"><label class="lbl" for="e${id}-punto">Punto de encuentro</label><input class="finput" type="text" id="e${id}-punto" placeholder="Lobby del hotel 7:00 AM" value="${d.punto||''}"></div>
   <div class="g2">
-    <div class="fg"><label class="lbl">¿Qué incluye?</label><textarea class="ftxt" id="e${id}-inc" rows="3" placeholder="Transporte, almuerzo, guía bilingüe...">${d.inc||''}</textarea></div>
-    <div class="fg"><label class="lbl">¿Qué NO incluye?</label><textarea class="ftxt" id="e${id}-noinc" rows="3" placeholder="Impuesto arqueológico...">${d.noinc||''}</textarea></div>
+    <div class="fg"><label class="lbl" for="e${id}-inc">¿Qué incluye?</label><textarea class="ftxt" id="e${id}-inc" rows="3" placeholder="Transporte, almuerzo, guía bilingüe...">${d.inc||''}</textarea></div>
+    <div class="fg"><label class="lbl" for="e${id}-noinc">¿Qué NO incluye?</label><textarea class="ftxt" id="e${id}-noinc" rows="3" placeholder="Impuesto arqueológico...">${d.noinc||''}</textarea></div>
   </div>
-  <div class="fg"><label class="lbl">Descripción para el cliente</label><textarea class="ftxt" id="e${id}-desc" rows="3" placeholder="Descripción atractiva...">${d.desc||''}</textarea></div>
-  <div class="fg"><label class="lbl">Foto de la excursión (URL opcional)</label><input class="finput" type="url" id="e${id}-foto" placeholder="https://..." value="${d.foto_url||''}"></div>
-  <div class="fg"><label class="lbl">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>
-  <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+  <div class="fg"><label class="lbl" for="e${id}-desc">Descripción para el cliente</label><textarea class="ftxt" id="e${id}-desc" rows="3" placeholder="Descripción atractiva...">${d.desc||''}</textarea></div>
+  <div class="fg"><label class="lbl" for="e${id}-foto">Foto de la excursión (URL opcional)</label><input class="finput" type="url" id="e${id}-foto" placeholder="https://..." value="${d.foto_url||''}"></div>
+  <div class="fg"><label class="lbl" for="e${id}-obs">Observaciones</label><input class="finput" type="text" id="e${id}-obs" placeholder="Llevar protector solar · Ropa cómoda" value="${d.obs||''}"></div>
+  <div class="fg"><label class="lbl" for="e${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="e${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-    <input class="money-inp" type="number" id="e${id}-com" placeholder="0" value="${d.comision||''}"></div>
+    <input class="money-inp" type="number" inputmode="decimal" id="e${id}-com" placeholder="0" value="${d.comision||''}"></div>
   </div>`;
   document.getElementById('excursiones-cont').appendChild(el);
   initCityAutocomplete('e'+id+'-punto');
@@ -641,27 +641,27 @@ function addAuto(d){
   const el=document.createElement('div');el.className='rep';el.id='ab-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Auto ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Proveedor</label><input class="finput" type="text" id="au${id}-prov" placeholder="Hertz, Avis, Budget..." value="${d.proveedor||''}"></div>
-    <div class="fg"><label class="lbl">Categoría</label>
+    <div class="fg"><label class="lbl" for="au${id}-prov">Proveedor</label><input class="finput" type="text" id="au${id}-prov" placeholder="Hertz, Avis, Budget..." value="${d.proveedor||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-cat">Categoría</label>
       <select class="fsel" id="au${id}-cat">
         <option>Económico</option><option>Compacto</option><option>Intermedio</option>
         <option>Full Size</option><option>SUV</option><option>Minivan</option>
         <option>Premium</option><option>Convertible</option>
       </select></div>
-    <div class="fg"><label class="lbl">Precio</label>
+    <div class="fg"><label class="lbl" for="au${id}-pr">Precio</label>
       <div class="money-wrap"><div class="money-cur"><select id="au${id}-cur"><option>USD</option><option>ARS</option></select></div>
-      <input class="money-inp" data-precio type="number" id="au${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
+      <input class="money-inp" data-precio type="number" inputmode="decimal" id="au${id}-pr" placeholder="0" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
     </div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Lugar de retiro</label><input class="finput" type="text" id="au${id}-or" placeholder="Aeropuerto MCO Terminal B" value="${d.retiro_lugar||''}"></div>
-    <div class="fg"><label class="lbl">Lugar de devolución</label><input class="finput" type="text" id="au${id}-de" placeholder="Mismo lugar" value="${d.devolucion_lugar||''}"></div>
-    <div class="fg"><label class="lbl">Fecha retiro</label><input class="finput" type="date" id="au${id}-fr" value="${d.retiro_fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora retiro</label><input class="finput" type="time" id="au${id}-hr" value="${d.retiro_hora||''}"></div>
-    <div class="fg"><label class="lbl">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${d.devolucion_fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora devolución</label><input class="finput" type="time" id="au${id}-hd" value="${d.devolucion_hora||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-or">Lugar de retiro</label><input class="finput" type="text" id="au${id}-or" placeholder="Aeropuerto MCO Terminal B" value="${d.retiro_lugar||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-de">Lugar de devolución</label><input class="finput" type="text" id="au${id}-de" placeholder="Mismo lugar" value="${d.devolucion_lugar||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-fr">Fecha retiro</label><input class="finput" type="date" id="au${id}-fr" value="${d.retiro_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-hr">Hora retiro</label><input class="finput" type="time" id="au${id}-hr" value="${d.retiro_hora||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-fd">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${d.devolucion_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-hd">Hora devolución</label><input class="finput" type="time" id="au${id}-hd" value="${d.devolucion_hora||''}"></div>
   </div>
   <div id="au${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
   <div class="g3">
@@ -675,12 +675,12 @@ function addAuto(d){
         <input type="checkbox" id="au${id}-seg" ${d.incluye_seguro?'checked':''} style="width:15px;height:15px;accent-color:var(--primary)"> Incluye seguro
       </label>
     </div>
-    <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+    <div class="fg"><label class="lbl" for="au${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
       <div class="money-wrap"><div class="money-cur"><select id="au${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-      <input class="money-inp" type="number" id="au${id}-com" placeholder="0" value="${d.comision||''}"></div>
+      <input class="money-inp" type="number" inputmode="decimal" id="au${id}-com" placeholder="0" value="${d.comision||''}"></div>
     </div>
   </div>
-  <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="au${id}-not" rows="2" placeholder="Incluye GPS · Se abona con tarjeta · Sin franquicia">${d.notas||''}</textarea></div>`;
+  <div class="fg"><label class="lbl" for="au${id}-not">Notas</label><textarea class="ftxt" id="au${id}-not" rows="2" placeholder="Incluye GPS · Se abona con tarjeta · Sin franquicia">${d.notas||''}</textarea></div>`;
   document.getElementById('autos-cont').appendChild(el);
   initCityAutocomplete('au'+id+'-or');
   initCityAutocomplete('au'+id+'-de');
@@ -699,49 +699,49 @@ function addCrucero(d){
   const el=document.createElement('div');el.className='rep';el.id='cb-'+id;
   el.innerHTML=`
   <div class="rep-hd"><div class="rep-ttl"><span class="rep-n">${id}</span>Crucero ${id}<span class="opcion-badge" style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.1);border:1px solid rgba(27,158,143,0.25);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--primary);margin-left:8px">?</span></div>
-    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)">✕</button></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--g3);white-space:nowrap"><input type="checkbox" class="incluir-en-total" ${d.incluir_en_total===false?'':'checked'} style="accent-color:var(--primary);width:13px;height:13px" onchange="_onIncluirChange(this)"> Incluir en total</label><button class="btn btn-del btn-xs" onclick="_removeRep(this)" aria-label="Eliminar">✕</button></div></div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Naviera</label><input class="finput" type="text" id="cr${id}-nav" placeholder="MSC, Royal Caribbean, Costa..." value="${d.naviera||''}"></div>
-    <div class="fg"><label class="lbl">Nombre del barco</label><input class="finput" type="text" id="cr${id}-barco" placeholder="MSC Seashore" value="${d.barco||''}"></div>
-    <div class="fg"><label class="lbl">Tipo de cabina</label>
+    <div class="fg"><label class="lbl" for="cr${id}-nav">Naviera</label><input class="finput" type="text" id="cr${id}-nav" placeholder="MSC, Royal Caribbean, Costa..." value="${d.naviera||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-barco">Nombre del barco</label><input class="finput" type="text" id="cr${id}-barco" placeholder="MSC Seashore" value="${d.barco||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-cab">Tipo de cabina</label>
       <select class="fsel" id="cr${id}-cab">
         <option>Interior</option><option>Oceanview</option><option>Balcón</option>
         <option>Suite</option><option>Suite Deluxe</option>
       </select></div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Puerto de embarque</label><input class="finput" type="text" id="cr${id}-pe" placeholder="Miami, FL" value="${d.embarque_puerto||''}"></div>
-    <div class="fg"><label class="lbl">Puerto de desembarque</label><input class="finput" type="text" id="cr${id}-pd" placeholder="Miami, FL" value="${d.desembarque_puerto||''}"></div>
-    <div class="fg"><label class="lbl">Fecha embarque</label><input class="finput" type="date" id="cr${id}-fe" value="${d.embarque_fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora embarque</label><input class="finput" type="time" id="cr${id}-he" value="${d.embarque_hora||''}"></div>
-    <div class="fg"><label class="lbl">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${d.desembarque_fecha||''}"></div>
-    <div class="fg"><label class="lbl">Hora desembarque</label><input class="finput" type="time" id="cr${id}-hd" value="${d.desembarque_hora||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-pe">Puerto de embarque</label><input class="finput" type="text" id="cr${id}-pe" placeholder="Miami, FL" value="${d.embarque_puerto||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-pd">Puerto de desembarque</label><input class="finput" type="text" id="cr${id}-pd" placeholder="Miami, FL" value="${d.desembarque_puerto||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-fe">Fecha embarque</label><input class="finput" type="date" id="cr${id}-fe" value="${d.embarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-he">Hora embarque</label><input class="finput" type="time" id="cr${id}-he" value="${d.embarque_hora||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-fd">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${d.desembarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-hd">Hora desembarque</label><input class="finput" type="time" id="cr${id}-hd" value="${d.desembarque_hora||''}"></div>
   </div>
   <div id="cr${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Régimen</label>
+    <div class="fg"><label class="lbl" for="cr${id}-reg">Régimen</label>
       <select class="fsel" id="cr${id}-reg">
         <option>Solo cabina</option><option>Pensión completa</option>
         <option>Todo incluido</option><option>Bebidas incluidas</option>
       </select></div>
-    <div class="fg"><label class="lbl">Precio por persona</label>
+    <div class="fg"><label class="lbl" for="cr${id}-pp">Precio por persona</label>
       <div class="money-wrap"><div class="money-cur"><select id="cr${id}-cur"><option>USD</option><option>ARS</option></select></div>
-      <input class="money-inp" type="number" id="cr${id}-pp" placeholder="0" value="${d.precio_pp||''}" oninput="calcCruceroTotal(${id})"></div>
+      <input class="money-inp" type="number" inputmode="decimal" id="cr${id}-pp" placeholder="0" value="${d.precio_pp||''}" oninput="calcCruceroTotal(${id})"></div>
     </div>
-    <div class="fg"><label class="lbl">Pasajeros</label><input class="finput" type="number" id="cr${id}-pax" placeholder="2" value="${d.pasajeros||''}" oninput="calcCruceroTotal(${id})"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-pax">Pasajeros</label><input class="finput" type="number" inputmode="numeric" id="cr${id}-pax" placeholder="2" value="${d.pasajeros||''}" oninput="calcCruceroTotal(${id})"></div>
   </div>
   <div class="g2">
-    <div class="fg"><label class="lbl">Precio total</label>
+    <div class="fg"><label class="lbl" for="cr${id}-tot">Precio total</label>
       <div class="money-wrap"><div class="money-cur" style="padding:10px 8px;font-size:.75rem;font-weight:700;color:var(--primary)">TOTAL</div>
-      <input class="money-inp" data-precio type="number" id="cr${id}-tot" placeholder="Calculado automáticamente" value="${d.precio_total||''}"></div>
+      <input class="money-inp" data-precio type="number" inputmode="decimal" id="cr${id}-tot" placeholder="Calculado automáticamente" value="${d.precio_total||''}"></div>
     </div>
-    <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+    <div class="fg"><label class="lbl" for="cr${id}-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
       <div class="money-wrap"><div class="money-cur"><select id="cr${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
-      <input class="money-inp" type="number" id="cr${id}-com" placeholder="0" value="${d.comision||''}"></div>
+      <input class="money-inp" type="number" inputmode="decimal" id="cr${id}-com" placeholder="0" value="${d.comision||''}"></div>
     </div>
   </div>
-  <div class="fg"><label class="lbl">Puertos de escala</label><textarea class="ftxt" id="cr${id}-esc" rows="3" placeholder="Nassau, Bahamas&#10;Cozumel, México&#10;Roatán, Honduras">${d.escalas||''}</textarea></div>
-  <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="cr${id}-not" rows="2" placeholder="Incluye propinas · Excursiones opcionales...">${d.notas||''}</textarea></div>`;
+  <div class="fg"><label class="lbl" for="cr${id}-esc">Puertos de escala</label><textarea class="ftxt" id="cr${id}-esc" rows="3" placeholder="Nassau, Bahamas&#10;Cozumel, México&#10;Roatán, Honduras">${d.escalas||''}</textarea></div>
+  <div class="fg"><label class="lbl" for="cr${id}-not">Notas</label><textarea class="ftxt" id="cr${id}-not" rows="2" placeholder="Incluye propinas · Excursiones opcionales...">${d.notas||''}</textarea></div>`;
   document.getElementById('cruceros-cont').appendChild(el);
   initCityAutocomplete('cr'+id+'-pe');
   initCityAutocomplete('cr'+id+'-pd');
