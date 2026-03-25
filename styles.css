@@ -1139,7 +1139,7 @@ input:focus,textarea:focus,select:focus{
     overflow:visible!important
   }
   /* Sidebar, bottom nav, toolbars — ocultar */
-  #sidebar,.sb,[class*="sidebar"],#bottom-nav,
+  #sidebar,.sb,[class*="sidebar"],#bottom-nav,#bottom-nav.active,
   #form-sticky-bar,#prev-toolbar,#hdr,.modal-overlay{display:none!important}
   #ui,#main-content,.cnt{margin-left:0!important}
   body,#ui{padding:0!important;margin:0!important}
@@ -1948,3 +1948,50 @@ body{overflow-x:hidden}
   /* Reduce gap in header */
   #hdr-right{gap:5px}
 }
+
+/* ══════════════════════════
+   ADMIN ACTIVITY LOG
+══════════════════════════ */
+.alog-list{padding:0}
+.alog-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:12px 20px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  transition:background .15s;
+}
+.alog-item:last-child{border-bottom:none}
+.alog-item:hover{background:rgba(27,158,143,0.04)}
+/* Vertical rail */
+.alog-item:not(:last-child)::after{
+  content:'';position:absolute;
+  left:28px;top:26px;bottom:-1px;width:1px;
+  background:var(--border2);
+  pointer-events:none;
+}
+.alog-dot{
+  flex-shrink:0;margin-top:3px;
+  width:10px;height:10px;border-radius:50%;
+  border:2px solid var(--surface);
+  box-shadow:0 0 0 1px var(--border2);
+  position:relative;z-index:1;
+}
+.alog-dot-tq {background:var(--primary)}
+.alog-dot-blue{background:#2563EB}
+.alog-dot-green{background:#059669}
+.alog-dot-red{background:#DC2626}
+.alog-dot-gray{background:var(--g3)}
+.alog-body{flex:1;min-width:0}
+.alog-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.alog-ref{
+  font-size:.7rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--g3);
+  font-family:'DM Mono',monospace;
+}
+.alog-nm{font-size:.84rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.alog-dest{font-size:.76rem;color:var(--g4);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alog-meta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.alog-time{font-size:.69rem;color:var(--g3);letter-spacing:.2px}
+.alog-rel{font-size:.69rem;font-weight:600;color:var(--primary);letter-spacing:.2px}
+.alog-hd-right{display:flex;align-items:center;gap:10px}
+.alog-count{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3)}

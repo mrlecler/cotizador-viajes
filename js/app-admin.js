@@ -28,6 +28,8 @@ async function renderAdmin(){
   buildDataLists(provs||[]);
   // Seguros
   loadSeguros();
+  // Actividad reciente
+  loadAdminLog();
 }
 
 function buildDataLists(provs){
@@ -415,6 +417,71 @@ function _initSecCollapse(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{ _initSecCollapse(); });
+
+// ═══════════════════════════════════════════
+// ADMIN ACTIVITY LOG
+// ═══════════════════════════════════════════
+async function loadAdminLog(){
+  const el=document.getElementById('admin-log');
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+
+  const {data,error}=await sb.from('cotizaciones')
+    .select('ref_id,destino,estado,created_at,datos,agente_id')
+    .order('created_at',{ascending:false})
+    .limit(60);
+
+  const cnt=document.getElementById('admin-log-count');
+  if(error||!data?.length){
+    if(cnt)cnt.textContent='';
+    el.innerHTML='<div class="empty-state" style="padding:40px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Sin actividad registrada</p><small>Las cotizaciones creadas aparecerán aquí</small></div>';
+    return;
+  }
+
+  if(cnt)cnt.textContent='Últimas '+data.length;
+
+  // Dot class por estado
+  const dotCls={borrador:'alog-dot-gray',enviada:'alog-dot-blue',confirmada:'alog-dot-green',cancelada:'alog-dot-red'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+
+  // Tiempo relativo
+  function relTime(ts){
+    const diff=Date.now()-new Date(ts).getTime();
+    const m=Math.floor(diff/60000);
+    if(m<1)return'ahora';
+    if(m<60)return'hace '+m+'m';
+    const h=Math.floor(m/60);
+    if(h<24)return'hace '+h+'h';
+    const d=Math.floor(h/24);
+    if(d<30)return'hace '+d+'d';
+    return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short'});
+  }
+
+  el.innerHTML='<div class="alog-list">'+data.map((r,i)=>{
+    const est=r.estado||'borrador';
+    const nm=r.datos?.cliente?.nombre||'Sin nombre';
+    const dest=r.destino||r.datos?.viaje?.destino||'—';
+    const dt=new Date(r.created_at);
+    const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    const isLast=i===data.length-1;
+    return`<div class="alog-item">
+      <div class="alog-dot ${dotCls[est]||'alog-dot-gray'}"></div>
+      <div class="alog-body">
+        <div class="alog-top">
+          <span class="alog-ref">${r.ref_id||'—'}</span>
+          <span class="status-badge st-${est}">${stLbl[est]||est}</span>
+        </div>
+        <div class="alog-nm">${nm}</div>
+        <div class="alog-dest">${dest}</div>
+        <div class="alog-meta">
+          <span class="alog-time">${dtStr}</span>
+          <span style="color:var(--border2)">·</span>
+          <span class="alog-rel">${relTime(r.created_at)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
 
 // ═══════════════════════════════════════════
 // BUILD QUOTE HTML (PDF renderer)

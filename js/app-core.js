@@ -316,10 +316,9 @@ async function dbSaveQuote(d, supabaseId){
     const num = window._agenteNum || 1;
     d.refId = `${pais}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
   }
-  const row = {
+  const baseRow = {
     ref_id: String(d.refId),
     cliente_id: clientId||null,
-    agente_id: agId||null,
     destino: d.viaje?.destino||'',
     fecha_sal: d.viaje?.salida ? parseDateArg(d.viaje.salida) : null,
     fecha_reg: d.viaje?.regreso ? parseDateArg(d.viaje.regreso) : null,
@@ -335,10 +334,11 @@ async function dbSaveQuote(d, supabaseId){
   };
   let error;
   if(supabaseId){
-    // UPDATE — editing existing quote, preserve the same record
-    ({error} = await sb.from('cotizaciones').update(row).eq('id', supabaseId));
+    // UPDATE — no re-enviar agente_id para evitar conflictos de RLS/constraints
+    ({error} = await sb.from('cotizaciones').update(baseRow).eq('id', supabaseId));
   } else {
-    // INSERT — always a brand new record (never upsert, to avoid overwriting by ref_id)
+    // INSERT — incluir agente_id en el registro nuevo
+    const row = {...baseRow, agente_id: agId||null};
     ({error} = await sb.from('cotizaciones').insert(row));
   }
   if(error){
