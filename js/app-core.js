@@ -422,12 +422,13 @@ async function dbSaveQuote(d, supabaseId){
   };
   let error;
   if(supabaseId){
-    // UPDATE — no re-enviar agente_id para evitar conflictos de RLS/constraints
-    ({error} = await sb.from('cotizaciones').update(baseRow).eq('id', supabaseId));
+    // UPDATE — no re-enviar ref_id (inmutable) ni agente_id para evitar 23505/RLS
+    const {ref_id:_rid, ...updateRow} = baseRow;
+    ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', supabaseId));
     // Si falla con columna inexistente, intentar con payload mínimo garantizado
     if(error && (error.code==='42703'||error.message?.includes('column'))){
       _captureError('dbSaveQuote:update:fallback', error);
-      const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
+      const safeRow={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
