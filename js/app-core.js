@@ -159,7 +159,7 @@ async function showForgot(){
 
 async function doLogout(){
   await sb.auth.signOut();
-  currentUser=null;isAdmin=false;
+  currentUser=null;isAdmin=false;localStorage.removeItem('mp_admin');
   document.getElementById('ui').style.display='none';
   document.getElementById('login-wall').style.display='flex';
   const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.classList.remove('active');
@@ -209,6 +209,12 @@ async function showApp(user){
     document.getElementById('ui').classList.add('sb-open');
   }
   document.getElementById('hdr-user').textContent = user.email;
+  // Restaurar estado admin del caché — se confirma/deniega cuando llega Supabase
+  if(localStorage.getItem('mp_admin')==='1'){
+    isAdmin=true;
+    document.getElementById('hdr-role-badge').style.display='';
+    document.getElementById('nav-admin').style.display='';
+  }
   // Saludo en pantalla Inicio
   const _saludoEl=document.getElementById('inicio-saludo');
   if(_saludoEl){
@@ -255,10 +261,6 @@ async function showApp(user){
         if(sal) sal.textContent='Hola, '+data.nombre.trim().split(/\s+/)[0]+'.';
       }
     }
-    if(isAdmin){
-      document.getElementById('hdr-role-badge').style.display='';
-      document.getElementById('nav-admin').style.display='';
-    }
     // Ensure agent record exists (fire and forget)
     sb.from('agentes').upsert(
       {email: user.email, nombre: agCfg.nm||user.user_metadata?.full_name||''},
@@ -266,6 +268,13 @@ async function showApp(user){
     ).then(()=>{}).catch(()=>{});
   } catch(e) {
     console.warn('Supabase init warning (non-fatal):', e.message);
+  }
+  // Admin UI — fuera del try/catch para que siempre se aplique incluso si algo falla antes
+  // También persiste en localStorage para sobrevivir el refresh sin esperar a Supabase
+  if(isAdmin){
+    localStorage.setItem('mp_admin','1');
+    document.getElementById('hdr-role-badge').style.display='';
+    document.getElementById('nav-admin').style.display='';
   }
   // Cargar métricas y promociones de la pantalla Inicio
   loadDashboardMetrics();

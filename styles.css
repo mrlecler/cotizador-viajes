@@ -1995,3 +1995,15 @@ body{overflow-x:hidden}
 .alog-rel{font-size:.69rem;font-weight:600;color:var(--primary);letter-spacing:.2px}
 .alog-hd-right{display:flex;align-items:center;gap:10px}
 .alog-count{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3)}
+
+/* ══════════════════════════
+   PRINT — override final (must be LAST)
+   Las reglas de @media print anteriores están al inicio del CSS;
+   este bloque repite las reglas críticas al final para ganar en cascada
+   contra cualquier regla de pantalla que aparezca después del primer bloque print.
+══════════════════════════ */
+@media print{
+  #bottom-nav,#bottom-nav.active,
+  #form-sticky-bar,#prev-toolbar,#hdr,
+  #sidebar,.sb{display:none!important}
+}
