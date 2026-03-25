@@ -561,6 +561,10 @@ function restoreDraft(d){
     const tks=document.getElementById('tickets-cont'); if(tks){ tks.innerHTML=''; }
     d.tickets.forEach(t=>addTicket(t));
   }
+  // Itinerario día a día
+  if(d.itinerario?.length&&typeof _itiRestore==='function'){
+    setTimeout(()=>_itiRestore(d.itinerario),50);
+  }
 }
 
 // ═══════════════════════════════════════════

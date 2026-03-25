@@ -124,6 +124,17 @@ function buildQuoteHTML(d){
   // ════════════════════════════════════════════════
   // PAGE 2: ITINERARIO DÍA A DÍA
   // ════════════════════════════════════════════════
+  if(d.itinerario?.length>0){
+    const _tipoC={VUELO:'#1B9E8F',LLEGADA:'#1B9E8F',TRASLADO:'#E8826A',PARQUE:'#D4A017','EXCURSIÓN':'#43A047',PLAYA:'#0288D1',COMPRAS:'#2E7D32',RELAX:'#78909C',CASA:'#66BB6A',NAVIDAD:'#C62828','EVENTO ESPECIAL':'#FF8F00',LIBRE:'#9CA3AF'};
+    const _pd3=(s)=>{if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');const dt=new Date(yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0'));return isNaN(dt)?null:dt;}const dt=new Date(s);return isNaN(dt)?null:dt;};
+    // Group by fecha preserving order
+    const _iGrp={};const _iOrd=[];
+    d.itinerario.forEach(r=>{if(!_iGrp[r.fecha]){_iGrp[r.fecha]=[];_iOrd.push(r.fecha);}_iGrp[r.fecha].push(r);});
+    const itiRows=_iOrd.map(f=>({fecha:f,date:_pd3(f),evs:_iGrp[f]})).filter(r=>r.date).sort((a,b)=>a.date-b.date);
+    if(itiRows.length>0){
+      H+=`<div class="qp-page" style="break-before:page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}<div style="padding:0 32px 20px"><table class="qp-iti-table"><thead><tr><th style="width:80px">FECHA</th><th>ACTIVIDAD</th><th style="width:110px">TIPO</th></tr></thead><tbody>${itiRows.map((r,ri)=>r.evs.map((ev,ei)=>{const c=_tipoC[ev.tipo]||'#9CA3AF';const dc=ei===0?`<td class="qp-iti-date" rowspan="${r.evs.length}"><div style="font-size:15px;font-weight:800;color:#2D1F14;line-height:1">${String(r.date.getDate()).padStart(2,'0')}/${String(r.date.getMonth()+1).padStart(2,'0')}</div><div style="font-size:8px;font-weight:600;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;margin-top:2px">${DIAS[r.date.getDay()]}</div></td>`:'';return`<tr class="${ri%2===0?'qp-iti-even':'qp-iti-odd'}">${dc}<td class="qp-iti-act"><div style="display:flex;align-items:center;gap:7px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0"></span><span style="font-size:10px;color:#374151">${ev.actividad||ev.tipo}</span></div></td><td class="qp-iti-type"><span style="background:${c};color:white;font-size:7.5px;font-weight:800;letter-spacing:1.5px;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap">${ev.tipo}</span></td></tr>`;}).join('')).join('')}</tbody></table></div></div>`;
+    }
+  } else {
   const allDates=[];
   const pushD=(s)=>{const dt=_pd(s);if(dt&&!isNaN(dt))allDates.push(dt);};
   pushD(vi.salida);pushD(vi.regreso);
@@ -159,6 +170,7 @@ function buildQuoteHTML(d){
   </div></div>`;
     }
   }
+  } // end else (auto-computed itinerary)
 
   // ════════════════════════════════════════════════
   // PAGES 3..N: SERVICE SECTIONS

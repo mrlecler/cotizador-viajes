@@ -150,6 +150,21 @@ document.addEventListener('DOMContentLoaded',function(){
   if(citiesList.length>0)_initStaticCityAC();
   _initAutoTotal();
   _initDestCards();
+  // Rebuild itinerary when travel dates change
+  ['m-sal','m-reg'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('change',()=>{
+      if(!document.getElementById('itinerario-card')?.classList.contains('collapsed'))_buildItinerario();
+    });
+  });
+  // Auto-build when itinerary section is first expanded
+  document.getElementById('iti-sec-hd')?.addEventListener('click',()=>{
+    setTimeout(()=>{
+      if(!document.getElementById('itinerario-card')?.classList.contains('collapsed')){
+        const cont=document.getElementById('itinerario-cont');
+        if(cont&&!cont.querySelector('table'))_buildItinerario();
+      }
+    },60);
+  });
 });
 
 // ── Franja de destinos populares ──
@@ -798,7 +813,7 @@ function collectForm(){
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
     viaje:{destino:gv('m-dest'),pais:gv('m-pais'),salida:fd(s),regreso:fd(e),noches,descripcion:gv('m-desc')},
-    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
+    itinerario:_itiCollect(),\n    vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
     total_comision};
@@ -1087,4 +1102,130 @@ function _initAutoTotal(){
   // Recalc total cuando cambia el seguro
   const seg=document.getElementById('seg-precio');
   if(seg)seg.addEventListener('input',_recalcTotal);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ITINERARIO DÍA A DÍA
+// ═══════════════════════════════════════════════════════════════
+const _ITI_TIPOS=[
+  {k:'VUELO',c:'#1B9E8F'},{k:'LLEGADA',c:'#1B9E8F'},{k:'TRASLADO',c:'#E8826A'},
+  {k:'PARQUE',c:'#D4A017'},{k:'EXCURSIÓN',c:'#43A047'},{k:'PLAYA',c:'#0288D1'},
+  {k:'COMPRAS',c:'#2E7D32'},{k:'RELAX',c:'#78909C'},{k:'CASA',c:'#66BB6A'},
+  {k:'NAVIDAD',c:'#C62828'},{k:'EVENTO ESPECIAL',c:'#FF8F00'},{k:'LIBRE',c:'#9CA3AF'},
+];
+let _itiData=[];
+
+function _itiTipoColor(t){return(_ITI_TIPOS.find(x=>x.k===t)||{c:'#9CA3AF'}).c;}
+function _itiFromStr(s){if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');return yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0');}return s;}
+
+function _buildItinerario(){
+  const salida=document.getElementById('m-sal')?.value;
+  const regreso=document.getElementById('m-reg')?.value;
+  const cont=document.getElementById('itinerario-cont');
+  if(!cont)return;
+  if(!salida||!regreso||salida>=regreso){
+    cont.innerHTML='<div style="padding:14px 18px;color:var(--g3);font-size:.82rem">Ingresá las fechas de salida y regreso para generar el itinerario automáticamente.</div>';
+    return;
+  }
+  // Preserve existing manual entries
+  const prevManual={};
+  _itiData.forEach(day=>{if(day.manual&&(day.manual.actividad||day.manual.tipo!=='LIBRE'))prevManual[day.k]=day.manual;});
+  // Build locked events from form
+  const evMap={};
+  const addEv=(dateStr,tipo,actividad)=>{const k=_itiFromStr(dateStr);if(!k||k.length!==10)return;if(!evMap[k])evMap[k]=[];evMap[k].push({actividad,tipo});};
+  // Vuelos
+  document.querySelectorAll('[id^="vb-"]').forEach(blk=>{
+    const i=blk.id.replace('vb-','');
+    const or=(document.getElementById('v'+i+'-or')?.value||'').trim();
+    const de=(document.getElementById('v'+i+'-de')?.value||'').trim();
+    const fs=(document.getElementById('v'+i+'-fs')?.value||'').trim();
+    const mod=(document.getElementById('v'+i+'-mod')?.value||'simple');
+    if(fs&&(or||de))addEv(fs,'VUELO',[or,de].filter(Boolean).join(' → '));
+    if(mod==='idavuelta'){const fs2=(document.getElementById('v'+i+'-fs2')?.value||'').trim();if(fs2)addEv(fs2,'VUELO',[de||or,or||de].filter(Boolean).join(' → '));}
+  });
+  // Hoteles (each night)
+  document.querySelectorAll('[id^="hb-"]').forEach(blk=>{
+    const i=blk.id.replace('hb-','');
+    const nm=(document.getElementById('h'+i+'-nm')?.value||'').trim();
+    const ci=(document.getElementById('h'+i+'-ci')?.value||'').trim();
+    const co=(document.getElementById('h'+i+'-co')?.value||'').trim();
+    if(!nm||!ci||!co)return;
+    let cur=new Date(ci);const end=new Date(co);
+    while(cur<end){addEv(cur.toISOString().slice(0,10),'RELAX','Alojamiento: '+nm);cur.setDate(cur.getDate()+1);}
+  });
+  // Traslados
+  document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
+    const i=blk.id.replace('tb-','');
+    const or=(document.getElementById('t'+i+'-or')?.value||'').trim();
+    const de=(document.getElementById('t'+i+'-de')?.value||'').trim();
+    const fe=(document.getElementById('t'+i+'-fe')?.value||'').trim();
+    if(fe&&(or||de))addEv(fe,'TRASLADO',[or,de].filter(Boolean).join(' → '));
+  });
+  // Build days array
+  _itiData=[];
+  let cur=new Date(salida);const end=new Date(regreso);
+  while(cur<=end){
+    const k=cur.toISOString().slice(0,10);
+    _itiData.push({k,date:new Date(cur),locked:evMap[k]||[],manual:prevManual[k]||{actividad:'',tipo:'LIBRE'}});
+    cur.setDate(cur.getDate()+1);
+  }
+  _renderItinerario();
+}
+
+function _renderItinerario(){
+  const cont=document.getElementById('itinerario-cont');
+  if(!cont)return;
+  if(!_itiData.length){cont.innerHTML='<div style="padding:14px 18px;color:var(--g3);font-size:.82rem">Sin días generados.</div>';return;}
+  const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const fmt2=(d)=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  const LOCK='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+  const opts=_ITI_TIPOS.map(t=>`<option value="${t.k}">${t.k}</option>`).join('');
+  let html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.82rem">';
+  html+='<thead><tr><th style="width:76px;padding:8px 12px 6px;text-align:left;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);border-bottom:2px solid var(--border2)">FECHA</th><th style="padding:8px 12px 6px;text-align:left;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);border-bottom:2px solid var(--border2)">ACTIVIDAD</th><th style="width:155px;padding:8px 12px 6px;text-align:left;font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);border-bottom:2px solid var(--border2)">TIPO</th></tr></thead><tbody>';
+  _itiData.forEach((day,idx)=>{
+    const bg=idx%2===0?'':'background:var(--g1);';
+    const nonTriv=[...day.locked.filter(l=>l.tipo!=='RELAX'&&l.tipo!=='LIBRE'),...(day.manual.actividad&&day.manual.tipo!=='LIBRE'&&day.manual.tipo!=='RELAX'?[day.manual]:[])];
+    const conflict=nonTriv.length>1;
+    const totalRows=day.locked.length+1;
+    const dateCell=`<td style="${bg}padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle" rowspan="${totalRows}"><div style="font-size:.9rem;font-weight:800;color:var(--text);line-height:1">${fmt2(day.date)}</div><div style="font-size:.65rem;font-weight:600;color:var(--g3);letter-spacing:.5px;text-transform:uppercase;margin-top:2px">${DIAS[day.date.getDay()]}</div>${conflict?'<span title="Este día tiene más de una actividad" style="color:#E8826A;font-size:.75rem;display:block;margin-top:3px">⚠</span>':''}</td>`;
+    let first=true;
+    day.locked.forEach(lk=>{
+      const c=_itiTipoColor(lk.tipo);
+      html+=`<tr>${first?dateCell:''}<td style="${bg}padding:5px 12px;border-bottom:1px solid var(--border);opacity:.65"><div style="display:flex;align-items:center;gap:6px"><span style="color:var(--g3)">${LOCK}</span><span style="color:var(--g4);font-size:.8rem">${lk.actividad}</span></div></td><td style="${bg}padding:5px 12px;border-bottom:1px solid var(--border);opacity:.65"><span style="background:${c};color:white;font-size:.62rem;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:12px;text-transform:uppercase;white-space:nowrap">${lk.tipo}</span></td></tr>`;
+      first=false;
+    });
+    const sel=opts.replace(`value="${day.manual.tipo||'LIBRE'}"`,`value="${day.manual.tipo||'LIBRE'}" selected`);
+    html+=`<tr>${first?dateCell:''}<td style="${bg}padding:5px 12px;border-bottom:1px solid var(--border)"><input class="finput" type="text" style="width:100%;font-size:.82rem;min-height:34px;padding:4px 10px" value="${(day.manual.actividad||'').replace(/"/g,'&quot;')}" placeholder="${day.locked.length?'Nota adicional...':'Actividad del día...'}" onchange="_itiSetManual('${day.k}','actividad',this.value)"></td><td style="${bg}padding:5px 12px;border-bottom:1px solid var(--border)"><select class="fsel" style="width:100%;font-size:.82rem;min-height:34px" onchange="_itiSetManual('${day.k}','tipo',this.value)">${sel}</select></td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  cont.innerHTML=html;
+}
+
+function _itiSetManual(k,field,value){
+  const day=_itiData.find(d=>d.k===k);
+  if(!day)return;
+  if(!day.manual)day.manual={actividad:'',tipo:'LIBRE'};
+  day.manual[field]=value;
+}
+
+function _itiCollect(){
+  if(!_itiData.length)return null;
+  const result=[];
+  const fmt3=(d)=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+  _itiData.forEach(day=>{
+    day.locked.forEach(lk=>{result.push({fecha:fmt3(day.date),actividad:lk.actividad,tipo:lk.tipo,locked:true});});
+    if(day.manual.actividad||(day.manual.tipo&&day.manual.tipo!=='LIBRE')){result.push({fecha:fmt3(day.date),actividad:day.manual.actividad||'',tipo:day.manual.tipo||'LIBRE',locked:false});}
+  });
+  return result.length?result:null;
+}
+
+function _itiRestore(itinerario){
+  if(!itinerario?.length)return;
+  _buildItinerario();
+  itinerario.filter(r=>!r.locked).forEach(r=>{
+    const k=_itiFromStr(r.fecha);
+    const day=_itiData.find(d=>d.k===k);
+    if(day)day.manual={actividad:r.actividad||'',tipo:r.tipo||'LIBRE'};
+  });
+  _renderItinerario();
 }

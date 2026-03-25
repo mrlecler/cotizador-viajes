@@ -1138,9 +1138,11 @@ input:focus,textarea:focus,select:focus{
     /* CRÍTICO: overflow:hidden corta el contenido en los bordes de página */
     overflow:visible!important
   }
-  /* Sidebar e iframes — ocultar */
-  #sidebar,.sb,[class*="sidebar"]{display:none!important}
+  /* Sidebar, bottom nav, toolbars — ocultar */
+  #sidebar,.sb,[class*="sidebar"],#bottom-nav,
+  #form-sticky-bar,#prev-toolbar,#hdr,.modal-overlay{display:none!important}
   #ui,#main-content,.cnt{margin-left:0!important}
+  body,#ui{padding:0!important;margin:0!important}
   /* Forzar que los backgrounds se impriman */
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
@@ -1351,6 +1353,19 @@ a:hover{color:var(--secondary)}
 [data-theme="dark"] .form-sec-badge{background:rgba(255,255,255,.12)}
 [data-theme="dark"] .form-sec-hd{filter:brightness(.55) saturate(.8)}
 [data-theme="dark"] .form-sec-hd:hover{filter:brightness(.65) saturate(.9)}
+/* ── Preview toolbar — fixed so it stays visible on scroll ── */
+#prev-toolbar{
+  position:fixed;top:52px;left:54px;right:0;z-index:50;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  box-shadow:var(--sh);
+}
+#ui.sb-open #prev-toolbar{left:200px}
+#qscreen{margin-top:66px}
+@media(max-width:767px){#prev-toolbar{top:48px;left:0}#qscreen{margin-top:62px}}
+@media(min-width:768px) and (max-width:1023px){#prev-toolbar{left:0;top:52px}}
+@media print{#prev-toolbar{display:none!important}#qscreen{margin-top:0!important}}
+
 /* Form sticky actions bar */
 #form-sticky-bar{
   position:sticky;top:56px;z-index:49;
