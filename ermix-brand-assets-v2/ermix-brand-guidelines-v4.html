@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ermix — Brand Guidelines v4 · Aurora Teal</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%231B9E8F'/%3E%3Cstop offset='0.5' stop-color='%230BC5B8'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0A0E0B;color:#F0EDE6;line-height:1.5;font-size:13px}
+.page{max-width:1200px;margin:0 auto;padding:48px 32px}
+
+/* ── Doc header ── */
+.doc-header{display:flex;align-items:center;gap:28px;padding:40px 44px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:22px;margin-bottom:60px;position:relative;overflow:hidden}
+.doc-header-glow{position:absolute;top:-40px;right:-40px;width:240px;height:240px;background:rgba(27,158,143,0.12);border-radius:50%;filter:blur(60px);pointer-events:none}
+.doc-header-glow2{position:absolute;bottom:-60px;left:60px;width:180px;height:180px;background:rgba(6,182,212,0.08);border-radius:50%;filter:blur(50px);pointer-events:none}
+.doc-logo-wrap{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.doc-logo-svg{width:52px;height:52px;flex-shrink:0}
+.doc-wordmark{font-size:46px;font-weight:800;letter-spacing:-2.5px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Plus Jakarta Sans',sans-serif}
+.doc-meta{position:relative;z-index:1}
+.doc-sub{font-size:11px;color:rgba(255,255,255,0.28);letter-spacing:2.5px;text-transform:uppercase;margin-top:5px;font-family:'Plus Jakarta Sans',sans-serif}
+.doc-desc{font-size:13px;color:rgba(255,255,255,0.42);margin-top:8px;max-width:540px;line-height:1.65;font-family:'Plus Jakarta Sans',sans-serif}
+.doc-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);font-size:9px;font-weight:700;color:#FF6B35;letter-spacing:1.5px;text-transform:uppercase;margin-top:12px}
+
+/* ── Sections ── */
+.sec{margin-bottom:72px}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);display:flex;align-items:center;gap:12px;margin-bottom:28px;font-family:'Plus Jakarta Sans',sans-serif}
+.sec-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06)}
+.sec-num{font-size:10px;font-weight:700;color:rgba(27,158,143,0.5);margin-right:4px}
+
+/* ── v3 vs v4 comparison table ── */
+.compare-table{width:100%;border-collapse:collapse;font-family:'Plus Jakarta Sans',sans-serif}
+.compare-table th{padding:10px 16px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}
+.compare-table th:first-child{color:rgba(255,255,255,0.25);width:22%}
+.compare-table th.v3{color:rgba(240,237,230,0.35)}
+.compare-table th.v4{color:#1B9E8F}
+.compare-table td{padding:12px 16px;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.compare-table td:first-child{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.22)}
+.compare-table td.v3-cell{color:rgba(240,237,230,0.4)}
+.compare-table td.v4-cell{color:#F0EDE6;font-weight:500}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-wrap{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden}
+.tag-new{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;background:rgba(255,107,53,0.12);color:#FF6B35;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-left:6px;vertical-align:middle}
+.tag-same{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;background:rgba(27,158,143,0.1);color:#1B9E8F;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-left:6px;vertical-align:middle}
+.tag-dep{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;background:rgba(240,237,230,0.06);color:rgba(240,237,230,0.3);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-left:6px;vertical-align:middle;text-decoration:line-through}
+
+/* ── Color palette ── */
+.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.swatch{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.07)}
+.swatch-color{height:72px;position:relative}
+.swatch-color.glass-demo{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:rgba(45,31,20,0.5);letter-spacing:1px}
+.swatch-info{padding:10px 12px;background:rgba(255,255,255,0.03)}
+.swatch-name{font-size:10px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.3px}
+.swatch-hex{font-size:10px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;margin-top:2px}
+.swatch-tag{margin-top:5px}
+.swatch-desc{font-size:9px;color:rgba(255,255,255,0.25);margin-top:3px;line-height:1.5}
+.palette-section-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:12px;margin-top:28px}
+.palette-section-label:first-of-type{margin-top:0}
+
+/* Pastel swatches row */
+.pastel-row{display:flex;gap:10px;flex-wrap:wrap}
+.pastel-chip{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pastel-circle{width:48px;height:48px;border-radius:50%;border:1px solid rgba(45,31,20,0.08)}
+.pastel-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center}
+
+/* ── Typography ── */
+.type-samples{display:flex;flex-direction:column;gap:20px}
+.type-row{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px 24px;display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+.type-meta{min-width:160px;flex-shrink:0}
+.type-meta-name{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25)}
+.type-meta-spec{font-size:9px;color:rgba(255,255,255,0.2);margin-top:4px;line-height:1.6;font-family:'DM Mono',monospace}
+.type-sample-h{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;letter-spacing:-0.03em;color:#F0EDE6;line-height:1.1}
+.type-sample-body{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:400;line-height:1.6;color:rgba(240,237,230,0.7);max-width:480px}
+.type-sample-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,237,230,0.35)}
+.type-sample-mono{font-family:'DM Mono',monospace;font-size:13px;color:#0BC5B8;letter-spacing:.5px}
+.type-sample-price{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── Glass system ── */
+.glass-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.glass-demo-wrap{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)}
+.glass-demo-cap{padding:10px 14px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase}
+.glass-demo-stage{padding:24px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.glass-stage-light{background:#F5F0E8}
+.glass-stage-dark{background:#0D120F}
+.glass-stage-glow{position:absolute;top:10px;right:10px;width:100px;height:100px;background:rgba(27,158,143,0.2);border-radius:50%;filter:blur(35px)}
+
+/* Light glass card */
+.glass-card-light{background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border:1px solid rgba(45,31,20,0.06);border-radius:16px;box-shadow:0 4px 20px rgba(45,31,20,0.05);padding:16px}
+.glass-card-light .gc-title{font-size:12px;font-weight:700;color:#2D1F14;font-family:'Plus Jakarta Sans',sans-serif}
+.glass-card-light .gc-sub{font-size:10px;color:rgba(45,31,20,0.45);margin-top:3px;font-family:'Plus Jakarta Sans',sans-serif}
+.glass-input-light{background:rgba(245,240,232,0.5);border:1px solid rgba(45,31,20,0.08);border-radius:10px;padding:8px 11px;font-size:11px;font-weight:500;color:#2D1F14;font-family:'Plus Jakarta Sans',sans-serif;width:100%;margin-top:10px}
+.glass-btn-light{padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);font-family:'Plus Jakarta Sans',sans-serif;margin-top:8px;display:inline-block}
+.glass-btn-cta{padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;border:none;background:#FF6B35;font-family:'Plus Jakarta Sans',sans-serif;margin-top:8px;display:inline-block;box-shadow:0 4px 15px rgba(255,107,53,0.3);margin-left:6px}
+
+/* Dark glass card */
+.glass-card-dark{background:rgba(11,197,184,0.06);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border:1px solid rgba(11,197,184,0.08);border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.3);padding:16px}
+.glass-card-dark .gc-title{font-size:12px;font-weight:700;color:#F0EDE6;font-family:'Plus Jakarta Sans',sans-serif}
+.glass-card-dark .gc-sub{font-size:10px;color:rgba(240,237,230,0.4);margin-top:3px;font-family:'Plus Jakarta Sans',sans-serif}
+.glass-input-dark{background:rgba(11,197,184,0.04);border:1px solid rgba(11,197,184,0.08);border-radius:10px;padding:8px 11px;font-size:11px;font-weight:500;color:#F0EDE6;font-family:'Plus Jakarta Sans',sans-serif;width:100%;margin-top:10px}
+
+/* Aurora glow element */
+.aurora-demo{height:80px;position:relative;overflow:hidden;border-radius:12px;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center}
+.aurora-blob{position:absolute;width:120px;height:80px;background:rgba(27,158,143,0.15);border-radius:50%;filter:blur(40px)}
+.aurora-text{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);position:relative;z-index:1;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Glass spec list */
+.glass-specs{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.glass-spec-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:10px 14px}
+.glass-spec-name{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(27,158,143,0.7);margin-bottom:5px}
+.glass-spec-code{font-size:10px;font-family:'DM Mono',monospace;color:rgba(255,255,255,0.4);line-height:1.8}
+
+/* ── CSS Variables block ── */
+.code-block{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px 22px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.8;color:rgba(255,255,255,0.55);overflow-x:auto;white-space:pre}
+.cv{color:#0BC5B8}.cv2{color:#F6C843}.cc{color:rgba(255,255,255,0.2)}.cs{color:#E8826A}.co{color:#FF6B35}.cn{color:#F0EDE6}
+
+/* ── Screen frames ── */
+.screens-row{display:grid;gap:24px}
+.screens-2{grid-template-columns:1fr 1fr}
+.screens-3{grid-template-columns:1fr 1fr 1fr}
+.screen-frame{border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);box-shadow:0 24px 64px rgba(0,0,0,0.5)}
+.screen-cap{padding:10px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
+.screen-cap-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);font-family:'Plus Jakarta Sans',sans-serif}
+.screen-cap-sub{font-size:9px;color:rgba(255,255,255,0.25);font-family:'Plus Jakarta Sans',sans-serif}
+.screen-badge{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(27,158,143,0.15);color:#1B9E8F;border:1px solid rgba(27,158,143,0.25)}
+.screen-badge-cta{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,107,53,0.12);color:#FF6B35;border:1px solid rgba(255,107,53,0.25)}
+
+/* ermix v4 CSS vars for mockups */
+:root{
+  --bg:#F5F0E8;
+  --surface:rgba(255,255,255,0.75);
+  --surface-solid:#FFFFFF;
+  --surface2:#EDE8DF;
+  --glass-blur:blur(15px);
+  --glass-border:1px solid rgba(45,31,20,0.06);
+  --text:#2D1F14;
+  --muted:rgba(45,31,20,0.52);
+  --g1:#EDE8DF;--g2:#E2DAD0;
+  --g3:rgba(45,31,20,0.32);--g4:rgba(45,31,20,0.55);
+  --border:rgba(45,31,20,0.07);--border2:rgba(45,31,20,0.13);
+  --sh:0 4px 20px rgba(45,31,20,0.05);
+  --sh2:0 8px 32px rgba(45,31,20,0.1);
+  --r:16px;--r2:10px;
+  --primary:#1B9E8F;--primary2:#0BC5B8;--primary3:#06B6D4;
+  --grad:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);
+  --cta:#FF6B35;--cta-hover:#E85A25;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+
+/* ── App shell mockups ── */
+.app-shell{background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;display:flex;flex-direction:column;min-height:420px}
+.app-layout{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar collapsed */
+.sb{width:54px;flex-shrink:0;background:var(--surface-solid);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
+.sb-logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);display:flex;align-items:center;justify-content:center;margin-bottom:4px;flex-shrink:0}
+.sb-item{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.sb-item svg{stroke:rgba(45,31,20,0.28);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;width:16px;height:16px;flex-shrink:0}
+.sb-item.on{background:rgba(27,158,143,0.1)}
+.sb-item.on svg{stroke:#1B9E8F}
+.sb-div{width:24px;height:1px;background:var(--border);margin:3px 0}
+.sb-av{margin-top:auto;width:30px;height:30px;border-radius:50%;background:rgba(27,158,143,0.1);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#1B9E8F;flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif}
+.sb-toggle{width:34px;height:28px;border-radius:8px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.sb-toggle svg{stroke:rgba(45,31,20,0.3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:13px;height:13px}
+
+/* Content area */
+.cnt{flex:1;overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}
+.topbar{height:46px;background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-bottom:1px solid rgba(45,31,20,0.06);display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:700;color:var(--text);flex:1;letter-spacing:-0.3px;font-family:'Plus Jakarta Sans',sans-serif}
+.topbar-meta{font-size:10px;color:var(--g3);font-family:'Plus Jakarta Sans',sans-serif}
+.topbar-btn{height:30px;padding:0 14px;border-radius:10px;font-size:11px;font-weight:700;color:white;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);font-family:'Plus Jakarta Sans',sans-serif;display:inline-flex;align-items:center;gap:5px}
+.topbar-btn-cta{height:30px;padding:0 14px;border-radius:10px;font-size:11px;font-weight:700;color:white;border:none;background:#FF6B35;font-family:'Plus Jakarta Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(255,107,53,0.3)}
+.topbar-btn-sec{height:30px;padding:0 14px;border-radius:10px;font-size:11px;font-weight:700;color:var(--text);border:1px solid var(--border2);background:rgba(255,255,255,0.75);backdrop-filter:blur(8px);font-family:'Plus Jakarta Sans',sans-serif}
+
+.scroll{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Photo header */
+.ph{height:60px;position:relative;overflow:hidden;display:flex;align-items:flex-end;flex-shrink:0;border-radius:var(--r) var(--r) 0 0}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.1) 60%,transparent 100%)}
+.ph-bar{position:relative;z-index:1;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;width:100%}
+.ph-title{font-size:11px;font-weight:800;color:white;display:flex;align-items:center;gap:6px;font-family:'Plus Jakarta Sans',sans-serif}
+.ph-title svg{stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:11px;height:11px}
+.ph-badge{font-size:7px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,0.22);color:white;letter-spacing:.5px;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Section card glass */
+.sec-card{background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:var(--r);border:1px solid rgba(45,31,20,0.06);box-shadow:var(--sh);overflow:hidden}
+.sec-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.field-row{display:grid;gap:6px}
+.fr-2{grid-template-columns:1fr 1fr}
+.fr-3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:3px}
+.flbl{font-size:8px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--g3);font-family:'Plus Jakarta Sans',sans-serif}
+.finput{background:rgba(245,240,232,0.5);border:1px solid rgba(45,31,20,0.08);border-radius:var(--r2);padding:7px 10px;font-size:11px;font-weight:500;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif}
+.price-box{padding:9px 12px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;border:1px solid}
+.price-lbl{font-size:8px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif}
+.price-val{font-size:15px;font-weight:800;letter-spacing:-.5px;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Metric card */
+.metric{background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:14px;padding:12px 14px;border:1px solid rgba(45,31,20,0.06);box-shadow:var(--sh)}
+.metric-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g3);margin-bottom:6px;display:flex;align-items:center;gap:5px;font-family:'Plus Jakarta Sans',sans-serif}
+.metric-lbl svg{width:10px;height:10px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.metric-val{font-size:24px;font-weight:800;letter-spacing:-1.5px;line-height:1;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.metric-sub{font-size:9px;color:var(--g3);margin-top:4px;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* PDF cover / Preview */
+.pdf-cover{background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%);padding:20px;display:flex;flex-direction:column;gap:12px;min-height:200px;position:relative;overflow:hidden}
+.pdf-cover-glow{position:absolute;top:-30px;right:-30px;width:160px;height:160px;background:rgba(27,158,143,0.2);border-radius:50%;filter:blur(40px)}
+.pdf-cover-glow2{position:absolute;bottom:-20px;left:20px;width:100px;height:100px;background:rgba(6,182,212,0.12);border-radius:50%;filter:blur(30px)}
+.pdf-logo{font-size:15px;font-weight:800;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(27,158,143,0.15);border:1px solid rgba(27,158,143,0.3);border-radius:100px;padding:4px 10px;font-size:8px;color:rgba(255,255,255,0.65);width:fit-content;font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-chip-name{color:#0BC5B8;font-weight:700}
+.pdf-dest-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-dest{font-size:24px;font-weight:800;color:white;letter-spacing:-.8px;line-height:1.1;font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-data-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.2)}
+.pdf-data-lbl{font-size:7px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:3px;font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-data-val{font-size:11px;font-weight:700;color:rgba(255,255,255,0.88);font-family:'Plus Jakarta Sans',sans-serif}
+.pdf-data-val.grad{background:linear-gradient(135deg,#1B9E8F,#0BC5B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.total-bar{padding:12px 16px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.total-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);font-family:'Plus Jakarta Sans',sans-serif}
+.total-sub{font-size:8px;color:rgba(255,255,255,0.5);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif}
+.total-val{font-size:20px;font-weight:800;color:white;letter-spacing:-.5px;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Login screen */
+.login-bg{background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:380px;padding:24px;position:relative;overflow:hidden}
+.login-bg-glow{position:absolute;top:30px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:rgba(27,158,143,0.08);border-radius:50%;filter:blur(60px)}
+.login-card{background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:20px;padding:30px 26px;box-shadow:0 8px 40px rgba(45,31,20,0.1);border:1px solid rgba(45,31,20,0.06);width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;position:relative;z-index:1}
+.login-logo-row{display:flex;align-items:center;gap:10px}
+.login-wm{font-size:28px;font-weight:800;letter-spacing:-1.2px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif}
+.login-wm span{background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-sub{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g3);margin-top:-8px;font-family:'Plus Jakarta Sans',sans-serif}
+.login-inputs{display:flex;flex-direction:column;gap:8px;width:100%}
+.login-input{background:rgba(245,240,232,0.5);border:1px solid rgba(45,31,20,0.08);border-radius:var(--r2);padding:9px 12px;font-size:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;width:100%}
+.login-btn{width:100%;padding:11px;border-radius:10px;font-size:12px;font-weight:700;color:white;border:none;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);font-family:'Plus Jakarta Sans',sans-serif}
+.login-google{width:100%;padding:10px;border-radius:10px;font-size:12px;font-weight:600;color:var(--text);border:1px solid var(--border2);background:rgba(255,255,255,0.5);font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+.login-link{font-size:10px;color:var(--primary);font-family:'Plus Jakarta Sans',sans-serif}
+.login-footer{font-size:9px;color:var(--g3);font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ── Icons grid ── */
+.icons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.icon-cell{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.icon-cell svg{stroke:rgba(27,158,143,0.7);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;width:22px;height:22px}
+.icon-cell.on svg{stroke:#1B9E8F}
+.icon-name{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-align:center;font-family:'Plus Jakarta Sans',sans-serif}
+.icon-attr{font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,255,255,0.2);text-align:center;margin-top:2px}
+
+/* ── Do / Don't ── */
+.dodont-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dodont-col{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.06)}
+.dodont-head{padding:12px 18px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.dodont-head.do{background:rgba(27,158,143,0.08);color:#1B9E8F;border-bottom:1px solid rgba(27,158,143,0.12)}
+.dodont-head.dont{background:rgba(244,63,94,0.06);color:#F43F5E;border-bottom:1px solid rgba(244,63,94,0.1)}
+.dodont-head svg{width:12px;height:12px;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.dodont-head.do svg{stroke:#1B9E8F}
+.dodont-head.dont svg{stroke:#F43F5E}
+.dodont-list{padding:14px 18px;display:flex;flex-direction:column;gap:9px;background:rgba(255,255,255,0.01)}
+.dodont-item{font-size:11px;color:rgba(240,237,230,0.55);display:flex;align-items:flex-start;gap:8px;line-height:1.5;font-family:'Plus Jakarta Sans',sans-serif}
+.dodont-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dodont-item.do-item .dodont-dot{background:#1B9E8F}
+.dodont-item.dont-item .dodont-dot{background:#F43F5E}
+
+/* Info box */
+.info-box{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px}
+.info-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.65);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-family:'Plus Jakarta Sans',sans-serif}
+.info-ok{color:#1B9E8F}.info-no{color:#F43F5E}
+.info-text{font-size:11px;color:rgba(255,255,255,0.38);line-height:1.75;font-family:'Plus Jakarta Sans',sans-serif}
+.grid-2-info{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Misc utility */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{padding:4px 12px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif}
+.chip-teal{background:rgba(27,158,143,0.1);color:#1B9E8F;border:1px solid rgba(27,158,143,0.2)}
+.chip-orange{background:rgba(255,107,53,0.1);color:#FF6B35;border:1px solid rgba(255,107,53,0.2)}
+.chip-muted{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.06)}
+.divider{height:1px;background:rgba(255,255,255,0.05);margin:8px 0}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════
+     1. HEADER
+══════════════════════════════ -->
+<div class="doc-header">
+  <div class="doc-header-glow"></div>
+  <div class="doc-header-glow2"></div>
+  <div class="doc-logo-wrap">
+    <!-- Logo ermix — X path custom, NO TOCAR -->
+    <svg class="doc-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1B9E8F"/>
+          <stop offset="50%" stop-color="#0BC5B8"/>
+          <stop offset="100%" stop-color="#06B6D4"/>
+        </linearGradient>
+      </defs>
+      <path d="M6 6l10 10L6 26" stroke="url(#logo-grad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M26 6L16 16l10 10" stroke="url(#logo-grad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <span class="doc-wordmark">ermix</span>
+  </div>
+  <div class="doc-meta">
+    <div class="doc-sub">Brand Guidelines v4.0 &nbsp;·&nbsp; Aurora Teal &nbsp;·&nbsp; Marzo 2026</div>
+    <div class="doc-desc">Identidad visual v4 de ermix. Evoluciona sobre v3 incorporando glassmorphism, profundidad por capas, Plus Jakarta Sans y CTA naranja como acento de contraste para acciones principales.</div>
+    <div class="chip-row">
+      <span class="chip chip-teal">Aurora Teal</span>
+      <span class="chip chip-orange">CTA Orange nuevo</span>
+      <span class="chip chip-muted">Logo sin cambios</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     2. QUE CAMBIA EN v4
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">01</span> Que cambia en v4</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="v3">v3 (anterior)</th>
+          <th class="v4">v4 Aurora Teal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tipografia</td>
+          <td class="v3-cell">DM Sans<span class="tag-dep">deprecated</span></td>
+          <td class="v4-cell">Plus Jakarta Sans 300–800<span class="tag-new">nuevo</span><br><span style="font-size:10px;color:rgba(240,237,230,0.35)">DM Mono se mantiene para codigos IATA</span></td>
+        </tr>
+        <tr>
+          <td>Cards / Surfaces</td>
+          <td class="v3-cell">Solid white (#FFFFFF)<br>box-shadow clasico</td>
+          <td class="v4-cell">Glass — rgba(255,255,255,0.75)<br>backdrop-filter:blur(15px)<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>CTA</td>
+          <td class="v3-cell">Solo teal gradient<br>linear-gradient(135deg,#1B9E8F,#0BC5B8)</td>
+          <td class="v4-cell">Teal gradient (acciones secundarias)<br>+ Orange #FF6B35 para guardar/confirmar<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>Sombras</td>
+          <td class="v3-cell">Drop shadows<br>0 2px 10px rgba(45,31,20,0.07)</td>
+          <td class="v4-cell">Glow shadows<span class="tag-new">nuevo</span><br>0 4px 20px rgba(45,31,20,0.05) en light<br>0 4px 20px rgba(0,0,0,0.3) en dark</td>
+        </tr>
+        <tr>
+          <td>Border radius</td>
+          <td class="v3-cell">--r: 14px &nbsp;/&nbsp; --r2: 8px</td>
+          <td class="v4-cell">--r: 16px &nbsp;/&nbsp; --r2: 10px<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>Topbar</td>
+          <td class="v3-cell">Surface solido, sin blur</td>
+          <td class="v4-cell">Glass — rgba(255,255,255,0.75) + blur(15px)<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>Inputs</td>
+          <td class="v3-cell">background: var(--surface)<br>border: 1px solid var(--border2)</td>
+          <td class="v4-cell">background: rgba(245,240,232,0.5)<br>border: 1px solid rgba(45,31,20,0.08)<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>Profundidad</td>
+          <td class="v3-cell">Flat — sin z-depth</td>
+          <td class="v4-cell">Layered — z-depth con blur + translucidez<br>Aurora glow en modales y hero elements<span class="tag-new">nuevo</span></td>
+        </tr>
+        <tr>
+          <td>Logo ermix</td>
+          <td class="v3-cell">Sin cambio</td>
+          <td class="v4-cell">Sin cambio<span class="tag-same">igual</span></td>
+        </tr>
+        <tr>
+          <td>Colores base</td>
+          <td class="v3-cell">Sin cambio</td>
+          <td class="v4-cell">Sin cambio — misma paleta teal<span class="tag-same">igual</span></td>
+        </tr>
+        <tr>
+          <td>Pasteles secciones</td>
+          <td class="v3-cell">Sin cambio</td>
+          <td class="v4-cell">Sin cambio<span class="tag-same">igual</span></td>
+        </tr>
+        <tr>
+          <td>Iconos Lucide</td>
+          <td class="v3-cell">Sin cambio</td>
+          <td class="v4-cell">Sin cambio — atributos obligatorios iguales<span class="tag-same">igual</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     3. PALETA DE COLORES
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">02</span> Paleta de colores</div>
+
+  <div class="palette-section-label">Gradiente principal — sin cambio</div>
+  <div class="palette-grid" style="grid-template-columns:repeat(3,1fr);max-width:560px">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1B9E8F"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Primary</div>
+        <div class="swatch-hex">#1B9E8F</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--primary</span></div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0BC5B8"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Primary 2</div>
+        <div class="swatch-hex">#0BC5B8</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--primary2</span></div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#06B6D4"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Primary 3</div>
+        <div class="swatch-hex">#06B6D4</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--primary3</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="palette-section-label" style="margin-top:24px">CTA Orange — NUEVO en v4</div>
+  <div class="palette-grid" style="grid-template-columns:repeat(2,1fr);max-width:380px">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FF6B35;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:1.5px;text-transform:uppercase">NUEVO</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-name">CTA Orange</div>
+        <div class="swatch-hex">#FF6B35</div>
+        <div class="swatch-tag"><span class="chip chip-orange" style="font-size:8px;padding:2px 7px">--cta</span></div>
+        <div class="swatch-desc">Guardar, Confirmar, Crear cotizacion</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#E85A25"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">CTA Hover</div>
+        <div class="swatch-hex">#E85A25</div>
+        <div class="swatch-tag"><span class="chip chip-orange" style="font-size:8px;padding:2px 7px">--cta-hover</span></div>
+        <div class="swatch-desc">Estado hover del boton naranja</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="palette-section-label" style="margin-top:24px">Fondos y surfaces</div>
+  <div class="palette-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F5F0E8;border-bottom:1px solid rgba(45,31,20,0.07)"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Background Light</div>
+        <div class="swatch-hex">#F5F0E8</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--bg</span></div>
+        <div class="swatch-desc">Fondo crema de toda la app</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color glass-demo" style="background:rgba(255,255,255,0.75);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-bottom:1px solid rgba(45,31,20,0.07)">
+        <span style="font-size:9px;font-weight:700;color:rgba(45,31,20,0.35);letter-spacing:1px;text-transform:uppercase">glass</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface Glass Light</div>
+        <div class="swatch-hex">rgba(255,255,255,0.75)</div>
+        <div class="swatch-tag"><span class="chip chip-orange" style="font-size:8px;padding:2px 7px">NUEVO</span></div>
+        <div class="swatch-desc">Cards, topbar, modales — luz</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FFFFFF;border-bottom:1px solid rgba(45,31,20,0.07)"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface Solid</div>
+        <div class="swatch-hex">#FFFFFF</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--surface-solid</span></div>
+        <div class="swatch-desc">Sidebar (no necesita glass)</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#EDE8DF;border-bottom:1px solid rgba(45,31,20,0.07)"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface 2</div>
+        <div class="swatch-hex">#EDE8DF</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--surface2</span></div>
+        <div class="swatch-desc">Hover estados, alternos</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0D120F"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Background Dark</div>
+        <div class="swatch-hex">#0D120F</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--bg dark</span></div>
+        <div class="swatch-desc">Verde oscuro — no negro puro</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color glass-demo" style="background:rgba(11,197,184,0.06);border-bottom:1px solid rgba(11,197,184,0.08)">
+        <span style="font-size:9px;font-weight:700;color:rgba(11,197,184,0.4);letter-spacing:1px;text-transform:uppercase">glass</span>
+      </div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface Glass Dark</div>
+        <div class="swatch-hex">rgba(11,197,184,0.06)</div>
+        <div class="swatch-tag"><span class="chip chip-orange" style="font-size:8px;padding:2px 7px">NUEVO</span></div>
+        <div class="swatch-desc">Cards, modales — oscuro</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#141A16"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Dark Surface Solid</div>
+        <div class="swatch-hex">#141A16</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--surface-solid dark</span></div>
+        <div class="swatch-desc">Sidebar dark mode</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#2D1F14"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Text Light</div>
+        <div class="swatch-hex">#2D1F14</div>
+        <div class="swatch-tag"><span class="chip chip-muted" style="font-size:8px;padding:2px 7px">--text</span></div>
+        <div class="swatch-desc">Texto principal en light mode</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="palette-section-label" style="margin-top:24px">Pasteles por seccion — sin cambio</div>
+  <div class="pastel-row">
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#E8F7F3"></div>
+      <div class="pastel-lbl">Vuelos<br><span style="color:#1B9E8F">#E8F7F3</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#FFF8E3"></div>
+      <div class="pastel-lbl">Hotel<br><span style="color:#D4A017">#FFF8E3</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#FFF0EC"></div>
+      <div class="pastel-lbl">Traslados<br><span style="color:#E8826A">#FFF0EC</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#FFF8E3"></div>
+      <div class="pastel-lbl">Excursiones<br><span style="color:#D4A017">#FFF8E3</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#FFF0EC"></div>
+      <div class="pastel-lbl">Autos<br><span style="color:#E8826A">#FFF0EC</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#E8F4FD"></div>
+      <div class="pastel-lbl">Cruceros<br><span style="color:#0EA5E9">#E8F4FD</span></div>
+    </div>
+    <div class="pastel-chip">
+      <div class="pastel-circle" style="background:#F0EEF9"></div>
+      <div class="pastel-lbl">Seguros<br><span style="color:#9B7FD4">#F0EEF9</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     4. TIPOGRAFIA
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">03</span> Tipografia</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <span class="chip chip-orange">Plus Jakarta Sans — nueva fuente principal</span>
+    <span class="chip chip-muted">DM Mono — se mantiene para codigos</span>
+  </div>
+  <div class="type-samples">
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Headings</div>
+        <div class="type-meta-spec">Plus Jakarta Sans 800<br>letter-spacing: -0.03em<br>line-height: 1.1</div>
+      </div>
+      <div class="type-sample-h">Nueva cotizacion<br>para tu cliente</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Body</div>
+        <div class="type-meta-spec">Plus Jakarta Sans 400<br>line-height: 1.6<br>font-size: 14px</div>
+      </div>
+      <div class="type-sample-body">El agente puede crear cotizaciones personalizadas, agregar secciones de vuelos, alojamiento, traslados y excursiones en un solo flujo.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Labels</div>
+        <div class="type-meta-spec">Plus Jakarta Sans 700<br>8–9px<br>letter-spacing: 2px<br>text-transform: uppercase<br>color: var(--g3)</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="type-sample-label">Origen del vuelo</div>
+        <div class="type-sample-label">Fecha de salida</div>
+        <div class="type-sample-label">Pasajeros</div>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Monospace</div>
+        <div class="type-meta-spec">DM Mono 400/500<br>Codigos IATA, refs<br>Sin cambio v3→v4</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="type-sample-mono">EZE → MIA · AA 1284</div>
+        <div class="type-sample-mono">REF #CTZ-2026-0384</div>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">
+        <div class="type-meta-name">Precios</div>
+        <div class="type-meta-spec">Plus Jakarta Sans 800<br>letter-spacing: -0.5px<br>gradient text clip</div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:16px">
+        <div class="type-sample-price">USD 4.850</div>
+        <div class="type-sample-price" style="font-size:18px">USD 1.200</div>
+        <div class="type-sample-price" style="font-size:13px">USD 320</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     5. SISTEMA DE GLASSMORPHISM
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">04</span> Sistema de glassmorphism</div>
+  <div class="glass-grid">
+
+    <!-- Light glass -->
+    <div class="glass-demo-wrap">
+      <div class="glass-demo-cap">Glass card — Light mode</div>
+      <div class="glass-demo-stage glass-stage-light" style="min-height:220px">
+        <div class="glass-card-light">
+          <div class="gc-title">Vuelos internacionales</div>
+          <div class="gc-sub">Buenos Aires → Miami · 2 pasajeros</div>
+          <input class="glass-input-light" type="text" placeholder="Aerolinea" readonly>
+          <div style="display:flex;gap:6px;margin-top:2px">
+            <span class="glass-btn-light">Vista previa</span>
+            <span class="glass-btn-cta">Guardar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark glass -->
+    <div class="glass-demo-wrap">
+      <div class="glass-demo-cap">Glass card — Dark mode</div>
+      <div class="glass-demo-stage glass-stage-dark" style="min-height:220px;position:relative">
+        <div class="glass-stage-glow"></div>
+        <div class="glass-card-dark" style="position:relative;z-index:1">
+          <div class="gc-title">Vuelos internacionales</div>
+          <div class="gc-sub">Buenos Aires → Miami · 2 pasajeros</div>
+          <input class="glass-input-dark" type="text" placeholder="Aerolinea" readonly style="margin-top:10px">
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <span style="padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);font-family:'Plus Jakarta Sans',sans-serif">Vista previa</span>
+            <span style="padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;background:#FF6B35;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 15px rgba(255,107,53,0.3)">Guardar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aurora glow -->
+    <div class="glass-demo-wrap">
+      <div class="glass-demo-cap">Aurora glow — elemento atmosferico</div>
+      <div style="padding:20px;background:#0D120F">
+        <div class="aurora-demo">
+          <div class="aurora-blob" style="left:-20px;top:-10px"></div>
+          <div class="aurora-blob" style="right:-20px;bottom:-10px;background:rgba(6,182,212,0.1)"></div>
+          <div class="aurora-text">Detras de modales y hero elements</div>
+        </div>
+        <div style="margin-top:12px;font-size:10px;font-family:'DM Mono',monospace;color:rgba(255,255,255,0.25);line-height:1.8">
+          position: absolute;<br>
+          background: rgba(27,158,143,0.15);<br>
+          border-radius: 50%;<br>
+          filter: blur(40px);
+        </div>
+      </div>
+    </div>
+
+    <!-- Input specs -->
+    <div class="glass-demo-wrap">
+      <div class="glass-demo-cap">Glass inputs — Light y Dark</div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:16px;background:#0A0E0B">
+        <div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif">Light mode input</div>
+          <div style="padding:9px 12px;border-radius:10px;background:rgba(245,240,232,0.5);border:1px solid rgba(45,31,20,0.08);font-size:11px;color:#2D1F14;font-family:'Plus Jakarta Sans',sans-serif">Buenos Aires (EZE)</div>
+        </div>
+        <div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif">Dark mode input</div>
+          <div style="padding:9px 12px;border-radius:10px;background:rgba(11,197,184,0.04);border:1px solid rgba(11,197,184,0.08);font-size:11px;color:#F0EDE6;font-family:'Plus Jakarta Sans',sans-serif">Buenos Aires (EZE)</div>
+        </div>
+        <div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif">CTA naranja vs teal</div>
+          <div style="display:flex;gap:8px">
+            <span style="padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);font-family:'Plus Jakarta Sans',sans-serif">Vista previa</span>
+            <span style="padding:8px 16px;border-radius:10px;font-size:11px;font-weight:700;color:white;background:#FF6B35;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 15px rgba(255,107,53,0.3)">Guardar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glass specs reference -->
+  <div class="glass-specs" style="margin-top:20px">
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">Glass card — Light</div>
+      <div class="glass-spec-code">background: rgba(255,255,255,0.75);
+backdrop-filter: blur(15px);  -webkit-backdrop-filter: blur(15px);
+border: 1px solid rgba(45,31,20,0.06);
+box-shadow: 0 4px 20px rgba(45,31,20,0.05);
+border-radius: 16px;</div>
+    </div>
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">Glass card — Dark</div>
+      <div class="glass-spec-code">background: rgba(11,197,184,0.06);
+backdrop-filter: blur(15px);  -webkit-backdrop-filter: blur(15px);
+border: 1px solid rgba(11,197,184,0.08);
+box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+border-radius: 16px;</div>
+    </div>
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">Input glass — Light</div>
+      <div class="glass-spec-code">background: rgba(245,240,232,0.5);
+border: 1px solid rgba(45,31,20,0.08);
+border-radius: 10px;</div>
+    </div>
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">Input glass — Dark</div>
+      <div class="glass-spec-code">background: rgba(11,197,184,0.04);
+border: 1px solid rgba(11,197,184,0.08);
+border-radius: 10px;</div>
+    </div>
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">Aurora glow</div>
+      <div class="glass-spec-code">position: absolute;
+background: rgba(27,158,143,0.15);
+border-radius: 50%;
+filter: blur(40px);  /* variante secundaria: rgba(6,182,212,0.08) + blur(50px) */</div>
+    </div>
+    <div class="glass-spec-item">
+      <div class="glass-spec-name">CTA Orange button</div>
+      <div class="glass-spec-code">background: #FF6B35;
+color: white;
+border-radius: 10px;
+box-shadow: 0 4px 15px rgba(255,107,53,0.3);
+font-weight: 700;</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     6. VARIABLES CSS
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">05</span> Variables CSS — v4</div>
+<div class="code-block"><span class="cc">/* ── ermix v4 — Aurora Teal ── */</span>
+<span class="cc">/* LIGHT MODE */</span>
+<span class="cv">:root</span> <span class="cn">{</span>
+  <span class="cv">--bg</span>:             <span class="cs">#F5F0E8</span>;           <span class="cc">/* crema — fondo toda la app */</span>
+  <span class="cv">--surface</span>:        <span class="cs">rgba(255,255,255,0.75)</span>;  <span class="cc">/* glass — cards, topbar, modales */</span>
+  <span class="cv">--surface-solid</span>:  <span class="cs">#FFFFFF</span>;            <span class="cc">/* sidebar (no necesita glass) */</span>
+  <span class="cv">--surface2</span>:       <span class="cs">#EDE8DF</span>;
+  <span class="cv">--glass-blur</span>:     <span class="cs">blur(15px)</span>;
+  <span class="cv">--glass-border</span>:   <span class="cs">1px solid rgba(45,31,20,0.06)</span>;
+  <span class="cv">--text</span>:           <span class="cs">#2D1F14</span>;
+  <span class="cv">--muted</span>:          <span class="cs">rgba(45,31,20,0.52)</span>;
+  <span class="cv">--g1</span>:             <span class="cs">#EDE8DF</span>;   <span class="cv">--g2</span>: <span class="cs">#E2DAD0</span>;
+  <span class="cv">--g3</span>:             <span class="cs">rgba(45,31,20,0.32)</span>;   <span class="cc">/* labels uppercase */</span>
+  <span class="cv">--g4</span>:             <span class="cs">rgba(45,31,20,0.55)</span>;
+  <span class="cv">--border</span>:         <span class="cs">rgba(45,31,20,0.07)</span>;
+  <span class="cv">--border2</span>:        <span class="cs">rgba(45,31,20,0.13)</span>;
+  <span class="cv">--sh</span>:             <span class="cs">0 4px 20px rgba(45,31,20,0.05)</span>;     <span class="cc">/* glow light */</span>
+  <span class="cv">--sh2</span>:            <span class="cs">0 8px 32px rgba(45,31,20,0.1)</span>;
+  <span class="cv">--r</span>:              <span class="cs">16px</span>;   <span class="cv">--r2</span>: <span class="cs">10px</span>;       <span class="cc">/* +2px vs v3 */</span>
+  <span class="cv">--primary</span>:        <span class="cs">#1B9E8F</span>;
+  <span class="cv">--primary2</span>:       <span class="cs">#0BC5B8</span>;
+  <span class="cv">--primary3</span>:       <span class="cs">#06B6D4</span>;
+  <span class="cv">--grad</span>:           <span class="cs">linear-gradient(135deg, #1B9E8F 0%, #0BC5B8 50%, #06B6D4 100%)</span>;
+  <span class="co">--cta</span>:            <span class="cs">#FF6B35</span>;             <span class="cc">/* NUEVO — naranja CTA */</span>
+  <span class="co">--cta-hover</span>:      <span class="cs">#E85A25</span>;
+  <span class="cv">--font</span>:           <span class="cs">'Plus Jakarta Sans', sans-serif</span>;   <span class="cc">/* NUEVO — reemplaza DM Sans */</span>
+  <span class="cv">--font-mono</span>:      <span class="cs">'DM Mono', monospace</span>;
+<span class="cn">}</span>
+
+<span class="cc">/* DARK MODE */</span>
+<span class="cv">[data-theme="dark"]</span> <span class="cn">{</span>
+  <span class="cv">--bg</span>:             <span class="cs">#0D120F</span>;            <span class="cc">/* verde oscuro — no negro puro */</span>
+  <span class="cv">--surface</span>:        <span class="cs">rgba(11,197,184,0.06)</span>;  <span class="cc">/* glass dark */</span>
+  <span class="cv">--surface-solid</span>:  <span class="cs">#141A16</span>;
+  <span class="cv">--surface2</span>:       <span class="cs">#1B231D</span>;
+  <span class="cv">--glass-blur</span>:     <span class="cs">blur(15px)</span>;
+  <span class="cv">--glass-border</span>:   <span class="cs">1px solid rgba(11,197,184,0.08)</span>;
+  <span class="cv">--text</span>:           <span class="cs">#F0EDE6</span>;
+  <span class="cv">--g3</span>:             <span class="cs">rgba(240,237,230,0.28)</span>;
+  <span class="cv">--border</span>:         <span class="cs">rgba(255,255,255,0.07)</span>;
+  <span class="cv">--border2</span>:        <span class="cs">rgba(255,255,255,0.13)</span>;
+  <span class="cv">--sh</span>:             <span class="cs">0 4px 20px rgba(0,0,0,0.3)</span>;
+  <span class="cv">--sh2</span>:            <span class="cs">0 8px 32px rgba(0,0,0,0.5)</span>;
+<span class="cn">}</span>
+
+<span class="cc">/* NOTA: aplicar glass siempre con -webkit-backdrop-filter tambien */</span>
+<span class="cc">/* backdrop-filter: var(--glass-blur);                              */</span>
+<span class="cc">/* -webkit-backdrop-filter: var(--glass-blur);                      */</span></div>
+</div>
+
+
+<!-- ══════════════════════════════
+     7. PANTALLAS MOCKUP
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">06</span> Pantallas mockup v4</div>
+
+  <!-- Mockup A: Form light -->
+  <div style="margin-bottom:24px">
+    <div class="screen-frame">
+      <div class="screen-cap">
+        <span class="screen-cap-title">Formulario de cotizacion — Light mode</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="screen-cap-sub">sidebar 54px colapsado</span>
+          <span class="screen-badge">Glass surfaces</span>
+          <span class="screen-badge-cta">CTA naranja</span>
+        </div>
+      </div>
+      <div class="app-shell" style="min-height:480px">
+        <!-- Topbar -->
+        <div class="topbar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.35)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <span class="topbar-title">Nueva cotizacion</span>
+          <span class="topbar-meta">Borrador · 3 secciones</span>
+          <button class="topbar-btn-sec">Vista previa</button>
+          <button class="topbar-btn-cta">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Guardar
+          </button>
+        </div>
+        <div class="app-layout">
+          <!-- Sidebar collapsed -->
+          <div class="sb">
+            <div class="sb-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(45,31,20,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </div>
+            <div class="sb-logo">
+              <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+                <defs><linearGradient id="sb-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+                <path d="M6 6l10 10L6 26" stroke="url(#sb-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M26 6L16 16l10 10" stroke="url(#sb-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="sb-item on">
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </div>
+            <div class="sb-item">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            </div>
+            <div class="sb-item">
+              <svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            </div>
+            <div class="sb-div"></div>
+            <div class="sb-item">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="sb-av">DL</div>
+          </div>
+          <!-- Content -->
+          <div class="cnt">
+            <div class="scroll">
+              <!-- Seccion vuelos -->
+              <div class="sec-card">
+                <div class="ph" style="background-image:url(https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80);background-size:cover;background-position:center">
+                  <div class="ph-bar">
+                    <div class="ph-title">
+                      <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                      Vuelos
+                    </div>
+                    <span class="ph-badge">2 pasajeros</span>
+                  </div>
+                </div>
+                <div class="sec-body">
+                  <div class="field-row fr-2">
+                    <div class="field">
+                      <span class="flbl">Origen</span>
+                      <div class="finput">Buenos Aires (EZE)</div>
+                    </div>
+                    <div class="field">
+                      <span class="flbl">Destino</span>
+                      <div class="finput">Miami (MIA)</div>
+                    </div>
+                  </div>
+                  <div class="field-row fr-3">
+                    <div class="field">
+                      <span class="flbl">Aerolinea</span>
+                      <div class="finput">American Airlines</div>
+                    </div>
+                    <div class="field">
+                      <span class="flbl">Salida</span>
+                      <div class="finput">14 Jun 2026</div>
+                    </div>
+                    <div class="field">
+                      <span class="flbl">Regreso</span>
+                      <div class="finput">24 Jun 2026</div>
+                    </div>
+                  </div>
+                  <div class="price-box" style="background:#E8F7F3;border-color:rgba(27,158,143,0.15)">
+                    <div>
+                      <div class="price-lbl" style="color:#1B9E8F">Precio vuelos</div>
+                      <div style="font-size:9px;color:rgba(27,158,143,0.6);font-family:'Plus Jakarta Sans',sans-serif">2 pasajeros · ida y vuelta</div>
+                    </div>
+                    <div class="price-val" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8)">USD 1.840</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Seccion hotel -->
+              <div class="sec-card">
+                <div class="ph" style="background-image:url(https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80);background-size:cover;background-position:center">
+                  <div class="ph-bar">
+                    <div class="ph-title">
+                      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                      Alojamiento
+                    </div>
+                    <span class="ph-badge">10 noches</span>
+                  </div>
+                </div>
+                <div class="sec-body">
+                  <div class="field-row fr-2">
+                    <div class="field">
+                      <span class="flbl">Hotel</span>
+                      <div class="finput">Fontainebleau Miami Beach</div>
+                    </div>
+                    <div class="field">
+                      <span class="flbl">Habitacion</span>
+                      <div class="finput">Deluxe Ocean View</div>
+                    </div>
+                  </div>
+                  <div class="price-box" style="background:#FFF8E3;border-color:rgba(212,160,23,0.15)">
+                    <div>
+                      <div class="price-lbl" style="color:#D4A017">Precio alojamiento</div>
+                      <div style="font-size:9px;color:rgba(212,160,23,0.7);font-family:'Plus Jakarta Sans',sans-serif">10 noches · desayuno incl.</div>
+                    </div>
+                    <div class="price-val" style="background:linear-gradient(135deg,#D4A017,#F6C843)">USD 2.400</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mockup B: PDF Preview dark -->
+  <div class="screens-row screens-2" style="margin-bottom:24px">
+    <div class="screen-frame">
+      <div class="screen-cap">
+        <span class="screen-cap-title">Vista previa / Portada PDF</span>
+        <span class="screen-badge">Dark · Aurora glow</span>
+      </div>
+      <div>
+        <div class="pdf-cover">
+          <div class="pdf-cover-glow"></div>
+          <div class="pdf-cover-glow2"></div>
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:10px">
+            <!-- Logo -->
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+                <defs><linearGradient id="pdf-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+                <path d="M6 6l10 10L6 26" stroke="url(#pdf-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M26 6L16 16l10 10" stroke="url(#pdf-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="pdf-logo">ermix</span>
+            </div>
+            <!-- Chip cliente -->
+            <div class="pdf-chip">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Cotizacion para: <span class="pdf-chip-name">Familia Gonzalez</span>
+            </div>
+            <!-- Destino -->
+            <div>
+              <div class="pdf-dest-label">Destino</div>
+              <div class="pdf-dest">Miami, Florida</div>
+            </div>
+          </div>
+        </div>
+        <!-- Data bar -->
+        <div class="pdf-data-bar">
+          <div>
+            <div class="pdf-data-lbl">Duracion</div>
+            <div class="pdf-data-val">10 noches</div>
+          </div>
+          <div>
+            <div class="pdf-data-lbl">Pasajeros</div>
+            <div class="pdf-data-val grad">4 pax</div>
+          </div>
+          <div>
+            <div class="pdf-data-lbl">Salida</div>
+            <div class="pdf-data-val">14 Jun 2026</div>
+          </div>
+        </div>
+        <!-- Total -->
+        <div class="total-bar">
+          <div>
+            <div class="total-lbl">Total cotizacion</div>
+            <div class="total-sub">Todos los servicios incluidos</div>
+          </div>
+          <div class="total-val">USD 4.850</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mockup C: Login light -->
+    <div class="screen-frame">
+      <div class="screen-cap">
+        <span class="screen-cap-title">Login — Light mode</span>
+        <span class="screen-badge">Glass card · Crema BG</span>
+      </div>
+      <div class="login-bg">
+        <div class="login-bg-glow"></div>
+        <div class="login-card">
+          <div class="login-logo-row">
+            <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+              <defs><linearGradient id="login-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+              <path d="M6 6l10 10L6 26" stroke="url(#login-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M26 6L16 16l10 10" stroke="url(#login-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="login-wm"><span>ermix</span></div>
+          </div>
+          <div class="login-sub">Cotizador de viajes</div>
+          <div class="login-inputs">
+            <input class="login-input" type="email" placeholder="Email" readonly>
+            <input class="login-input" type="password" placeholder="Contrasena" readonly>
+          </div>
+          <button class="login-btn">Ingresar</button>
+          <div class="divider" style="width:100%"></div>
+          <button class="login-google">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continuar con Google
+          </button>
+          <a class="login-link">Crear cuenta nueva</a>
+          <div class="login-footer">ermix · cotizador de viajes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     8. DO / DON'T
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">07</span> Reglas Do / Don't</div>
+  <div class="dodont-grid">
+    <div class="dodont-col">
+      <div class="dodont-head do">
+        <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+        Hacer
+      </div>
+      <div class="dodont-list">
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Usar Plus Jakarta Sans exclusivamente como fuente principal</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>DM Mono para codigos IATA, referencias numericas y bloques de codigo</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Glassmorphism en cards, topbar y surfaces — backdrop-filter:blur(15px)</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Aurora glow (rgba + blur) detras de modales y hero elements</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>CTA naranja (#FF6B35) para Guardar, Confirmar, Crear</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Teal para links, badges, estados activos, indicadores</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Logo X con gradiente teal siempre — los 2 paths exactos</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Radius 16px en cards, 10px en inputs y botones</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Aplicar -webkit-backdrop-filter junto con backdrop-filter</div>
+        <div class="dodont-item do-item"><span class="dodont-dot"></span>Variables CSS siempre — nunca colores hardcodeados en la app</div>
+      </div>
+    </div>
+    <div class="dodont-col">
+      <div class="dodont-head dont">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        No hacer
+      </div>
+      <div class="dodont-list">
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Usar DM Sans — deprecated en v4</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Fondos violeta o box-shadow violeta — eso era v2, eliminado</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Glassmorphism sin fondo contrastante detras — necesita BG visible</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Opacidad menor a 0.5 en glass cards light — pierden legibilidad</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>CTA naranja para links de navegacion — eso es teal</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Tocar el path SVG de la X del logo — nunca</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Emojis en la UI — prohibido en toda la app</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Escribir "Ermix" con mayuscula — siempre "ermix" en minuscula</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>npm, bundlers, librerias externas pesadas</div>
+        <div class="dodont-item dont-item"><span class="dodont-dot"></span>Tocar logica de Supabase auth, window.print() o IDs del formulario</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     9. ICONOS LUCIDE
+══════════════════════════════ -->
+<div class="sec">
+  <div class="sec-label"><span class="sec-num">08</span> Iconos Lucide — atributos obligatorios</div>
+  <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;padding:12px 16px;margin-bottom:18px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);line-height:1.8">
+    fill="none"  stroke-width="1.8"  stroke-linecap="round"  stroke-linejoin="round"
+  </div>
+  <div class="icons-grid">
+    <!-- Vuelos -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      <div class="icon-name">Vuelos</div>
+    </div>
+    <!-- Alojamiento -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <div class="icon-name">Alojamiento</div>
+    </div>
+    <!-- Traslados -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg>
+      <div class="icon-name">Traslados</div>
+    </div>
+    <!-- Excursiones -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+      <div class="icon-name">Excursiones</div>
+    </div>
+    <!-- Autos -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+      <div class="icon-name">Autos</div>
+    </div>
+    <!-- Cruceros -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg>
+      <div class="icon-name">Cruceros</div>
+    </div>
+    <!-- Seguros -->
+    <div class="icon-cell on">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="icon-name">Seguros</div>
+    </div>
+    <!-- Inicio/home -->
+    <div class="icon-cell">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <div class="icon-name">Inicio</div>
+    </div>
+    <!-- Historial -->
+    <div class="icon-cell">
+      <svg viewBox="0 0 24 24" width="22" height="22"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      <div class="icon-name">Historial</div>
+    </div>
+    <!-- Clientes -->
+    <div class="icon-cell">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <div class="icon-name">Clientes</div>
+    </div>
+    <!-- Perfil -->
+    <div class="icon-cell">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="icon-name">Perfil</div>
+    </div>
+    <!-- Admin -->
+    <div class="icon-cell">
+      <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      <div class="icon-name">Admin</div>
+    </div>
+  </div>
+
+  <!-- Atributos detallados -->
+  <div class="grid-2-info" style="margin-top:16px">
+    <div class="info-box">
+      <div class="info-title"><span class="info-ok">Atributos obligatorios en todos los SVG</span></div>
+      <div class="info-text">fill="none"<br>stroke-width="1.8"<br>stroke-linecap="round"<br>stroke-linejoin="round"<br><br>Color del stroke se define por contexto: stroke del elemento padre, clase CSS o atributo inline.</div>
+    </div>
+    <div class="info-box">
+      <div class="info-title"><span class="info-ok">Tamanos tipicos de iconos</span></div>
+      <div class="info-text">Sidebar items: 16×16px<br>Topbar: 13×13px o 14×14px<br>Photo headers (ph): 11×11px<br>Labels inline: 10×10px<br>Metric labels: 10×10px<br>Section indicators: 22×22px</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<div style="text-align:center;padding:40px 0 20px;border-top:1px solid rgba(255,255,255,0.05);margin-top:40px">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+      <defs><linearGradient id="ft-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+      <path d="M6 6l10 10L6 26" stroke="url(#ft-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M26 6L16 16l10 10" stroke="url(#ft-g)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span style="font-size:18px;font-weight:800;letter-spacing:-0.8px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Plus Jakarta Sans',sans-serif">ermix</span>
+  </div>
+  <div style="font-size:9px;color:rgba(255,255,255,0.18);letter-spacing:2px;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif">Brand Guidelines v4.0 · Aurora Teal · Marzo 2026</div>
+  <div style="font-size:10px;color:rgba(255,255,255,0.15);margin-top:6px;font-family:'Plus Jakarta Sans',sans-serif">Este archivo es la fuente de verdad para la identidad visual v4 de ermix.</div>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
