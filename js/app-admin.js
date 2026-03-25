@@ -1,11 +1,11 @@
 async function renderAdmin(){
-  if(!isAdmin) return;
+  if(currentRol!=='admin'&&currentRol!=='agencia') return;
   // Agentes
   const {data:ags}=await sb.from('agentes').select('*').order('creado_en');
   document.getElementById('admin-agentes').innerHTML=ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th><th></th></tr></thead><tbody>
   ${ags.map(a=>`<tr>
     <td>${a.email}</td><td>${a.nombre||'—'}</td>
-    <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':'st-borrador'}">${a.rol}</span></td>
+    <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
     <td>${a.activo?'Sí':'No'}</td>
     <td style="white-space:nowrap;vertical-align:middle">
       <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
@@ -175,7 +175,7 @@ function editAgentModal(id,nombre,email,rol){
     <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar agente</div>
     <div class="fg"><label class="lbl">Email</label><input class="finput" id="ea-em" value="${email}" readonly style="opacity:.6"></div>
     <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ea-nm" value="${nombre}" placeholder="Nombre completo"></div>
-    <div class="fg"><label class="lbl">Rol</label><select class="fsel" id="ea-rol"><option value="agente" ${rol==='agente'?'selected':''}>Agente</option><option value="admin" ${rol==='admin'?'selected':''}>Admin</option></select></div>
+    <div class="fg"><label class="lbl">Rol</label><select class="fsel" id="ea-rol"><option value="agente" ${rol==='agente'?'selected':''}>Agente</option><option value="agencia" ${rol==='agencia'?'selected':''}>Agencia</option><option value="admin" ${rol==='admin'?'selected':''}>Admin</option></select></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-pri" onclick="saveAgentEdit('${id}')">Guardar</button>

@@ -105,14 +105,6 @@
 
   <div class="sb-div"></div>
 
-  <!-- Admin (solo visible para admin) -->
-  <button class="sb-item" onclick="switchTab('admin')" title="Admin" data-tab="admin" id="nav-admin" style="display:none">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    <span class="sb-lbl">Admin</span>
-  </button>
-
-  <div class="sb-div"></div>
-
   <!-- Dark/light toggle -->
   <button class="sb-item" onclick="toggleTheme()" title="Cambiar tema" id="btn-theme">
     <svg id="theme-icon-dark" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -120,8 +112,17 @@
     <span class="sb-lbl">Tema</span>
   </button>
 
-  <!-- Avatar agente -->
-  <div id="sb-avatar" onclick="switchTab('config')" title="Mi perfil">DL<span class="bn-lbl">Perfil</span></div>
+  <!-- Profile dropdown trigger -->
+  <div id="sb-prof-dd" style="position:relative;margin-top:auto">
+    <div id="sb-avatar" onclick="_toggleProfDD(event)" title="Mi perfil">DL</div>
+    <!-- Expanded label (sidebar open) -->
+    <div id="sb-prof-label" onclick="_toggleProfDD(event)" style="display:none;cursor:pointer;padding:0 12px 4px;margin-top:-4px">
+      <div style="font-size:.76rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:136px" id="sb-prof-nm"></div>
+      <div id="sb-prof-rolbadge" style="font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);margin-top:1px"></div>
+    </div>
+    <!-- Dropdown panel -->
+    <div id="sb-prof-menu" class="prof-dd"></div>
+  </div>
 </div>
 
 <!-- BOTTOM NAVIGATION — mobile only, shown by JS after login -->
@@ -823,13 +824,13 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 </div>
 
 <!-- JS Modules -->
-<script src="js/app-core.js?v=18"></script>
-<script src="js/app-form.js?v=18"></script>
-<script src="js/app-ia.js?v=18"></script>
-<script src="js/app-preview.js?v=18"></script>
-<script src="js/app-history.js?v=18"></script>
-<script src="js/app-admin.js?v=18"></script>
-<script src="js/app-quote.js?v=18"></script>
-<script src="js/app-promos.js?v=18"></script>
+<script src="js/app-core.js?v=19"></script>
+<script src="js/app-form.js?v=19"></script>
+<script src="js/app-ia.js?v=19"></script>
+<script src="js/app-preview.js?v=19"></script>
+<script src="js/app-history.js?v=19"></script>
+<script src="js/app-admin.js?v=19"></script>
+<script src="js/app-quote.js?v=19"></script>
+<script src="js/app-promos.js?v=19"></script>
 </body>
 </html>
