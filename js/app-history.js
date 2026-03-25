@@ -64,6 +64,7 @@ async function loadFromHistory(refId, id){
   // Vista previa (click en la fila)
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data)return;
+  window._hFotos={};
   qData=data.datos;
   editingQuoteId=id;
   if(data.cover_url) coverUrl=data.cover_url;
@@ -74,6 +75,7 @@ async function editFromHistory(refId, id){
   // Cargar en formulario para editar
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data){ toast('No se encontró la cotización.',false); return; }
+  window._hFotos={};
   // Store editing context
   editingQuoteId = id;
   const d = data.datos;

@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════
 let airportsList=[];
 let citiesList=[];
+window._hFotos={}; // fotos de galería por bloque hotel: {'hb-1':[{url,label},...], ...}
 fetch('data/airports.json').then(r=>r.json()).then(d=>{airportsList=d;}).catch(()=>{});
 fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCityAC();}).catch(()=>{});
 // Mapa aerolínea→IATA y lista completa para autocomplete (carga asíncrona silenciosa)
@@ -500,8 +501,16 @@ function addHotel(d){
   <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
     <div class="money-wrap"><div class="money-cur"><select id="h${id}-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
     <input class="money-inp" type="number" id="h${id}-com" placeholder="0" value="${d.comision||''}"></div>
+  </div>
+  <div class="fg">
+    <label class="lbl">Fotos de galería</label>
+    <div id="h${id}-fotos-strip" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+    <input type="file" id="h${id}-fotos-inp" accept="image/*" multiple style="display:none" onchange="_addHotelFotos(${id},this)">
+    <button type="button" class="btn btn-out btn-sm" onclick="document.getElementById('h${id}-fotos-inp').click()">+ Agregar fotos</button>
   </div>`;
+  window._hFotos['hb-'+id]=Array.isArray(d.fotos)?d.fotos.slice():[];
   document.getElementById('hoteles-cont').appendChild(el);
+  _renderHotelFotoStrip(id);
   // Autocomplete ciudad y país del hotel
   initCityAutocomplete('h'+id+'-ciu');
   initCityAutocomplete('h'+id+'-pai',true);
@@ -774,7 +783,7 @@ function collectForm(){
     const parqs=[...blk.querySelectorAll('#h'+i+'-parques input:checked')].map(x=>pMap[x.value]||x.value);
     const bens=[...blk.querySelectorAll('#h'+i+'-bens input:checked')].map(x=>bMap[x.value]||x.value);
     const am=[...blk.querySelectorAll('#h'+i+'-am input:checked')].map(x=>amMap[x.value]||x.value);
-    hoteles.push({nombre:nm,tipo,ciudad:gv('h'+i+'-ciu'),pais:gv('h'+i+'-pai'),estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),foto_url:gv('h'+i+'-foto'),comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
+    hoteles.push({nombre:nm,tipo,ciudad:gv('h'+i+'-ciu'),pais:gv('h'+i+'-pai'),estrellas:gv('h'+i+'-est'),ci:fd(gv('h'+i+'-ci')),co:fd(gv('h'+i+'-co')),noches:gn('h'+i+'-nc'),hab:gv('h'+i+'-hab'),regimen:gv('h'+i+'-reg'),moneda:gv('h'+i+'-cur'),precio:gn('h'+i+'-pr'),tickets:gv('h'+i+'-tkt'),dias_tkt:gv('h'+i+'-tktd'),parques:parqs,beneficios:bens,mp:gv('h'+i+'-mp'),mp_cur:gv('h'+i+'-mp-cur'),mp_pr:gn('h'+i+'-mp-pr'),mp_desc:gv('h'+i+'-mp-desc'),notes:gv('h'+i+'-notes'),amenities:am,am_x:gv('h'+i+'-am-x'),foto_url:gv('h'+i+'-foto'),fotos:window._hFotos['hb-'+i]||[],comision:gn('h'+i+'-com'),com_cur:gv('h'+i+'-com-cur'),incluir_en_total:_getIncluir(blk),opcion:_getOpcion(blk)});
   });
   document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
     const i=blk.id.replace('tb-','');const or=gv('t'+i+'-or'),de=gv('t'+i+'-de');if(!or&&!de)return;
@@ -989,10 +998,35 @@ function _onPriceChange(contId,label){
 }
 
 // ── Función unificada para el botón ✕ ──
+function _addHotelFotos(hid,inp){
+  [...inp.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      const key='hb-'+hid;
+      if(!window._hFotos[key])window._hFotos[key]=[];
+      window._hFotos[key].push({url:e.target.result,label:f.name.replace(/\.[^.]+$/,'')});
+      _renderHotelFotoStrip(hid);
+    };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
+function _removeHotelFoto(hid,idx){
+  const key='hb-'+hid;
+  if(window._hFotos[key])window._hFotos[key].splice(idx,1);
+  _renderHotelFotoStrip(hid);
+}
+function _renderHotelFotoStrip(hid){
+  const strip=document.getElementById('h'+hid+'-fotos-strip');
+  if(!strip)return;
+  const fotos=window._hFotos['hb-'+hid]||[];
+  strip.innerHTML=fotos.map((f,i)=>f?.url?`<div style="position:relative"><img src="${f.url}" style="width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--border2)" title="${f.label||''}"><button type="button" onclick="_removeHotelFoto(${hid},${i})" style="position:absolute;top:-5px;right:-5px;background:var(--text);color:var(--surface);border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">✕</button></div>`:'').join('');
+}
 function _removeRep(btn){
   const rep=btn.closest('.rep');
   const cont=rep?.closest('[id$="-cont"]');
   const contId=cont?.id;
+  if(rep?.id) delete window._hFotos[rep.id];
   rep?.remove();
   if(contId){
     const labels={
