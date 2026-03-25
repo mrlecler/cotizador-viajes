@@ -269,11 +269,7 @@ async function showApp(user){
         if(sal) sal.textContent='Hola, '+data.nombre.trim().split(/\s+/)[0]+'.';
       }
     }
-    // Ensure agent record exists (fire and forget)
-    sb.from('agentes').upsert(
-      {email: user.email, nombre: agCfg.nm||user.user_metadata?.full_name||''},
-      {onConflict:'email',ignoreDuplicates:true}
-    ).then(()=>{}).catch(()=>{});
+    // (upsert eliminado — RLS bloquea con 403 y el registro ya existe)
   } catch(e) {
     console.warn('Supabase init warning (non-fatal):', e.message);
   }
@@ -340,15 +336,15 @@ function _buildProfileDropdown(){
 }
 function _toggleProfDD(e){
   e.stopPropagation();
-  const dd=document.getElementById('sb-prof-dd');
-  if(!dd) return;
-  const isOpen=dd.classList.toggle('open');
+  const menu=document.getElementById('sb-prof-menu');
+  if(!menu) return;
+  const isOpen=menu.classList.toggle('open');
   if(isOpen){
     setTimeout(()=>document.addEventListener('click',_closeProfDD,{once:true}),10);
   }
 }
 function _closeProfDD(){
-  document.getElementById('sb-prof-dd')?.classList.remove('open');
+  document.getElementById('sb-prof-menu')?.classList.remove('open');
 }
 
 // ═══════════════════════════════════════════
@@ -478,7 +474,8 @@ async function loadDashboardMetrics(){
     else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
 
     // Quotes
-    let qQuery=sb.from('cotizaciones').select('id,estado,total_comision,created_at').eq('agente_id',ag.id);
+    // total_comision puede no existir como columna — se lee desde datos JSON
+    let qQuery=sb.from('cotizaciones').select('id,estado,created_at,datos').eq('agente_id',ag.id);
     if(since) qQuery=qQuery.gte('created_at',since);
     const {data:qData}=await qQuery;
     const quotes=qData||[];
@@ -493,9 +490,10 @@ async function loadDashboardMetrics(){
     const env=quotes.filter(q=>q.estado==='enviada').length;
     const borr=quotes.filter(q=>q.estado==='borrador'||!q.estado).length;
     const canc=quotes.filter(q=>q.estado==='cancelada').length;
-    const comTotal=quotes.reduce((s,q)=>s+(Number(q.total_comision)||0),0);
-    const comConf=quotes.filter(q=>q.estado==='confirmada').reduce((s,q)=>s+(Number(q.total_comision)||0),0);
-    const comPend=quotes.filter(q=>q.estado==='enviada').reduce((s,q)=>s+(Number(q.total_comision)||0),0);
+    const getCom=q=>Number(q.datos?.total_comision||q.total_comision)||0;
+    const comTotal=quotes.reduce((s,q)=>s+getCom(q),0);
+    const comConf=quotes.filter(q=>q.estado==='confirmada').reduce((s,q)=>s+getCom(q),0);
+    const comPend=quotes.filter(q=>q.estado==='enviada').reduce((s,q)=>s+getCom(q),0);
     const fmtUSD=n=>n>=1000?'$'+(n/1000).toFixed(1)+'k':'$'+n.toLocaleString('es-AR');
 
     // Update metric cards
