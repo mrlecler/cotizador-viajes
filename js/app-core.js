@@ -13,6 +13,19 @@ let agCfg=JSON.parse(localStorage.getItem('mp_cfg')||'{}');
 let qData=null, currentUser=null, isAdmin=false, currentRol='agente';
 let vc=0,hc=0,tc=0,ec=0;
 let allClients=[], allQuotes=[];
+
+// ── Error log global (debug) ──────────────────────────
+window._appLog = window._appLog || [];
+function _captureError(ctx, err){
+  const entry={ts:new Date().toISOString(),ctx,msg:err?.message||String(err),code:err?.code||'',details:err?.details||''};
+  window._appLog.unshift(entry);
+  if(window._appLog.length>100) window._appLog.length=100;
+  console.error('[appLog]',ctx,err);
+  // Si el panel de admin está abierto, refrescar el log
+  if(document.getElementById('admin-log') && typeof loadAdminLog==='function'){
+    loadAdminLog();
+  }
+}
 let formDraft=null; // BUG3 — draft en memoria para preservar el formulario entre tabs
 let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editando (null = nueva)
 
@@ -404,20 +417,33 @@ async function dbSaveQuote(d, supabaseId){
     cover_url: coverUrl||null,
     precio_total: d.precios?.total||d.precios?.por_persona||null,
     moneda: d.precios?.moneda||'USD',
-    notas_int: d.notas_int||'',
-    total_comision: d.total_comision||0
+    notas_int: d.notas_int||''
+    // total_comision NO es columna en DB — vive dentro de datos JSONB
   };
   let error;
   if(supabaseId){
     // UPDATE — no re-enviar agente_id para evitar conflictos de RLS/constraints
     ({error} = await sb.from('cotizaciones').update(baseRow).eq('id', supabaseId));
+    // Si falla con columna inexistente, intentar con payload mínimo garantizado
+    if(error && (error.code==='42703'||error.message?.includes('column'))){
+      _captureError('dbSaveQuote:update:fallback', error);
+      const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
+      ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
+    }
   } else {
     // INSERT — incluir agente_id en el registro nuevo
     const row = {...baseRow, agente_id: agId||null};
     ({error} = await sb.from('cotizaciones').insert(row));
+    // Si falla con columna inexistente, intentar con payload mínimo garantizado
+    if(error && (error.code==='42703'||error.message?.includes('column'))){
+      _captureError('dbSaveQuote:insert:fallback', error);
+      const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
+      ({error} = await sb.from('cotizaciones').insert(safeRow));
+    }
   }
   if(error){
     console.error('dbSaveQuote error:', error);
+    _captureError('dbSaveQuote', error);
     throw new Error(error.message||(error.details||JSON.stringify(error)));
   }
   await loadClients();

@@ -432,17 +432,6 @@ async function loadAdminLog(){
     .limit(60);
 
   const cnt=document.getElementById('admin-log-count');
-  if(error||!data?.length){
-    if(cnt)cnt.textContent='';
-    el.innerHTML='<div class="empty-state" style="padding:40px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Sin actividad registrada</p><small>Las cotizaciones creadas aparecerán aquí</small></div>';
-    return;
-  }
-
-  if(cnt)cnt.textContent='Últimas '+data.length;
-
-  // Dot class por estado
-  const dotCls={borrador:'alog-dot-gray',enviada:'alog-dot-blue',confirmada:'alog-dot-green',cancelada:'alog-dot-red'};
-  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
 
   // Tiempo relativo
   function relTime(ts){
@@ -457,30 +446,85 @@ async function loadAdminLog(){
     return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short'});
   }
 
-  el.innerHTML='<div class="alog-list">'+data.map((r,i)=>{
-    const est=r.estado||'borrador';
-    const nm=r.datos?.cliente?.nombre||'Sin nombre';
-    const dest=r.destino||r.datos?.viaje?.destino||'—';
-    const dt=new Date(r.created_at);
-    const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-    const isLast=i===data.length-1;
-    return`<div class="alog-item">
-      <div class="alog-dot ${dotCls[est]||'alog-dot-gray'}"></div>
-      <div class="alog-body">
-        <div class="alog-top">
-          <span class="alog-ref">${r.ref_id||'—'}</span>
-          <span class="status-badge st-${est}">${stLbl[est]||est}</span>
-        </div>
-        <div class="alog-nm">${nm}</div>
-        <div class="alog-dest">${dest}</div>
-        <div class="alog-meta">
-          <span class="alog-time">${dtStr}</span>
-          <span style="color:var(--border2)">·</span>
-          <span class="alog-rel">${relTime(r.created_at)}</span>
-        </div>
-      </div>
+  // Errores capturados en memoria (session)
+  const errLog=window._appLog||[];
+  let html='<div class="alog-list">';
+
+  // Sección errores (si hay)
+  if(errLog.length){
+    html+=`<div class="alog-section-hdr">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Errores de sesión (${errLog.length})
+      <button onclick="window._appLog=[];loadAdminLog()" class="alog-clear-btn">Limpiar</button>
     </div>`;
-  }).join('')+'</div>';
+    html+=errLog.map(e=>{
+      const dt=new Date(e.ts);
+      const dtStr=dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      return`<div class="alog-item alog-item-err">
+        <div class="alog-dot alog-dot-red"></div>
+        <div class="alog-body">
+          <div class="alog-top">
+            <span class="alog-ref" style="color:var(--color-red,#EF4444)">${e.ctx||'error'}</span>
+            ${e.code?`<span class="status-badge" style="background:rgba(239,68,68,0.1);color:#EF4444;border-color:rgba(239,68,68,0.2)">${e.code}</span>`:''}
+          </div>
+          <div class="alog-nm" style="color:var(--text)">${_escHtml(e.msg)}</div>
+          ${e.details?`<div class="alog-dest">${_escHtml(e.details)}</div>`:''}
+          <div class="alog-meta">
+            <span class="alog-time">${dtStr}</span>
+            <span style="color:var(--border2)">·</span>
+            <span class="alog-rel">${relTime(e.ts)}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Sección actividad cotizaciones
+  if(!error && data?.length){
+    if(errLog.length){
+      html+=`<div class="alog-section-hdr" style="margin-top:12px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Actividad de cotizaciones (${data.length})
+      </div>`;
+    }
+    const dotCls={borrador:'alog-dot-gray',enviada:'alog-dot-blue',confirmada:'alog-dot-green',cancelada:'alog-dot-red'};
+    const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+    html+=data.map(r=>{
+      const est=r.estado||'borrador';
+      const nm=r.datos?.cliente?.nombre||'Sin nombre';
+      const dest=r.destino||r.datos?.viaje?.destino||'—';
+      const dt=new Date(r.created_at);
+      const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+      return`<div class="alog-item">
+        <div class="alog-dot ${dotCls[est]||'alog-dot-gray'}"></div>
+        <div class="alog-body">
+          <div class="alog-top">
+            <span class="alog-ref">${r.ref_id||'—'}</span>
+            <span class="status-badge st-${est}">${stLbl[est]||est}</span>
+          </div>
+          <div class="alog-nm">${_escHtml(nm)}</div>
+          <div class="alog-dest">${_escHtml(dest)}</div>
+          <div class="alog-meta">
+            <span class="alog-time">${dtStr}</span>
+            <span style="color:var(--border2)">·</span>
+            <span class="alog-rel">${relTime(r.created_at)}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } else if(!errLog.length){
+    html+='<div class="empty-state" style="padding:40px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Sin actividad registrada</p><small>Los errores y cotizaciones creadas aparecerán aquí</small></div>';
+  }
+
+  html+='</div>';
+  el.innerHTML=html;
+
+  const total=(errLog.length||0)+(data?.length||0);
+  if(cnt) cnt.textContent=total?'Últimas '+total:'';
+}
+
+function _escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ═══════════════════════════════════════════

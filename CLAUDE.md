@@ -14,18 +14,22 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 |---|---|
 | `index.html` | Shell principal |
 | `styles.css` | Todos los estilos — variables CSS, layout, componentes |
-| `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle dark/light |
-| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades |
+| `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle dark/light, roles, `_captureError()`, profile dropdown |
+| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades, `saveQuote()` |
 | `js/app-quote.js` | Generación HTML cotización y PDF (`window.print()`) |
-| `js/app-admin.js` | Panel admin |
+| `js/app-admin.js` | Panel admin, activity log + error log, gestión de agentes/seguros |
+| `js/app-preview.js` | Vista previa de cotización, perfil de usuario, cambio de contraseña |
+| `js/app-history.js` | Historial de cotizaciones |
+| `js/app-ia.js` | Integración con Claude API para generar descripciones |
+| `js/app-promos.js` | Gestión de promos |
 | `data/airports.json` | 915 aeropuertos con IATA |
 | `data/cities.json` | Ciudades del mundo |
 | `ermix-brand-assets-v2/ermix-brand-guidelines-v3.html` | Referencia visual completa — leer si hay dudas de diseño |
 
 ## Reglas absolutas — NUNCA hacer esto
 
-- ❌ Tocar lógica de Supabase auth
-- ❌ Tocar el guardado de cotizaciones
+- ❌ Tocar lógica de Supabase auth (login, signup, session, OAuth)
+- ❌ Tocar `dbSaveQuote()` sin verificar columnas reales de la tabla `cotizaciones`
 - ❌ Tocar `window.print()`
 - ❌ Tocar IDs de campos del formulario
 - ❌ Tocar el sistema de autocomplete de aeropuertos/ciudades
@@ -124,9 +128,11 @@ Seguros:     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
 3. Historial
 4. Clientes
 5. [separador]
-6. Admin
-7. [separador]
-8. Perfil
+6. Perfil (avatar con iniciales abajo, `#sb-prof-dd`)
+
+- **Ya no hay botón "Admin" en el sidebar** — Admin se accede desde el dropdown del avatar
+- El dropdown del perfil (`#sb-prof-menu.prof-dd`) se abre con `_toggleProfDD(event)` en el `#sb-avatar`
+- Contenido del dropdown: nombre, badge de rol, links a Admin/Perfil/Cerrar sesión (según `currentRol`)
 
 ## Photo headers (secciones del formulario)
 
@@ -160,8 +166,12 @@ Seguros:     https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&
 @media print {
   .sb, #sidebar, [class*="sidebar"] { display: none !important; }
   .cnt, #main-content { margin-left: 0 !important; }
+  #bottom-nav, #bottom-nav.active,
+  #form-sticky-bar, #prev-toolbar, #hdr { display: none !important; }
 }
 ```
+
+**IMPORTANTE:** El bloque `@media print` FINAL en `styles.css` debe ser el ÚLTIMO bloque del archivo. Si se agregan reglas mobile con `!important` después, ganan por cascada y rompen el PDF (ej: `#bottom-nav.active{display:flex!important}` apareció después del print y se mostraba en PDF).
 
 ## Modales
 
@@ -185,10 +195,35 @@ La API de Claude está en `https://api.anthropic.com/v1/messages`.
 - La API key se guarda en Supabase por agente (campo en tabla `agentes`)
 - Uso actual: botón "✦ Generar descripción" inline en el formulario — rellena el campo descripción del viaje con info turística del destino seleccionado
 
+## Roles de usuario
+
+Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agente'`
+
+| Rol | Acceso |
+|---|---|
+| `admin` | Todo: admin panel, config global, ver todos los agentes, editar roles |
+| `agencia` | Config agencia, ver cotizaciones de sus agentes, invitar hasta 3 agentes |
+| `agente` | Solo sus propias cotizaciones, clientes, config PDF |
+
+- El rol viene de `agentes.rol` en Supabase; se cachea en `localStorage('mp_rol')`
+- `_applyRolUI()` en `app-core.js` muestra badge `ADMIN`/`AGENCIA` en header y arma el dropdown
+- `isAdmin` (boolean legacy) se mantiene sincronizado con `currentRol==='admin'`
+
+## Sistema de error log (debug)
+
+- `window._appLog` — array global de errores capturados en sesión (max 100)
+- `_captureError(ctx, err)` — empuja al array y refresca el admin log si está abierto
+- Se llama desde `dbSaveQuote`, `saveQuote`, y puntos clave de error
+- El admin panel muestra errores de sesión (sección roja) + actividad de cotizaciones (timeline)
+
 ## Supabase
 
-- RLS habilitado en `public.agentes`
-- Tabla principal de cotizaciones: verificar nombre exacto antes de consultar
+- RLS habilitado en `public.agentes` — NO hacer upsert desde cliente (403)
+- Tabla `cotizaciones` — usar `select('*')`, NO nombrar columnas individualmente (riesgo de 400 por columna inexistente)
+- `total_comision` NO existe como columna en `cotizaciones` — vive dentro del JSONB `datos`
+- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `created_at`
+- Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback si fallan
+- Tabla `agentes`: tiene `id`, `email`, `nombre`, `rol`, y más — usar `select('*')`
 - Storage: para fotos de secciones y logos de agencia
 - NO modificar políticas RLS ni funciones de DB sin confirmar primero
 

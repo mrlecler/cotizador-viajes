@@ -2031,6 +2031,11 @@ body{overflow-x:hidden}
 .alog-rel{font-size:.69rem;font-weight:600;color:var(--primary);letter-spacing:.2px}
 .alog-hd-right{display:flex;align-items:center;gap:10px}
 .alog-count{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3)}
+.alog-section-hdr{display:flex;align-items:center;gap:6px;padding:8px 20px 6px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);border-bottom:1px solid var(--border)}
+.alog-section-hdr svg{opacity:.6}
+.alog-clear-btn{margin-left:auto;font-size:.68rem;font-weight:600;color:var(--g3);background:none;border:1px solid var(--border2);border-radius:var(--r2);padding:2px 8px;cursor:pointer;transition:all .15s}
+.alog-clear-btn:hover{color:var(--text);border-color:var(--g3)}
+.alog-item-err:hover{background:rgba(239,68,68,0.04)}
 
 /* ══════════════════════════
    PRINT — override final (must be LAST)

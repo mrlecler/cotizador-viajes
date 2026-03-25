@@ -851,6 +851,7 @@ async function saveQuote(){
     toast(wasEditing ? '✓ Cotización actualizada en la nube' : '✓ Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
+    if(typeof _captureError==='function') _captureError('saveQuote', e);
     toast('No se pudo guardar la cotización, intentá de nuevo',false);
   }
   finally{ 
