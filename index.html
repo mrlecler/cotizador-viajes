@@ -576,7 +576,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <button class="btn btn-out btn-sm" onclick="document.getElementById('closing-f').click()" title="Foto página de cierre"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Cierre</button>
       <button class="btn btn-del btn-xs" id="btn-rmclosing" onclick="removeClosing()" style="display:none">✕</button>
       <input type="file" id="closing-f" accept="image/*" style="display:none" onchange="uploadClosing(this)">
-      <button class="btn btn-out btn-sm" onclick="openGalleryPanel()" title="Galería de fotos por hotel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Galería</button>
       <div style="width:1px;height:24px;background:var(--border2);flex-shrink:0;margin:0 2px"></div>
       <button type="button" class="pdf-sw tb-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Tema: Turquesa ermix"></button>
       <button type="button" class="pdf-sw tb-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Tema: Azul marino"></button>
@@ -812,16 +811,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
   </div>
 </div>
 
-<!-- Modal Galería Hotel -->
-<div id="gallery-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeGalleryModal()">
-  <div class="modal" style="width:500px;max-height:85vh;display:flex;flex-direction:column">
-    <div class="modal-hd"><div class="modal-ttl">Galería de fotos</div><button class="modal-cls" onclick="closeGalleryModal()">✕</button></div>
-    <div class="modal-body" id="gallery-body" style="overflow-y:auto;flex:1"></div>
-    <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
-      <button class="btn btn-save btn-sm" onclick="closeGalleryModal()">Listo</button>
-    </div>
-  </div>
-</div>
 
 <!-- JS Modules -->
 <script src="js/app-core.js?v=21"></script>

@@ -154,59 +154,6 @@ function removeSectionPhoto(k){
 }
 
 // ═══════════════════════════════════════════
-// GALLERY MODAL
-// ═══════════════════════════════════════════
-const _GALLERY_LABELS=['Exterior','Habitación','Piscina','Áreas comunes','Restaurante','Vista'];
-function openGalleryPanel(){
-  const hoteles=(qData?.hoteles||[]).filter(h=>h.nombre);
-  if(!hoteles.length){toast('Agregá hoteles al formulario primero.',false);return;}
-  let html='';
-  hoteles.forEach((h,hi)=>{
-    const fotos=hotelPhotos[hi]||[];
-    html+=`<div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">${h.nombre}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
-    for(let fi=0;fi<6;fi++){
-      const foto=fotos[fi];
-      const lbl=foto?.label||_GALLERY_LABELS[fi]||('Foto '+(fi+1));
-      html+=`<div>
-        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);margin-bottom:4px">${lbl}</div>
-        <div style="display:flex;align-items:center;gap:6px">
-          ${foto?.url?`<img src="${foto.url}" style="height:36px;width:64px;object-fit:cover;border-radius:4px;border:1px solid var(--border2)">`:'<div style="height:36px;width:64px;border-radius:4px;border:2px dashed var(--border2)"></div>'}
-          <input type="file" id="gf-${hi}-${fi}" accept="image/*" style="display:none" onchange="setHotelGalleryPhoto(${hi},${fi},'${_GALLERY_LABELS[fi]||('Foto '+(fi+1))}',this)">
-          <input type="text" value="${lbl}" style="font-size:10px;padding:3px 7px;border:1px solid var(--border2);border-radius:5px;width:90px;color:var(--text);background:var(--surface)" onchange="setHotelGalleryLabel(${hi},${fi},this.value)" placeholder="Etiqueta">
-          <button class="btn btn-out btn-xs" onclick="document.getElementById('gf-${hi}-${fi}').click()">+</button>
-          ${foto?.url?`<button class="btn btn-del btn-xs" onclick="removeHotelGalleryPhoto(${hi},${fi})">✕</button>`:''}
-        </div>
-      </div>`;
-    }
-    html+=`</div></div>`;
-  });
-  document.getElementById('gallery-body').innerHTML=html;
-  document.getElementById('gallery-modal').style.display='flex';
-}
-function closeGalleryModal(){document.getElementById('gallery-modal').style.display='none';}
-function setHotelGalleryPhoto(hi,fi,defaultLabel,inp){
-  const f=inp.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    if(!hotelPhotos[hi])hotelPhotos[hi]=[];
-    hotelPhotos[hi][fi]={url:e.target.result,label:hotelPhotos[hi][fi]?.label||defaultLabel};
-    openGalleryPanel();
-    if(qData)renderPreview(qData);
-  };
-  r.readAsDataURL(f);
-}
-function setHotelGalleryLabel(hi,fi,label){
-  if(!hotelPhotos[hi])hotelPhotos[hi]=[];
-  if(!hotelPhotos[hi][fi])hotelPhotos[hi][fi]={url:'',label};
-  else hotelPhotos[hi][fi].label=label;
-}
-function removeHotelGalleryPhoto(hi,fi){
-  if(hotelPhotos[hi])hotelPhotos[hi][fi]=null;
-  openGalleryPanel();
-  if(qData)renderPreview(qData);
-}
 
 // ═══════════════════════════════════════════
 // EDIT FROM PREVIEW
