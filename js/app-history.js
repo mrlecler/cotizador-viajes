@@ -244,7 +244,7 @@ function openClientModal(id){
     <div class="fg"><label class="lbl">Notas</label><textarea class="ftxt" id="mc-not" rows="3">${c.notas||''}</textarea></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveClient('${id||''}')">Guardar</button>
+      <button class="btn btn-cta" onclick="saveClient('${id||''}')">Guardar</button>
     </div>`;
   openModal();
 }

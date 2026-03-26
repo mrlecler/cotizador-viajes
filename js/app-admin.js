@@ -68,7 +68,7 @@ function openProvModal(){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveProv()">Guardar</button>
+      <button class="btn btn-cta" onclick="saveProv()">Guardar</button>
     </div>`;openModal();
 }
 async function saveProv(){
@@ -132,7 +132,7 @@ function openSeguroModal(){
     <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ms-nm" placeholder="PAX Assistance"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveSeguro()">Guardar</button>
+      <button class="btn btn-cta" onclick="saveSeguro()">Guardar</button>
     </div>`;openModal();
 }
 
@@ -154,7 +154,7 @@ function editSeguroModal(id,nombre,activo){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveSeguroEdit('${id}')">Guardar</button>
+      <button class="btn btn-cta" onclick="saveSeguroEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 
@@ -178,7 +178,7 @@ function editAgentModal(id,nombre,email,rol){
     <div class="fg"><label class="lbl">Rol</label><select class="fsel" id="ea-rol"><option value="agente" ${rol==='agente'?'selected':''}>Agente</option><option value="agencia" ${rol==='agencia'?'selected':''}>Agencia</option><option value="admin" ${rol==='admin'?'selected':''}>Admin</option></select></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveAgentEdit('${id}')">Guardar</button>
+      <button class="btn btn-cta" onclick="saveAgentEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 async function saveAgentEdit(id){
@@ -200,7 +200,7 @@ function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-pri" onclick="saveProvEdit('${id}')">Guardar</button>
+      <button class="btn btn-cta" onclick="saveProvEdit('${id}')">Guardar</button>
     </div>`;openModal();
 }
 async function saveProvEdit(id){
