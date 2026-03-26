@@ -101,7 +101,7 @@ input:focus,textarea:focus,select:focus{
 /* Brand hero above card */
 .login-brand-hero{text-align:center;margin-bottom:20px;animation:brandFloat 5s ease-in-out infinite}
 #login-wm{display:flex;justify-content:center;margin-bottom:6px;color:white}
-.login-brand-tag{font-size:.6rem;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.18);display:block}
+.login-brand-tag{font-size:.6rem;font-weight:700;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.18);display:block;font-family:'Plus Jakarta Sans',sans-serif}
 /* Portal ring decoration */
 .login-portal-ring{position:absolute;inset:-28px;border-radius:32px;border:1px solid rgba(27,158,143,.18);pointer-events:none;animation:portalRing 4s ease-in-out infinite}
 .login-portal-ring::before{content:'';position:absolute;inset:10px;border-radius:24px;border:1px solid rgba(27,158,143,.08)}
@@ -109,18 +109,18 @@ input:focus,textarea:focus,select:focus{
 .login-card{background:rgba(8,22,14,.72);border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:40px 36px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);width:100%;position:relative;animation:cardGlow 5s ease-in-out infinite;text-align:center}
 /* Gradient line at top of card */
 .login-card::before{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:var(--grad);opacity:.7;border-radius:0 0 50% 50%}
-.login-subtitle{font-size:.65rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:26px}
+.login-subtitle{font-size:.65rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:26px;font-family:'Plus Jakarta Sans',sans-serif}
 /* Main CTA button */
-.login-btn-main{display:block;width:100%;padding:14px;background:var(--grad);color:white;border:none;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:14px;font-family:inherit;box-shadow:0 4px 24px rgba(27,158,143,.45);position:relative;overflow:hidden}
+.login-btn-main{display:block;width:100%;padding:14px;background:var(--grad);color:white;border:none;border-radius:var(--r);font-size:.92rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:14px;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 24px rgba(27,158,143,.45);position:relative;overflow:hidden;letter-spacing:0.02em}
 .login-btn-main::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);animation:shimmer 3.5s infinite}
 .login-btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 36px rgba(27,158,143,.65)}
 /* Inputs */
-#login-wall .finput{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)!important;color:rgba(255,255,255,.88)!important;margin-bottom:10px}
-#login-wall .finput::placeholder{color:rgba(255,255,255,.25)!important}
+#login-wall .finput{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)!important;color:rgba(255,255,255,.88)!important;margin-bottom:10px;border-radius:var(--r2)!important;font-family:'Plus Jakarta Sans',sans-serif!important;font-size:.88rem!important;padding:13px 16px!important;transition:border-color .2s,box-shadow .2s,background .2s!important}
+#login-wall .finput::placeholder{color:rgba(255,255,255,.25)!important;font-weight:400!important}
 #login-wall .finput:focus{border-color:rgba(27,158,143,.7)!important;box-shadow:0 0 0 3px rgba(27,158,143,.18)!important;background:rgba(255,255,255,.09)!important}
 /* Google button */
-#login-wall .btn-google{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.75)}
-#login-wall .btn-google:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18)}
+#login-wall .btn-google{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border-radius:var(--r2);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;padding:12px 16px;transition:all .2s}
+#login-wall .btn-google:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
 /* Forgot */
 #login-wall .link-forgot{color:rgba(255,255,255,.3);font-size:.72rem}
 #login-wall .link-forgot:hover{color:rgba(255,255,255,.55)}
@@ -130,7 +130,7 @@ input:focus,textarea:focus,select:focus{
 .login-divider-lbl{font-size:.7rem;color:rgba(255,255,255,.18)}
 /* Status, footer, debug */
 #login-status{font-size:.82rem;color:rgba(255,255,255,.4);margin-top:8px;min-height:22px}
-.login-footer{margin-top:20px;font-size:.65rem;color:rgba(255,255,255,.14);line-height:1.6}
+.login-footer{margin-top:20px;font-size:.65rem;color:rgba(255,255,255,.14);line-height:1.6;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:0.04em}
 #login-debug{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:8px;line-height:1.5;text-align:left;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;display:none}
 /* Light mode — card gets slightly warmer tint so toggle has visible effect */
 [data-theme="light"] .login-card{background:rgba(240,237,230,.07);border-color:rgba(255,255,255,.15)}
