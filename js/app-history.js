@@ -17,8 +17,8 @@ async function renderHistory(){
       const ref=(r.ref_id||'').toLowerCase();
       if(!nm.includes(srch)&&!dest.includes(srch)&&!ref.includes(srch)&&!(r.pasajeros||'').toLowerCase().includes(srch))return false;
     }
-    if(dateFrom){const d=new Date(r.created_at||r.creado_en||0);if(d<new Date(dateFrom))return false;}
-    if(dateTo){const d=new Date(r.created_at||r.creado_en||0);if(d>new Date(dateTo+'T23:59:59'))return false;}
+    if(dateFrom){const d=new Date(r.creado_en||r.updated_at||0);if(d<new Date(dateFrom))return false;}
+    if(dateTo){const d=new Date(r.creado_en||r.updated_at||0);if(d>new Date(dateTo+'T23:59:59'))return false;}
     return true;
   });
   if(!filtered.length){
@@ -33,7 +33,7 @@ async function renderHistory(){
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
         <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}</div>
-        <div class="hist-meta">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
+        <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
