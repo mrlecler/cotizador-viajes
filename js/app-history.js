@@ -1,10 +1,22 @@
 let _histPageSize=25;
 let _cliPageSize=25;
 
+// Cache de nombres de agentes para mostrar en historial
+let _agentNamesCache={};
+async function _loadAgentNames(){
+  if(Object.keys(_agentNamesCache).length) return;
+  try{
+    const {data}=await sb.from('agentes').select('id,nombre,email');
+    (data||[]).forEach(a=>{_agentNamesCache[a.id]=a.nombre||a.email||'';});
+  }catch(e){}
+}
+
 async function renderHistory(){
   const el=document.getElementById('hist-list');
   el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
   const rows=await dbLoadQuotes();
+  // Cargar nombres de agentes si es admin o agencia (ven cotizaciones de otros)
+  if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase().trim();
   const dateFrom=document.getElementById('hist-date-from')?.value||'';
@@ -43,7 +55,7 @@ async function renderHistory(){
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
-        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}</div>
+        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}${!isOwner&&r.agente_id&&_agentNamesCache[r.agente_id]?' · <span style="color:var(--primary);font-weight:600">'+_agentNamesCache[r.agente_id]+'</span>':''}</div>
         <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
