@@ -18,8 +18,33 @@ async function renderAdmin(){
   buildDataLists(provs||[]);
   // Seguros
   loadSeguros();
+  // Agencias (solo admin)
+  if(currentRol==='admin') renderAdminAgencias();
   // Actividad reciente
   loadAdminLog();
+}
+
+// ═══════════════════════════════════════════
+// AGENCIAS (Admin)
+// ═══════════════════════════════════════════
+async function renderAdminAgencias(){
+  const el=document.getElementById('admin-agencias');if(!el)return;
+  // Agencias = agentes con rol 'agencia'
+  const {data:agencias}=await sb.from('agentes').select('*').eq('rol','agencia').order('nombre');
+  if(!agencias?.length){el.innerHTML='<p style="color:var(--g3);font-size:.82rem">Sin agencias registradas.</p>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Email</th><th>Activo</th><th></th></tr></thead><tbody>
+  ${agencias.map(a=>`<tr>
+    <td style="font-weight:600">${a.nombre||'Sin nombre'}</td>
+    <td style="font-size:.78rem">${a.email}</td>
+    <td>${a.activo!==false?'<span style="color:var(--primary);font-weight:600">Activo</span>':'<span style="color:var(--g3)">Inactivo</span>'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+    </td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function openAgencyInviteModal(){
+  openAgentModal('agencia');
 }
 
 function buildDataLists(provs){
@@ -90,11 +115,12 @@ function _renderAdminUsersTable(){
       <td>${statusBadge(a)}</td>
       <td style="text-align:right">
         <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
-          ${!a.activo?`<button class="btn btn-out btn-xs" onclick="activateUser('${a.id}')">Activar</button>`:''}
+          ${!a.activo?`<button class="btn btn-out btn-xs" style="color:var(--primary);border-color:var(--primary)" onclick="activateUser('${a.id}')">Activar</button>`:''}
+          ${a.activo&&a.id!==myId?`<button class="btn btn-out btn-xs" style="color:#D4A017;border-color:#D4A017" onclick="deactivateUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Desactivar</button>`:''}
           ${a.invite_token?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.id}')">Nuevo enlace</button>`:''}
+          ${a.activo?`<button class="btn btn-out btn-xs" onclick="generateResetLink('${a.id}')">Reset pass</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
-          <button class="btn btn-out btn-xs" onclick="changeRol('${a.id}','${a.rol}')">Cambiar rol</button>
-          ${a.user_id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
+          ${a.id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
         </div>
       </td>
     </tr>`).join('')}</tbody>
@@ -115,9 +141,18 @@ async function changeRol(id,rol){
 }
 
 async function activateUser(id){
-  const {error}=await sb.from('agentes').update({activo:true}).eq('id',id);
+  const {error}=await sb.from('agentes').update({activo:true,invite_token:null}).eq('id',id);
+  if(error){toast('Error al activar: '+error.message,false);console.error('[activateUser]',error);return;}
+  toast('Usuario activado');
+  await renderAdminUsers();
+}
+
+async function deactivateUser(id,nombre){
+  if(!confirm('Desactivar a "'+nombre+'"? No podra acceder hasta que lo reactives.'))return;
+  const {error}=await sb.from('agentes').update({activo:false}).eq('id',id);
   if(error){toast('Error: '+error.message,false);return;}
-  toast('Usuario activado');renderAdminUsers();
+  toast('Usuario desactivado');
+  await renderAdminUsers();
 }
 
 async function regenerateInviteLink(id){
@@ -784,27 +819,35 @@ async function renderAgency(){
 }
 
 async function saveAgencyData(){
-  // Placeholder — save agency fields (requires agency table in Supabase)
-  const data={
-    nombre:document.getElementById('ag-nombre')?.value||'',
-    email:document.getElementById('ag-email')?.value||'',
-    telefono:document.getElementById('ag-tel')?.value||'',
-    direccion:document.getElementById('ag-dir')?.value||''
-  };
-  // For now, save to localStorage until agency table is ready
-  localStorage.setItem('ermix_agency',JSON.stringify(data));
+  if(!window._agenteId){toast('Error: no se pudo identificar tu cuenta',false);return;}
+  const data={};
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  if(v('ag-nombre')) data.agencia=v('ag-nombre');
+  if(v('ag-email')) data.email=v('ag-email');
+  if(v('ag-tel')) data.telefono=v('ag-tel');
+  if(v('ag-dir')) data.direccion=v('ag-dir');
+  // Save to Supabase agentes table (each user's own row)
+  const {error}=await sb.from('agentes').update(data).eq('id',window._agenteId);
+  if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
+  // Update local config
+  if(data.agencia) agCfg.ag=data.agencia;
+  if(data.telefono) agCfg.tel=data.telefono;
+  localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
   toast('Datos de agencia guardados');
 }
 
-// Load agency data from localStorage on render
-function _loadAgencyFields(){
+// Load agency data from Supabase
+async function _loadAgencyFields(){
+  if(!window._agenteId)return;
   try{
-    const d=JSON.parse(localStorage.getItem('ermix_agency')||'{}');
-    if(d.nombre) document.getElementById('ag-nombre').value=d.nombre;
-    if(d.email) document.getElementById('ag-email').value=d.email;
-    if(d.telefono) document.getElementById('ag-tel').value=d.telefono;
-    if(d.direccion) document.getElementById('ag-dir').value=d.direccion;
-  }catch(e){}
+    const {data}=await sb.from('agentes').select('agencia,email,telefono,direccion').eq('id',window._agenteId).single();
+    if(!data)return;
+    const el=id=>document.getElementById(id);
+    if(data.agencia && el('ag-nombre')) el('ag-nombre').value=data.agencia;
+    if(data.email && el('ag-email')) el('ag-email').value=data.email;
+    if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
+    if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
+  }catch(e){console.warn('[_loadAgencyFields]',e);}
 }
 
 // ═══════════════════════════════════════════

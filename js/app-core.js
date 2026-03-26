@@ -66,8 +66,37 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 
 // Inicialización de wordmarks cuando las fuentes están listas
 function _initWordmarks(){
-  buildWordmark('login-wm',88,'white','grad');
+  buildWordmark('login-wm',42,'white','grad');
+  buildWordmark('tk-hd-wm',28,'white','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
+}
+
+// Login: random photo + random route
+const _loginPhotos=[
+  'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80',
+  'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200&q=80',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&q=80',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80',
+  'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&q=80',
+  'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1200&q=80',
+  'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=1200&q=80'
+];
+const _loginRoutes=[
+  {to:'BCN',city:'Barcelona'},{to:'CDG',city:'Paris'},{to:'FCO',city:'Roma'},
+  {to:'MIA',city:'Miami'},{to:'CUN',city:'Cancun'},{to:'NRT',city:'Tokyo'},
+  {to:'LHR',city:'Londres'},{to:'JFK',city:'New York'},{to:'SYD',city:'Sydney'},
+  {to:'MAD',city:'Madrid'},{to:'DXB',city:'Dubai'},{to:'IST',city:'Estambul'},
+  {to:'GIG',city:'Rio de Janeiro'},{to:'LIS',city:'Lisboa'},{to:'AMS',city:'Amsterdam'}
+];
+function _initLoginScreen(){
+  const img=document.getElementById('login-bg');
+  if(img) img.src=_loginPhotos[Math.floor(Math.random()*_loginPhotos.length)];
+  const r=_loginRoutes[Math.floor(Math.random()*_loginRoutes.length)];
+  const toEl=document.getElementById('tk-to');if(toEl)toEl.textContent=r.to;
+  const cityEl=document.getElementById('tk-to-city');if(cityEl)cityEl.textContent=r.city;
 }
 function _tryInitWordmarks(attempt){
   if(document.fonts.check('900 48px "DM Sans"')){
@@ -79,7 +108,7 @@ function _tryInitWordmarks(attempt){
     _initWordmarks();
   }
 }
-document.fonts.ready.then(()=>_tryInitWordmarks(0));
+document.fonts.ready.then(()=>{_tryInitWordmarks(0);_initLoginScreen();});
 
 function _buildSbLogo(){
   const el=document.getElementById('sb-logo');
@@ -178,32 +207,38 @@ async function doLoginGoogle(){
 
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
-  if(!email){setLoginStatus('Ingresá tu email primero','var(--amber)');return;}
+  if(!email){setLoginStatus('Ingresa tu email primero','var(--amber)');return;}
+  // Sin SMTP: intentar reset via Supabase (funciona si SMTP está configurado)
   const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
-  if(error) setLoginStatus('No se pudo enviar el email, intentá de nuevo','var(--red)');
-  else setLoginStatus('Email enviado — revisá tu casilla','var(--green)');
+  if(error){
+    // Si falla, mostrar instrucciones de contacto
+    setLoginStatus('No se pudo enviar el email. Contacta al administrador de tu agencia para restablecer tu contrasena.','var(--amber)');
+  } else {
+    setLoginStatus('Si el servicio de email esta activo, recibiras un enlace. Si no, contacta a tu administrador.','var(--primary)');
+  }
 }
 
 async function doLogout(){
   await sb.auth.signOut();
   currentUser=null;isAdmin=false;currentRol='agente';localStorage.removeItem('mp_admin');localStorage.removeItem('mp_rol');
   document.getElementById('ui').style.display='none';
-  document.getElementById('login-wall').style.display='flex';
+  document.getElementById('login-wall').style.display='block';
   const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.classList.remove('active');
   document.getElementById('li-pass').value='';
   setLoginStatus('Sesión cerrada.','var(--muted)');
 }
 
 // Check existing session + listen to auth changes
-sb.auth.onAuthStateChange((event,session)=>{
+sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_IN'&&session?.user){
+    await _completeGoogleInvite(session.user);
     showApp(session.user);
   } else if(event==='PASSWORD_RECOVERY'){
     document.getElementById('li-pass').placeholder='Nueva contraseña';
     document.getElementById('li-btn').onclick=doResetPassword;
     document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Guardar nueva contraseña';
     setLoginStatus('Ingresá tu nueva contraseña','var(--amber)');
-    document.getElementById('login-wall').style.display='flex';
+    document.getElementById('login-wall').style.display='block';
     document.getElementById('ui').style.display='none';
   }
 });
@@ -216,9 +251,212 @@ async function doResetPassword(){
   else { setLoginStatus('Contraseña actualizada','var(--green)'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
 }
 
+// ═══════════════════════════════════════════
+// INVITE FLOW
+// ═══════════════════════════════════════════
+let _inviteData=null;
+
+async function _checkInviteToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('invite');
+  if(!token)return false;
+  // Look up invite in agentes table
+  const {data:agent,error}=await sb.from('agentes').select('*').eq('invite_token',token).single();
+  if(error||!agent){
+    // Invalid or expired token — show login with message
+    document.getElementById('login-wall').style.display='block';
+    setLoginStatus('Enlace de invitacion invalido o expirado','var(--red)');
+    return true;
+  }
+  if(agent.activo){
+    // Already accepted — redirect to login
+    document.getElementById('login-wall').style.display='block';
+    setLoginStatus('Esta invitacion ya fue usada. Inicia sesion con tu cuenta.','var(--amber)');
+    return true;
+  }
+  // Show invite screen — hide everything else
+  _inviteData={agent,token};
+  document.getElementById('login-wall').style.display='none';
+  document.getElementById('ui').style.display='none';
+  const _sb=document.getElementById('sidebar');if(_sb)_sb.style.display='none';
+  const _bn=document.getElementById('bottom-nav');if(_bn)_bn.classList.remove('active');
+  document.getElementById('invite-wall').style.display='flex';
+  document.getElementById('inv-accept-nm').value=agent.nombre||'';
+  document.getElementById('inv-accept-em').value=agent.email||'';
+  const rolLbl={agente:'Agente',agencia:'Agencia',admin:'Administrador'}[agent.rol]||agent.rol;
+  document.getElementById('invite-rol-badge').textContent=rolLbl;
+  // Build wordmark for invite screen
+  // Logo wordmark en invite screen
+  if(typeof buildWordmark==='function') buildWordmark('invite-wm',56,'white','grad');
+  return true;
+}
+
+async function acceptInvite(){
+  if(!_inviteData){toast('Error: datos de invitacion no encontrados',false);return;}
+  const nm=document.getElementById('inv-accept-nm')?.value?.trim();
+  const pass=document.getElementById('inv-accept-pass')?.value;
+  const pass2=document.getElementById('inv-accept-pass2')?.value;
+  const em=_inviteData.agent.email;
+  const statusEl=document.getElementById('invite-status');
+  const setStatus=(msg,color)=>{if(statusEl)statusEl.innerHTML=`<div style="font-size:.78rem;color:${color};text-align:center">${msg}</div>`;};
+
+  if(!pass||pass.length<6){setStatus('La contrasena debe tener al menos 6 caracteres','var(--red)');return;}
+  if(pass!==pass2){setStatus('Las contrasenas no coinciden','var(--red)');return;}
+
+  const btn=document.getElementById('inv-accept-btn');
+  if(btn){btn.disabled=true;btn.textContent='Creando cuenta...';}
+
+  // Create auth user via signUp
+  const {data,error}=await sb.auth.signUp({email:em,password:pass});
+  if(error){
+    setStatus('Error: '+error.message,'var(--red)');
+    if(btn){btn.disabled=false;btn.innerHTML='Crear cuenta';}
+    return;
+  }
+
+  // Update agentes record: set activo=true, nombre, clear token
+  const updates={activo:true,invite_token:null};
+  if(nm)updates.nombre=nm;
+  if(data.user?.id)updates.id=data.user.id;
+  await sb.from('agentes').update(updates).eq('invite_token',_inviteData.token);
+
+  // If email confirmation is required, show message
+  if(data.user&&!data.session){
+    setStatus('Cuenta creada. Revisa tu email para confirmar y luego inicia sesion.','var(--primary)');
+    setTimeout(()=>{
+      window.location.href=window.location.pathname;
+    },3000);
+    return;
+  }
+
+  // If auto-confirmed, redirect to app
+  setStatus('Cuenta creada. Ingresando...','var(--primary)');
+  setTimeout(()=>{
+    window.location.href=window.location.pathname;
+  },1500);
+}
+
+async function acceptInviteGoogle(){
+  if(!_inviteData)return;
+  // Store invite token in localStorage so we can complete after OAuth redirect
+  localStorage.setItem('mp_pending_invite',_inviteData.token);
+  await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin+window.location.pathname}
+  });
+}
+
+// ═══════════════════════════════════════════
+// MANUAL PASSWORD RESET (sin SMTP)
+// ═══════════════════════════════════════════
+let _resetData=null;
+
+async function _checkResetToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('reset_token');
+  if(!token)return false;
+  // Look up reset token in agentes table
+  const {data:agent,error}=await sb.from('agentes').select('*').eq('reset_token',token).single();
+  if(error||!agent){
+    document.getElementById('login-wall').style.display='block';
+    setLoginStatus('Enlace de restablecimiento invalido o expirado','var(--red)');
+    return true;
+  }
+  // Show reset screen
+  _resetData={agent,token};
+  document.getElementById('login-wall').style.display='none';
+  document.getElementById('ui').style.display='none';
+  const _sb2=document.getElementById('sidebar');if(_sb2)_sb2.style.display='none';
+  const _bn2=document.getElementById('bottom-nav');if(_bn2)_bn2.classList.remove('active');
+  document.getElementById('reset-wall').style.display='flex';
+  document.getElementById('reset-user-name').textContent=agent.nombre||'Usuario';
+  document.getElementById('reset-user-email').textContent=agent.email;
+  // Logo wordmark en reset screen
+  if(typeof buildWordmark==='function') buildWordmark('reset-wm',56,'white','grad');
+  return true;
+}
+
+async function doManualReset(){
+  if(!_resetData){toast('Error: datos de reset no encontrados',false);return;}
+  const pass=document.getElementById('reset-pass')?.value;
+  const pass2=document.getElementById('reset-pass2')?.value;
+  const statusEl=document.getElementById('reset-status');
+  const setStatus=(msg,color)=>{if(statusEl)statusEl.innerHTML=`<div style="font-size:.78rem;color:${color};text-align:center">${msg}</div>`;};
+  if(!pass||pass.length<6){setStatus('La contrasena debe tener al menos 6 caracteres','var(--red)');return;}
+  if(pass!==pass2){setStatus('Las contrasenas no coinciden','var(--red)');return;}
+  const btn=document.getElementById('reset-btn');
+  if(btn){btn.disabled=true;btn.textContent='Guardando...';}
+  // Sign in with email to get session, then update password
+  // First try to sign in with a temp approach — use Supabase admin updateUser
+  // Since we can't call admin API from client, we sign in and update
+  const {data:signInData,error:signInErr}=await sb.auth.signInWithPassword({email:_resetData.agent.email,password:pass});
+  if(!signInErr&&signInData?.session){
+    // Already has this password — nothing to change
+    setStatus('Contrasena guardada. Ingresando...','var(--primary)');
+    // Clear reset token
+    await sb.from('agentes').update({reset_token:null}).eq('id',_resetData.agent.id);
+    setTimeout(()=>{window.location.href=window.location.pathname;},1500);
+    return;
+  }
+  // Can't sign in with old password — try signUp update flow
+  // The cleanest way: use the existing auth user and updateUser
+  // But we need a session. Since we don't have SMTP, the admin needs to use Supabase Dashboard
+  // Alternative: create a new auth user with this password (if user was invited but never set password)
+  const {data:signUpData,error:signUpErr}=await sb.auth.signUp({email:_resetData.agent.email,password:pass});
+  if(signUpErr){
+    // User probably already exists — try password recovery approach
+    // Show manual instructions
+    setStatus('No se pudo actualizar la contrasena automaticamente. El administrador debe restablecerla desde el panel de Supabase.','var(--amber)');
+    if(btn){btn.disabled=false;btn.textContent='Guardar contrasena';}
+    return;
+  }
+  // Clear reset token and activate
+  await sb.from('agentes').update({reset_token:null,activo:true}).eq('id',_resetData.agent.id);
+  if(signUpData?.user?.id){
+    await sb.from('agentes').update({id:signUpData.user.id}).eq('email',_resetData.agent.email);
+  }
+  setStatus('Contrasena guardada. Ingresando...','var(--primary)');
+  setTimeout(()=>{window.location.href=window.location.pathname;},1500);
+}
+
+async function generateResetLink(agentId){
+  const token=crypto.randomUUID();
+  const {error}=await sb.from('agentes').update({reset_token:token}).eq('id',agentId);
+  if(error){toast('Error: '+error.message,false);return;}
+  const url=window.location.origin+window.location.pathname+'?reset_token='+token;
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Enlace para restablecer contrasena</div>
+    <div style="font-size:.82rem;color:var(--g4);margin-bottom:12px">Comparti este enlace con el usuario. Al abrirlo podra elegir una nueva contrasena:</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="finput" id="reset-link-url" value="${url}" readonly style="flex:1;font-size:.78rem;font-family:'DM Mono',monospace">
+      <button class="btn btn-pri btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('reset-link-url').value);toast('Enlace copiado')">Copiar</button>
+    </div>
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-out" onclick="closeModal()">Cerrar</button></div>`;
+  openModal();
+}
+
+async function _completeGoogleInvite(user){
+  const token=localStorage.getItem('mp_pending_invite');
+  if(!token)return;
+  localStorage.removeItem('mp_pending_invite');
+  // Update agentes record with the Google user's ID and email
+  const updates={activo:true,invite_token:null,id:user.id};
+  if(user.user_metadata?.full_name)updates.nombre=user.user_metadata.full_name;
+  await sb.from('agentes').update(updates).eq('invite_token',token);
+}
+
 window.addEventListener('DOMContentLoaded',async()=>{
+  // Check invite or reset token first
+  const isInvite=await _checkInviteToken();
+  if(isInvite)return;
+  const isReset=await _checkResetToken();
+  if(isReset)return;
   const {data:{session}}=await sb.auth.getSession();
-  if(session?.user) showApp(session.user);
+  if(session?.user){
+    // Check if there's a pending Google invite to complete
+    await _completeGoogleInvite(session.user);
+    showApp(session.user);
+  }
 });
 
 async function showApp(user){
@@ -265,6 +503,17 @@ async function showApp(user){
     const {data, error:agErr} = await sb.from('agentes').select('*').eq('email', user.email).maybeSingle();
     if(agErr) console.warn('agentes query error:', agErr.message, agErr.details);
     if(!data) console.warn('agentes: sin registro para', user.email, '— verificar DB');
+    // Bloquear acceso si el usuario fue desactivado
+    if(data && data.activo===false && !data.invite_token){
+      await sb.auth.signOut();
+      currentUser=null;
+      document.getElementById('ui').style.display='none';
+      document.getElementById('sidebar').style.display='none';
+      const _bnBlk=document.getElementById('bottom-nav');if(_bnBlk)_bnBlk.classList.remove('active');
+      document.getElementById('login-wall').style.display='block';
+      setLoginStatus('Tu cuenta ha sido desactivada. Contacta al administrador.','var(--red)');
+      return;
+    }
     if(data){
       currentRol = data.rol || 'agente';
       isAdmin = currentRol === 'admin';
@@ -638,6 +887,11 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
 function switchTab(id){
+  // Restricción: agencias no pueden cotizar (deben darse de alta como agente)
+  if(id==='form'&&currentRol==='agencia'){
+    toast('Para cotizar necesitas darte de alta como agente dentro de tu agencia',false);
+    return;
+  }
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
   if(activePanel?.id==='tab-form' && id!=='form'){
