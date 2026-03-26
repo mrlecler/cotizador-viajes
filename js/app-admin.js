@@ -799,15 +799,12 @@ async function saveAgencyData(){
   const data={};
   const v=id=>(document.getElementById(id)?.value||'').trim();
   if(v('ag-nombre')) data.agencia=v('ag-nombre');
-  if(v('ag-email')) data.email=v('ag-email');
-  if(v('ag-tel')) data.telefono=v('ag-tel');
+  if(v('ag-email')) data.agencia_email=v('ag-email');
+  if(v('ag-tel')) data.agencia_tel=v('ag-tel');
   if(v('ag-dir')) data.direccion=v('ag-dir');
-  // Save to Supabase agentes table (each user's own row)
   const {error}=await sb.from('agentes').update(data).eq('id',window._agenteId);
   if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
-  // Update local config
   if(data.agencia) agCfg.ag=data.agencia;
-  if(data.telefono) agCfg.tel=data.telefono;
   _saveAgCfg();
   toast('Datos de agencia guardados');
 }
@@ -816,12 +813,12 @@ async function saveAgencyData(){
 async function _loadAgencyFields(){
   if(!window._agenteId)return;
   try{
-    const {data}=await sb.from('agentes').select('agencia,email,telefono,direccion').eq('id',window._agenteId).single();
+    const {data}=await sb.from('agentes').select('agencia,agencia_email,agencia_tel,direccion').eq('id',window._agenteId).single();
     if(!data)return;
     const el=id=>document.getElementById(id);
     if(data.agencia && el('ag-nombre')) el('ag-nombre').value=data.agencia;
-    if(data.email && el('ag-email')) el('ag-email').value=data.email;
-    if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
+    if(data.agencia_email && el('ag-email')) el('ag-email').value=data.agencia_email;
+    if(data.agencia_tel && el('ag-tel')) el('ag-tel').value=data.agencia_tel;
     if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
   }catch(e){console.warn('[_loadAgencyFields]',e);}
 }

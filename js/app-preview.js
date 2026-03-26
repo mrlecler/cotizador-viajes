@@ -103,7 +103,7 @@ function _loadApiKeyFields(){
 function saveCfg(){
   const rawPais=(gv('cfg-pais')||'').toUpperCase().trim().slice(0,3);
   const rawTheme=parseInt(document.getElementById('cfg-pdf-theme')?.value||'1')||1;
-  agCfg={nm:gv('cfg-nm'),ag:gv('cfg-ag'),em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR',pdf_theme:rawTheme};
+  agCfg={nm:gv('cfg-nm'),ag:agCfg.ag||'',em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR',pdf_theme:rawTheme};
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase
@@ -125,7 +125,7 @@ async function changePassword(){
   toast('Contraseña actualizada');
 }
 function loadCfg(){
-  [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+  [{id:'cfg-nm',k:'nm'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
   if(agCfg.pdf_theme) selectPdfTheme(agCfg.pdf_theme);
 }
 
