@@ -657,7 +657,10 @@ async function dbSaveQuote(d, supabaseId){
     const {data:existing} = await sb.from('clientes').select('id').eq('nombre',d.cliente.nombre).eq('celular',d.cliente.celular||'').maybeSingle();
     if(existing){ clientId = existing.id; }
     else{
-      const {data:nc} = await sb.from('clientes').insert({nombre:d.cliente.nombre,celular:d.cliente.celular||'',email:d.cliente.email||''}).select().single();
+      const clientRow={nombre:d.cliente.nombre,celular:d.cliente.celular||'',email:d.cliente.email||''};
+      if(window._agenteId) clientRow.agente_id=window._agenteId;
+      const {data:nc,error:ncErr} = await sb.from('clientes').insert(clientRow).select().single();
+      if(ncErr) console.warn('[dbSaveQuote] client insert error:',ncErr);
       if(nc) clientId = nc.id;
     }
   }
