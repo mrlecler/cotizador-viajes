@@ -1,19 +1,9 @@
+let _adminUsersData=[];
+
 async function renderAdmin(){
   if(currentRol!=='admin'&&currentRol!=='agencia') return;
-  // Agentes
-  const {data:ags}=await sb.from('agentes').select('*').order('creado_en');
-  document.getElementById('admin-agentes').innerHTML=ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th><th></th></tr></thead><tbody>
-  ${ags.map(a=>`<tr>
-    <td>${a.email}</td><td>${a.nombre||'—'}</td>
-    <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
-    <td>${a.activo?'Sí':'No'}</td>
-    <td style="white-space:nowrap;vertical-align:middle">
-      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
-        <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
-        <button class="btn btn-out btn-xs" onclick="toggleAdmin('${a.id}','${a.rol}')">Cambiar rol</button>
-      </div>
-    </td>
-  </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
+  // Usuarios (unificado)
+  await renderAdminUsers();
 
   // Proveedores
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
@@ -49,11 +39,109 @@ function buildDataLists(provs){
   });
 }
 
-async function toggleAdmin(id,rol){
-  const nw=rol==='admin'?'agente':'admin';
-  if(!confirm(`¿Cambiar rol a "${nw}"?`))return;
-  await sb.from('agentes').update({rol:nw}).eq('id',id);
-  toast('✓ Rol actualizado');renderAdmin();
+async function renderAdminUsers(){
+  const el=document.getElementById('admin-users-list');if(!el)return;
+  const {data,error}=await sb.from('agentes').select('*').order('nombre');
+  if(error){el.innerHTML='<div style="color:var(--red);font-size:.82rem">Error: '+error.message+'</div>';return;}
+  _adminUsersData=data||[];
+  _renderAdminUsersTable();
+}
+
+function _renderAdminUsersTable(){
+  const el=document.getElementById('admin-users-list');if(!el)return;
+  const search=(document.getElementById('admin-user-search')?.value||'').toLowerCase();
+  const rolFilter=document.getElementById('admin-user-filter-rol')?.value||'';
+  const statusFilter=document.getElementById('admin-user-filter-status')?.value||'';
+
+  let filtered=_adminUsersData.filter(a=>{
+    if(search && !((a.nombre||'').toLowerCase().includes(search) || (a.email||'').toLowerCase().includes(search))) return false;
+    if(rolFilter && a.rol!==rolFilter) return false;
+    if(statusFilter==='active' && !a.activo) return false;
+    if(statusFilter==='inactive' && a.activo) return false;
+    if(statusFilter==='pending' && !a.invite_token) return false;
+    return true;
+  });
+
+  if(!filtered.length){
+    el.innerHTML='<div style="color:var(--g3);font-size:.82rem;padding:12px 0">No se encontraron usuarios</div>';
+    return;
+  }
+
+  const rolBadge=r=>{
+    const colors={admin:'#1B9E8F',agencia:'#D4A017',agente:'#9B7FD4'};
+    const labels={admin:'ADMIN',agencia:'AGENCIA',agente:'AGENTE'};
+    return `<span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:12px;background:${colors[r]||'var(--g1)'}22;color:${colors[r]||'var(--g4)'};letter-spacing:.5px">${labels[r]||r}</span>`;
+  };
+
+  const statusBadge=a=>{
+    if(a.invite_token && !a.activo) return '<span style="font-size:.68rem;color:#D4A017;font-weight:600">Pendiente</span>';
+    if(a.activo) return '<span style="font-size:.68rem;color:var(--primary);font-weight:600">Activo</span>';
+    return '<span style="font-size:.68rem;color:var(--g3);font-weight:600">Inactivo</span>';
+  };
+
+  const myId=currentUser?.id||'';
+
+  el.innerHTML=`<table class="tbl" style="width:100%">
+    <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+    <tbody>${filtered.map(a=>`<tr>
+      <td style="font-weight:600">${a.nombre||'\u2014'}</td>
+      <td style="font-size:.82rem;color:var(--g4)">${a.email||'\u2014'}</td>
+      <td>${rolBadge(a.rol)}</td>
+      <td>${statusBadge(a)}</td>
+      <td style="text-align:right">
+        <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+          ${!a.activo?`<button class="btn btn-out btn-xs" onclick="activateUser('${a.id}')">Activar</button>`:''}
+          ${a.invite_token?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.id}')">Nuevo enlace</button>`:''}
+          <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
+          <button class="btn btn-out btn-xs" onclick="changeRol('${a.id}','${a.rol}')">Cambiar rol</button>
+          ${a.user_id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function _filterAdminUsers(){
+  _renderAdminUsersTable();
+}
+
+async function changeRol(id,rol){
+  const opts=(['admin','agencia','agente']).filter(r=>r!==rol);
+  const nw=prompt('Cambiar rol de "'+rol+'" a:\n'+opts.map((r,i)=>(i+1)+'. '+r).join('\n')+'\n\nEscribí el nuevo rol:');
+  if(!nw||!['admin','agencia','agente'].includes(nw.trim().toLowerCase()))return;
+  const {error}=await sb.from('agentes').update({rol:nw.trim().toLowerCase()}).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Rol actualizado');renderAdminUsers();
+}
+
+async function activateUser(id){
+  const {error}=await sb.from('agentes').update({activo:true}).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Usuario activado');renderAdminUsers();
+}
+
+async function regenerateInviteLink(id){
+  const token=crypto.randomUUID();
+  const {error}=await sb.from('agentes').update({invite_token:token,activo:false}).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  const url=window.location.origin+window.location.pathname+'?invite='+token;
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Nuevo enlace de invitacion</div>
+    <div style="font-size:.82rem;color:var(--g4);margin-bottom:12px">Comparti este enlace con el usuario para que cree su cuenta:</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="finput" id="regen-link" value="${url}" readonly style="flex:1;font-size:.78rem;font-family:'DM Mono',monospace">
+      <button class="btn btn-pri btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('regen-link').value);toast('Enlace copiado')">Copiar</button>
+    </div>
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-out" onclick="closeModal()">Cerrar</button></div>`;
+  openModal();
+  renderAdminUsers();
+}
+
+async function deleteUser(id,nombre){
+  if(!confirm('Eliminar a "'+nombre+'"? Esta accion no se puede deshacer.'))return;
+  const {error}=await sb.from('agentes').delete().eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Usuario eliminado');renderAdminUsers();
 }
 
 const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursi\u00f3n'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerol\u00ednea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
@@ -319,26 +407,64 @@ async function renderDashboard(){
   </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin comisiones registradas todavía.</div>';
 }
 
-function openAgentModal(){
+function openInviteModal(rol){
+  rol=rol||'agente';
+  const label=rol==='agencia'?'agencia':'agente';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar agente</div>
-    <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se crean directamente desde el panel de Supabase.</p>
-    <div style="border:1px solid rgba(27,158,143,0.2);border-radius:var(--r);background:rgba(27,158,143,0.07);padding:16px 20px;display:flex;flex-direction:column;gap:10px">
-      ${[
-        'Ir a <strong style="color:var(--violet-light)">Supabase Dashboard → Authentication → Users</strong>',
-        'Click en <strong style="color:var(--violet-light)">"Add user" → "Create new user"</strong>',
-        'Ingresar el email y una contraseña temporal',
-        'El agente recibirá sus credenciales y podrá cambiar la contraseña desde <strong style="color:var(--violet-light)">Mi Perfil</strong>'
-      ].map((step,i)=>`<div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="width:22px;height:22px;border-radius:6px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white;flex-shrink:0;margin-top:1px">${i+1}</div>
-        <div style="font-size:.83rem;color:var(--g4);line-height:1.5">${step}</div>
-      </div>`).join('')}
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
-      <button class="btn btn-out" onclick="closeModal()">Cerrar</button>
-      <button class="btn btn-pri" onclick="window.open('https://supabase.com/dashboard','_blank')">Ir a Supabase &rarr;</button>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar ${label}</div>
+    <div class="fg"><label class="lbl">Email</label><input class="finput" id="inv-email" type="email" placeholder="usuario@email.com" inputmode="email"></div>
+    <div class="fg"><label class="lbl">Nombre (opcional)</label><input class="finput" id="inv-nombre" placeholder="Nombre completo"></div>
+    <input type="hidden" id="inv-rol" value="${rol}">
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-cta" onclick="sendInvite()">Generar invitacion</button>
     </div>`;openModal();
 }
+
+async function sendInvite(){
+  const email=(document.getElementById('inv-email')?.value||'').trim().toLowerCase();
+  const nombre=(document.getElementById('inv-nombre')?.value||'').trim();
+  const rol=document.getElementById('inv-rol')?.value||'agente';
+  if(!email){toast('Ingresa un email',false);return;}
+
+  // Check if email already exists
+  const {data:existing}=await sb.from('agentes').select('id,invite_token,activo').eq('email',email).maybeSingle();
+  if(existing){
+    if(existing.invite_token && !existing.activo){
+      if(confirm('Este email ya tiene una invitacion pendiente. Generar un nuevo enlace?')){
+        closeModal();
+        regenerateInviteLink(existing.id);
+      }
+      return;
+    }
+    if(existing.activo){
+      toast('Este email ya tiene una cuenta activa',false);
+      return;
+    }
+  }
+
+  // Create row in agentes with invite_token
+  const token=crypto.randomUUID();
+  const row={email,rol,activo:false,invite_token:token};
+  if(nombre) row.nombre=nombre;
+  const {error}=await sb.from('agentes').insert(row);
+  if(error){toast('Error: '+error.message,false);return;}
+
+  const url=window.location.origin+window.location.pathname+'?invite='+token;
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitacion creada</div>
+    <div style="font-size:.82rem;color:var(--g4);margin-bottom:12px">Comparti este enlace con el usuario para que cree su cuenta:</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="finput" id="inv-link" value="${url}" readonly style="flex:1;font-size:.78rem;font-family:'DM Mono',monospace">
+      <button class="btn btn-pri btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('inv-link').value);toast('Enlace copiado')">Copiar</button>
+    </div>
+    <div style="font-size:.75rem;color:var(--g3);margin-top:10px">El usuario abrira el enlace, creara su contrasena y quedara como pendiente hasta que lo actives.</div>
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-out" onclick="closeModal()">Cerrar</button></div>`;
+  renderAdminUsers();
+}
+
+// Legacy alias
+function openAgentModal(){openInviteModal('agente');}
 
 // ═══════════════════════════════════════════
 // MODAL
