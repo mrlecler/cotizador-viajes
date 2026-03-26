@@ -1397,11 +1397,11 @@ a:hover{color:var(--secondary)}
   color:var(--g3);transition:transform .2s ease;margin-left:4px;
 }
 .sec-card.collapsed .form-sec-chv{transform:rotate(-90deg)}
-[data-theme="dark"] .form-sec-badge{background:rgba(255,255,255,.12)}
-[data-theme="dark"] .form-sec-hd{background-color:var(--surface2) !important}
-[data-theme="dark"] .form-sec-ttl{color:var(--text)}
-[data-theme="dark"] .form-sec-ico{opacity:.85}
-[data-theme="dark"] .form-sec-chv{color:var(--g4)}
+[data-theme="dark"] .form-sec-badge{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+[data-theme="dark"] .form-sec-hd{background:var(--surface2) !important}
+[data-theme="dark"] .form-sec-ttl{color:#F0EDE6 !important}
+[data-theme="dark"] .form-sec-ico svg{stroke:rgba(255,255,255,.8) !important}
+[data-theme="dark"] .form-sec-chv{color:rgba(255,255,255,.4)}
 /* ── Preview toolbar — fixed so it stays visible on scroll ── */
 #prev-toolbar{
   position:fixed;top:52px;left:54px;right:0;z-index:50;
