@@ -80,7 +80,7 @@ input:focus,textarea:focus,select:focus{
 ══════════════════════════ */
 @keyframes loginPhotoZoom{0%{transform:scale(1)}100%{transform:scale(1.06) translateY(-1%)}}
 /* Base */
-#login-wall{position:fixed;inset:0;z-index:9999;overflow:hidden;display:none}
+#login-wall{position:fixed;inset:0;z-index:9999;overflow:hidden}
 .login-split{display:flex;height:100vh;height:100dvh}
 /* Photo side */
 .login-photo{flex:1;position:relative;overflow:hidden;min-height:0}
