@@ -119,6 +119,7 @@ function buildQuoteHTML(d){
       ${vi.descripcion?`<div style="flex:1;padding:0 ${totalAmt?'24':'0'}px${ag.nm?';border-right:1px solid rgba(255,255,255,.25)':''}"><div style="font-size:9px;color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${vi.descripcion.trim().substring(0,200)}</div></div>`:`<div style="flex:1"></div>`}
       ${ag.nm?`<div style="flex:0 0 auto;padding-left:24px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">AGENTE</div><div style="font-size:12px;font-weight:700;color:white">${ag.nm}</div><div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px">${today}</div></div>`:''}
     </div>
+    ${window._unsplashCredit?`<div style="position:absolute;bottom:60px;right:36px;z-index:3;font-size:8px;color:rgba(255,255,255,.45)">Foto de <a href="https://unsplash.com/@${window._unsplashCredit.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.6);text-decoration:underline">${window._unsplashCredit.name}</a> en <a href="https://unsplash.com/?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.6);text-decoration:underline">Unsplash</a></div>`:''}
   </div>`;
 
   // ════════════════════════════════════════════════
