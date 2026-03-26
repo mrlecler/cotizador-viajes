@@ -118,7 +118,6 @@ function _renderAdminUsersTable(){
           ${!a.activo?`<button class="btn btn-out btn-xs" onclick="activateUser('${a.id}')">Activar</button>`:''}
           ${a.invite_token?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.id}')">Nuevo enlace</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
-          <button class="btn btn-out btn-xs" onclick="changeRol('${a.id}','${a.rol}')">Cambiar rol</button>
           ${a.user_id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
         </div>
       </td>

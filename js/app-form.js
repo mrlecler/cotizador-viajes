@@ -849,7 +849,9 @@ async function saveQuote(){
   try{
     await dbSaveQuote(qData, editingQuoteId);
     const wasEditing = !!editingQuoteId;
-    // ── SIEMPRE limpiar modo edición después de guardar ──────────────
+    // Detener autosave antes de limpiar estado
+    _stopAutosave();
+    // ── SIEMPRE limpiar modo edición después de guardar manual ──────────────
     editingQuoteId = null;
     formDraft = null;
     // Limpiar m-ref para que la próxima cotización genere un ref_id nuevo
@@ -857,7 +859,7 @@ async function saveQuote(){
     if(refField) refField.value = '';
     _hideEditBanner();
     // Toast según operación
-    toast(wasEditing ? '✓ Cotización actualizada en la nube' : '✓ Guardado en la nube');
+    toast(wasEditing ? 'Cotizacion actualizada en la nube' : 'Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
     if(typeof _captureError==='function') _captureError('saveQuote', e);
@@ -870,6 +872,101 @@ async function saveQuote(){
     if(b1){b1.disabled=false;b1.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar';}
   }
 }
+
+// ═══════════════════════════════════════════
+// AUTOSAVE — guarda automáticamente cada 30s si hay cambios
+// ═══════════════════════════════════════════
+let _autosaveTimer=null, _autosaveSnapshot='', _autosaving=false;
+
+function _startAutosave(){
+  if(_autosaveTimer) return; // ya está corriendo
+  _autosaveSnapshot=_formFingerprint();
+  _autosaveTimer=setInterval(_autosaveTick, 30000); // cada 30 segundos
+  console.log('[AUTOSAVE] iniciado');
+}
+
+function _stopAutosave(){
+  if(_autosaveTimer){clearInterval(_autosaveTimer);_autosaveTimer=null;}
+  _autosaveSnapshot='';
+  _autosaving=false;
+  console.log('[AUTOSAVE] detenido');
+}
+
+function _formFingerprint(){
+  // Hash rápido del formulario para detectar cambios
+  try{
+    const d=collectForm();
+    return JSON.stringify(d);
+  }catch(e){return '';}
+}
+
+async function _autosaveTick(){
+  if(_autosaving) return; // ya está guardando
+  if(!currentUser) return; // no logueado
+  // Solo autoguardar si estamos en el tab del formulario
+  const formTab=document.getElementById('tab-form');
+  if(!formTab||formTab.style.display==='none') return;
+  // Verificar si hay contenido mínimo (al menos destino o cliente)
+  const dest=document.getElementById('m-dest')?.value?.trim()||'';
+  const cli=document.getElementById('m-nm')?.value?.trim()||'';
+  if(!dest&&!cli) return; // formulario vacío, no guardar
+  // Comparar fingerprint
+  const current=_formFingerprint();
+  if(!current||current===_autosaveSnapshot) return; // sin cambios
+  _autosaving=true;
+  try{
+    const d=collectForm();
+    qData=d;
+    await dbSaveQuote(d, editingQuoteId);
+    // Si era nueva, guardar el ID para futuros autosaves
+    if(!editingQuoteId&&d.ref_id){
+      // Buscar la cotización recién creada para obtener su ID
+      const {data}=await sb.from('cotizaciones').select('id').eq('ref_id',d.ref_id).maybeSingle();
+      if(data) editingQuoteId=data.id;
+    }
+    _autosaveSnapshot=current;
+    // Indicador visual sutil
+    _showAutosaveIndicator();
+    console.log('[AUTOSAVE] guardado OK');
+  }catch(e){
+    console.warn('[AUTOSAVE] error:',e);
+    // No mostrar toast de error para no molestar — solo log
+  }finally{
+    _autosaving=false;
+  }
+}
+
+function _showAutosaveIndicator(){
+  // Pequeño texto que aparece brevemente
+  let ind=document.getElementById('autosave-ind');
+  if(!ind){
+    ind=document.createElement('div');
+    ind.id='autosave-ind';
+    ind.style.cssText='position:fixed;bottom:70px;right:20px;font-size:.72rem;color:var(--primary);background:var(--surface);padding:4px 12px;border-radius:20px;border:1px solid var(--border);box-shadow:var(--sh);opacity:0;transition:opacity .3s;z-index:100;font-weight:600;pointer-events:none';
+    document.body.appendChild(ind);
+  }
+  ind.textContent='Guardado automatico';
+  ind.style.opacity='1';
+  setTimeout(()=>{ind.style.opacity='0';},2000);
+}
+
+// Iniciar autosave cuando se entra al tab del formulario
+// Se engancha al switchTab existente
+(function(){
+  const _origSwitchTab=window.switchTab;
+  if(_origSwitchTab){
+    window.switchTab=function(id){
+      _origSwitchTab(id);
+      if(id==='form') _startAutosave();
+      else _stopAutosave();
+    };
+  }
+  // También iniciar si ya estamos en el form (ej: al cargar desde historial)
+  document.addEventListener('DOMContentLoaded',()=>{
+    const formTab=document.getElementById('tab-form');
+    if(formTab&&formTab.style.display!=='none') _startAutosave();
+  });
+})();
 
 // ═══════════════════════════════════════════
 // AI
