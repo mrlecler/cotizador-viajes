@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="ermix-brand-assets-v2/png/transparent/icon-gradient-16.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
@@ -62,7 +62,7 @@
 <div id="sidebar" style="display:none">
 
   <!-- Toggle hamburger / chevron -->
-  <button id="sb-toggle" onclick="_toggleSidebar()" title="Menú">
+  <button id="sb-toggle" onclick="_toggleSidebar()" title="Menú" aria-label="Abrir/cerrar menú">
     <svg id="sb-ico-open" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     <svg id="sb-ico-close" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
@@ -327,33 +327,33 @@
         </div>
       </div>
       <div class="g3">
-        <div class="fg"><label class="lbl">Nombre completo</label><input class="finput" type="text" id="m-nombre" placeholder="Hugo Martínez"></div>
-        <div class="fg"><label class="lbl">Celular / WhatsApp</label><input class="finput" type="text" id="m-cel" placeholder="+54 362 470-3040"></div>
-        <div class="fg"><label class="lbl">Email</label><input class="finput" type="text" id="m-email" placeholder="hugo@email.com"></div>
+        <div class="fg"><label class="lbl" for="m-nombre">Nombre completo</label><input class="finput" type="text" id="m-nombre" placeholder="Hugo Martínez"></div>
+        <div class="fg"><label class="lbl" for="m-cel">Celular / WhatsApp</label><input class="finput" type="text" id="m-cel" placeholder="+54 362 470-3040" inputmode="tel"></div>
+        <div class="fg"><label class="lbl" for="m-email">Email</label><input class="finput" type="text" id="m-email" placeholder="hugo@email.com" inputmode="email"></div>
       </div>
       <div class="g4">
-        <div class="fg"><label class="lbl">Adultos</label><input class="finput" type="number" id="m-adu" placeholder="2" min="0"></div>
-        <div class="fg"><label class="lbl">Niños</label><input class="finput" type="number" id="m-nin" placeholder="0" min="0"></div>
-        <div class="fg"><label class="lbl">Infantes</label><input class="finput" type="number" id="m-inf" placeholder="0" min="0"></div>
-        <div class="fg"><label class="lbl">N° cotización</label><input class="finput" type="text" id="m-ref" placeholder="Auto"></div>
+        <div class="fg"><label class="lbl" for="m-adu">Adultos</label><input class="finput" type="number" id="m-adu" placeholder="2" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-nin">Niños</label><input class="finput" type="number" id="m-nin" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-inf">Infantes</label><input class="finput" type="number" id="m-inf" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-ref">N° cotización</label><input class="finput" type="text" id="m-ref" placeholder="Auto"></div>
       </div>
       <div class="g2">
         <div class="fg">
-          <label class="lbl">Destino</label>
+          <label class="lbl" for="m-dest">Destino</label>
           <input class="finput" type="text" id="m-dest" placeholder="Orlando, Florida">
           <button class="btn-ia-desc" id="btn-ia-desc" onclick="generarDescIA()" title="Generar descripción turística con IA">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg>
             <span id="btn-ia-desc-txt">Generar descripción</span>
           </button>
         </div>
-        <div class="fg"><label class="lbl">País</label><input class="finput" type="text" id="m-pais" placeholder="Estados Unidos"></div>
-        <div class="fg"><label class="lbl">Fecha de salida</label><input class="finput" type="date" id="m-sal"></div>
-        <div class="fg"><label class="lbl">Fecha de regreso</label><input class="finput" type="date" id="m-reg"></div>
+        <div class="fg"><label class="lbl" for="m-pais">País</label><input class="finput" type="text" id="m-pais" placeholder="Estados Unidos"></div>
+        <div class="fg"><label class="lbl" for="m-sal">Fecha de salida</label><input class="finput" type="date" id="m-sal"></div>
+        <div class="fg"><label class="lbl" for="m-reg">Fecha de regreso</label><input class="finput" type="date" id="m-reg"></div>
       </div>
-      <div class="fg"><label class="lbl">Descripción del destino <span style="font-size:.6rem;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(visible en la cotización)</span></label>
+      <div class="fg"><label class="lbl" for="m-desc">Descripción del destino <span style="font-size:.6rem;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(visible en la cotización)</span></label>
         <textarea class="ftxt" id="m-desc" rows="3" placeholder="Se mostrará en la cotización. Podés generarla automáticamente con IA..."></textarea>
       </div>
-      <div class="fg"><label class="lbl">Estado</label>
+      <div class="fg"><label class="lbl" for="m-estado">Estado</label>
         <select class="fsel" id="m-estado" style="max-width:220px">
           <option value="borrador">Borrador</option>
           <option value="enviada">Enviada</option>
@@ -361,7 +361,7 @@
           <option value="cancelada">Cancelada</option>
         </select>
       </div>
-      <div class="fg"><label class="lbl">Notas internas</label>
+      <div class="fg"><label class="lbl" for="m-notas">Notas internas</label>
         <textarea class="ftxt" id="m-notas" rows="2" placeholder="Preferencias, observaciones (no aparecen en el PDF)..."></textarea>
       </div>
       <div class="fg" style="margin-top:4px">
@@ -491,23 +491,23 @@
     </div>
     <div class="card-body">
       <div class="g3">
-        <div class="fg"><label class="lbl">Aseguradora</label>
+        <div class="fg"><label class="lbl" for="seg-nm">Aseguradora</label>
           <select class="fsel" id="seg-nm"><option value="">— Elegir aseguradora —</option></select>
         </div>
-        <div class="fg"><label class="lbl">Cobertura médica</label><input class="finput" type="text" id="seg-med" placeholder="USD 2.000.000"></div>
-        <div class="fg"><label class="lbl">Equipaje</label><input class="finput" type="text" id="seg-eq" placeholder="USD 1.500"></div>
-        <div class="fg"><label class="lbl">Preexistencias</label><input class="finput" type="text" id="seg-pre" placeholder="USD 15.000"></div>
-        <div class="fg"><label class="lbl">Días</label><input class="finput" type="number" id="seg-dias" placeholder="14"></div>
-        <div class="fg"><label class="lbl">Precio</label>
+        <div class="fg"><label class="lbl" for="seg-med">Cobertura médica</label><input class="finput" type="text" id="seg-med" placeholder="USD 2.000.000"></div>
+        <div class="fg"><label class="lbl" for="seg-eq">Equipaje</label><input class="finput" type="text" id="seg-eq" placeholder="USD 1.500"></div>
+        <div class="fg"><label class="lbl" for="seg-pre">Preexistencias</label><input class="finput" type="text" id="seg-pre" placeholder="USD 15.000"></div>
+        <div class="fg"><label class="lbl" for="seg-dias">Días</label><input class="finput" type="number" id="seg-dias" placeholder="14" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="seg-precio">Precio</label>
           <div class="money-wrap"><div class="money-cur"><select id="seg-cur"><option>USD</option><option>ARS</option></select></div>
-          <input class="money-inp" type="number" id="seg-precio" placeholder="0"></div>
+          <input class="money-inp" type="number" id="seg-precio" placeholder="0" inputmode="decimal"></div>
         </div>
       </div>
       <div class="g2">
-        <div class="fg"><label class="lbl">Financiación</label><input class="finput" type="text" id="seg-fin" placeholder="12 cuotas sin interés · $27.347/mes"></div>
-        <div class="fg"><label class="lbl">Otras coberturas</label><input class="finput" type="text" id="seg-extra" placeholder="Covid · PAX Cash"></div>
+        <div class="fg"><label class="lbl" for="seg-fin">Financiación</label><input class="finput" type="text" id="seg-fin" placeholder="12 cuotas sin interés · $27.347/mes"></div>
+        <div class="fg"><label class="lbl" for="seg-extra">Otras coberturas</label><input class="finput" type="text" id="seg-extra" placeholder="Covid · PAX Cash"></div>
       </div>
-      <div class="fg"><label class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+      <div class="fg"><label class="lbl" for="seg-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
         <div class="money-wrap" style="max-width:260px"><div class="money-cur"><select id="seg-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
         <input class="money-inp" type="number" id="seg-com" placeholder="0"></div>
       </div>
@@ -518,20 +518,20 @@
     <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="card-ttl">Precios y condiciones</div></div></div>
     <div class="card-body">
       <div class="g3">
-        <div class="fg"><label class="lbl">Precio por persona</label>
-          <div class="money-wrap"><div class="money-cur"><select id="p-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-pp" placeholder="2392"></div>
+        <div class="fg"><label class="lbl" for="p-pp">Precio por persona</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-pp" placeholder="2392" inputmode="decimal"></div>
         </div>
-        <div class="fg"><label class="lbl">Precio total</label>
-          <div class="money-wrap"><div class="money-cur"><select id="p-cur2"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-tot" placeholder="14352"></div>
+        <div class="fg"><label class="lbl" for="p-tot">Precio total</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur2"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-tot" placeholder="14352" inputmode="decimal"></div>
         </div>
-        <div class="fg"><label class="lbl">Reserva inicial</label>
-          <div class="money-wrap"><div class="money-cur"><select id="p-cur3"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-res" placeholder="300"></div>
+        <div class="fg"><label class="lbl" for="p-res">Reserva inicial</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur3"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-res" placeholder="300" inputmode="decimal"></div>
         </div>
-        <div class="fg"><label class="lbl">Cuotas</label><input class="finput" type="text" id="p-cuo" placeholder="12 cuotas sin interés"></div>
-        <div class="fg"><label class="lbl">Cancelación hasta</label><input class="finput" type="date" id="p-can"></div>
-        <div class="fg"><label class="lbl">Validez</label><input class="finput" type="text" id="p-val" placeholder="24 horas"></div>
+        <div class="fg"><label class="lbl" for="p-cuo">Cuotas</label><input class="finput" type="text" id="p-cuo" placeholder="12 cuotas sin interés"></div>
+        <div class="fg"><label class="lbl" for="p-can">Cancelación hasta</label><input class="finput" type="date" id="p-can"></div>
+        <div class="fg"><label class="lbl" for="p-val">Validez</label><input class="finput" type="text" id="p-val" placeholder="24 horas"></div>
       </div>
-      <div class="fg"><label class="lbl">Términos y condiciones</label>
+      <div class="fg"><label class="lbl" for="p-tyc">Términos y condiciones</label>
         <textarea class="ftxt" id="p-tyc" rows="6">Aclaraciones importantes
 • Los pasajes son intransferibles; cambios o cancelaciones pueden tener costo según la tarifa.
 • Transferencia o depósito bancario en dólares. Pagos en sitios internacionales: solo tarjeta cuando el proveedor lo permite.
@@ -570,13 +570,12 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <img id="tb-thumb" src="" style="display:none;height:36px;width:64px;object-fit:cover;border-radius:6px;border:2px solid var(--amber)" alt="">
       <button class="btn btn-out btn-sm" onclick="document.getElementById('cov-f2').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Foto</button>
       <button class="btn btn-out btn-sm" onclick="autoCover()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Destino</button>
-      <button class="btn btn-del btn-xs" id="btn-rmcov2" onclick="removeCover()" style="display:none">✕</button>
+      <button class="btn btn-del btn-xs" id="btn-rmcov2" onclick="removeCover()" style="display:none" aria-label="Quitar foto de portada">✕</button>
       <input type="file" id="cov-f2" accept="image/*" style="display:none" onchange="uploadCover(this)">
       <div style="width:1px;height:24px;background:var(--border2);flex-shrink:0;margin:0 2px"></div>
       <button class="btn btn-out btn-sm" onclick="document.getElementById('closing-f').click()" title="Foto página de cierre"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Cierre</button>
-      <button class="btn btn-del btn-xs" id="btn-rmclosing" onclick="removeClosing()" style="display:none">✕</button>
+      <button class="btn btn-del btn-xs" id="btn-rmclosing" onclick="removeClosing()" style="display:none" aria-label="Quitar foto de cierre">✕</button>
       <input type="file" id="closing-f" accept="image/*" style="display:none" onchange="uploadClosing(this)">
-      <button class="btn btn-out btn-sm" onclick="openGalleryPanel()" title="Galería de fotos por hotel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Galería</button>
       <div style="width:1px;height:24px;background:var(--border2);flex-shrink:0;margin:0 2px"></div>
       <button type="button" class="pdf-sw tb-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Tema: Turquesa ermix"></button>
       <button type="button" class="pdf-sw tb-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Tema: Azul marino"></button>
@@ -723,7 +722,7 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     <div class="card-body">
       <div class="fg"><label class="lbl">Logo</label>
         <div style="display:flex;align-items:center;gap:12px">
-          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
+          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
           <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
           <button class="btn btn-del btn-xs" id="btn-rmlogo" onclick="removeLogo()" style="display:none">✕</button>
           <input type="file" id="logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
@@ -731,16 +730,16 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
         <div style="font-size:11px;color:var(--g3);margin-top:6px">Formato: PNG o JPG &middot; Tamaño recomendado: 300&times;80px &middot; Peso máximo: 500KB &middot; Fondo transparente o blanco</div>
       </div>
       <div class="g2">
-        <div class="fg"><label class="lbl">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
-        <div class="fg"><label class="lbl">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
-        <div class="fg"><label class="lbl">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com"></div>
-        <div class="fg"><label class="lbl">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040"></div>
-        <div class="fg"><label class="lbl">País <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(código ISO)</span></label>
+        <div class="fg"><label class="lbl" for="cfg-nm">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
+        <div class="fg"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
+        <div class="fg"><label class="lbl" for="cfg-em">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com" inputmode="email"></div>
+        <div class="fg"><label class="lbl" for="cfg-tel">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
+        <div class="fg"><label class="lbl" for="cfg-pais">País <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(código ISO)</span></label>
           <input class="finput" id="cfg-pais" list="cfg-pais-list" maxlength="3" placeholder="AR" style="text-transform:uppercase">
           <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">España</option><option value="MX">México</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Perú</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panamá</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
           <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotización · ej: AR-0001-00001</div>
         </div>
-        <div class="fg full"><label class="lbl">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
+        <div class="fg full"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
       </div>
       <!-- Tema del PDF -->
       <div class="fg full" style="margin-top:8px">
@@ -764,8 +763,8 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="card-ttl">Cambiar contraseña</div></div></div>
     <div class="card-body">
       <div class="g2">
-        <div class="fg"><label class="lbl">Nueva contraseña</label><input class="finput" type="password" id="pw-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
-        <div class="fg"><label class="lbl">Confirmar contraseña</label><input class="finput" type="password" id="pw-conf" placeholder="Repetir contraseña" autocomplete="new-password"></div>
+        <div class="fg"><label class="lbl" for="pw-new">Nueva contraseña</label><input class="finput" type="password" id="pw-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+        <div class="fg"><label class="lbl" for="pw-conf">Confirmar contraseña</label><input class="finput" type="password" id="pw-conf" placeholder="Repetir contraseña" autocomplete="new-password"></div>
       </div>
       <button class="btn btn-pri" onclick="changePassword()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Guardar contraseña</button>
       <span id="pw-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">Contraseña actualizada</span>
@@ -778,16 +777,16 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 <!-- MODALS -->
 <div id="modal-overlay" onclick="closeModal()" style="display:none;position:fixed;inset:0;background:rgba(45,31,20,0.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1000"></div>
-<div id="modal-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border-radius:16px;padding:28px;width:90%;max-width:500px;z-index:1001;max-height:90vh;overflow-y:auto;border:1px solid var(--border)">
+<div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-box-ttl" tabindex="-1" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border-radius:16px;padding:28px;width:90%;max-width:500px;z-index:1001;max-height:90vh;overflow-y:auto;border:1px solid var(--border);outline:none">
   <div id="modal-content"></div>
 </div>
 
 <!-- PRINT -->
 
 <!-- ═══ MODAL ESTADO ═══ -->
-<div id="modal-status" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="modal-status" role="dialog" aria-modal="true" aria-labelledby="modal-status-ttl" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:center;justify-content:center;padding:20px">
   <div class="status-modal-box">
-    <div class="status-modal-ttl">Cambiar estado</div>
+    <div class="status-modal-ttl" id="modal-status-ttl">Cambiar estado</div>
     <div style="font-size:.8rem;color:var(--g3);margin-bottom:20px">Seleccioná el nuevo estado de la cotización</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <button class="btn btn-st-draft" onclick="applyStatus('borrador')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Borrador</button>
@@ -806,22 +805,12 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 <!-- Modal Secciones Fotos -->
 <div id="sec-photos-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSPModal()">
-  <div class="modal" style="width:420px;max-height:80vh;overflow-y:auto">
-    <div class="modal-hd"><div class="modal-ttl">Fotos por sección</div><button class="modal-cls" onclick="closeSPModal()">✕</button></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sec-photos-ttl" style="width:420px;max-height:80vh;overflow-y:auto">
+    <div class="modal-hd"><div class="modal-ttl" id="sec-photos-ttl">Fotos por sección</div><button class="modal-cls" onclick="closeSPModal()" aria-label="Cerrar">✕</button></div>
     <div class="modal-body" id="sec-photos-body"></div>
   </div>
 </div>
 
-<!-- Modal Galería Hotel -->
-<div id="gallery-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeGalleryModal()">
-  <div class="modal" style="width:500px;max-height:85vh;display:flex;flex-direction:column">
-    <div class="modal-hd"><div class="modal-ttl">Galería de fotos</div><button class="modal-cls" onclick="closeGalleryModal()">✕</button></div>
-    <div class="modal-body" id="gallery-body" style="overflow-y:auto;flex:1"></div>
-    <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
-      <button class="btn btn-save btn-sm" onclick="closeGalleryModal()">Listo</button>
-    </div>
-  </div>
-</div>
 
 <!-- JS Modules -->
 <script src="js/app-core.js?v=21"></script>

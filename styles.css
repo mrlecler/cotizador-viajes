@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=DM+Mono:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* ── ermix Brand v3 — Light-first ── */
@@ -14,16 +14,17 @@
   --g2:        #E2DAD0;
   --g3:        rgba(45,31,20,0.32);
   --g4:        rgba(45,31,20,0.55);
-  --sh:        0 2px 10px rgba(45,31,20,0.07),0 1px 3px rgba(45,31,20,0.04);
-  --sh2:       0 8px 28px rgba(45,31,20,0.13);
+  --sh:        0 4px 20px rgba(45,31,20,0.05);
+  --sh2:       0 8px 32px rgba(45,31,20,0.1);
   --sh3:       0 12px 40px rgba(27,158,143,0.15);
-  --r:         14px;--rs:10px;--r2:8px;
+  --r:         16px;--rs:10px;--r2:10px;
   /* Acento turquesa */
   --primary:   #1B9E8F;
   --primary2:  #0BC5B8;
   --primary3:  #06B6D4;
   --secondary: #E8826A;
   --grad:      linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);
+  --cta:#FF6B35;--cta-hover:#E85A25;
   --grad-text: linear-gradient(90deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);
   --grad-soft: linear-gradient(135deg,rgba(27,158,143,0.08),rgba(11,197,184,0.05));
   /* Colores por sección */
@@ -51,8 +52,9 @@
   --violet:var(--primary);--violet-mid:var(--primary2);--violet-light:var(--primary3);
   --coral:var(--secondary);--indigo:var(--primary);
   --primary2-legacy:#6D28D9;
+  --glass:rgba(255,255,255,0.75);--glass-blur:blur(15px);--glass-border:1px solid rgba(45,31,20,0.06);
 }
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.55}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.55}
 input,textarea,select,button{font-family:inherit;box-sizing:border-box}
 textarea{resize:vertical}
 input:focus,textarea:focus,select:focus{
@@ -450,10 +452,12 @@ input:focus,textarea:focus,select:focus{
   background:transparent;border:none;outline:none;
   font-size:.78rem;font-weight:700;color:var(--primary);cursor:pointer;width:100%
 }
+.money-cur select:focus{outline:none} /* ring en .money-wrap:focus-within */
 .money-inp{
   flex:1;padding:10px 12px;border:none;background:transparent;
   font-size:.87rem;color:var(--text);outline:none;font-family:inherit
 }
+.money-inp:focus{outline:none} /* ring en .money-wrap:focus-within */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
@@ -550,6 +554,10 @@ input:focus,textarea:focus,select:focus{
   border-color:transparent;
   box-shadow:0 4px 15px rgba(27,158,143,.3)
 }
+.btn-cta{background:#FF6B35;color:white;box-shadow:0 4px 15px rgba(255,107,53,0.3)}
+.btn-cta:hover{background:#E85A25;transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,107,53,0.4)}
+.btn-cta:active{transform:translateY(0);box-shadow:0 2px 8px rgba(255,107,53,0.25)}
+.btn-cta:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-sm{padding:7px 14px;font-size:.76rem}
 .btn-xs{padding:5px 10px;font-size:.72rem}
 .add-row{
@@ -748,14 +756,14 @@ input:focus,textarea:focus,select:focus{
 
 /* ── Reset y tipografía base ── */
 #qwrap{
-  font-family:'DM Sans',system-ui,sans-serif!important;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif!important;
   background:white!important;
   border-radius:16px;overflow:hidden;
   box-shadow:0 8px 60px rgba(27,158,143,.15);
   max-width:900px;margin:0 auto;
   color:#2D1F14!important
 }
-#qwrap *{font-family:'DM Sans',system-ui,sans-serif!important}
+#qwrap *{font-family:'Plus Jakarta Sans',system-ui,sans-serif!important}
 #qwrap .q-ref-val,
 #qwrap .q-iata,
 #qwrap .q-bp-code{font-family:'DM Mono',monospace!important}
@@ -1065,6 +1073,7 @@ input:focus,textarea:focus,select:focus{
   transition:transform .15s,box-shadow .15s,border-color .15s;
   outline:none;padding:0
 }
+.pdf-sw:focus{outline:none} /* handled by :focus-visible */
 .pdf-sw:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .pdf-sw-on{
   border-color:var(--text)!important;
@@ -1131,7 +1140,7 @@ input:focus,textarea:focus,select:focus{
 /* Itinerary table */
 .qp-iti-table{
   width:100%;border-collapse:collapse;
-  font-family:'DM Sans',sans-serif
+  font-family:'Plus Jakarta Sans',sans-serif
 }
 .qp-iti-table thead th{
   text-align:left;padding:8px 12px;
@@ -1198,7 +1207,7 @@ input:focus,textarea:focus,select:focus{
 .modal-overlay{
   position:fixed;inset:0;
   background:rgba(45,31,20,0.42);
-  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   z-index:2500;
   display:flex;align-items:center;justify-content:center;
   padding:20px;
@@ -1222,6 +1231,7 @@ input:focus,textarea:focus,select:focus{
 }
 .modal-cls:hover{background:var(--g1);color:var(--text)}
 .modal-body{padding:18px 20px 22px}
+.glass{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:var(--glass-border)}
 @media print{.modal-overlay{display:none!important}}
 
 /* ══════════════════════════
@@ -1261,8 +1271,9 @@ a:hover{color:var(--secondary)}
   --g2:        rgba(255,255,255,0.1);
   --g3:        rgba(240,237,230,0.28);
   --g4:        rgba(240,237,230,0.5);
-  --sh:        0 2px 10px rgba(0,0,0,0.45);
-  --sh2:       0 8px 28px rgba(0,0,0,0.55);
+  --sh:        0 4px 20px rgba(0,0,0,0.3);
+  --sh2:       0 8px 32px rgba(0,0,0,0.5);
+  --glass:rgba(11,197,184,0.06);--glass-blur:blur(15px);--glass-border:1px solid rgba(11,197,184,0.08);
   --c-vuelos:     rgba(27,158,143,0.1);
   --c-hotel:      rgba(212,160,23,0.08);
   --c-traslado:   rgba(232,130,106,0.08);
@@ -1454,7 +1465,7 @@ a:hover{color:var(--secondary)}
   padding:22px 24px 20px;
   box-shadow:var(--sh);
   transition:box-shadow .22s,transform .22s;
-  font-family:'DM Sans',sans-serif;
+  font-family:'Plus Jakarta Sans',sans-serif;
   position:relative;overflow:hidden;
 }
 .dash-metric::before{
@@ -1744,7 +1755,7 @@ a:hover{color:var(--secondary)}
 .q-iti-underline{width:44px;height:3px;background:#1B9E8F;margin-top:10px;border-radius:2px}
 .q-iti-stop{display:grid;grid-template-columns:44px 1fr auto;gap:0 14px;position:relative;margin-bottom:0}
 .q-iti-num-col{display:flex;flex-direction:column;align-items:center;padding-top:2px}
-.q-iti-circle{width:30px;height:30px;border-radius:50%;background:#1B9E8F;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Sans',sans-serif}
+.q-iti-circle{width:30px;height:30px;border-radius:50%;background:#1B9E8F;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif}
 .q-iti-connector{flex:1;width:2px;background:#e5e7eb;min-height:24px;margin:5px 0}
 .q-iti-info-col{padding:2px 0 20px}
 .q-iti-loc{display:flex;align-items:center;gap:4px;margin-bottom:4px}
@@ -1754,7 +1765,7 @@ a:hover{color:var(--secondary)}
 .q-iti-detail{font-size:11px;color:#4b5563;margin-bottom:3px;line-height:1.55}
 .q-iti-detail strong{color:#111827;font-weight:700}
 .q-iti-nights-col{text-align:right;padding-top:2px;min-width:52px}
-.q-iti-nights-val{display:block;font-size:22px;font-weight:900;color:#111827;line-height:1;font-family:'DM Sans',sans-serif}
+.q-iti-nights-val{display:block;font-size:22px;font-weight:900;color:#111827;line-height:1;font-family:'Plus Jakarta Sans',sans-serif}
 .q-iti-nights-lbl{display:flex;align-items:center;justify-content:flex-end;gap:3px;font-size:9px;color:#6b7280;margin-top:3px}
 #qwrap .q-iti-sec{break-before:page;break-inside:auto}
 #qwrap .q-iti-stop{break-inside:avoid}
@@ -2036,6 +2047,38 @@ body{overflow-x:hidden}
 .alog-clear-btn{margin-left:auto;font-size:.68rem;font-weight:600;color:var(--g3);background:none;border:1px solid var(--border2);border-radius:var(--r2);padding:2px 8px;cursor:pointer;transition:all .15s}
 .alog-clear-btn:hover{color:var(--text);border-color:var(--g3)}
 .alog-item-err:hover{background:rgba(239,68,68,0.04)}
+
+/* ══════════════════════════
+   ACCESSIBILITY — focus-visible + touch targets + outlines
+══════════════════════════ */
+
+/* 1. Focus visible para navegación por teclado — botones y elementos interactivos */
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:2px
+}
+/* Inputs/textareas/selects usan box-shadow (ya definido en :focus) — solo silenciar outline */
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
+/* Dropdowns de dinero y swatches PDF carecían de focus replacement */
+.money-cur select:focus-visible,
+.money-inp:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:1px;
+  border-radius:3px
+}
+.pdf-sw:focus-visible{
+  outline:2px solid var(--primary)!important;
+  outline-offset:2px
+}
+
+/* 2. Touch targets mínimos para btn-sm y btn-xs en mobile */
+@media(max-width:767px){
+  .btn-sm{min-height:44px}
+  .btn-xs{min-height:40px;padding:5px 12px}
+}
 
 /* ══════════════════════════
    PRINT — override final (must be LAST)

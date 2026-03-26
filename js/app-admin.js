@@ -332,7 +332,17 @@ function openAgentModal(){
 // ═══════════════════════════════════════════
 // MODAL
 // ═══════════════════════════════════════════
-function openModal(){document.getElementById('modal-overlay').style.display='block';document.getElementById('modal-box').style.display='block';}
+function openModal(){
+  const box=document.getElementById('modal-box');
+  const overlay=document.getElementById('modal-overlay');
+  overlay.style.display='block';
+  box.style.display='block';
+  // Accesibilidad: encontrar primer h2/h3 y asignarle el id para aria-labelledby
+  const ttl=box.querySelector('h2,h3,[class*="ttl"],[class*="title"]');
+  if(ttl&&!ttl.id) ttl.id='modal-box-ttl';
+  // Enfocar el modal para lectores de pantalla
+  box.focus();
+}
 function closeModal(){document.getElementById('modal-overlay').style.display='none';document.getElementById('modal-box').style.display='none';}
 
 // ═══════════════════════════════════════════
