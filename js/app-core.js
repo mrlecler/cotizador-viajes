@@ -644,10 +644,9 @@ function switchTab(id){
   if(id==='history') renderHistory();
   if(id==='promos') renderPromos();
   if(id==='clients') renderClients();
-  if(id==='admin'){renderAdmin();}
+  if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
-  if(id==='config'){if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
 }
 
 // BUG3 — restore simple fields from draft

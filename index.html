@@ -714,6 +714,23 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
+  <!-- API KEYS -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+      <div><div class="card-ttl">API Keys</div><div class="card-sub">Claves de servicios externos para toda la plataforma ermix</div></div>
+    </div>
+    <div class="card-body">
+      <div class="fg">
+        <label class="lbl" for="cfg-unsplash">Unsplash Access Key</label>
+        <input class="finput" type="password" id="cfg-unsplash" placeholder="Access Key de unsplash.com/developers" autocomplete="off">
+        <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Para fotos de portada por destino. Se guarda en localStorage, no se sube al servidor.</div>
+      </div>
+      <button class="btn btn-cta btn-sm" onclick="saveApiKeys()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar keys</button>
+      <span id="api-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
+    </div>
+  </div>
+
 </div>
 
 <!-- ═══ CONFIG ═══ -->
@@ -758,19 +775,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
-    </div>
-  </div>
-  <!-- API Keys -->
-  <div class="card" style="margin-top:16px">
-    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div><div><div class="card-ttl">API Keys</div><div class="card-sub">Claves de servicios externos (se guardan solo en tu navegador)</div></div></div>
-    <div class="card-body">
-      <div class="fg">
-        <label class="lbl" for="cfg-unsplash">Unsplash Access Key</label>
-        <input class="finput" type="password" id="cfg-unsplash" placeholder="Access Key de unsplash.com/developers" autocomplete="off">
-        <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Para fotos de portada por destino. Se guarda en localStorage, no se sube al servidor.</div>
-      </div>
-      <button class="btn btn-cta btn-sm" onclick="saveApiKeys()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar keys</button>
-      <span id="api-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
     </div>
   </div>
   <div class="card" style="margin-top:16px">
