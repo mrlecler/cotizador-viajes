@@ -2090,6 +2090,14 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .log-pager button{padding:4px 12px;border:1px solid var(--border2);border-radius:var(--r2);background:var(--surface);color:var(--text);font-size:.75rem;cursor:pointer}
 .log-pager button:disabled{opacity:.4;cursor:not-allowed}
 
+/* Client modal tabs */
+.cli-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.cli-tab{padding:8px 14px;font-size:.78rem;font-weight:600;color:var(--g3);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s;white-space:nowrap;flex-shrink:0}
+.cli-tab:hover{color:var(--text)}
+.cli-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.cli-tab-panel{display:none}
+.cli-tab-panel.on{display:block}
+
 /* ══════════════════════════
    PRINT — override final (must be LAST)
    Las reglas de @media print anteriores están al inicio del CSS;

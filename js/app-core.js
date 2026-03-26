@@ -651,7 +651,7 @@ function switchTab(id){
   }
   if(id==='history') renderHistory();
   if(id==='promos') renderPromos();
-  if(id==='clients') renderClients();
+  if(id==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
