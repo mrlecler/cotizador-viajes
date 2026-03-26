@@ -69,15 +69,17 @@ function _initWordmarks(){
   buildWordmark('login-wm',88,'white','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
 }
-document.fonts.ready.then(function(){
-  // Verificar que DM Sans 900 realmente cargó (fonts.ready puede resolver antes)
+function _tryInitWordmarks(attempt){
   if(document.fonts.check('900 48px "DM Sans"')){
     _initWordmarks();
+  } else if(attempt<10){
+    setTimeout(()=>_tryInitWordmarks(attempt+1), 300);
   } else {
-    // Reintentar tras 500ms
-    setTimeout(_initWordmarks, 500);
+    // Después de 3s, construir igual con lo que haya
+    _initWordmarks();
   }
-});
+}
+document.fonts.ready.then(()=>_tryInitWordmarks(0));
 
 function _buildSbLogo(){
   const el=document.getElementById('sb-logo');
@@ -543,16 +545,16 @@ async function loadDashboardMetrics(){
     }
     console.log('[DASH] después de filtro fecha:',quotes.length,'period:',_dashPeriod);
 
-    // Clients count
+    // Clients count — intentar con agente_id, si da 0 contar todos
     let totalClients=0;
     const {data:cliData,error:cliErr}=await sb.from('clientes')
       .select('id,nombre,agente_id')
       .eq('agente_id',ag.id);
-    console.log('[DASH] clientes agente:',cliData?.length,'err:',cliErr);
-    if(cliErr){
-      // Fallback sin filtro
-      const {data:c2}=await sb.from('clientes').select('id,nombre');
-      console.log('[DASH] clientes fallback total:',c2?.length);
+    console.log('[DASH] clientes con agente_id:',cliData?.length,'err:',cliErr);
+    if(cliErr || (cliData||[]).length===0){
+      // Puede que los clientes no tengan agente_id asignado — contar todos
+      const {data:c2,error:e2}=await sb.from('clientes').select('id,nombre');
+      console.log('[DASH] clientes total (sin filtro):',c2?.length,'err:',e2);
       totalClients=(c2||[]).length;
     } else {
       totalClients=(cliData||[]).length;

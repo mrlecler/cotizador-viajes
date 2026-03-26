@@ -182,6 +182,15 @@ function _applyCoversToDOM(){
 function updCovers(){
   _applyCoversToDOM();
   if(qData) renderPreview(qData);
+  // Mostrar/ocultar crédito Unsplash
+  const creditEl=document.getElementById('unsplash-credit');
+  if(creditEl){
+    if(window._unsplashCredit){
+      _showUnsplashCredit();
+    } else {
+      creditEl.style.display='none';
+    }
+  }
 }
 
 // ═══════════════════════════════════════════
