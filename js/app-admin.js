@@ -505,14 +505,7 @@ async function sendInvite(){
 // Legacy alias
 function openAgentModal(){openInviteModal('agente');}
 
-async function selfRegisterAsAgent(){
-  if(!confirm('Al activarte como agente podras crear cotizaciones. Deberas reingresar para que los cambios tomen efecto.')) return;
-  // Actualizar la fila existente — agregar flag es_agente=true
-  const {error}=await sb.from('agentes').update({es_agente:true}).eq('id',window._agenteId);
-  if(error){ toast('Error: '+error.message, false); return; }
-  toast('Te activaste como agente. Cerrando sesion...');
-  setTimeout(async()=>{ await sb.auth.signOut(); location.reload(); }, 2000);
-}
+// selfRegisterAsAgent eliminado — agencias pueden cotizar directamente
 
 // ═══════════════════════════════════════════
 // MODAL
@@ -776,14 +769,7 @@ async function renderAgency(){
   if(agEl){
     // Boton "Activarme como agente" para agencias que no son agentes
     let selfRegBtn='';
-    if(currentRol==='agencia' && currentUser){
-      if(!window._esAgente){
-        selfRegBtn=`<div style="padding:12px;margin-bottom:12px;border-radius:var(--r2);background:rgba(27,158,143,.07);border:1px solid rgba(27,158,143,.12);display:flex;align-items:center;gap:12px">
-          <div style="flex:1;font-size:.82rem;color:var(--text)">Para cotizar, necesitas activarte como agente de tu agencia</div>
-          <button class="btn btn-cta btn-sm" onclick="selfRegisterAsAgent()">Activarme como agente</button>
-        </div>`;
-      }
-    }
+    // Agencias pueden cotizar directamente — no se necesita botón de activación
     agEl.innerHTML=selfRegBtn+(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
     ${ags.map(a=>`<tr>
       <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>

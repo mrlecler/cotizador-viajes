@@ -522,7 +522,6 @@ async function showApp(user){
       currentRol = data.rol || 'agente';
       isAdmin = currentRol === 'admin';
       window._agenteId = data.id;
-      window._esAgente = !!data.es_agente;
       localStorage.setItem('mp_rol', currentRol);
       // Supabase es la fuente de verdad — siempre pisar localStorage al login
       if(data.nombre)    agCfg.nm        = data.nombre;
@@ -724,19 +723,31 @@ async function dbSaveQuote(d, supabaseId){
   await loadClients();
 }
 
+async function _getAgencyAgentIds(){
+  // Para agencias: obtener IDs de sus agentes + el propio
+  if(currentRol!=='agencia'||!window._agenteId) return null;
+  try{
+    const {data}=await sb.from('agentes').select('id').eq('agencia_id',window._agenteId);
+    const ids=[window._agenteId,...(data||[]).map(a=>a.id)];
+    return [...new Set(ids)]; // dedup
+  }catch(e){ return [window._agenteId]; }
+}
+
 async function dbLoadQuotes(){
   // created_at NO existe en cotizaciones — usar creado_en
   let query = sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
-  // Admin ve todo, otros solo sus propias cotizaciones
-  if(currentRol !== 'admin' && window._agenteId){
+  // Admin ve todo, agencia ve propias + de sus agentes, agente solo propias
+  if(currentRol==='agencia'){
+    const ids=await _getAgencyAgentIds();
+    if(ids?.length) query=query.in('agente_id',ids);
+  } else if(currentRol !== 'admin' && window._agenteId){
     query = query.eq('agente_id', window._agenteId);
   }
   const {data,error} = await query;
   if(error){
     console.warn('dbLoadQuotes error:', error);
-    // Fallback sin order
     let q2 = sb.from('cotizaciones').select('*').limit(200);
-    if(currentRol !== 'admin' && window._agenteId) q2 = q2.eq('agente_id', window._agenteId);
+    if(currentRol!=='admin'&&window._agenteId) q2=q2.eq('agente_id',window._agenteId);
     const {data:d2,error:e2} = await q2;
     if(e2){ console.error('dbLoadQuotes fallback error:',e2); return []; }
     return (d2||[]).sort((a,b)=>new Date(b.creado_en||b.updated_at||0)-new Date(a.creado_en||a.updated_at||0));
@@ -746,8 +757,11 @@ async function dbLoadQuotes(){
 
 async function dbLoadClients(){
   let query = sb.from('clientes').select('*').order('nombre');
-  // Admin ve todos, otros solo sus propios clientes
-  if(currentRol !== 'admin' && window._agenteId){
+  // Admin ve todos, agencia ve propios + de sus agentes, agente solo propios
+  if(currentRol==='agencia'){
+    const ids=await _getAgencyAgentIds();
+    if(ids?.length) query=query.in('agente_id',ids);
+  } else if(currentRol !== 'admin' && window._agenteId){
     query = query.eq('agente_id', window._agenteId);
   }
   const {data} = await query;
@@ -889,11 +903,7 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
 function switchTab(id){
-  // Restricción: agencias no pueden cotizar (salvo que se hayan activado como agente)
-  if(id==='form'&&currentRol==='agencia'&&!window._esAgente){
-    toast('Para cotizar necesitas activarte como agente desde Mi Agencia',false);
-    return;
-  }
+  // Agencias pueden cotizar directamente + ver las de sus agentes (solo lectura)
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
   if(activePanel?.id==='tab-form' && id!=='form'){
