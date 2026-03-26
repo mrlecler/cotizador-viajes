@@ -832,7 +832,7 @@ async function saveAgencyData(){
   // Update local config
   if(data.agencia) agCfg.ag=data.agencia;
   if(data.telefono) agCfg.tel=data.telefono;
-  localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
+  _saveAgCfg();
   toast('Datos de agencia guardados');
 }
 
