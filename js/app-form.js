@@ -826,7 +826,7 @@ function collectForm(){
     vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
-    total_comision};
+    total_comision,_coverUrl:coverUrl||null};
 }
 
 // ═══════════════════════════════════════════

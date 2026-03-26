@@ -88,7 +88,7 @@ async function loadFromHistory(refId, id){
   window._hFotos={};
   qData=data.datos;
   editingQuoteId=id;
-  if(data.cover_url) coverUrl=data.cover_url;
+  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
   renderPreview(qData);switchTab('preview');
 }
 
@@ -100,7 +100,7 @@ async function editFromHistory(refId, id){
   // Store editing context
   editingQuoteId = id;
   const d = data.datos;
-  if(data.cover_url) coverUrl=data.cover_url;
+  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
   // Restore into form via restoreDraft
   formDraft = d;
   switchTab('form');
@@ -124,7 +124,7 @@ async function duplicateFromHistory(refId, id){
   // Reset editing state — this will be a NEW quote
   editingQuoteId=null;
   _hideEditBanner();
-  if(data.cover_url) coverUrl=data.cover_url;
+  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
   formDraft=d;
   switchTab('form');
   setTimeout(()=>{
