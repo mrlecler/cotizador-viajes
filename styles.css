@@ -1095,11 +1095,15 @@ input:focus,textarea:focus,select:focus{
   break-after:page
 }
 
-/* Standard page — full A4 with top padding for content */
+/* Standard page — continuous flow, no forced page breaks */
 .qp-page{
   background:#FFFFFF!important;
   min-height:0;
-  break-inside:auto
+  break-inside:auto;
+  margin-bottom:0
+}
+.qp-page+.qp-page{
+  border-top:3px solid rgba(27,158,143,0.15)
 }
 
 /* Dark page header */

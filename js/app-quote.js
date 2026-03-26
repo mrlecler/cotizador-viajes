@@ -133,7 +133,7 @@ function buildQuoteHTML(d){
     d.itinerario.forEach(r=>{if(!_iGrp[r.fecha]){_iGrp[r.fecha]=[];_iOrd.push(r.fecha);}_iGrp[r.fecha].push(r);});
     const itiRows=_iOrd.map(f=>({fecha:f,date:_pd3(f),evs:_iGrp[f]})).filter(r=>r.date).sort((a,b)=>a.date-b.date);
     if(itiRows.length>0){
-      H+=`<div class="qp-page" style="break-before:page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}<div style="padding:0 32px 20px"><table class="qp-iti-table"><thead><tr><th style="width:80px">FECHA</th><th>ACTIVIDAD</th><th style="width:110px">TIPO</th></tr></thead><tbody>${itiRows.map((r,ri)=>r.evs.map((ev,ei)=>{const c=_tipoC[ev.tipo]||'#9CA3AF';const dc=ei===0?`<td class="qp-iti-date" rowspan="${r.evs.length}"><div style="font-size:15px;font-weight:800;color:#2D1F14;line-height:1">${String(r.date.getDate()).padStart(2,'0')}/${String(r.date.getMonth()+1).padStart(2,'0')}</div><div style="font-size:8px;font-weight:600;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;margin-top:2px">${DIAS[r.date.getDay()]}</div></td>`:'';return`<tr class="${ri%2===0?'qp-iti-even':'qp-iti-odd'}">${dc}<td class="qp-iti-act"><div style="display:flex;align-items:center;gap:7px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0"></span><span style="font-size:10px;color:#374151">${ev.actividad||ev.tipo}</span></div></td><td class="qp-iti-type"><span style="background:${c};color:white;font-size:7.5px;font-weight:800;letter-spacing:1.5px;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap">${ev.tipo}</span></td></tr>`;}).join('')).join('')}</tbody></table></div></div>`;
+      H+=`<div class="qp-page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}<div style="padding:0 32px 20px"><table class="qp-iti-table"><thead><tr><th style="width:80px">FECHA</th><th>ACTIVIDAD</th><th style="width:110px">TIPO</th></tr></thead><tbody>${itiRows.map((r,ri)=>r.evs.map((ev,ei)=>{const c=_tipoC[ev.tipo]||'#9CA3AF';const dc=ei===0?`<td class="qp-iti-date" rowspan="${r.evs.length}"><div style="font-size:15px;font-weight:800;color:#2D1F14;line-height:1">${String(r.date.getDate()).padStart(2,'0')}/${String(r.date.getMonth()+1).padStart(2,'0')}</div><div style="font-size:8px;font-weight:600;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase;margin-top:2px">${DIAS[r.date.getDay()]}</div></td>`:'';return`<tr class="${ri%2===0?'qp-iti-even':'qp-iti-odd'}">${dc}<td class="qp-iti-act"><div style="display:flex;align-items:center;gap:7px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0"></span><span style="font-size:10px;color:#374151">${ev.actividad||ev.tipo}</span></div></td><td class="qp-iti-type"><span style="background:${c};color:white;font-size:7.5px;font-weight:800;letter-spacing:1.5px;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap">${ev.tipo}</span></td></tr>`;}).join('')).join('')}</tbody></table></div></div>`;
     }
   } else {
   const allDates=[];
@@ -161,7 +161,7 @@ function buildQuoteHTML(d){
     const rows=[];let cur=new Date(minD);
     while(cur<=maxD){const k=_sameDayKey(cur);rows.push({k,date:new Date(cur),evs:evMap[k]||[{type:'—',desc:vi.destino||'En destino',color:'#9CA3AF'}]});cur=new Date(cur);cur.setDate(cur.getDate()+1);}
     if(rows.length>0&&rows.length<=60){
-      H+=`<div class="qp-page" style="break-before:page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}
+      H+=`<div class="qp-page">${darkHd(`ITINERARIO · ${(vi.destino||'').toUpperCase()}${vi.salida?' · '+fd(vi.salida):''}${vi.regreso?' – '+fd(vi.regreso):''}`,`Día a Día`,vi.noches?vi.noches+' noches'+(vi.destino?' en '+vi.destino:''):'')}
   <div style="padding:0 32px 20px">
     <table class="qp-iti-table">
       <thead><tr><th style="width:80px">FECHA</th><th>ACTIVIDAD</th><th style="width:110px">TIPO</th></tr></thead>
@@ -180,7 +180,7 @@ function buildQuoteHTML(d){
   // ── VUELOS ──
   if((d.vuelos||[]).length){
     const rBP=(label,isRet,or,io,hs,fss,de,id2,hl,fl,al,num,esc,tesc,dur)=>`<div class="q-bp"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:10px;font-weight:700;color:#374151">${or} → ${de}</span><span class="q-bp-chip${isRet?' ret':''}">${label}</span></div><div class="q-bp-grid"><div><div class="q-bp-time">${hs||'–'}</div><div class="q-iata">${io||or}</div><div class="q-bp-city">${or}</div>${fss?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fss)}</div>`:''}</div><div class="q-bp-mid"><div class="q-bp-escl">${esc?'con escala':'directo'}</div><div class="q-bp-line"></div>${esc?`<div class="q-bp-via">${L(LI.arrow,8)} ${esc}${tesc?' · '+tesc:''}</div>`:''}${dur?`<div class="q-bp-dur">${dur}</div>`:''}</div><div style="text-align:right"><div class="q-bp-time">${hl||'–'}</div><div class="q-iata">${id2||de}</div><div class="q-bp-city">${de}</div>${fl?`<div style="font-size:9px;color:rgba(45,31,20,0.4);margin-top:1px">${fd(fl)}</div>`:''}</div></div><div class="q-bp-footer"><span class="q-bp-meta">${al||''}${num?' · '+num:''}</span></div></div>`;
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('TRANSPORTE AÉREO','Vuelos',d.vuelos.length+' tramo'+( d.vuelos.length>1?'s':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('TRANSPORTE AÉREO','Vuelos',d.vuelos.length+' tramo'+( d.vuelos.length>1?'s':''))}<div class="qp-items">`;
     d.vuelos.forEach(v=>{
       const vAiata=v.aerolinea_iata||_extractAirlineIata(v.aerolinea,v.numero);
       let info='';
@@ -204,7 +204,7 @@ function buildQuoteHTML(d){
   if(hotOk.length){
     const hotCities=[...new Set(hotOk.map(h=>h.ciudad).filter(Boolean))].join(', ');
     const hotDates=hotOk[0]?.checkin?fd(hotOk[0].checkin)+(hotOk[hotOk.length-1].checkout?' – '+fd(hotOk[hotOk.length-1].checkout):''):'';
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('ALOJAMIENTO'+(hotCities?' · '+hotCities.toUpperCase():'')+(hotDates?' · '+hotDates:''),'Alojamiento',hotOk.length+' hotel'+(hotOk.length>1?'es':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('ALOJAMIENTO'+(hotCities?' · '+hotCities.toUpperCase():'')+(hotDates?' · '+hotDates:''),'Alojamiento',hotOk.length+' hotel'+(hotOk.length>1?'es':''))}<div class="qp-items">`;
     hotOk.forEach((h)=>{
       const isP=h.tipo==='disney'||h.tipo==='universal';
       const stars=parseInt(h.estrellas)||0;
@@ -237,7 +237,7 @@ function buildQuoteHTML(d){
   {
     const hotelesConFotos=(d.hoteles||[]).map((h,i)=>({h,i,fotos:(h.fotos||[]).filter(f=>f?.url)})).filter(x=>x.fotos.length);
     if(hotelesConFotos.length){
-      H+=`<div class="qp-page" style="break-before:page">${darkHd('GALERÍA DE FOTOS','Alojamiento','Imágenes de referencia')}<div style="padding:20px 32px">`;
+      H+=`<div class="qp-page">${darkHd('GALERÍA DE FOTOS','Alojamiento','Imágenes de referencia')}<div style="padding:20px 32px">`;
       hotelesConFotos.forEach(({h,fotos})=>{
         H+=`<div style="margin-bottom:20px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(45,31,20,0.4);margin-bottom:10px">${h.nombre||'Hotel'}</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${fotos.map(f=>`<div style="position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:8px"><img src="${f.url}" style="width:100%;height:100%;object-fit:cover;display:block">${f.label?`<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 80%);padding:6px 8px"><span style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.85)">${f.label}</span></div>`:''}</div>`).join('')}</div></div>`;
       });
@@ -248,7 +248,7 @@ function buildQuoteHTML(d){
   // ── TRASLADOS ──
   const trsOk=(d.traslados||[]).filter(t=>t.origen||t.destino);
   if(trsOk.length){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('TRANSFERS Y TRASLADOS','Traslados',trsOk.length+' traslado'+(trsOk.length>1?'s':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('TRANSFERS Y TRASLADOS','Traslados',trsOk.length+' traslado'+(trsOk.length>1?'s':''))}<div class="qp-items">`;
     trsOk.forEach(t=>{
       let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${t.origen||''}${t.destino?' → '+t.destino:''}</div>`;
       const chips=[t.vehiculo,t.hora?'Recogida: '+t.hora:'',t.prov,t.fecha?fd(t.fecha):''].filter(Boolean);
@@ -264,7 +264,7 @@ function buildQuoteHTML(d){
   // ── EXCURSIONES ──
   const excOk=(d.excursiones||[]).filter(e=>e.nombre);
   if(excOk.length){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('EXCURSIONES Y ACTIVIDADES','Excursiones',excOk.length+' actividad'+(excOk.length>1?'es':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('EXCURSIONES Y ACTIVIDADES','Excursiones',excOk.length+' actividad'+(excOk.length>1?'es':''))}<div class="qp-items">`;
     excOk.forEach(e=>{
       let info=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div style="font-size:14px;font-weight:700;color:#2D1F14;line-height:1.2">${e.nombre}</div>${e.categoria?`<span style="background:rgba(67,160,71,0.1);color:#43A047;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:8px">${e.categoria}</span>`:''}</div>`;
       const chips=[e.dur?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(67,160,71,0.08);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.clock,9,'rgba(67,160,71,0.6)')} ${e.dur}</span>`:'',e.fecha?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">${e.fecha}</span>`:'',e.hora?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px">Hora: ${e.hora}</span>`:'',e.prov?`<span style="font-size:9px;color:rgba(45,31,20,0.6);background:rgba(45,31,20,0.06);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:3px">${L(LI.building,9,'rgba(45,31,20,0.4)')} ${e.prov}</span>`:''].filter(Boolean);
@@ -282,7 +282,7 @@ function buildQuoteHTML(d){
   // ── AUTOS ──
   const autosOk=(d.autos||[]).filter(a=>a.proveedor);
   if(autosOk.length){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('ALQUILER DE AUTOS','Rent a Car',autosOk.length+' vehículo'+(autosOk.length>1?'s':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('ALQUILER DE AUTOS','Rent a Car',autosOk.length+' vehículo'+(autosOk.length>1?'s':''))}<div class="qp-items">`;
     autosOk.forEach(a=>{
       let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${a.proveedor}${a.categoria?' — '+a.categoria:''}</div>`;
       const retiro=[a.retiro_fecha,a.retiro_hora].filter(Boolean).join(' ');const devol=[a.devolucion_fecha,a.devolucion_hora].filter(Boolean).join(' ');
@@ -298,7 +298,7 @@ function buildQuoteHTML(d){
   // ── CRUCEROS ──
   const crucOk=(d.cruceros||[]).filter(c=>c.naviera);
   if(crucOk.length){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('CRUCERO · NAVEGACIÓN','Crucero',crucOk[0].naviera)}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('CRUCERO · NAVEGACIÓN','Crucero',crucOk[0].naviera)}<div class="qp-items">`;
     crucOk.forEach(c=>{
       const escalasArr=c.escalas?c.escalas.split(/\n/).filter(s=>s.trim()):[];
       let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${c.naviera}${c.barco?' — '+c.barco:''}</div>`;
@@ -314,13 +314,13 @@ function buildQuoteHTML(d){
 
   // ── SEGURO ──
   if(d.seguro?.nombre){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('ASISTENCIA AL VIAJERO','Cobertura',d.seguro.nombre)}<div class="qp-items"><div class="qp-item-card"><div class="seg-grid">${[[LI.med,'Cobertura médica',d.seguro.cobertura_medica],[LI.luggage,'Equipaje',d.seguro.equipaje_seg],[LI.check,'Preexistencias',d.seguro.preexistencias],[LI.clip,'Beneficios',d.seguro.extra]].filter(r=>r[2]).map(r=>`<div class="seg-cell"><div style="margin-bottom:4px">${L(r[0],14,'#9B7FD4')}</div><div class="lbl2">${r[1]}</div><div class="val">${r[2]}</div></div>`).join('')}</div>${d.seguro.precio>0?`<div class="ptag"><div style="display:inline-flex;flex-direction:column;align-items:flex-end;background:#F0EEF9;border:1px solid rgba(155,127,212,0.2);border-radius:8px;padding:8px 14px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(155,127,212,0.7);margin-bottom:2px">Precio${d.seguro.fin?' · '+d.seguro.fin:''}</div>${gradPrice(fmtMoney(d.seguro.precio,d.seguro.moneda),15,'linear-gradient(135deg,#9B7FD4,#C4B5FD)')}</div></div>`:''}</div></div></div>`;
+    H+=`<div class="qp-page">${darkHd('ASISTENCIA AL VIAJERO','Cobertura',d.seguro.nombre)}<div class="qp-items"><div class="qp-item-card"><div class="seg-grid">${[[LI.med,'Cobertura médica',d.seguro.cobertura_medica],[LI.luggage,'Equipaje',d.seguro.equipaje_seg],[LI.check,'Preexistencias',d.seguro.preexistencias],[LI.clip,'Beneficios',d.seguro.extra]].filter(r=>r[2]).map(r=>`<div class="seg-cell"><div style="margin-bottom:4px">${L(r[0],14,'#9B7FD4')}</div><div class="lbl2">${r[1]}</div><div class="val">${r[2]}</div></div>`).join('')}</div>${d.seguro.precio>0?`<div class="ptag"><div style="display:inline-flex;flex-direction:column;align-items:flex-end;background:#F0EEF9;border:1px solid rgba(155,127,212,0.2);border-radius:8px;padding:8px 14px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(155,127,212,0.7);margin-bottom:2px">Precio${d.seguro.fin?' · '+d.seguro.fin:''}</div>${gradPrice(fmtMoney(d.seguro.precio,d.seguro.moneda),15,'linear-gradient(135deg,#9B7FD4,#C4B5FD)')}</div></div>`:''}</div></div></div>`;
   }
 
   // ── TICKETS ──
   const tksOk=(d.tickets||[]).filter(t=>t.nombre);
   if(tksOk.length){
-    H+=`<div class="qp-page" style="break-before:page">${darkHd('TICKETS Y ENTRADAS','Tickets',tksOk.length+' entrada'+(tksOk.length>1?'s':''))}<div class="qp-items">`;
+    H+=`<div class="qp-page">${darkHd('TICKETS Y ENTRADAS','Tickets',tksOk.length+' entrada'+(tksOk.length>1?'s':''))}<div class="qp-items">`;
     tksOk.forEach(t=>{
       let info=`<div style="font-size:14px;font-weight:700;color:#2D1F14;margin-bottom:8px">${t.nombre}</div>`;
       const chips=[t.tipo,t.prov,t.fecha?fd(t.fecha):''].filter(Boolean);
@@ -336,7 +336,7 @@ function buildQuoteHTML(d){
   // ════════════════════════════════════════════════
   // RESUMEN ECONÓMICO
   // ════════════════════════════════════════════════
-  H+=`<div class="qp-page" style="break-before:page">${darkHd('RESUMEN ECONÓMICO','Condiciones y Precios',pr.validez?'Validez: '+pr.validez:'Válido por 24 horas')}<div style="padding:20px 32px">`;
+  H+=`<div class="qp-page">${darkHd('RESUMEN ECONÓMICO','Condiciones y Precios',pr.validez?'Validez: '+pr.validez:'Válido por 24 horas')}<div style="padding:20px 32px">`;
   const prLines=[
     ...(d.vuelos||[]).filter(v=>v.precio>0).map(v=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Vuelos${v.aerolinea?' · '+v.aerolinea:''}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(v.precio,v.moneda)}</td></tr>`),
     ...(d.hoteles||[]).filter(h=>h.nombre&&h.precio>0).map(h=>`<tr><td style="padding:7px 0;font-size:10px;color:#374151;border-bottom:1px solid rgba(45,31,20,0.05)">Alojamiento · ${h.nombre}</td><td style="padding:7px 0;text-align:right;font-size:10px;font-weight:700;color:#2D1F14;border-bottom:1px solid rgba(45,31,20,0.05)">${fmtMoney(h.precio,h.moneda)}</td></tr>`),
