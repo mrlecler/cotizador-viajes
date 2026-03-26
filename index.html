@@ -13,47 +13,74 @@
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN — Split + Boarding Pass -->
 <div id="login-wall">
-  <!-- Aurora animated bands -->
-  <div class="login-aurora login-aurora-1"></div>
-  <div class="login-aurora login-aurora-2"></div>
-  <div class="login-aurora login-aurora-3"></div>
-  <!-- Star field -->
-  <div class="login-stars"></div>
-  <!-- Content -->
-  <div class="login-center">
-    <!-- Brand hero -->
-    <div class="login-brand-hero">
-      <div id="login-wm"></div>
-      <span class="login-brand-tag">Travel Platform for Agents</span>
+  <div class="login-split">
+    <!-- LEFT: Travel photo -->
+    <div class="login-photo">
+      <img id="login-bg" src="" alt="Destino de viaje">
+      <div class="login-photo-overlay"></div>
+      <div class="login-photo-content">
+        <div class="login-photo-logo"><div id="login-wm"></div></div>
+        <h2 class="login-photo-h2">Conecta con el mundo.<br>Cotiza sin limites.</h2>
+        <p class="login-photo-p">La plataforma de cotizacion preferida por agentes de viaje</p>
+        <div class="login-photo-dots"><span class="login-photo-dot on"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span></div>
+      </div>
     </div>
-    <!-- Login card -->
-    <div class="login-card">
-      <div class="login-portal-ring"></div>
-      <div class="login-subtitle">Ingresá a tu cuenta</div>
-      <div style="margin-bottom:18px">
-        <input class="finput" id="li-email" type="email" placeholder="tu@email.com" style="margin-bottom:10px">
-        <input class="finput" id="li-pass" type="password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+    <!-- RIGHT: Boarding pass ticket -->
+    <div class="login-ticket-wrap">
+      <div class="login-ticket">
+        <!-- Header con ruta -->
+        <div class="tk-hd">
+          <div id="tk-hd-wm"></div>
+          <div class="tk-route">
+            <div><div class="tk-iata" id="tk-from">EZE</div><div class="tk-iata-sub">Buenos Aires</div></div>
+            <div class="tk-route-line">
+              <div class="tk-route-dot"></div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,.55)" stroke="none" style="position:absolute;left:calc(50% + 16px);top:50%;transform:translate(-50%,-50%) rotate(90deg)"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            <div style="text-align:right"><div class="tk-iata" id="tk-to">BCN</div><div class="tk-iata-sub" id="tk-to-city">Barcelona</div></div>
+          </div>
+        </div>
+        <!-- Form -->
+        <div class="tk-body">
+          <div class="tk-subtitle">Boarding Pass / Acceso</div>
+          <div style="margin-bottom:14px">
+            <label class="tk-label">Email del pasajero</label>
+            <input class="tk-input" id="li-email" type="email" placeholder="tu@email.com">
+          </div>
+          <div style="margin-bottom:6px">
+            <label class="tk-label">Codigo de acceso</label>
+            <input class="tk-input" id="li-pass" type="password" placeholder="Tu contrasena" onkeydown="if(event.key==='Enter')doLogin()">
+          </div>
+          <div style="text-align:right;margin-bottom:16px">
+            <button onclick="showForgot()" class="tk-forgot" style="background:none;border:none;cursor:pointer">Olvidaste tu contrasena?</button>
+          </div>
+          <button class="tk-cta" onclick="doLogin()" id="li-btn">Embarcar</button>
+          <div id="login-status" style="min-height:22px;margin-top:8px;text-align:center;font-size:.82rem"></div>
+          <div class="tk-divider"><span>o</span></div>
+          <button onclick="doLoginGoogle()" class="tk-google">
+            <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5L31.8 34c-2 1.4-4.5 2-7.8 2-5.2 0-9.6-3-11.3-7.3l-6.5 5C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l5.7 5c3.4-3.1 5.8-7.7 5.8-15 0-1.3-.1-2.7-.4-4z"/></svg>
+            Continuar con Google
+          </button>
+        </div>
+        <!-- Tear line -->
+        <div class="tk-tear"><div class="tk-tear-c"></div><div class="tk-tear-line"></div><div class="tk-tear-c"></div></div>
+        <!-- Footer -->
+        <div class="tk-footer">
+          <div><div class="tk-meta-label">Gate</div><div class="tk-meta-value">A12</div></div>
+          <div><div class="tk-meta-label">Seat</div><div class="tk-meta-value">1A</div></div>
+          <div><div class="tk-meta-label">Class</div><div class="tk-meta-value" style="color:#1B9E8F">PRO</div></div>
+          <div class="tk-barcode"><span style="height:18px"></span><span style="height:24px"></span><span style="height:12px"></span><span style="height:24px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:10px"></span><span style="height:20px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:24px"></span><span style="height:18px"></span><span style="height:10px"></span><span style="height:24px"></span><span style="height:16px"></span><span style="height:20px"></span><span style="height:24px"></span><span style="height:12px"></span><span style="height:24px"></span><span style="height:18px"></span></div>
+        </div>
+        <!-- Theme toggle + access -->
+        <div class="tk-theme-toggle">
+          <span>Claro</span>
+          <button class="tk-theme-sw" id="login-theme-sw" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
+          <span>Oscuro</span>
+        </div>
+        <div class="tk-access">Acceso restringido / Solo agentes autorizados</div>
       </div>
-      <button class="login-btn-main" onclick="doLogin()" id="li-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:7px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Iniciar sesión
-      </button>
-      <div id="login-status" style="min-height:22px;margin-top:8px"></div>
-      <div class="login-divider"><div class="login-divider-line"></div><span class="login-divider-lbl">o</span><div class="login-divider-line"></div></div>
-      <button onclick="doLoginGoogle()" class="btn-google">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5L31.8 34c-2 1.4-4.5 2-7.8 2-5.2 0-9.6-3-11.3-7.3l-6.5 5C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l5.7 5c3.4-3.1 5.8-7.7 5.8-15 0-1.3-.1-2.7-.4-4z"/></svg>
-        Continuar con Google
-      </button>
-      <button onclick="showForgot()" class="link-forgot">¿Olvidaste tu contraseña?</button>
-      <!-- Theme toggle -->
-      <div class="login-theme-row">
-        <span class="login-theme-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
-        <button class="login-theme-sw" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
-        <span class="login-theme-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-        <span class="login-theme-lbl" id="login-theme-lbl">Tema al ingresar: oscuro</span>
-      </div>
-      <div class="login-footer">Acceso restringido · Solo agentes autorizados</div>
     </div>
   </div>
 </div>

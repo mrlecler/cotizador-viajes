@@ -66,8 +66,37 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 
 // Inicialización de wordmarks cuando las fuentes están listas
 function _initWordmarks(){
-  buildWordmark('login-wm',88,'white','grad');
+  buildWordmark('login-wm',42,'white','grad');
+  buildWordmark('tk-hd-wm',28,'white','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
+}
+
+// Login: random photo + random route
+const _loginPhotos=[
+  'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80',
+  'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200&q=80',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&q=80',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80',
+  'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200&q=80',
+  'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1200&q=80',
+  'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=1200&q=80'
+];
+const _loginRoutes=[
+  {to:'BCN',city:'Barcelona'},{to:'CDG',city:'Paris'},{to:'FCO',city:'Roma'},
+  {to:'MIA',city:'Miami'},{to:'CUN',city:'Cancun'},{to:'NRT',city:'Tokyo'},
+  {to:'LHR',city:'Londres'},{to:'JFK',city:'New York'},{to:'SYD',city:'Sydney'},
+  {to:'MAD',city:'Madrid'},{to:'DXB',city:'Dubai'},{to:'IST',city:'Estambul'},
+  {to:'GIG',city:'Rio de Janeiro'},{to:'LIS',city:'Lisboa'},{to:'AMS',city:'Amsterdam'}
+];
+function _initLoginScreen(){
+  const img=document.getElementById('login-bg');
+  if(img) img.src=_loginPhotos[Math.floor(Math.random()*_loginPhotos.length)];
+  const r=_loginRoutes[Math.floor(Math.random()*_loginRoutes.length)];
+  const toEl=document.getElementById('tk-to');if(toEl)toEl.textContent=r.to;
+  const cityEl=document.getElementById('tk-to-city');if(cityEl)cityEl.textContent=r.city;
 }
 function _tryInitWordmarks(attempt){
   if(document.fonts.check('900 48px "DM Sans"')){
@@ -79,7 +108,7 @@ function _tryInitWordmarks(attempt){
     _initWordmarks();
   }
 }
-document.fonts.ready.then(()=>_tryInitWordmarks(0));
+document.fonts.ready.then(()=>{_tryInitWordmarks(0);_initLoginScreen();});
 
 function _buildSbLogo(){
   const el=document.getElementById('sb-logo');
