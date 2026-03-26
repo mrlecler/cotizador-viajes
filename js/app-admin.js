@@ -782,27 +782,35 @@ async function renderAgency(){
 }
 
 async function saveAgencyData(){
-  // Placeholder — save agency fields (requires agency table in Supabase)
-  const data={
-    nombre:document.getElementById('ag-nombre')?.value||'',
-    email:document.getElementById('ag-email')?.value||'',
-    telefono:document.getElementById('ag-tel')?.value||'',
-    direccion:document.getElementById('ag-dir')?.value||''
-  };
-  // For now, save to localStorage until agency table is ready
-  localStorage.setItem('ermix_agency',JSON.stringify(data));
+  if(!window._agenteId){toast('Error: no se pudo identificar tu cuenta',false);return;}
+  const data={};
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  if(v('ag-nombre')) data.agencia=v('ag-nombre');
+  if(v('ag-email')) data.email=v('ag-email');
+  if(v('ag-tel')) data.telefono=v('ag-tel');
+  if(v('ag-dir')) data.direccion=v('ag-dir');
+  // Save to Supabase agentes table (each user's own row)
+  const {error}=await sb.from('agentes').update(data).eq('id',window._agenteId);
+  if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
+  // Update local config
+  if(data.agencia) agCfg.ag=data.agencia;
+  if(data.telefono) agCfg.tel=data.telefono;
+  localStorage.setItem('mp_cfg',JSON.stringify(agCfg));
   toast('Datos de agencia guardados');
 }
 
-// Load agency data from localStorage on render
-function _loadAgencyFields(){
+// Load agency data from Supabase
+async function _loadAgencyFields(){
+  if(!window._agenteId)return;
   try{
-    const d=JSON.parse(localStorage.getItem('ermix_agency')||'{}');
-    if(d.nombre) document.getElementById('ag-nombre').value=d.nombre;
-    if(d.email) document.getElementById('ag-email').value=d.email;
-    if(d.telefono) document.getElementById('ag-tel').value=d.telefono;
-    if(d.direccion) document.getElementById('ag-dir').value=d.direccion;
-  }catch(e){}
+    const {data}=await sb.from('agentes').select('agencia,email,telefono,direccion').eq('id',window._agenteId).single();
+    if(!data)return;
+    const el=id=>document.getElementById(id);
+    if(data.agencia && el('ag-nombre')) el('ag-nombre').value=data.agencia;
+    if(data.email && el('ag-email')) el('ag-email').value=data.email;
+    if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
+    if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
+  }catch(e){console.warn('[_loadAgencyFields]',e);}
 }
 
 // ═══════════════════════════════════════════
