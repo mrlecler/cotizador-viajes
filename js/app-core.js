@@ -500,7 +500,8 @@ async function loadDashboardMetrics(){
     const el=document.getElementById(id);if(el)el.textContent='...';
   });
   try{
-    const {data:ag}=await sb.from('agentes').select('id').eq('email',currentUser.email).maybeSingle();
+    const {data:ag,error:agErr}=await sb.from('agentes').select('*').eq('email',currentUser.email).maybeSingle();
+    console.log('[DASH] agente:',ag?.id,'email:',currentUser.email,'err:',agErr);
     if(!ag){['met-cot','met-conf','met-act','met-com','met-com-conf','met-com-pend','met-clients'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='0';});return;}
 
     // Date filter
@@ -509,26 +510,26 @@ async function loadDashboardMetrics(){
     if(_dashPeriod==='month'){since=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
     else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
 
-    // Quotes
-    // total_comision puede no existir como columna — se lee desde datos JSON
-    let qQuery=sb.from('cotizaciones').select('id,estado,created_at,datos').eq('agente_id',ag.id);
+    // Quotes — usar select('*') para evitar errores de columnas
+    let qQuery=sb.from('cotizaciones').select('*').eq('agente_id',ag.id);
     if(since) qQuery=qQuery.gte('created_at',since);
     const {data:qData,error:qErr}=await qQuery;
+    console.log('[DASH] cotizaciones:',qData?.length,'err:',qErr,'since:',since,'agente_id:',ag.id);
     if(qErr) console.error('Dashboard quotes error:',qErr);
     const quotes=qData||[];
 
     // Clients count (always total, not filtered by period)
     let totalClients=0;
-    try{
-      const {count:cliCount,error:cliErr}=await sb.from('clientes').select('id',{count:'exact',head:true}).eq('agente_id',ag.id);
-      if(cliErr){
-        // Fallback: contar sin filtro agente_id (puede que la columna no exista)
-        const {count:c2}=await sb.from('clientes').select('id',{count:'exact',head:true});
-        totalClients=c2||0;
-      } else {
-        totalClients=cliCount||0;
-      }
-    }catch(ce){ console.warn('clients count fallback:',ce); }
+    // Primero intentar con agente_id, fallback sin filtro
+    const {data:cliData,error:cliErr}=await sb.from('clientes').select('*').eq('agente_id',ag.id);
+    console.log('[DASH] clientes:',cliData?.length,'err:',cliErr);
+    if(cliErr){
+      // Fallback: quizás la tabla no tiene agente_id — contar todo
+      const {data:c2}=await sb.from('clientes').select('*');
+      totalClients=(c2||[]).length;
+    } else {
+      totalClients=(cliData||[]).length;
+    }
 
     // Calculations
     const total=quotes.length;
