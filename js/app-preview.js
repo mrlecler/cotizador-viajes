@@ -1,23 +1,41 @@
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;updCovers();};r.readAsDataURL(f);}
+// Unsplash — key en localStorage, NUNCA en el repo
+function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||''; }
+// Último crédito de foto Unsplash (para atribución)
+window._unsplashCredit=null;
+
 function autoCover(){
   const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');
+  const key=_unsplashKey();
+  if(!key){
+    toast('Configurá tu Unsplash API Key en Mi Perfil',false);
+    return;
+  }
   const q=encodeURIComponent(dest+' travel landscape');
-  // Unsplash source API deprecated — use search API with demo client_id
-  fetch(`https://api.unsplash.com/photos/random?query=${q}&orientation=landscape&client_id=YourAccessKey`)
+  fetch(`https://api.unsplash.com/photos/random?query=${q}&orientation=landscape&client_id=${key}`)
     .then(r=>{
-      if(!r.ok) throw new Error('Unsplash API error');
+      if(!r.ok) throw new Error('Unsplash '+r.status);
       return r.json();
     })
     .then(d=>{
       coverUrl=d.urls?.regular || d.urls?.small;
+      // Atribución Unsplash (requerido por TOS)
+      window._unsplashCredit={
+        name: d.user?.name||'Fotógrafo',
+        username: d.user?.username||'',
+        link: d.links?.html||'',
+        downloadUrl: d.links?.download_location||''
+      };
+      // Trigger download event (requerido por Unsplash TOS)
+      if(d.links?.download_location){
+        fetch(d.links.download_location+'?client_id='+key).catch(()=>{});
+      }
       updCovers();
+      _showUnsplashCredit();
     })
-    .catch(()=>{
-      // Fallback: usar Unsplash estático con query params (funciona sin API key)
-      const pages=[1,2,3,4,5];
-      const p=pages[Math.floor(Math.random()*pages.length)];
-      coverUrl=`https://images.unsplash.com/photo-${dest.toLowerCase().replace(/\s+/g,'-')}?w=1200&h=600&fit=crop&q=80`;
-      // Fallback final: curated travel photos
+    .catch(e=>{
+      console.warn('Unsplash API:',e.message);
+      // Fallback: fotos curadas sin API
       const fallbacks=[
         'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
@@ -29,8 +47,20 @@ function autoCover(){
         'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
       ];
       coverUrl=fallbacks[Math.floor(Math.random()*fallbacks.length)];
+      window._unsplashCredit=null;
       updCovers();
     });
+}
+
+function _showUnsplashCredit(){
+  const c=window._unsplashCredit;
+  if(!c) return;
+  // Mostrar crédito debajo de la portada en preview
+  const el=document.getElementById('unsplash-credit');
+  if(el){
+    el.innerHTML=`Foto de <a href="https://unsplash.com/@${c.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">${c.name}</a> en <a href="https://unsplash.com/?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">Unsplash</a>`;
+    el.style.display='';
+  }
 }
 function removeCover(){coverUrl=null;updCovers();}
 
@@ -46,6 +76,25 @@ function updateHeader(){
   // El logo de agente solo aparece en el PDF — el header siempre muestra el wordmark ermix
   // buildWordmark() es llamado desde app-core.js en fonts.ready
   document.fonts.ready.then(function(){ buildWordmark('hdr-wm',22,'currentColor','grad'); });
+}
+
+// ═══════════════════════════════════════════
+// API KEYS (localStorage only — never sent to server)
+// ═══════════════════════════════════════════
+function saveApiKeys(){
+  const unsplash=document.getElementById('cfg-unsplash')?.value?.trim();
+  if(unsplash) localStorage.setItem('mp_unsplash_key',unsplash);
+  else localStorage.removeItem('mp_unsplash_key');
+  const ok=document.getElementById('api-ok');
+  if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',3000);}
+  toast('API Keys guardadas');
+}
+function _loadApiKeyFields(){
+  const el=document.getElementById('cfg-unsplash');
+  if(el){
+    const k=localStorage.getItem('mp_unsplash_key')||'';
+    el.value=k;
+  }
 }
 
 // ═══════════════════════════════════════════
