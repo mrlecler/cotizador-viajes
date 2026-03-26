@@ -24,7 +24,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 | `js/app-promos.js` | Gestión de promos |
 | `data/airports.json` | 915 aeropuertos con IATA |
 | `data/cities.json` | Ciudades del mundo |
-| `ermix-brand-assets-v2/ermix-brand-guidelines-v3.html` | Referencia visual completa — leer si hay dudas de diseño |
+| `ermix-brand-assets-v2/ermix-brand-guidelines-v4.html` | Referencia visual v4 Aurora Teal — leer si hay dudas de diseño |
 
 ## Reglas absolutas — NUNCA hacer esto
 
@@ -40,13 +40,25 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - ❌ Escribir "Ermix" — siempre "ermix" en minúscula
 - ❌ npm, bundlers, librerías externas pesadas
 
-## Brand v3 — Colores
+## Brand v4 — Aurora Teal
+
+### Principios v4
+- **Glassmorphism** sobre fondos atmosféricos — cards con `backdrop-filter:blur(15px)`, bordes translúcidos
+- **Plus Jakarta Sans** reemplaza DM Sans como fuente principal (DM Sans solo en `buildWordmark()` del logo, DM Mono para IATA)
+- **CTA naranja** `#FF6B35` como acento de contraste para acciones de guardar/confirmar
+- **Aurora glow** — resplandores sutiles de teal detrás de elementos clave
+- **Border radius** 16px (era 14px)
+
+### Variables CSS v4
 
 ```css
 /* LIGHT MODE */
 --bg:       #F5F0E8;   /* crema — fondo de TODA la app */
 --surface:  #FFFFFF;   /* cards, inputs, sidebar, topbar */
 --surface2: #EDE8DF;
+--glass:    rgba(255,255,255,0.75);
+--glass-blur: blur(15px);
+--glass-border: 1px solid rgba(45,31,20,0.06);
 --text:     #2D1F14;
 --muted:    rgba(45,31,20,0.52);
 --g1:       #EDE8DF;
@@ -55,23 +67,30 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 --g4:       rgba(45,31,20,0.55);
 --border:   rgba(45,31,20,0.07);
 --border2:  rgba(45,31,20,0.13);
---sh:       0 2px 10px rgba(45,31,20,0.07), 0 1px 3px rgba(45,31,20,0.04);
---sh2:      0 8px 28px rgba(45,31,20,0.13);
---r:        14px;
---r2:       8px;
+--sh:       0 4px 20px rgba(45,31,20,0.05);
+--sh2:      0 8px 32px rgba(45,31,20,0.1);
+--r:        16px;
+--r2:       10px;
 --primary:  #1B9E8F;
 --primary2: #0BC5B8;
 --primary3: #06B6D4;
 --grad:     linear-gradient(135deg, #1B9E8F 0%, #0BC5B8 50%, #06B6D4 100%);
+--cta:      #FF6B35;
+--cta-hover:#E85A25;
 
 /* DARK MODE — [data-theme="dark"] */
 --bg:       #0D120F;   /* verde oscuro — NO negro puro */
 --surface:  #141A16;
 --surface2: #1B231D;
+--glass:    rgba(11,197,184,0.06);
+--glass-blur: blur(15px);
+--glass-border: 1px solid rgba(11,197,184,0.08);
 --text:     #F0EDE6;
 --g3:       rgba(240,237,230,0.28);
 --border:   rgba(255,255,255,0.07);
 --border2:  rgba(255,255,255,0.13);
+--sh:       0 4px 20px rgba(0,0,0,0.3);
+--sh2:      0 8px 32px rgba(0,0,0,0.5);
 ```
 
 ## Pasteles por sección de formulario
@@ -108,8 +127,9 @@ Seguros:     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
 
 ## Logo ermix
 
-- La forma X es un path SVG custom — **NO TOCAR EL PATH**
-- Solo cambiar colores en `buildWordmark()`: `#4F46E5→#1B9E8F`, `#7C3AED→#0BC5B8`, `#F43F5E→#06B6D4`
+- La forma X es un path SVG custom — **NO TOCAR EL PATH** (`M8 8 L8 18 L24.5 32...`)
+- **NO TOCAR `buildWordmark()`** — usa DM Sans internamente para medir "ermi", no cambiar a Plus Jakarta Sans
+- Colores del gradiente: `#1B9E8F → #0BC5B8 → #06B6D4` (sin cambio en v4)
 - El wordmark va en el topbar superior
 - En el sidebar NO va el ícono de la marca — solo el botón toggle y los ítems de nav
 
@@ -176,17 +196,32 @@ Seguros:     https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&
 ## Modales
 
 ```css
-.modal-overlay { background: rgba(45,31,20,0.4); backdrop-filter: blur(4px); }
+.modal-overlay { background: rgba(45,31,20,0.4); backdrop-filter: blur(8px); }
 .modal { background: var(--surface); border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(45,31,20,0.15); }
 /* SIN box-shadow violeta — eso es del brand v2, está eliminado */
 ```
 
+## Glassmorphism (v4)
+
+```css
+.glass { background: var(--glass); backdrop-filter: var(--glass-blur); border: var(--glass-border); }
+```
+Usar `.glass` en cards que necesiten efecto frosted sobre fondos con contenido visible detrás. No abusar — solo donde agrega profundidad visual.
+
 ## Tipografía
 
-- Font: `DM Sans` exclusivamente
+- Font principal: `Plus Jakarta Sans` (reemplaza DM Sans desde v4)
+- Font del logo (buildWordmark): `DM Sans` — **no cambiar**, el logo mide "ermi" con DM Sans
 - Labels: `8-9px`, `font-weight: 700`, `letter-spacing: 2px`, `text-transform: uppercase`, `color: var(--g3)`
 - Precios: `font-weight: 800`, `letter-spacing: -0.5px`, gradiente via `-webkit-background-clip: text`
 - Monospace (IATA, refs): `DM Mono`
+
+## Botón CTA naranja (v4)
+
+```css
+.btn-cta { background: #FF6B35; color: white; box-shadow: 0 4px 15px rgba(255,107,53,0.3); }
+```
+Usar para acciones de **guardar/confirmar**. El teal (`.btn-pri`) queda para acciones de navegación y estados activos.
 
 ## Funcionalidad IA
 

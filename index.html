@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="ermix-brand-assets-v2/png/transparent/icon-gradient-16.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
@@ -722,7 +722,7 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     <div class="card-body">
       <div class="fg"><label class="lbl">Logo</label>
         <div style="display:flex;align-items:center;gap:12px">
-          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
+          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
           <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
           <button class="btn btn-del btn-xs" id="btn-rmlogo" onclick="removeLogo()" style="display:none">✕</button>
           <input type="file" id="logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
