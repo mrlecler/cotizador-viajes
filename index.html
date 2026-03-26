@@ -632,6 +632,18 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <div id="cli-list"><div style="text-align:center;padding:40px;color:var(--g3)">Cargando...</div></div>
     </div>
   </div>
+
+  <!-- Grupos de viaje -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Grupos de viaje</div><div class="card-sub">Familias o grupos que viajan juntos</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openGroupModal()">+ Nuevo grupo</button>
+    </div>
+    <div class="card-body">
+      <div id="group-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ DASHBOARD ═══ -->
@@ -655,11 +667,22 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 <div id="tab-admin" class="panel">
   <div class="intro-bar">
     <h2>Panel de Administración</h2>
-    <p>Gestioná agentes, proveedores y seguros del equipo.</p>
+    <p>Gestión global de la plataforma ermix.</p>
   </div>
 
-  <!-- AGENTES -->
-  <div class="card">
+  <!-- AGENCIAS (solo admin) -->
+  <div class="card" id="admin-agencias-card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Agencias</div></div>
+    </div>
+    <div class="card-body">
+      <div id="admin-agencias"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
+    </div>
+  </div>
+
+  <!-- AGENTES (solo admin) -->
+  <div class="card" id="admin-agentes-card">
     <div class="card-hd">
       <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <div style="flex:1"><div class="card-ttl">Agentes</div></div>
@@ -731,6 +754,63 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
+</div>
+
+<!-- ═══ AGENCY ═══ -->
+<div id="tab-agency" class="panel">
+  <div class="intro-bar">
+    <h2>Mi Agencia</h2>
+    <p>Datos de tu agencia, equipo de agentes y proveedores.</p>
+  </div>
+
+  <!-- DATOS DE AGENCIA -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div>
+      <div><div class="card-ttl">Datos de agencia</div></div>
+    </div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="ag-nombre">Nombre de la agencia</label><input class="finput" type="text" id="ag-nombre" placeholder="Patoyro Travel"></div>
+        <div class="fg"><label class="lbl" for="ag-email">Email</label><input class="finput" type="text" id="ag-email" placeholder="info@agencia.com" inputmode="email"></div>
+        <div class="fg"><label class="lbl" for="ag-tel">Telefono</label><input class="finput" type="text" id="ag-tel" placeholder="+54 9 11 1234-5678" inputmode="tel"></div>
+        <div class="fg"><label class="lbl" for="ag-dir">Direccion</label><input class="finput" type="text" id="ag-dir" placeholder="Av. Corrientes 1234, CABA"></div>
+        <div class="fg full">
+          <label class="lbl">Logo de agencia</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div id="ag-logo-wrap"><div id="ag-logo-ini" style="width:48px;height:48px;background:var(--g1);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--g3);font-size:.7rem">Logo</div></div>
+            <button class="btn btn-out btn-sm" onclick="document.getElementById('ag-logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+            <input type="file" id="ag-logo-f" accept="image/*" style="display:none">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px"><button class="btn btn-cta" onclick="saveAgencyData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar datos</button></div>
+    </div>
+  </div>
+
+  <!-- MIS AGENTES -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Mis agentes</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
+    </div>
+    <div class="card-body">
+      <div id="agency-agentes"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
+    </div>
+  </div>
+
+  <!-- PROVEEDORES -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Proveedores</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar proveedor</button>
+    </div>
+    <div class="card-body">
+      <div id="agency-proveedores"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ CONFIG ═══ -->
