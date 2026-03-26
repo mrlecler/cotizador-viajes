@@ -54,31 +54,7 @@ async function renderAdminAgencias(){
 }
 
 function openAgencyInviteModal(){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar nueva agencia</div>
-    <div class="fg"><label class="lbl">Nombre de agencia</label><input class="finput" id="inv-ag-nm" placeholder="Ej: Viajes Sol"></div>
-    <div class="fg" style="margin-top:10px"><label class="lbl">Email</label><input class="finput" id="inv-ag-em" type="email" placeholder="agencia@email.com"></div>
-    <div class="fg" style="margin-top:10px"><label class="lbl">Nombre contacto</label><input class="finput" id="inv-ag-contact" placeholder="Nombre del responsable"></div>
-    <p style="font-size:.75rem;color:var(--g4);margin-top:12px">Se creara un registro con rol "agencia". La agencia recibira sus credenciales por email.</p>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-cta" onclick="saveAgencyInvite()">Invitar agencia</button>
-    </div>`;
-  openModal();
-}
-
-async function saveAgencyInvite(){
-  const nm=document.getElementById('inv-ag-nm')?.value?.trim();
-  const em=document.getElementById('inv-ag-em')?.value?.trim();
-  const contact=document.getElementById('inv-ag-contact')?.value?.trim();
-  if(!em){alert('Email requerido');return;}
-  // Insert as agente with rol agencia
-  const row={email:em,rol:'agencia',activo:true};
-  if(nm)row.nombre=nm;
-  if(contact)row.contacto=contact;
-  const {error}=await sb.from('agentes').insert(row);
-  if(error){toast('Error: '+error.message,false);return;}
-  closeModal();toast('Agencia invitada');renderAdmin();
+  openAgentModal('agencia');
 }
 
 function buildDataLists(provs){
@@ -370,25 +346,76 @@ async function renderDashboard(){
   </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin comisiones registradas todavía.</div>';
 }
 
-function openAgentModal(){
+function openAgentModal(rolDefault='agente'){
+  const rolLabel=rolDefault==='agencia'?'agencia':'agente';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar agente</div>
-    <p style="font-size:.83rem;color:var(--g4);margin-bottom:16px;line-height:1.6">Los agentes se crean directamente desde el panel de Supabase.</p>
-    <div style="border:1px solid rgba(27,158,143,0.2);border-radius:var(--r);background:rgba(27,158,143,0.07);padding:16px 20px;display:flex;flex-direction:column;gap:10px">
-      ${[
-        'Ir a <strong style="color:var(--violet-light)">Supabase Dashboard → Authentication → Users</strong>',
-        'Click en <strong style="color:var(--violet-light)">"Add user" → "Create new user"</strong>',
-        'Ingresar el email y una contraseña temporal',
-        'El agente recibirá sus credenciales y podrá cambiar la contraseña desde <strong style="color:var(--violet-light)">Mi Perfil</strong>'
-      ].map((step,i)=>`<div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="width:22px;height:22px;border-radius:6px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white;flex-shrink:0;margin-top:1px">${i+1}</div>
-        <div style="font-size:.83rem;color:var(--g4);line-height:1.5">${step}</div>
-      </div>`).join('')}
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar ${rolLabel}</div>
+    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="inv-nm" placeholder="Nombre completo"></div>
+    <div class="fg" style="margin-top:10px"><label class="lbl">Email</label><input class="finput" id="inv-em" type="email" placeholder="email@ejemplo.com"></div>
+    <div class="fg" style="margin-top:10px"><label class="lbl">Rol</label>
+      <select class="finput" id="inv-rol">
+        <option value="agente"${rolDefault==='agente'?' selected':''}>Agente</option>
+        <option value="agencia"${rolDefault==='agencia'?' selected':''}>Agencia</option>
+      </select>
     </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
-      <button class="btn btn-out" onclick="closeModal()">Cerrar</button>
-      <button class="btn btn-pri" onclick="window.open('https://supabase.com/dashboard','_blank')">Ir a Supabase &rarr;</button>
-    </div>`;openModal();
+    <div id="inv-link-box" style="display:none;margin-top:14px;padding:12px;background:rgba(27,158,143,0.07);border:1px solid rgba(27,158,143,0.2);border-radius:var(--r2)">
+      <label class="lbl" style="margin-bottom:6px">Enlace de invitacion</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="finput" id="inv-link-url" readonly style="font-size:.75rem;font-family:'DM Mono',monospace;flex:1">
+        <button class="btn btn-pri btn-sm" onclick="_copyInviteLink()">Copiar</button>
+      </div>
+      <p style="font-size:.72rem;color:var(--g4);margin-top:6px">Comparti este enlace con el ${rolLabel}. Al abrirlo podra crear su cuenta.</p>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-out" id="inv-btn-link" onclick="_generateInviteLink()">Generar enlace</button>
+      <button class="btn btn-cta" id="inv-btn-send" onclick="_sendInvite()">Enviar invitacion</button>
+    </div>`;
+  openModal();
+}
+
+async function _generateInviteLink(){
+  const nm=document.getElementById('inv-nm')?.value?.trim()||'';
+  const em=document.getElementById('inv-em')?.value?.trim();
+  const rol=document.getElementById('inv-rol')?.value||'agente';
+  if(!em){alert('Email requerido');return;}
+  // Generate token
+  const token=crypto.randomUUID();
+  // Insert into agentes with pending status
+  const row={email:em,rol,activo:false,invite_token:token};
+  if(nm)row.nombre=nm;
+  const {error}=await sb.from('agentes').insert(row);
+  if(error){
+    if(error.code==='23505'){toast('Ya existe un registro con ese email',false);return;}
+    toast('Error: '+error.message,false);return;
+  }
+  // Build invite URL
+  const base='https://mrlecler.github.io/cotizador-viajes/';
+  const url=`${base}?invite=${token}`;
+  document.getElementById('inv-link-url').value=url;
+  document.getElementById('inv-link-box').style.display='block';
+  document.getElementById('inv-btn-link').style.display='none';
+  toast('Enlace generado');
+}
+
+function _copyInviteLink(){
+  const url=document.getElementById('inv-link-url')?.value;
+  if(!url)return;
+  navigator.clipboard.writeText(url).then(()=>toast('Enlace copiado al portapapeles'));
+}
+
+async function _sendInvite(){
+  const em=document.getElementById('inv-em')?.value?.trim();
+  if(!em){alert('Email requerido');return;}
+  // Check if link was generated first
+  const linkUrl=document.getElementById('inv-link-url')?.value;
+  if(!linkUrl){
+    // Generate link first, then show SMTP pending message
+    await _generateInviteLink();
+  }
+  toast('Envio por email pendiente (SMTP no configurado). Usa el enlace de invitacion.');
+  document.getElementById('inv-link-box').style.display='block';
+  document.getElementById('inv-btn-link').style.display='none';
 }
 
 // ═══════════════════════════════════════════

@@ -195,8 +195,9 @@ async function doLogout(){
 }
 
 // Check existing session + listen to auth changes
-sb.auth.onAuthStateChange((event,session)=>{
+sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_IN'&&session?.user){
+    await _completeGoogleInvite(session.user);
     showApp(session.user);
   } else if(event==='PASSWORD_RECOVERY'){
     document.getElementById('li-pass').placeholder='Nueva contraseña';
@@ -216,9 +217,118 @@ async function doResetPassword(){
   else { setLoginStatus('Contraseña actualizada','var(--green)'); setTimeout(()=>{ document.getElementById('li-btn').onclick=doLogin; document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion'; document.getElementById('li-pass').placeholder='Contraseña'; },1500); }
 }
 
+// ═══════════════════════════════════════════
+// INVITE FLOW
+// ═══════════════════════════════════════════
+let _inviteData=null;
+
+async function _checkInviteToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('invite');
+  if(!token)return false;
+  // Look up invite in agentes table
+  const {data:agent,error}=await sb.from('agentes').select('*').eq('invite_token',token).single();
+  if(error||!agent){
+    // Invalid or expired token — show login with message
+    document.getElementById('login-wall').style.display='flex';
+    setLoginStatus('Enlace de invitacion invalido o expirado','var(--red)');
+    return true;
+  }
+  if(agent.activo){
+    // Already accepted — redirect to login
+    document.getElementById('login-wall').style.display='flex';
+    setLoginStatus('Esta invitacion ya fue usada. Inicia sesion con tu cuenta.','var(--amber)');
+    return true;
+  }
+  // Show invite screen
+  _inviteData={agent,token};
+  document.getElementById('login-wall').style.display='none';
+  document.getElementById('invite-wall').style.display='flex';
+  document.getElementById('inv-accept-nm').value=agent.nombre||'';
+  document.getElementById('inv-accept-em').value=agent.email||'';
+  const rolLbl={agente:'Agente',agencia:'Agencia',admin:'Administrador'}[agent.rol]||agent.rol;
+  document.getElementById('invite-rol-badge').textContent=rolLbl;
+  // Build wordmark for invite screen
+  const invWm=document.getElementById('invite-wm');
+  if(invWm&&typeof buildWordmark==='function') invWm.appendChild(buildWordmark(36));
+  return true;
+}
+
+async function acceptInvite(){
+  if(!_inviteData){toast('Error: datos de invitacion no encontrados',false);return;}
+  const nm=document.getElementById('inv-accept-nm')?.value?.trim();
+  const pass=document.getElementById('inv-accept-pass')?.value;
+  const pass2=document.getElementById('inv-accept-pass2')?.value;
+  const em=_inviteData.agent.email;
+  const statusEl=document.getElementById('invite-status');
+  const setStatus=(msg,color)=>{if(statusEl)statusEl.innerHTML=`<div style="font-size:.78rem;color:${color};text-align:center">${msg}</div>`;};
+
+  if(!pass||pass.length<6){setStatus('La contrasena debe tener al menos 6 caracteres','var(--red)');return;}
+  if(pass!==pass2){setStatus('Las contrasenas no coinciden','var(--red)');return;}
+
+  const btn=document.getElementById('inv-accept-btn');
+  if(btn){btn.disabled=true;btn.textContent='Creando cuenta...';}
+
+  // Create auth user via signUp
+  const {data,error}=await sb.auth.signUp({email:em,password:pass});
+  if(error){
+    setStatus('Error: '+error.message,'var(--red)');
+    if(btn){btn.disabled=false;btn.innerHTML='Crear cuenta';}
+    return;
+  }
+
+  // Update agentes record: set activo=true, nombre, clear token
+  const updates={activo:true,invite_token:null};
+  if(nm)updates.nombre=nm;
+  if(data.user?.id)updates.id=data.user.id;
+  await sb.from('agentes').update(updates).eq('invite_token',_inviteData.token);
+
+  // If email confirmation is required, show message
+  if(data.user&&!data.session){
+    setStatus('Cuenta creada. Revisa tu email para confirmar y luego inicia sesion.','var(--primary)');
+    setTimeout(()=>{
+      window.location.href=window.location.pathname;
+    },3000);
+    return;
+  }
+
+  // If auto-confirmed, redirect to app
+  setStatus('Cuenta creada. Ingresando...','var(--primary)');
+  setTimeout(()=>{
+    window.location.href=window.location.pathname;
+  },1500);
+}
+
+async function acceptInviteGoogle(){
+  if(!_inviteData)return;
+  // Store invite token in localStorage so we can complete after OAuth redirect
+  localStorage.setItem('mp_pending_invite',_inviteData.token);
+  await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin+window.location.pathname}
+  });
+}
+
+async function _completeGoogleInvite(user){
+  const token=localStorage.getItem('mp_pending_invite');
+  if(!token)return;
+  localStorage.removeItem('mp_pending_invite');
+  // Update agentes record with the Google user's ID and email
+  const updates={activo:true,invite_token:null,id:user.id};
+  if(user.user_metadata?.full_name)updates.nombre=user.user_metadata.full_name;
+  await sb.from('agentes').update(updates).eq('invite_token',token);
+}
+
 window.addEventListener('DOMContentLoaded',async()=>{
+  // Check invite token first
+  const isInvite=await _checkInviteToken();
+  if(isInvite)return;
   const {data:{session}}=await sb.auth.getSession();
-  if(session?.user) showApp(session.user);
+  if(session?.user){
+    // Check if there's a pending Google invite to complete
+    await _completeGoogleInvite(session.user);
+    showApp(session.user);
+  }
 });
 
 async function showApp(user){
