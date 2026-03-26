@@ -1,4 +1,4 @@
-function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;updCovers();};r.readAsDataURL(f);}
+function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;window._unsplashCredit=null;updCovers();};r.readAsDataURL(f);}
 // Unsplash — key en localStorage, NUNCA en el repo
 function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||''; }
 // Último crédito de foto Unsplash (para atribución)
@@ -62,7 +62,7 @@ function _showUnsplashCredit(){
     el.style.display='';
   }
 }
-function removeCover(){coverUrl=null;updCovers();}
+function removeCover(){coverUrl=null;window._unsplashCredit=null;updCovers();}
 
 function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;localStorage.setItem('mp_logo',logoUrl);updateLogoPreview();};r.readAsDataURL(f);}
 function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogoPreview();}
