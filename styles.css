@@ -165,6 +165,10 @@ input:focus,textarea:focus,select:focus{
 [data-theme="dark"] .tk-theme-toggle{border-color:rgba(255,255,255,.04)}
 [data-theme="dark"] .tk-theme-toggle span{color:rgba(255,255,255,.15)}
 [data-theme="dark"] .tk-access{color:rgba(255,255,255,.1)}
+/* Auth screens (invite, reset) — centered ticket on dark bg */
+.auth-screen{position:fixed;inset:0;z-index:9999;overflow-y:auto;background:#0D120F}
+.auth-screen-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 20px}
+.auth-tag{font-size:.55rem;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.15);text-align:center;margin-bottom:4px}
 /* Login responsive */
 @media(max-width:960px){
   .login-split{flex-direction:column}
