@@ -522,6 +522,7 @@ async function showApp(user){
       currentRol = data.rol || 'agente';
       isAdmin = currentRol === 'admin';
       window._agenteId = data.id;
+      window._esAgente = !!data.es_agente;
       localStorage.setItem('mp_rol', currentRol);
       // Supabase es la fuente de verdad — siempre pisar localStorage al login
       if(data.nombre)    agCfg.nm        = data.nombre;
@@ -888,9 +889,9 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
 function switchTab(id){
-  // Restricción: agencias no pueden cotizar (deben darse de alta como agente)
-  if(id==='form'&&currentRol==='agencia'){
-    toast('Para cotizar necesitas darte de alta como agente dentro de tu agencia',false);
+  // Restricción: agencias no pueden cotizar (salvo que se hayan activado como agente)
+  if(id==='form'&&currentRol==='agencia'&&!window._esAgente){
+    toast('Para cotizar necesitas activarte como agente desde Mi Agencia',false);
     return;
   }
   // Guardar borrador al salir del formulario
