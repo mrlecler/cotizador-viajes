@@ -336,8 +336,19 @@ function _buildProfileDropdown(){
   if(rolEl) rolEl.textContent=rolLblMap[currentRol]||'Agente';
   const email=currentUser?.email||'';
   const rolLbl={admin:'Administrador',agencia:'Agencia',agente:'Agente'}[currentRol]||'Agente';
-  // Admin y Agencia pueden acceder al panel de configuración
-  const showPanel=currentRol==='admin'||currentRol==='agencia';
+  // Build management link based on role
+  let mgmtLink='';
+  if(currentRol==='admin'){
+    mgmtLink=`<button class="prof-dd-item" onclick="_closeProfDD();switchTab('admin')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Gesti\u00f3n
+    </button>`;
+  } else if(currentRol==='agencia'){
+    mgmtLink=`<button class="prof-dd-item" onclick="_closeProfDD();switchTab('agency')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+      Mi Agencia
+    </button>`;
+  }
   wrap.innerHTML=`
     <div class="prof-dd-header">
       <div class="prof-dd-nm">${nm||email}</div>
@@ -348,14 +359,11 @@ function _buildProfileDropdown(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Mi perfil
     </button>
-    ${showPanel?`<button class="prof-dd-item" onclick="_closeProfDD();switchTab('admin')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      ${currentRol==='admin'?'Panel Admin':'Configurar Agencia'}
-    </button>`:''}
+    ${mgmtLink}
     <div class="prof-dd-sep"></div>
     <button class="prof-dd-item prof-dd-danger" onclick="_closeProfDD();doLogout()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Cerrar sesión
+      Cerrar sesi\u00f3n
     </button>`;
 }
 function _toggleProfDD(e){
@@ -615,7 +623,7 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
 function switchTab(id){
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
@@ -645,6 +653,7 @@ function switchTab(id){
   if(id==='promos') renderPromos();
   if(id==='clients') renderClients();
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
+  if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }

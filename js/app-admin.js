@@ -17,10 +17,10 @@ async function renderAdmin(){
 
   // Proveedores
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
-  document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Contacto</th><th></th></tr></thead><tbody>
-  ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'—'}</td><td>${p.pais||'—'}</td><td style="font-size:.75rem">${p.contacto||''}</td>
+  document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>Pa\u00eds</th><th>Email</th><th>Contacto</th><th></th></tr></thead><tbody>
+  ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'\u2014'}</td><td>${p.pais||'\u2014'}</td><td style="font-size:.75rem">${p.email||''}</td><td style="font-size:.75rem">${p.contacto||''}</td>
     <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
       <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
 
@@ -56,15 +56,20 @@ async function toggleAdmin(id,rol){
   toast('✓ Rol actualizado');renderAdmin();
 }
 
+const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursi\u00f3n'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerol\u00ednea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
+function _provTipoOpts(sel){return _provTipos.map(t=>`<option value="${t.v}"${t.v===sel?' selected':''}>${t.l}</option>`).join('');}
+
 function openProvModal(){
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Proveedor</div>
     <div class="g2">
       <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="mp-nm" placeholder="Orlantours"></div>
-      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="mp-tipo"><option value="traslado">Traslado</option><option value="excursion">Excursión</option><option value="hotel">Hotel</option><option value="seguro">Seguro</option><option value="otro">Otro</option></select></div>
-      <div class="fg"><label class="lbl">País</label><input class="finput" id="mp-pais" placeholder="Estados Unidos"></div>
+      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="mp-tipo">${_provTipoOpts('')}</select></div>
+      <div class="fg"><label class="lbl">Pa\u00eds</label><input class="finput" id="mp-pais" placeholder="Estados Unidos"></div>
       <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="mp-ciudad" placeholder="Orlando"></div>
-      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="mp-not" placeholder="Gabriel Quezada · +1 407..."></div>
+      <div class="fg"><label class="lbl">Email</label><input class="finput" id="mp-email" placeholder="info@proveedor.com" inputmode="email"></div>
+      <div class="fg"><label class="lbl">Telefono</label><input class="finput" id="mp-tel" placeholder="+1 407 555-1234" inputmode="tel"></div>
+      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="mp-not" placeholder="Gabriel Quezada"></div>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
@@ -73,8 +78,10 @@ function openProvModal(){
 }
 async function saveProv(){
   const nm=document.getElementById('mp-nm').value.trim();if(!nm)return;
-  await sb.from('proveedores').insert({nombre:nm,tipo:document.getElementById('mp-tipo').value,pais:document.getElementById('mp-pais').value,ciudad:document.getElementById('mp-ciudad').value,contacto:document.getElementById('mp-not').value});
-  closeModal();toast('✓ Proveedor agregado');renderAdmin();
+  await sb.from('proveedores').insert({nombre:nm,tipo:document.getElementById('mp-tipo').value,pais:document.getElementById('mp-pais').value,ciudad:document.getElementById('mp-ciudad').value,email:document.getElementById('mp-email').value,telefono:document.getElementById('mp-tel').value,contacto:document.getElementById('mp-not').value});
+  closeModal();toast('Proveedor agregado');
+  if(typeof renderAgency==='function'&&document.getElementById('tab-agency')?.classList.contains('on'))renderAgency();
+  else renderAdmin();
 }
 async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('proveedores').delete().eq('id',id);toast('Eliminado');renderAdmin();}
 
@@ -188,15 +195,17 @@ async function saveAgentEdit(id){
   closeModal();toast('✓ Agente actualizado');renderAdmin();
 }
 
-function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
+function editProvModal(id,nombre,tipo,pais,ciudad,contacto,email,telefono){
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar proveedor</div>
     <div class="g2">
       <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="epv-nm" value="${nombre}" placeholder="Orlantours"></div>
-      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="epv-tipo"><option value="traslado" ${tipo==='traslado'?'selected':''}>Traslado</option><option value="excursion" ${tipo==='excursion'?'selected':''}>Excursión</option><option value="hotel" ${tipo==='hotel'?'selected':''}>Hotel</option><option value="seguro" ${tipo==='seguro'?'selected':''}>Seguro</option><option value="otro" ${tipo==='otro'?'selected':''}>Otro</option></select></div>
-      <div class="fg"><label class="lbl">País</label><input class="finput" id="epv-pais" value="${pais}" placeholder="Estados Unidos"></div>
+      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="epv-tipo">${_provTipoOpts(tipo)}</select></div>
+      <div class="fg"><label class="lbl">Pa\u00eds</label><input class="finput" id="epv-pais" value="${pais}" placeholder="Estados Unidos"></div>
       <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="epv-ciudad" value="${ciudad}" placeholder="Orlando"></div>
-      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="epv-not" value="${contacto}" placeholder="Gabriel · +1 407..."></div>
+      <div class="fg"><label class="lbl">Email</label><input class="finput" id="epv-email" value="${email||''}" placeholder="info@proveedor.com" inputmode="email"></div>
+      <div class="fg"><label class="lbl">Telefono</label><input class="finput" id="epv-tel" value="${telefono||''}" placeholder="+1 407 555-1234" inputmode="tel"></div>
+      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="epv-not" value="${contacto}" placeholder="Gabriel"></div>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
@@ -205,8 +214,10 @@ function editProvModal(id,nombre,tipo,pais,ciudad,contacto){
 }
 async function saveProvEdit(id){
   const nm=document.getElementById('epv-nm').value.trim();if(!nm)return;
-  await sb.from('proveedores').update({nombre:nm,tipo:document.getElementById('epv-tipo').value,pais:document.getElementById('epv-pais').value,ciudad:document.getElementById('epv-ciudad').value,contacto:document.getElementById('epv-not').value}).eq('id',id);
-  closeModal();toast('✓ Proveedor actualizado');renderAdmin();
+  await sb.from('proveedores').update({nombre:nm,tipo:document.getElementById('epv-tipo').value,pais:document.getElementById('epv-pais').value,ciudad:document.getElementById('epv-ciudad').value,email:document.getElementById('epv-email').value,telefono:document.getElementById('epv-tel').value,contacto:document.getElementById('epv-not').value}).eq('id',id);
+  closeModal();toast('Proveedor actualizado');
+  if(typeof renderAgency==='function'&&document.getElementById('tab-agency')?.classList.contains('on'))renderAgency();
+  else renderAdmin();
 }
 
 // ═══════════════════════════════════════════
@@ -573,6 +584,64 @@ async function loadAdminLog(){
 
 function _escHtml(s){
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════
+// AGENCY PANEL
+// ═══════════════════════════════════════════
+async function renderAgency(){
+  if(currentRol!=='agencia'&&currentRol!=='admin') return;
+
+  // Agentes — for now load all (agency_id linking pending)
+  const {data:ags}=await sb.from('agentes').select('*').order('creado_en');
+  const agEl=document.getElementById('agency-agentes');
+  if(agEl){
+    agEl.innerHTML=ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
+    ${ags.map(a=>`<tr>
+      <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>
+      <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
+      <td>${a.activo?'S\u00ed':'No'}</td>
+    </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>';
+  }
+
+  // Proveedores
+  const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
+  const pvEl=document.getElementById('agency-proveedores');
+  if(pvEl){
+    pvEl.innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>Pa\u00eds</th><th>Email</th><th>Contacto</th><th></th></tr></thead><tbody>
+    ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'\u2014'}</td><td>${p.pais||'\u2014'}</td><td style="font-size:.75rem">${p.email||''}</td><td style="font-size:.75rem">${p.contacto||''}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin proveedores.</p>';
+  }
+
+  // Build datalists for form autocomplete
+  buildDataLists(provs||[]);
+}
+
+async function saveAgencyData(){
+  // Placeholder — save agency fields (requires agency table in Supabase)
+  const data={
+    nombre:document.getElementById('ag-nombre')?.value||'',
+    email:document.getElementById('ag-email')?.value||'',
+    telefono:document.getElementById('ag-tel')?.value||'',
+    direccion:document.getElementById('ag-dir')?.value||''
+  };
+  // For now, save to localStorage until agency table is ready
+  localStorage.setItem('ermix_agency',JSON.stringify(data));
+  toast('Datos de agencia guardados');
+}
+
+// Load agency data from localStorage on render
+function _loadAgencyFields(){
+  try{
+    const d=JSON.parse(localStorage.getItem('ermix_agency')||'{}');
+    if(d.nombre) document.getElementById('ag-nombre').value=d.nombre;
+    if(d.email) document.getElementById('ag-email').value=d.email;
+    if(d.telefono) document.getElementById('ag-tel').value=d.telefono;
+    if(d.direccion) document.getElementById('ag-dir').value=d.direccion;
+  }catch(e){}
 }
 
 // ═══════════════════════════════════════════
