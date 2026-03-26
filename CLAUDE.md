@@ -256,7 +256,8 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 - RLS habilitado en `public.agentes` — NO hacer upsert desde cliente (403)
 - Tabla `cotizaciones` — usar `select('*')`, NO nombrar columnas individualmente (riesgo de 400 por columna inexistente)
 - `total_comision` NO existe como columna en `cotizaciones` — vive dentro del JSONB `datos`
-- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `created_at`
+- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `creado_en`, `updated_at`
+- **`created_at` NO EXISTE** en `cotizaciones` — la columna de fecha es `creado_en`
 - Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback si fallan
 - Tabla `agentes`: tiene `id`, `email`, `nombre`, `rol`, y más — usar `select('*')`
 - Storage: para fotos de secciones y logos de agencia

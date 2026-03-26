@@ -258,7 +258,7 @@ async function renderDashboard(){
   const all=await dbLoadQuotes();
   const now=new Date();
   const mesActual=all.filter(r=>{
-    const d=new Date(r.created_at||r.creado_en||Date.now());
+    const d=new Date(r.creado_en||r.updated_at||Date.now());
     return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
   });
   const confirmadas=all.filter(r=>r.estado==='confirmada');
@@ -302,7 +302,7 @@ async function renderDashboard(){
   ${conCom.map(r=>`<tr>
     <td><strong>${r.datos?.cliente?.nombre||'—'}</strong></td>
     <td>${r.destino||'—'}</td>
-    <td style="font-size:.75rem;color:var(--g3)">${new Date(r.created_at||r.creado_en||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</td>
+    <td style="font-size:.75rem;color:var(--g3)">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</td>
     <td><span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||''} ${r.estado||'—'}</span></td>
     <td style="font-weight:700;color:var(--amber2)">USD ${Number(r.datos.total_comision).toLocaleString('es-AR')}</td>
   </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin comisiones registradas todavía.</div>';
@@ -437,8 +437,8 @@ async function loadAdminLog(){
   el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
 
   const {data,error}=await sb.from('cotizaciones')
-    .select('ref_id,destino,estado,created_at,datos,agente_id')
-    .order('created_at',{ascending:false})
+    .select('ref_id,destino,estado,creado_en,datos,agente_id')
+    .order('creado_en',{ascending:false})
     .limit(60);
 
   const cnt=document.getElementById('admin-log-count');
@@ -503,7 +503,7 @@ async function loadAdminLog(){
       const est=r.estado||'borrador';
       const nm=r.datos?.cliente?.nombre||'Sin nombre';
       const dest=r.destino||r.datos?.viaje?.destino||'—';
-      const dt=new Date(r.created_at);
+      const dt=new Date(r.creado_en||r.updated_at||Date.now());
       const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
       return`<div class="alog-item">
         <div class="alog-dot ${dotCls[est]||'alog-dot-gray'}"></div>
@@ -517,7 +517,7 @@ async function loadAdminLog(){
           <div class="alog-meta">
             <span class="alog-time">${dtStr}</span>
             <span style="color:var(--border2)">·</span>
-            <span class="alog-rel">${relTime(r.created_at)}</span>
+            <span class="alog-rel">${relTime(r.creado_en||r.updated_at)}</span>
           </div>
         </div>
       </div>`;

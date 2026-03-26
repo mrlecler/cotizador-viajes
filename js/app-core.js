@@ -460,13 +460,14 @@ async function dbSaveQuote(d, supabaseId){
 }
 
 async function dbLoadQuotes(){
+  // created_at NO existe en cotizaciones — usar creado_en
   const {data,error} = await sb.from('cotizaciones')
-    .select('*').order('created_at',{ascending:false}).limit(200);
+    .select('*').order('creado_en',{ascending:false}).limit(200);
   if(error){
-    // Fallback: try with creado_en column name
+    // Fallback sin order
     const {data:d2,error:e2} = await sb.from('cotizaciones').select('*').limit(200);
     if(e2){ console.error('dbLoadQuotes error:',e2); return []; }
-    return (d2||[]).sort((a,b)=>new Date(b.created_at||b.creado_en||0)-new Date(a.created_at||a.creado_en||0));
+    return (d2||[]).sort((a,b)=>new Date(b.creado_en||b.updated_at||0)-new Date(a.creado_en||a.updated_at||0));
   }
   return data||[];
 }
@@ -510,27 +511,33 @@ async function loadDashboardMetrics(){
     if(_dashPeriod==='month'){since=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
     else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
 
-    // Quotes — columnas seguras, sin select('*') que puede dar 400
-    // Intentar primero sin filtro de fecha para ver si hay datos
+    // Quotes — NO usar created_at (no existe), la fecha está en creado_en o updated_at
     const {data:allQ,error:allErr}=await sb.from('cotizaciones')
-      .select('id,ref_id,agente_id,destino,estado,datos,created_at')
+      .select('id,ref_id,agente_id,destino,estado,datos,creado_en,updated_at')
       .eq('agente_id',ag.id);
-    console.log('[DASH] todas las cotizaciones del agente:',allQ?.length,'err:',allErr);
+    console.log('[DASH] cotizaciones agente:',allQ?.length,'err:',allErr);
 
     let quotes=allQ||[];
     if(allErr){
-      // Fallback: sin filtro agente_id (quizás el campo se llama diferente)
+      // Fallback: sin columna creado_en tampoco
       const {data:q2,error:e2}=await sb.from('cotizaciones')
-        .select('id,ref_id,agente_id,destino,estado,datos,created_at');
-      console.log('[DASH] fallback sin agente_id:',q2?.length,'err:',e2);
-      quotes=q2||[];
+        .select('id,ref_id,agente_id,destino,estado,datos')
+        .eq('agente_id',ag.id);
+      console.log('[DASH] fallback sin fecha:',q2?.length,'err:',e2);
+      if(e2){
+        // Último fallback: sin agente_id
+        const {data:q3}=await sb.from('cotizaciones').select('id,ref_id,destino,estado,datos');
+        quotes=q3||[];
+      } else {
+        quotes=q2||[];
+      }
     }
 
-    // Filtrar por fecha en JS (más seguro que .gte en Supabase)
+    // Filtrar por fecha en JS
     if(since){
       const sinceDate=new Date(since);
       quotes=quotes.filter(q=>{
-        const d=new Date(q.created_at||0);
+        const d=new Date(q.creado_en||q.updated_at||0);
         return d>=sinceDate;
       });
     }
