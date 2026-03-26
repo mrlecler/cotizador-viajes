@@ -504,12 +504,22 @@ async function loadDashboardMetrics(){
     // total_comision puede no existir como columna — se lee desde datos JSON
     let qQuery=sb.from('cotizaciones').select('id,estado,created_at,datos').eq('agente_id',ag.id);
     if(since) qQuery=qQuery.gte('created_at',since);
-    const {data:qData}=await qQuery;
+    const {data:qData,error:qErr}=await qQuery;
+    if(qErr) console.error('Dashboard quotes error:',qErr);
     const quotes=qData||[];
 
     // Clients count (always total, not filtered by period)
-    const {count:cliCount}=await sb.from('clientes').select('id',{count:'exact',head:true}).eq('agente_id',ag.id);
-    const totalClients=cliCount||0;
+    let totalClients=0;
+    try{
+      const {count:cliCount,error:cliErr}=await sb.from('clientes').select('id',{count:'exact',head:true}).eq('agente_id',ag.id);
+      if(cliErr){
+        // Fallback: contar sin filtro agente_id (puede que la columna no exista)
+        const {count:c2}=await sb.from('clientes').select('id',{count:'exact',head:true});
+        totalClients=c2||0;
+      } else {
+        totalClients=cliCount||0;
+      }
+    }catch(ce){ console.warn('clients count fallback:',ce); }
 
     // Calculations
     const total=quotes.length;
@@ -558,7 +568,8 @@ async function loadDashboardMetrics(){
       leg('leg-confirmada','Confirmadas',conf);leg('leg-cancelada','Canceladas',canc);
     }
   }catch(e){
-    console.warn('metrics error:',e);
+    console.error('loadDashboardMetrics error:',e);
+    if(typeof _captureError==='function') _captureError('DASHBOARD',e);
   }
 }
 
