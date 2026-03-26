@@ -106,6 +106,41 @@
   </div>
 </div>
 
+<!-- RESET PASSWORD SCREEN -->
+<div id="reset-wall" style="display:none">
+  <div class="login-aurora login-aurora-1"></div>
+  <div class="login-aurora login-aurora-2"></div>
+  <div class="login-aurora login-aurora-3"></div>
+  <div class="login-stars"></div>
+  <div class="login-center">
+    <div class="login-brand-hero">
+      <div id="reset-wm"></div>
+      <span class="login-brand-tag">Travel Platform for Agents</span>
+    </div>
+    <div class="login-card" style="max-width:420px">
+      <div class="login-portal-ring"></div>
+      <div class="login-subtitle">Restablecer contrasena</div>
+      <div id="reset-info" style="padding:10px 14px;border-radius:var(--r2);background:rgba(27,158,143,0.07);border:1px solid rgba(27,158,143,0.15);margin-bottom:16px">
+        <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7)" id="reset-user-name"></div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.4)" id="reset-user-email"></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="lbl">Nueva contrasena</label>
+        <input class="finput" id="reset-pass" type="password" placeholder="Minimo 6 caracteres">
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="lbl">Confirmar contrasena</label>
+        <input class="finput" id="reset-pass2" type="password" placeholder="Repetir contrasena" onkeydown="if(event.key==='Enter')doManualReset()">
+      </div>
+      <button class="login-btn-main" onclick="doManualReset()" id="reset-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:7px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>Guardar contrasena
+      </button>
+      <div id="reset-status" style="min-height:22px;margin-top:8px"></div>
+      <div class="login-footer">Despues de guardar podras iniciar sesion con tu nueva contrasena</div>
+    </div>
+  </div>
+</div>
+
 <!-- SIDEBAR v3 -->
 <div id="sidebar" style="display:none">
 

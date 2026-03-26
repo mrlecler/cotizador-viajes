@@ -2112,6 +2112,14 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 #invite-wall .btn-google:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
 #invite-wall .lbl{color:rgba(255,255,255,.35)!important}
 #invite-wm{display:flex;justify-content:center;margin-bottom:6px;color:white}
+/* Reset wall */
+#reset-wall{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;overflow:hidden;background:#040B07}
+#reset-wall::after{content:'';position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,rgba(27,158,143,.06) 0%,transparent 100%);pointer-events:none}
+#reset-wall .finput{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)!important;color:rgba(255,255,255,.88)!important;margin-bottom:10px;border-radius:var(--r2)!important;font-family:'Plus Jakarta Sans',sans-serif!important;font-size:.88rem!important;padding:13px 16px!important}
+#reset-wall .finput::placeholder{color:rgba(255,255,255,.25)!important}
+#reset-wall .finput:focus{border-color:rgba(27,158,143,.7)!important;box-shadow:0 0 0 3px rgba(27,158,143,.18)!important;background:rgba(255,255,255,.09)!important}
+#reset-wall .lbl{color:rgba(255,255,255,.35)!important}
+#reset-wm{display:flex;justify-content:center;margin-bottom:6px;color:white}
 
 /* ══════════════════════════
    PRINT — override final (must be LAST)
