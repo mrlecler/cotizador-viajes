@@ -431,40 +431,34 @@ document.addEventListener('DOMContentLoaded',()=>{ _initSecCollapse(); });
 // ═══════════════════════════════════════════
 // ADMIN ACTIVITY LOG
 // ═══════════════════════════════════════════
-async function loadAdminLog(){
+let _logPage=0, _logPageSize=25, _logData=null;
+
+function _relTime(ts){
+  const diff=Date.now()-new Date(ts).getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1)return'ahora';
+  if(m<60)return'hace '+m+'m';
+  const h=Math.floor(m/60);
+  if(h<24)return'hace '+h+'h';
+  const d=Math.floor(h/24);
+  if(d<30)return'hace '+d+'d';
+  return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short'});
+}
+
+function _renderLogTable(){
   const el=document.getElementById('admin-log');
-  if(!el)return;
-  el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  if(!el||!_logData)return;
 
-  const {data,error}=await sb.from('cotizaciones')
-    .select('ref_id,destino,estado,creado_en,datos,agente_id')
-    .order('creado_en',{ascending:false})
-    .limit(60);
-
-  const cnt=document.getElementById('admin-log-count');
-
-  // Tiempo relativo
-  function relTime(ts){
-    const diff=Date.now()-new Date(ts).getTime();
-    const m=Math.floor(diff/60000);
-    if(m<1)return'ahora';
-    if(m<60)return'hace '+m+'m';
-    const h=Math.floor(m/60);
-    if(h<24)return'hace '+h+'h';
-    const d=Math.floor(h/24);
-    if(d<30)return'hace '+d+'d';
-    return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'short'});
-  }
-
-  // Errores capturados en memoria (session)
   const errLog=window._appLog||[];
-  let html='<div class="alog-list">';
+  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+  let html='';
 
-  // Sección errores (si hay)
+  // --- Error section (unchanged timeline layout) ---
   if(errLog.length){
+    html+=`<div class="alog-list">`;
     html+=`<div class="alog-section-hdr">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Errores de sesión (${errLog.length})
+      Errores de sesion (${errLog.length})
       <button onclick="window._appLog=[];loadAdminLog()" class="alog-clear-btn">Limpiar</button>
     </div>`;
     html+=errLog.map(e=>{
@@ -482,55 +476,99 @@ async function loadAdminLog(){
           <div class="alog-meta">
             <span class="alog-time">${dtStr}</span>
             <span style="color:var(--border2)">·</span>
-            <span class="alog-rel">${relTime(e.ts)}</span>
+            <span class="alog-rel">${_relTime(e.ts)}</span>
           </div>
         </div>
       </div>`;
     }).join('');
+    html+=`</div>`;
   }
 
-  // Sección actividad cotizaciones
-  if(!error && data?.length){
-    if(errLog.length){
-      html+=`<div class="alog-section-hdr" style="margin-top:12px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Actividad de cotizaciones (${data.length})
-      </div>`;
-    }
-    const dotCls={borrador:'alog-dot-gray',enviada:'alog-dot-blue',confirmada:'alog-dot-green',cancelada:'alog-dot-red'};
-    const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
-    html+=data.map(r=>{
+  // --- Activity table with pagination ---
+  const total=_logData.length;
+  const totalPages=Math.max(1,Math.ceil(total/_logPageSize));
+  if(_logPage>=totalPages)_logPage=totalPages-1;
+  if(_logPage<0)_logPage=0;
+  const start=_logPage*_logPageSize;
+  const page=_logData.slice(start,start+_logPageSize);
+
+  if(errLog.length||total){
+    html+=`<div class="alog-section-hdr" style="${errLog.length?'margin-top:12px':''}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Actividad de cotizaciones (${total})
+    </div>`;
+  }
+
+  // Pagination bar
+  if(total>0){
+    html+=`<div class="log-pager">
+      <span>Mostrar</span>
+      <select onchange="_setLogPageSize(+this.value)">
+        <option value="10"${_logPageSize===10?' selected':''}>10</option>
+        <option value="25"${_logPageSize===25?' selected':''}>25</option>
+        <option value="50"${_logPageSize===50?' selected':''}>50</option>
+      </select>
+      <span style="margin-left:auto">Pagina ${_logPage+1} de ${totalPages}</span>
+      <span style="color:var(--g3)">(${total} total)</span>
+      <button onclick="_logPrevPage()"${_logPage===0?' disabled':''}>Anterior</button>
+      <button onclick="_logNextPage()"${_logPage>=totalPages-1?' disabled':''}>Siguiente</button>
+    </div>`;
+  }
+
+  // Table
+  if(page.length){
+    html+=`<div class="tbl-wrap"><table class="tbl">
+    <thead><tr>
+      <th>Ref</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Fecha</th><th>Hace</th>
+    </tr></thead><tbody>`;
+    html+=page.map(r=>{
       const est=r.estado||'borrador';
       const nm=r.datos?.cliente?.nombre||'Sin nombre';
-      const dest=r.destino||r.datos?.viaje?.destino||'—';
-      const dt=new Date(r.creado_en||r.updated_at||Date.now());
-      const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' · '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-      return`<div class="alog-item">
-        <div class="alog-dot ${dotCls[est]||'alog-dot-gray'}"></div>
-        <div class="alog-body">
-          <div class="alog-top">
-            <span class="alog-ref">${r.ref_id||'—'}</span>
-            <span class="status-badge st-${est}">${stLbl[est]||est}</span>
-          </div>
-          <div class="alog-nm">${_escHtml(nm)}</div>
-          <div class="alog-dest">${_escHtml(dest)}</div>
-          <div class="alog-meta">
-            <span class="alog-time">${dtStr}</span>
-            <span style="color:var(--border2)">·</span>
-            <span class="alog-rel">${relTime(r.creado_en||r.updated_at)}</span>
-          </div>
-        </div>
-      </div>`;
+      const dest=r.destino||r.datos?.viaje?.destino||'--';
+      const dt=new Date(r.creado_en||Date.now());
+      const dtStr=dt.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})+' '+dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+      return`<tr>
+        <td><span style="font-family:'DM Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:1px;color:var(--primary)">${r.ref_id||'--'}</span></td>
+        <td>${_escHtml(nm)}</td>
+        <td style="color:var(--g4)">${_escHtml(dest)}</td>
+        <td><span class="status-badge st-${est}">${stLbl[est]||est}</span></td>
+        <td style="font-size:.78rem;white-space:nowrap">${dtStr}</td>
+        <td style="font-size:.78rem;font-weight:600;color:var(--primary);white-space:nowrap">${_relTime(r.creado_en)}</td>
+      </tr>`;
     }).join('');
+    html+=`</tbody></table></div>`;
   } else if(!errLog.length){
-    html+='<div class="empty-state" style="padding:40px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Sin actividad registrada</p><small>Los errores y cotizaciones creadas aparecerán aquí</small></div>';
+    html+='<div class="empty-state" style="padding:40px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Sin actividad registrada</p><small>Los errores y cotizaciones creadas apareceran aqui</small></div>';
   }
 
-  html+='</div>';
   el.innerHTML=html;
 
-  const total=(errLog.length||0)+(data?.length||0);
-  if(cnt) cnt.textContent=total?'Últimas '+total:'';
+  const cnt=document.getElementById('admin-log-count');
+  const totalAll=(errLog.length||0)+total;
+  if(cnt) cnt.textContent=totalAll?'Ultimas '+totalAll:'';
+}
+
+function _setLogPageSize(v){_logPageSize=v;_logPage=0;_renderLogTable();}
+function _logPrevPage(){if(_logPage>0){_logPage--;_renderLogTable();}}
+function _logNextPage(){const totalPages=Math.ceil((_logData||[]).length/_logPageSize);if(_logPage<totalPages-1){_logPage++;_renderLogTable();}}
+
+async function loadAdminLog(){
+  const el=document.getElementById('admin-log');
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+
+  const {data,error}=await sb.from('cotizaciones')
+    .select('ref_id,destino,estado,creado_en,datos,agente_id')
+    .order('creado_en',{ascending:false})
+    .limit(500);
+
+  if(error){
+    _captureError('loadAdminLog',error);
+  }
+
+  _logData=data||[];
+  _logPage=0;
+  _renderLogTable();
 }
 
 function _escHtml(s){

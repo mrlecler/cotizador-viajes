@@ -2083,6 +2083,14 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 }
 
 /* ══════════════════════════
+   LOG PAGINATION
+══════════════════════════ */
+.log-pager{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:.78rem;color:var(--g4)}
+.log-pager select{padding:4px 8px;border:1px solid var(--border2);border-radius:var(--r2);font-size:.75rem;background:var(--surface);color:var(--text)}
+.log-pager button{padding:4px 12px;border:1px solid var(--border2);border-radius:var(--r2);background:var(--surface);color:var(--text);font-size:.75rem;cursor:pointer}
+.log-pager button:disabled{opacity:.4;cursor:not-allowed}
+
+/* ══════════════════════════
    PRINT — override final (must be LAST)
    Las reglas de @media print anteriores están al inicio del CSS;
    este bloque repite las reglas críticas al final para ganar en cascada
