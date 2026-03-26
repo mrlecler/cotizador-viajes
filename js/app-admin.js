@@ -115,11 +115,12 @@ function _renderAdminUsersTable(){
       <td>${statusBadge(a)}</td>
       <td style="text-align:right">
         <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
-          ${!a.activo?`<button class="btn btn-out btn-xs" onclick="activateUser('${a.id}')">Activar</button>`:''}
+          ${!a.activo?`<button class="btn btn-out btn-xs" style="color:var(--primary);border-color:var(--primary)" onclick="activateUser('${a.id}')">Activar</button>`:''}
+          ${a.activo&&a.id!==myId?`<button class="btn btn-out btn-xs" style="color:#D4A017;border-color:#D4A017" onclick="deactivateUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Desactivar</button>`:''}
           ${a.invite_token?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.id}')">Nuevo enlace</button>`:''}
           ${a.activo?`<button class="btn btn-out btn-xs" onclick="generateResetLink('${a.id}')">Reset pass</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
-          ${a.user_id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
+          ${a.id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
         </div>
       </td>
     </tr>`).join('')}</tbody>
@@ -140,9 +141,18 @@ async function changeRol(id,rol){
 }
 
 async function activateUser(id){
-  const {error}=await sb.from('agentes').update({activo:true}).eq('id',id);
+  const {error}=await sb.from('agentes').update({activo:true,invite_token:null}).eq('id',id);
+  if(error){toast('Error al activar: '+error.message,false);console.error('[activateUser]',error);return;}
+  toast('Usuario activado');
+  await renderAdminUsers();
+}
+
+async function deactivateUser(id,nombre){
+  if(!confirm('Desactivar a "'+nombre+'"? No podra acceder hasta que lo reactives.'))return;
+  const {error}=await sb.from('agentes').update({activo:false}).eq('id',id);
   if(error){toast('Error: '+error.message,false);return;}
-  toast('Usuario activado');renderAdminUsers();
+  toast('Usuario desactivado');
+  await renderAdminUsers();
 }
 
 async function regenerateInviteLink(id){

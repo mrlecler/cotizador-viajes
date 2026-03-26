@@ -474,6 +474,17 @@ async function showApp(user){
     const {data, error:agErr} = await sb.from('agentes').select('*').eq('email', user.email).maybeSingle();
     if(agErr) console.warn('agentes query error:', agErr.message, agErr.details);
     if(!data) console.warn('agentes: sin registro para', user.email, '— verificar DB');
+    // Bloquear acceso si el usuario fue desactivado
+    if(data && data.activo===false && !data.invite_token){
+      await sb.auth.signOut();
+      currentUser=null;
+      document.getElementById('ui').style.display='none';
+      document.getElementById('sidebar').style.display='none';
+      const _bnBlk=document.getElementById('bottom-nav');if(_bnBlk)_bnBlk.classList.remove('active');
+      document.getElementById('login-wall').style.display='flex';
+      setLoginStatus('Tu cuenta ha sido desactivada. Contacta al administrador.','var(--red)');
+      return;
+    }
     if(data){
       currentRol = data.rol || 'agente';
       isAdmin = currentRol === 'admin';
