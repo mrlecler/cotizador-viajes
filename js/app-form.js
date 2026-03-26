@@ -918,11 +918,11 @@ async function _autosaveTick(){
     const d=collectForm();
     qData=d;
     await dbSaveQuote(d, editingQuoteId);
-    // Si era nueva, guardar el ID para futuros autosaves
-    if(!editingQuoteId&&d.ref_id){
-      // Buscar la cotización recién creada para obtener su ID
-      const {data}=await sb.from('cotizaciones').select('id').eq('ref_id',d.ref_id).maybeSingle();
-      if(data) editingQuoteId=data.id;
+    // Si era nueva, capturar el ID del INSERT para futuros autosaves
+    if(!editingQuoteId && window._lastInsertedQuoteId){
+      editingQuoteId = window._lastInsertedQuoteId;
+      window._lastInsertedQuoteId = null;
+      console.log('[AUTOSAVE] capturado editingQuoteId:', editingQuoteId);
     }
     _autosaveSnapshot=current;
     // Indicador visual sutil

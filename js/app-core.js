@@ -705,14 +705,18 @@ async function dbSaveQuote(d, supabaseId){
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
-    // INSERT — incluir agente_id en el registro nuevo
+    // INSERT — incluir agente_id, retornar id para autosave
     const row = {...baseRow, agente_id: agId||null};
-    ({error} = await sb.from('cotizaciones').insert(row));
+    const insertResult = await sb.from('cotizaciones').insert(row).select('id').single();
+    error = insertResult.error;
+    if(insertResult.data?.id) window._lastInsertedQuoteId = insertResult.data.id;
     // Si falla con columna inexistente, intentar con payload mínimo garantizado
     if(error && (error.code==='42703'||error.message?.includes('column'))){
       _captureError('dbSaveQuote:insert:fallback', error);
       const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
-      ({error} = await sb.from('cotizaciones').insert(safeRow));
+      const fb = await sb.from('cotizaciones').insert(safeRow).select('id').single();
+      error = fb.error;
+      if(fb.data?.id) window._lastInsertedQuoteId = fb.data.id;
     }
   }
   if(error){
