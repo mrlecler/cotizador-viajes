@@ -257,8 +257,8 @@ async function _checkInviteToken(){
   const rolLbl={agente:'Agente',agencia:'Agencia',admin:'Administrador'}[agent.rol]||agent.rol;
   document.getElementById('invite-rol-badge').textContent=rolLbl;
   // Build wordmark for invite screen
-  const invWm=document.getElementById('invite-wm');
-  if(invWm&&typeof buildWordmark==='function'){invWm.innerHTML='';invWm.appendChild(buildWordmark(36));}
+  // Logo wordmark en invite screen
+  if(typeof buildWordmark==='function') buildWordmark('invite-wm',56,'white','grad');
   return true;
 }
 
@@ -342,8 +342,8 @@ async function _checkResetToken(){
   document.getElementById('reset-wall').style.display='flex';
   document.getElementById('reset-user-name').textContent=agent.nombre||'Usuario';
   document.getElementById('reset-user-email').textContent=agent.email;
-  const rwm=document.getElementById('reset-wm');
-  if(rwm&&typeof buildWordmark==='function'){rwm.innerHTML='';rwm.appendChild(buildWordmark(36));}
+  // Logo wordmark en reset screen
+  if(typeof buildWordmark==='function') buildWordmark('reset-wm',56,'white','grad');
   return true;
 }
 
