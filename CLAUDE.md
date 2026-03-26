@@ -249,18 +249,49 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 - `window._appLog` — array global de errores capturados en sesión (max 100)
 - `_captureError(ctx, err)` — empuja al array y refresca el admin log si está abierto
 - Se llama desde `dbSaveQuote`, `saveQuote`, y puntos clave de error
-- El admin panel muestra errores de sesión (sección roja) + actividad de cotizaciones (timeline)
+- El admin panel muestra errores de sesión (sección roja) + actividad en tabla horizontal con paginador (10/25/50)
+- `loadAdminLog()` carga hasta 500 registros, pagina en JS con `_logPage`/`_logPageSize`/`_logData`
+
+## Tab Agency (Mi Agencia)
+
+- Panel `tab-agency` — accesible solo para `agencia` y `admin` desde dropdown del avatar
+- `renderAgency()` en `app-admin.js` — renderiza datos de agencia, agentes y proveedores
+- 3 cards: Datos de agencia, Mis agentes, Proveedores
+- Proveedores unificados: tipos expandidos (traslado, excursion, hotel, seguro, asistencia, DMC, receptivo, aerolinea, crucero, otro)
+
+## CRM Clientes
+
+- Modal con 5 tabs: Datos personales, Viaje, Documentos, Cotizaciones, Grupos
+- `openClientModal()` en `app-history.js` genera modal tabulado con `_cliTab()` para switching
+- `saveClient()` construye row dinámico — solo envía campos con valor para evitar errores de columna
+- Documentos: upload a Storage bucket `documentos-clientes`, tabla `documentos_cliente`
+  - `uploadClientDoc()`, `loadClientDocs()`, `downloadClientDoc()`, `deleteClientDoc()`
+- Cotizaciones del cliente: `loadClientQuotes()` busca por `cliente_id` o match de nombre
+- Grupos del cliente: `loadClientGroups()`, `removeFromGroup()`
+
+## Grupos de Viaje
+
+- Tabla `grupos_viaje` (id, nombre, agente_id, creado_en)
+- Tabla `grupo_miembros` (id, grupo_id, cliente_id) — junction con cascade delete
+- Sección en tab-clients debajo de la lista de clientes
+- `renderGroups()` — renderiza lista de grupos con miembros
+- `openGroupModal()` — modal con nombre + picker de miembros (checkboxes + buscador)
+- `saveGroup()` — upsert grupo + sync miembros (delete all + re-insert)
+- `deleteGroup()` — elimina grupo (cascade elimina miembros)
 
 ## Supabase
 
 - RLS habilitado en `public.agentes` — NO hacer upsert desde cliente (403)
 - Tabla `cotizaciones` — usar `select('*')`, NO nombrar columnas individualmente (riesgo de 400 por columna inexistente)
 - `total_comision` NO existe como columna en `cotizaciones` — vive dentro del JSONB `datos`
-- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `creado_en`, `updated_at`
+- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `creado_en`, `updated_at`, `grupo_id`
 - **`created_at` NO EXISTE** en `cotizaciones` — la columna de fecha es `creado_en`
 - Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback si fallan
 - Tabla `agentes`: tiene `id`, `email`, `nombre`, `rol`, y más — usar `select('*')`
-- Storage: para fotos de secciones y logos de agencia
+- Tabla `clientes`: campos expandidos (documento, doc_tipo, fecha_nac, nacionalidad, visa_*, ff_*, etc.) — `saveClient` solo envía campos con valor
+- Tabla `grupos_viaje` + `grupo_miembros` — grupos de viaje con miembros
+- Tabla `documentos_cliente` — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
+- Storage buckets: fotos de secciones, logos de agencia, `documentos-clientes` (privado)
 - NO modificar políticas RLS ni funciones de DB sin confirmar primero
 
 ## Workflow para cada cambio
