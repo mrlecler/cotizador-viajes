@@ -222,7 +222,7 @@ async function doLogout(){
   await sb.auth.signOut();
   currentUser=null;isAdmin=false;currentRol='agente';localStorage.removeItem('mp_admin');localStorage.removeItem('mp_rol');
   document.getElementById('ui').style.display='none';
-  document.getElementById('login-wall').style.display='flex';
+  document.getElementById('login-wall').style.display='block';
   const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.classList.remove('active');
   document.getElementById('li-pass').value='';
   setLoginStatus('Sesión cerrada.','var(--muted)');
@@ -238,7 +238,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('li-btn').onclick=doResetPassword;
     document.getElementById('li-btn').innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Guardar nueva contraseña';
     setLoginStatus('Ingresá tu nueva contraseña','var(--amber)');
-    document.getElementById('login-wall').style.display='flex';
+    document.getElementById('login-wall').style.display='block';
     document.getElementById('ui').style.display='none';
   }
 });
@@ -264,13 +264,13 @@ async function _checkInviteToken(){
   const {data:agent,error}=await sb.from('agentes').select('*').eq('invite_token',token).single();
   if(error||!agent){
     // Invalid or expired token — show login with message
-    document.getElementById('login-wall').style.display='flex';
+    document.getElementById('login-wall').style.display='block';
     setLoginStatus('Enlace de invitacion invalido o expirado','var(--red)');
     return true;
   }
   if(agent.activo){
     // Already accepted — redirect to login
-    document.getElementById('login-wall').style.display='flex';
+    document.getElementById('login-wall').style.display='block';
     setLoginStatus('Esta invitacion ya fue usada. Inicia sesion con tu cuenta.','var(--amber)');
     return true;
   }
@@ -358,7 +358,7 @@ async function _checkResetToken(){
   // Look up reset token in agentes table
   const {data:agent,error}=await sb.from('agentes').select('*').eq('reset_token',token).single();
   if(error||!agent){
-    document.getElementById('login-wall').style.display='flex';
+    document.getElementById('login-wall').style.display='block';
     setLoginStatus('Enlace de restablecimiento invalido o expirado','var(--red)');
     return true;
   }
@@ -510,7 +510,7 @@ async function showApp(user){
       document.getElementById('ui').style.display='none';
       document.getElementById('sidebar').style.display='none';
       const _bnBlk=document.getElementById('bottom-nav');if(_bnBlk)_bnBlk.classList.remove('active');
-      document.getElementById('login-wall').style.display='flex';
+      document.getElementById('login-wall').style.display='block';
       setLoginStatus('Tu cuenta ha sido desactivada. Contacta al administrador.','var(--red)');
       return;
     }
