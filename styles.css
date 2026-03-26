@@ -554,7 +554,7 @@ input:focus,textarea:focus,select:focus{
   border-color:transparent;
   box-shadow:0 4px 15px rgba(27,158,143,.3)
 }
-.btn-cta{background:#FF6B35;color:white;box-shadow:0 4px 15px rgba(255,107,53,0.3)}
+.btn-cta{background:#FF6B35;color:white;border:none;box-shadow:0 4px 15px rgba(255,107,53,0.3)}
 .btn-cta:hover{background:#E85A25;transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,107,53,0.4)}
 .btn-cta:active{transform:translateY(0);box-shadow:0 2px 8px rgba(255,107,53,0.25)}
 .btn-cta:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}

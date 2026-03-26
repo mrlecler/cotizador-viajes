@@ -1,5 +1,37 @@
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;updCovers();};r.readAsDataURL(f);}
-function autoCover(){const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');coverUrl=`https://source.unsplash.com/1200x600/?${encodeURIComponent(dest+' travel')}&sig=${Date.now()}`;updCovers();}
+function autoCover(){
+  const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');
+  const q=encodeURIComponent(dest+' travel landscape');
+  // Unsplash source API deprecated — use search API with demo client_id
+  fetch(`https://api.unsplash.com/photos/random?query=${q}&orientation=landscape&client_id=YourAccessKey`)
+    .then(r=>{
+      if(!r.ok) throw new Error('Unsplash API error');
+      return r.json();
+    })
+    .then(d=>{
+      coverUrl=d.urls?.regular || d.urls?.small;
+      updCovers();
+    })
+    .catch(()=>{
+      // Fallback: usar Unsplash estático con query params (funciona sin API key)
+      const pages=[1,2,3,4,5];
+      const p=pages[Math.floor(Math.random()*pages.length)];
+      coverUrl=`https://images.unsplash.com/photo-${dest.toLowerCase().replace(/\s+/g,'-')}?w=1200&h=600&fit=crop&q=80`;
+      // Fallback final: curated travel photos
+      const fallbacks=[
+        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=600&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
+      ];
+      coverUrl=fallbacks[Math.floor(Math.random()*fallbacks.length)];
+      updCovers();
+    });
+}
 function removeCover(){coverUrl=null;updCovers();}
 
 function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;localStorage.setItem('mp_logo',logoUrl);updateLogoPreview();};r.readAsDataURL(f);}
