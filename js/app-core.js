@@ -268,6 +268,7 @@ async function showApp(user){
     if(data){
       currentRol = data.rol || 'agente';
       isAdmin = currentRol === 'admin';
+      window._agenteId = data.id;
       localStorage.setItem('mp_rol', currentRol);
       // Supabase es la fuente de verdad — siempre pisar localStorage al login
       if(data.nombre)    agCfg.nm        = data.nombre;
@@ -471,19 +472,31 @@ async function dbSaveQuote(d, supabaseId){
 
 async function dbLoadQuotes(){
   // created_at NO existe en cotizaciones — usar creado_en
-  const {data,error} = await sb.from('cotizaciones')
-    .select('*').order('creado_en',{ascending:false}).limit(200);
+  let query = sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
+  // Admin ve todo, otros solo sus propias cotizaciones
+  if(currentRol !== 'admin' && window._agenteId){
+    query = query.eq('agente_id', window._agenteId);
+  }
+  const {data,error} = await query;
   if(error){
+    console.warn('dbLoadQuotes error:', error);
     // Fallback sin order
-    const {data:d2,error:e2} = await sb.from('cotizaciones').select('*').limit(200);
-    if(e2){ console.error('dbLoadQuotes error:',e2); return []; }
+    let q2 = sb.from('cotizaciones').select('*').limit(200);
+    if(currentRol !== 'admin' && window._agenteId) q2 = q2.eq('agente_id', window._agenteId);
+    const {data:d2,error:e2} = await q2;
+    if(e2){ console.error('dbLoadQuotes fallback error:',e2); return []; }
     return (d2||[]).sort((a,b)=>new Date(b.creado_en||b.updated_at||0)-new Date(a.creado_en||a.updated_at||0));
   }
   return data||[];
 }
 
 async function dbLoadClients(){
-  const {data} = await sb.from('clientes').select('*').order('nombre');
+  let query = sb.from('clientes').select('*').order('nombre');
+  // Admin ve todos, otros solo sus propios clientes
+  if(currentRol !== 'admin' && window._agenteId){
+    query = query.eq('agente_id', window._agenteId);
+  }
+  const {data} = await query;
   return data||[];
 }
 
