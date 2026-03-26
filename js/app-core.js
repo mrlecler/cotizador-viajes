@@ -240,9 +240,12 @@ async function _checkInviteToken(){
     setLoginStatus('Esta invitacion ya fue usada. Inicia sesion con tu cuenta.','var(--amber)');
     return true;
   }
-  // Show invite screen
+  // Show invite screen — hide everything else
   _inviteData={agent,token};
   document.getElementById('login-wall').style.display='none';
+  document.getElementById('ui').style.display='none';
+  const _sb=document.getElementById('sidebar');if(_sb)_sb.style.display='none';
+  const _bn=document.getElementById('bottom-nav');if(_bn)_bn.classList.remove('active');
   document.getElementById('invite-wall').style.display='flex';
   document.getElementById('inv-accept-nm').value=agent.nombre||'';
   document.getElementById('inv-accept-em').value=agent.email||'';
@@ -250,7 +253,7 @@ async function _checkInviteToken(){
   document.getElementById('invite-rol-badge').textContent=rolLbl;
   // Build wordmark for invite screen
   const invWm=document.getElementById('invite-wm');
-  if(invWm&&typeof buildWordmark==='function') invWm.appendChild(buildWordmark(36));
+  if(invWm&&typeof buildWordmark==='function'){invWm.innerHTML='';invWm.appendChild(buildWordmark(36));}
   return true;
 }
 

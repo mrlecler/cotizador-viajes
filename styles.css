@@ -2102,6 +2102,17 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 .cli-tab-panel{display:none}
 .cli-tab-panel.on{display:block}
 
+/* Invite wall — same styles as login wall */
+#invite-wall{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;overflow:hidden;background:#040B07}
+#invite-wall::after{content:'';position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,rgba(27,158,143,.06) 0%,transparent 100%);pointer-events:none}
+#invite-wall .finput{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)!important;color:rgba(255,255,255,.88)!important;margin-bottom:10px;border-radius:var(--r2)!important;font-family:'Plus Jakarta Sans',sans-serif!important;font-size:.88rem!important;padding:13px 16px!important;transition:border-color .2s,box-shadow .2s,background .2s!important}
+#invite-wall .finput::placeholder{color:rgba(255,255,255,.25)!important;font-weight:400!important}
+#invite-wall .finput:focus{border-color:rgba(27,158,143,.7)!important;box-shadow:0 0 0 3px rgba(27,158,143,.18)!important;background:rgba(255,255,255,.09)!important}
+#invite-wall .btn-google{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border-radius:var(--r2);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;padding:12px 16px;transition:all .2s}
+#invite-wall .btn-google:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-1px)}
+#invite-wall .lbl{color:rgba(255,255,255,.35)!important}
+#invite-wm{display:flex;justify-content:center;margin-bottom:6px;color:white}
+
 /* ══════════════════════════
    PRINT — override final (must be LAST)
    Las reglas de @media print anteriores están al inicio del CSS;
