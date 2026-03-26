@@ -819,20 +819,17 @@ async function loadDashboardMetrics(){
     }
     console.log('[DASH] después de filtro fecha:',quotes.length,'period:',_dashPeriod);
 
-    // Clients count — intentar con agente_id, si da 0 contar todos
+    // Clients count — admin ve todos, agencia/agente solo los propios
     let totalClients=0;
-    const {data:cliData,error:cliErr}=await sb.from('clientes')
-      .select('id,nombre,agente_id')
-      .eq('agente_id',ag.id);
-    console.log('[DASH] clientes con agente_id:',cliData?.length,'err:',cliErr);
-    if(cliErr || (cliData||[]).length===0){
-      // Puede que los clientes no tengan agente_id asignado — contar todos
-      const {data:c2,error:e2}=await sb.from('clientes').select('id,nombre');
-      console.log('[DASH] clientes total (sin filtro):',c2?.length,'err:',e2);
+    if(currentRol==='admin'){
+      const {data:c2}=await sb.from('clientes').select('id');
       totalClients=(c2||[]).length;
     } else {
+      const {data:cliData}=await sb.from('clientes')
+        .select('id').eq('agente_id',ag.id);
       totalClients=(cliData||[]).length;
     }
+    console.log('[DASH] clientes:',totalClients,'rol:',currentRol);
 
     // Calculations
     const total=quotes.length;
