@@ -713,6 +713,16 @@ async function dbSaveQuote(d, supabaseId){
     const insertResult = await sb.from('cotizaciones').insert(row).select('id').single();
     error = insertResult.error;
     if(insertResult.data?.id) window._lastInsertedQuoteId = insertResult.data.id;
+    // Si falla con ref_id duplicado (23505), buscar existente y hacer UPDATE
+    if(error && error.code==='23505' && baseRow.ref_id){
+      console.warn('[dbSaveQuote] ref_id duplicado, buscando existente para UPDATE...');
+      const {data:existing}=await sb.from('cotizaciones').select('id').eq('ref_id',baseRow.ref_id).maybeSingle();
+      if(existing?.id){
+        const {ref_id:_rid, ...updateRow} = baseRow;
+        ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', existing.id));
+        window._lastInsertedQuoteId = existing.id;
+      }
+    }
     // Si falla con columna inexistente, intentar con payload mínimo garantizado
     if(error && (error.code==='42703'||error.message?.includes('column'))){
       _captureError('dbSaveQuote:insert:fallback', error);

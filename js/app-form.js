@@ -849,16 +849,14 @@ async function saveQuote(){
   try{
     await dbSaveQuote(qData, editingQuoteId);
     const wasEditing = !!editingQuoteId;
-    // Detener autosave antes de limpiar estado
-    _stopAutosave();
-    // ── SIEMPRE limpiar modo edición después de guardar manual ──────────────
-    editingQuoteId = null;
-    formDraft = null;
-    // Limpiar m-ref para que la próxima cotización genere un ref_id nuevo
-    const refField = document.getElementById('m-ref');
-    if(refField) refField.value = '';
+    // Capturar ID si fue un INSERT nuevo (para que autosave haga UPDATE)
+    if(!editingQuoteId && window._lastInsertedQuoteId){
+      editingQuoteId = window._lastInsertedQuoteId;
+      window._lastInsertedQuoteId = null;
+    }
+    // NO limpiar editingQuoteId — el autosave necesita el ID para hacer UPDATE
+    // Solo se limpia al hacer "Nueva cotización" o al salir del form
     _hideEditBanner();
-    // Toast según operación
     toast(wasEditing ? 'Cotizacion actualizada en la nube' : 'Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
