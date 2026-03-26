@@ -65,9 +65,18 @@ function buildWordmark(targetId, fontSize, textCol, xType) {
 }
 
 // Inicialización de wordmarks cuando las fuentes están listas
-document.fonts.ready.then(function(){
+function _initWordmarks(){
   buildWordmark('login-wm',88,'white','grad');
   buildWordmark('hdr-wm',22,'currentColor','grad');
+}
+document.fonts.ready.then(function(){
+  // Verificar que DM Sans 900 realmente cargó (fonts.ready puede resolver antes)
+  if(document.fonts.check('900 48px "DM Sans"')){
+    _initWordmarks();
+  } else {
+    // Reintentar tras 500ms
+    setTimeout(_initWordmarks, 500);
+  }
 });
 
 function _buildSbLogo(){
