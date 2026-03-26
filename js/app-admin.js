@@ -28,8 +28,57 @@ async function renderAdmin(){
   buildDataLists(provs||[]);
   // Seguros
   loadSeguros();
+  // Agencias (solo admin)
+  if(currentRol==='admin') renderAdminAgencias();
   // Actividad reciente
   loadAdminLog();
+}
+
+// ═══════════════════════════════════════════
+// AGENCIAS (Admin)
+// ═══════════════════════════════════════════
+async function renderAdminAgencias(){
+  const el=document.getElementById('admin-agencias');if(!el)return;
+  // Agencias = agentes con rol 'agencia'
+  const {data:agencias}=await sb.from('agentes').select('*').eq('rol','agencia').order('nombre');
+  if(!agencias?.length){el.innerHTML='<p style="color:var(--g3);font-size:.82rem">Sin agencias registradas.</p>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Email</th><th>Activo</th><th></th></tr></thead><tbody>
+  ${agencias.map(a=>`<tr>
+    <td style="font-weight:600">${a.nombre||'Sin nombre'}</td>
+    <td style="font-size:.78rem">${a.email}</td>
+    <td>${a.activo!==false?'<span style="color:var(--primary);font-weight:600">Activo</span>':'<span style="color:var(--g3)">Inactivo</span>'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+    </td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function openAgencyInviteModal(){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar nueva agencia</div>
+    <div class="fg"><label class="lbl">Nombre de agencia</label><input class="finput" id="inv-ag-nm" placeholder="Ej: Viajes Sol"></div>
+    <div class="fg" style="margin-top:10px"><label class="lbl">Email</label><input class="finput" id="inv-ag-em" type="email" placeholder="agencia@email.com"></div>
+    <div class="fg" style="margin-top:10px"><label class="lbl">Nombre contacto</label><input class="finput" id="inv-ag-contact" placeholder="Nombre del responsable"></div>
+    <p style="font-size:.75rem;color:var(--g4);margin-top:12px">Se creara un registro con rol "agencia". La agencia recibira sus credenciales por email.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-cta" onclick="saveAgencyInvite()">Invitar agencia</button>
+    </div>`;
+  openModal();
+}
+
+async function saveAgencyInvite(){
+  const nm=document.getElementById('inv-ag-nm')?.value?.trim();
+  const em=document.getElementById('inv-ag-em')?.value?.trim();
+  const contact=document.getElementById('inv-ag-contact')?.value?.trim();
+  if(!em){alert('Email requerido');return;}
+  // Insert as agente with rol agencia
+  const row={email:em,rol:'agencia',activo:true};
+  if(nm)row.nombre=nm;
+  if(contact)row.contacto=contact;
+  const {error}=await sb.from('agentes').insert(row);
+  if(error){toast('Error: '+error.message,false);return;}
+  closeModal();toast('Agencia invitada');renderAdmin();
 }
 
 function buildDataLists(provs){
@@ -50,10 +99,12 @@ function buildDataLists(provs){
 }
 
 async function toggleAdmin(id,rol){
-  const nw=rol==='admin'?'agente':'admin';
-  if(!confirm(`¿Cambiar rol a "${nw}"?`))return;
+  const roles=['agente','agencia','admin'];
+  const cur=roles.indexOf(rol);
+  const nw=roles[(cur+1)%roles.length];
+  if(!confirm(`Cambiar rol de "${rol}" a "${nw}"?`))return;
   await sb.from('agentes').update({rol:nw}).eq('id',id);
-  toast('✓ Rol actualizado');renderAdmin();
+  toast('Rol actualizado a '+nw);renderAdmin();
 }
 
 const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursi\u00f3n'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerol\u00ednea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
