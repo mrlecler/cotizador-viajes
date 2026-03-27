@@ -849,16 +849,20 @@ async function saveQuote(){
   try{
     await dbSaveQuote(qData, editingQuoteId);
     const wasEditing = !!editingQuoteId;
-    // Detener autosave antes de limpiar estado
     _stopAutosave();
-    // ── SIEMPRE limpiar modo edición después de guardar manual ──────────────
-    editingQuoteId = null;
-    formDraft = null;
-    // Limpiar m-ref para que la próxima cotización genere un ref_id nuevo
-    const refField = document.getElementById('m-ref');
-    if(refField) refField.value = '';
-    _hideEditBanner();
-    // Toast según operación
+    // Para cotizaciones nuevas: buscar el ID insertado para quedarnos en modo edicion
+    if(!editingQuoteId && d.refId){
+      const {data:saved}=await sb.from('cotizaciones').select('id').eq('ref_id',d.refId).maybeSingle();
+      if(saved) editingQuoteId=saved.id;
+    }
+    // Mantener en modo edicion con banner visible
+    const currentRef=document.getElementById('m-ref')?.value||d.refId||'';
+    if(editingQuoteId){
+      _showEditBanner(currentRef);
+      _startAutosave();
+    } else {
+      _hideEditBanner();
+    }
     toast(wasEditing ? 'Cotizacion actualizada en la nube' : 'Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
