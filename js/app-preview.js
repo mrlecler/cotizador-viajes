@@ -133,7 +133,7 @@ async function changePassword(){
 }
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
-  if(agCfg.pdf_theme) selectPdfTheme(agCfg.pdf_theme);
+  if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
 }
 
 // ═══════════════════════════════════════════

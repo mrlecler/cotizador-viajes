@@ -21,22 +21,24 @@ async function renderHistory(){
     if(dateTo){const d=new Date(r.creado_en||r.updated_at||0);if(d>new Date(dateTo+'T23:59:59'))return false;}
     return true;
   });
-  if(!filtered.length){
+  // Agente solo ve sus propias cotizaciones (RLS puede devolver de mas)
+  const visible=currentRol==='agente'?filtered.filter(r=>!r.agente_id||r.agente_id===window._agenteId):filtered;
+  if(!visible.length){
     el.innerHTML=`<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No hay resultados</p><small>Probá cambiando los filtros o el texto de búsqueda</small></div>`;
     return;
   }
-  const shown=filtered.slice(0,_histPageSize);
+  const shown=visible.slice(0,_histPageSize);
   const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
   el.innerHTML=shown.map(r=>{
-    const isOwner = (r.agente_id === window._agenteId);
-    const editBtn = isOwner
+    const canE=_canEdit(r), canV=_canView(r);
+    const editBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>`
-      : (currentRol==='admin' ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();loadFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver</button>` : '');
-    const dupBtn = isOwner
+      : (canV ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();loadFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver</button>` : '');
+    const dupBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();duplicateFromHistory('${r.ref_id}','${r.id}')" title="Duplicar cotizacion con nuevo numero"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Duplicar</button>` : '';
-    const statusBtn = isOwner
+    const statusBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Estado</button>` : '';
-    const delBtn = (isOwner && (!r.estado || r.estado==='borrador'))
+    const delBtn = (canE && (!r.estado || r.estado==='borrador'))
       ? `<button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')" title="Eliminar borrador"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
     return `
     <div class="hist-item" onclick="loadFromHistory('${r.ref_id}','${r.id}')">
@@ -55,7 +57,7 @@ async function renderHistory(){
     </div>`;
   }).join('')+`
   <div class="list-footer">
-    <span class="list-count">Mostrando ${shown.length} de ${filtered.length} cotizaciones</span>
+    <span class="list-count">Mostrando ${shown.length} de ${visible.length} cotizaciones</span>
     <div class="page-sel">
       <span>Ver</span>
       <select onchange="_setHistPageSize(this.value)">
@@ -81,9 +83,9 @@ async function loadFromHistory(refId, id){
 }
 
 async function editFromHistory(refId, id){
-  // Cargar en formulario para editar
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data){ toast('No se encontró la cotización.',false); return; }
+  if(!_canEdit(data)){ toast('No tenés permiso para editar esta cotización',false); return; }
   window._hFotos={};
   // Store editing context
   editingQuoteId = id;
@@ -105,6 +107,7 @@ async function editFromHistory(refId, id){
 async function duplicateFromHistory(refId, id){
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data){ toast('No se encontró la cotización.',false); return; }
+  if(!_canEdit(data)){ toast('No podés duplicar cotizaciones de otro agente',false); return; }
   // Deep copy datos and clear ref + client so a new quote is created
   const d=JSON.parse(JSON.stringify(data.datos||{}));
   delete d.refId;
@@ -203,6 +206,8 @@ function openStatusModal(id){ _statusTargetId=id; const m=document.getElementByI
 function closeStatusModal(){ document.getElementById('modal-status').style.display='none'; _statusTargetId=null; }
 async function applyStatus(s){
   if(!_statusTargetId) return;
+  const {data:q}=await sb.from('cotizaciones').select('agente_id').eq('id',_statusTargetId).maybeSingle();
+  if(q&&!_canEdit(q)){toast('No podés cambiar el estado de cotizaciones de otro agente',false);closeStatusModal();return;}
   closeStatusModal();
   await sb.from('cotizaciones').update({estado:s}).eq('id',_statusTargetId);
   toast('✓ Estado actualizado a: '+s);
@@ -216,19 +221,21 @@ async function renderClients(){
   await loadClients();
   const q=(document.getElementById('cli-filter')?.value||'').toLowerCase().trim();
   const filtered=allClients.filter(c=>!q||(c.nombre||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.celular||'').includes(q));
+  // Agente solo ve sus propios clientes
+  const visible=currentRol==='agente'?filtered.filter(c=>!c.agente_id||c.agente_id===window._agenteId):filtered;
   const el=document.getElementById('cli-list');
-  if(!filtered.length){
+  if(!visible.length){
     el.innerHTML=`<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>${q?'Sin resultados para "'+q+'"':'Todavía no tenés clientes'}</p><small>${q?'Probá con otro nombre, email o teléfono':'Agregá tu primer cliente con el botón + Nuevo cliente'}</small></div>`;
     return;
   }
-  const shown=filtered.slice(0,_cliPageSize);
+  const shown=visible.slice(0,_cliPageSize);
   el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Notas</th><th></th></tr></thead><tbody>
   ${shown.map(c=>{
-    const isOwner = (c.agente_id === window._agenteId);
-    const editBtn = isOwner
+    const canE=_canEdit(c), canV=_canView(c);
+    const editBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
-      : (currentRol==='admin' ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
-    const delBtn = isOwner
+      : (canV ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
+    const delBtn = canE
       ? `<button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
     return `<tr>
     <td><strong>${c.nombre||'—'}</strong></td>
@@ -239,7 +246,7 @@ async function renderClients(){
   </tr>`;
   }).join('')}</tbody></table>
   <div class="list-footer">
-    <span class="list-count">Mostrando ${shown.length} de ${filtered.length} clientes</span>
+    <span class="list-count">Mostrando ${shown.length} de ${visible.length} clientes</span>
     <div class="page-sel">
       <span>Ver</span>
       <select onchange="_setCliPageSize(this.value)">
@@ -255,9 +262,11 @@ function _setCliPageSize(n){_cliPageSize=parseInt(n);renderClients();}
 
 function openClientModal(id){
   const c=allClients.find(x=>x.id===id)||{};
+  const readOnly=!!id&&!_canEdit(c);
   const _v=(k)=>c[k]||'';
+  const _dis=readOnly?' disabled':'';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">${readOnly?'Ver cliente':id?'Editar cliente':'+ Nuevo cliente'}</div>
     <div class="cli-tabs">
       <div class="cli-tab on" onclick="_cliTab(0,this)">Datos</div>
       <div class="cli-tab" onclick="_cliTab(1,this)">Viaje</div>
@@ -340,16 +349,20 @@ function openClientModal(id){
     </div>
 
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      ${(!id || c.agente_id===window._agenteId || !c.agente_id)
-        ? `<button class="btn btn-cta" onclick="saveClient('${id||''}')">Guardar</button>`
-        : `<span style="font-size:.78rem;color:var(--g3);align-self:center">Solo lectura (otro agente)</span>`}
+      <button class="btn btn-out" onclick="closeModal()">${readOnly?'Cerrar':'Cancelar'}</button>
+      ${readOnly?'':`<button class="btn btn-cta" onclick="saveClient('${id||''}')">Guardar</button>`}
     </div>`;
 
   // Widen modal for tabbed content
   const box=document.getElementById('modal-box');
   if(box) box.style.maxWidth='640px';
   openModal();
+  // Read-only: deshabilitar todos los campos del modal
+  if(readOnly){
+    document.querySelectorAll('#modal-content input,#modal-content select,#modal-content textarea').forEach(el=>el.disabled=true);
+    const uploadBtn=document.querySelector('#modal-content .btn-pri');
+    if(uploadBtn) uploadBtn.style.display='none';
+  }
 
   // Load async tab data if editing existing client
   if(id){
@@ -397,11 +410,8 @@ async function saveClient(id){
 }
 async function deleteClient(id){
   if(!confirm('¿Eliminar cliente?'))return;
-  // Solo el owner puede eliminar
-  const {data:c}=await sb.from('clientes').select('agente_id').eq('id',id).single();
-  if(c && c.agente_id && c.agente_id !== window._agenteId){
-    toast('No podes eliminar clientes de otro agente', false); return;
-  }
+  const {data:c}=await sb.from('clientes').select('agente_id').eq('id',id).maybeSingle();
+  if(c&&!_canEdit(c)){toast('No podés eliminar clientes de otro agente',false);return;}
   await sb.from('clientes').delete().eq('id',id);
   toast('Cliente eliminado');renderClients();
 }
