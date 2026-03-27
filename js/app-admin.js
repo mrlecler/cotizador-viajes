@@ -66,9 +66,17 @@ function buildDataLists(provs){
 
 async function renderAdminUsers(){
   const el=document.getElementById('admin-users-list');if(!el)return;
-  const {data,error}=await sb.from('agentes').select('*').order('nombre');
+  const [{data:agents,error},{data:pendingInvs}]=await Promise.all([
+    sb.from('agentes').select('*').order('nombre'),
+    sb.from('invitaciones').select('*').eq('tipo','invite').eq('usado',false).order('creado_en',{ascending:false})
+  ]);
   if(error){el.innerHTML='<div style="color:var(--red);font-size:.82rem">Error: '+error.message+'</div>';return;}
-  _adminUsersData=data||[];
+  // Merge: pending invites que aún no tienen cuenta (no aparecen en agentes)
+  const activeEmails=new Set((agents||[]).map(a=>a.email));
+  const pendingRows=(pendingInvs||[])
+    .filter(inv=>!activeEmails.has(inv.email))
+    .map(inv=>({id:inv.id,email:inv.email,nombre:inv.nombre||'',rol:inv.rol,activo:false,_pending:true,_invToken:inv.token}));
+  _adminUsersData=[...(agents||[]),...pendingRows];
   _renderAdminUsersTable();
 }
 
@@ -83,7 +91,7 @@ function _renderAdminUsersTable(){
     if(rolFilter && a.rol!==rolFilter) return false;
     if(statusFilter==='active' && !a.activo) return false;
     if(statusFilter==='inactive' && a.activo) return false;
-    if(statusFilter==='pending' && !a.invite_token) return false;
+    if(statusFilter==='pending' && !a._pending) return false;
     return true;
   });
 
@@ -99,7 +107,7 @@ function _renderAdminUsersTable(){
   };
 
   const statusBadge=a=>{
-    if(a.invite_token && !a.activo) return '<span style="font-size:.68rem;color:#D4A017;font-weight:600">Pendiente</span>';
+    if(a._pending) return '<span style="font-size:.68rem;color:#D4A017;font-weight:600">Pendiente</span>';
     if(a.activo) return '<span style="font-size:.68rem;color:var(--primary);font-weight:600">Activo</span>';
     return '<span style="font-size:.68rem;color:var(--g3);font-weight:600">Inactivo</span>';
   };
@@ -117,7 +125,7 @@ function _renderAdminUsersTable(){
         <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
           ${!a.activo?`<button class="btn btn-out btn-xs" style="color:var(--primary);border-color:var(--primary)" onclick="activateUser('${a.id}')">Activar</button>`:''}
           ${a.activo&&a.id!==myId?`<button class="btn btn-out btn-xs" style="color:#D4A017;border-color:#D4A017" onclick="deactivateUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Desactivar</button>`:''}
-          ${a.invite_token?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.id}')">Nuevo enlace</button>`:''}
+          ${a._pending?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.email}')">Nuevo enlace</button>`:''}
           ${a.activo?`<button class="btn btn-out btn-xs" onclick="generateResetLink('${a.id}')">Reset pass</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
           ${a.id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
@@ -141,7 +149,7 @@ async function changeRol(id,rol){
 }
 
 async function activateUser(id){
-  const {error}=await sb.from('agentes').update({activo:true,invite_token:null}).eq('id',id);
+  const {error}=await sb.from('agentes').update({activo:true}).eq('id',id);
   if(error){toast('Error al activar: '+error.message,false);console.error('[activateUser]',error);return;}
   toast('Usuario activado');
   await renderAdminUsers();
@@ -155,9 +163,13 @@ async function deactivateUser(id,nombre){
   await renderAdminUsers();
 }
 
-async function regenerateInviteLink(id){
+async function regenerateInviteLink(email){
   const token=crypto.randomUUID();
-  const {error}=await sb.from('agentes').update({invite_token:token,activo:false}).eq('id',id);
+  // Invalidar invites previos del mismo email
+  await sb.from('invitaciones').update({usado:true}).eq('email',email).eq('usado',false);
+  // Obtener rol del email si tiene invitacion previa
+  const {data:prev}=await sb.from('invitaciones').select('rol,agencia_id').eq('email',email).order('creado_en',{ascending:false}).limit(1).maybeSingle();
+  const {error}=await sb.from('invitaciones').insert({email,rol:prev?.rol||'agente',tipo:'invite',token,agencia_id:prev?.agencia_id||null,usado:false});
   if(error){toast('Error: '+error.message,false);return;}
   const url=window.location.origin+window.location.pathname+'?invite='+token;
   document.getElementById('modal-content').innerHTML=`
@@ -462,31 +474,30 @@ async function sendInvite(){
   const rol=document.getElementById('inv-rol')?.value||'agente';
   if(!email){toast('Ingresa un email',false);return;}
 
-  // Check if email already exists
-  const {data:existing}=await sb.from('agentes').select('id,invite_token,activo').eq('email',email).maybeSingle();
-  if(existing){
-    if(existing.invite_token && !existing.activo){
-      if(confirm('Este email ya tiene una invitacion pendiente. Generar un nuevo enlace?')){
-        closeModal();
-        regenerateInviteLink(existing.id);
-      }
-      return;
+  // Check if email already has an active account
+  const {data:existing}=await sb.from('agentes').select('id,activo').eq('email',email).maybeSingle();
+  if(existing?.activo){toast('Este email ya tiene una cuenta activa',false);return;}
+
+  // Check for pending invite
+  const {data:pendingInv}=await sb.from('invitaciones').select('id').eq('email',email).eq('tipo','invite').eq('usado',false).maybeSingle();
+  if(pendingInv){
+    if(confirm('Este email ya tiene una invitacion pendiente. Generar un nuevo enlace?')){
+      closeModal();
+      regenerateInviteLink(email);
     }
-    if(existing.activo){
-      toast('Este email ya tiene una cuenta activa',false);
-      return;
-    }
+    return;
   }
 
-  // Create row in agentes with invite_token
+  // INSERT in invitaciones — NOT in agentes (agentes se crea cuando acepta con auth.uid())
   const token=crypto.randomUUID();
-  const row={email,rol,activo:false,invite_token:token};
+  const row={email,rol,tipo:'invite',token,usado:false};
   if(nombre) row.nombre=nombre;
-  // Vincular al agencia si es una agencia invitando
-  if(currentRol === 'agencia' && window._agenteId){
-    row.agencia_id = window._agenteId;
+  if(currentRol==='agencia'&&window._agenteId){
+    // Vincular a la agencia de quien invita
+    const {data:agRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
+    if(agRow?.agencia_id) row.agencia_id=agRow.agencia_id;
   }
-  const {error}=await sb.from('agentes').insert(row);
+  const {error}=await sb.from('invitaciones').insert(row);
   if(error){toast('Error: '+error.message,false);return;}
 
   const url=window.location.origin+window.location.pathname+'?invite='+token;
@@ -775,12 +786,18 @@ function _escHtml(s){
 async function renderAgency(){
   if(currentRol!=='agencia'&&currentRol!=='admin') return;
 
-  // Agentes — filtrar por agencia_id si es rol agencia
-  let agQuery = sb.from('agentes').select('*').order('creado_en');
-  if(currentRol === 'agencia' && window._agenteId){
-    agQuery = agQuery.eq('agencia_id', window._agenteId);
+  // Agentes — filtrar por agencia_id de la agencia del usuario actual
+  let ags=[];
+  if(currentRol==='agencia'&&window._agenteId){
+    const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
+    if(aRow?.agencia_id){
+      const {data}=await sb.from('agentes').select('*').eq('agencia_id',aRow.agencia_id).order('nombre');
+      ags=data||[];
+    }
+  } else if(currentRol==='admin'){
+    const {data}=await sb.from('agentes').select('*').order('nombre');
+    ags=data||[];
   }
-  const {data:ags}=await agQuery;
   const agEl=document.getElementById('agency-agentes');
   if(agEl){
     // Boton "Activarme como agente" para agencias que no son agentes
@@ -820,18 +837,18 @@ async function renderAgency(){
 
 async function saveAgencyData(){
   if(!window._agenteId){toast('Error: no se pudo identificar tu cuenta',false);return;}
-  const data={};
   const v=id=>(document.getElementById(id)?.value||'').trim();
-  if(v('ag-nombre')) data.agencia=v('ag-nombre');
-  if(v('ag-email')) data.email=v('ag-email');
-  if(v('ag-tel')) data.telefono=v('ag-tel');
-  if(v('ag-dir')) data.direccion=v('ag-dir');
-  // Save to Supabase agentes table (each user's own row)
-  const {error}=await sb.from('agentes').update(data).eq('id',window._agenteId);
+  const agData={};
+  if(v('ag-nombre')) agData.nombre=v('ag-nombre');
+  if(v('ag-email')) agData.email=v('ag-email');
+  if(v('ag-tel')) agData.telefono=v('ag-tel');
+  if(v('ag-dir')) agData.direccion=v('ag-dir');
+  // Obtener agencia_id del agente actual
+  const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
+  if(!aRow?.agencia_id){toast('Error: no se encontro tu agencia',false);return;}
+  const {error}=await sb.from('agencias').update(agData).eq('id',aRow.agencia_id);
   if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
-  // Update local config
-  if(data.agencia) agCfg.ag=data.agencia;
-  if(data.telefono) agCfg.tel=data.telefono;
+  if(agData.nombre) agCfg.ag=agData.nombre;
   _saveAgCfg();
   toast('Datos de agencia guardados');
 }
@@ -840,10 +857,12 @@ async function saveAgencyData(){
 async function _loadAgencyFields(){
   if(!window._agenteId)return;
   try{
-    const {data}=await sb.from('agentes').select('agencia,email,telefono,direccion').eq('id',window._agenteId).single();
+    const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
+    if(!aRow?.agencia_id)return;
+    const {data}=await sb.from('agencias').select('nombre,email,telefono,direccion').eq('id',aRow.agencia_id).maybeSingle();
     if(!data)return;
     const el=id=>document.getElementById(id);
-    if(data.agencia && el('ag-nombre')) el('ag-nombre').value=data.agencia;
+    if(data.nombre && el('ag-nombre')) el('ag-nombre').value=data.nombre;
     if(data.email && el('ag-email')) el('ag-email').value=data.email;
     if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
     if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
