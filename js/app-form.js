@@ -856,7 +856,7 @@ async function saveQuote(){
     }
     // NO limpiar editingQuoteId — el autosave necesita el ID para hacer UPDATE
     // Solo se limpia al hacer "Nueva cotización" o al salir del form
-    _hideEditBanner();
+    if(typeof _hideEditBanner==='function') _hideEditBanner();
     toast(wasEditing ? 'Cotizacion actualizada en la nube' : 'Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);

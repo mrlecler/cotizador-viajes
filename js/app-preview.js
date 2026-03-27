@@ -108,7 +108,10 @@ async function saveCfg(){
   window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase
   if(currentUser){
-    const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',agencia:agCfg.ag||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('email',currentUser.email);
+    let _cfgQuery=sb.from('agentes').update({nombre:agCfg.nm||'',agencia:agCfg.ag||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme});
+    if(window._agenteId) _cfgQuery=_cfgQuery.eq('id',window._agenteId);
+    else _cfgQuery=_cfgQuery.eq('email',currentUser.email);
+    const {error}=await _cfgQuery;
     if(error){
       _captureError('saveCfg',error);
       toast('Error al guardar perfil: '+_friendlyError(error),false);
