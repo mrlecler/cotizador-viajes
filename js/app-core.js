@@ -723,32 +723,13 @@ async function dbSaveQuote(d, supabaseId){
   await loadClients();
 }
 
-async function _getAgencyAgentIds(){
-  // Para agencias: obtener IDs de agentes de la misma agencia + el propio
-  if(currentRol!=='agencia'||!window._agenciaId) return null;
-  try{
-    const {data}=await sb.from('agentes').select('id').eq('agencia_id',window._agenciaId);
-    const ids=[window._agenteId,...(data||[]).map(a=>a.id)];
-    return [...new Set(ids)]; // dedup
-  }catch(e){ return [window._agenteId]; }
-}
-
 async function dbLoadQuotes(){
-  // created_at NO existe en cotizaciones — usar creado_en
-  let query = sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
-  // Admin ve todo, agencia ve propias + de sus agentes, agente solo propias
-  if(currentRol==='agencia'){
-    const ids=await _getAgencyAgentIds();
-    if(ids?.length) query=query.in('agente_id',ids);
-  } else if(currentRol !== 'admin' && window._agenteId){
-    query = query.eq('agente_id', window._agenteId);
-  }
-  const {data,error} = await query;
+  // RLS filtra por rol (agente=propias, agencia=misma agencia, admin=todo)
+  // created_at NO existe — usar creado_en
+  const {data,error} = await sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
   if(error){
     console.warn('dbLoadQuotes error:', error);
-    let q2 = sb.from('cotizaciones').select('*').limit(200);
-    if(currentRol!=='admin'&&window._agenteId) q2=q2.eq('agente_id',window._agenteId);
-    const {data:d2,error:e2} = await q2;
+    const {data:d2,error:e2} = await sb.from('cotizaciones').select('*').limit(200);
     if(e2){ console.error('dbLoadQuotes fallback error:',e2); return []; }
     return (d2||[]).sort((a,b)=>new Date(b.creado_en||b.updated_at||0)-new Date(a.creado_en||a.updated_at||0));
   }
@@ -756,15 +737,8 @@ async function dbLoadQuotes(){
 }
 
 async function dbLoadClients(){
-  let query = sb.from('clientes').select('*').order('nombre');
-  // Admin ve todos, agencia ve propios + de sus agentes, agente solo propios
-  if(currentRol==='agencia'){
-    const ids=await _getAgencyAgentIds();
-    if(ids?.length) query=query.in('agente_id',ids);
-  } else if(currentRol !== 'admin' && window._agenteId){
-    query = query.eq('agente_id', window._agenteId);
-  }
-  const {data} = await query;
+  // RLS filtra por rol
+  const {data} = await sb.from('clientes').select('*').order('nombre');
   return data||[];
 }
 
@@ -800,21 +774,13 @@ async function loadDashboardMetrics(){
     if(_dashPeriod==='month'){since=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
     else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
 
-    // Quotes — filtrar por rol en JS (RLS puede no estar configurado)
-    let qQuery=sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos,creado_en,updated_at');
-    if(currentRol==='agencia'){
-      const ids=await _getAgencyAgentIds();
-      if(ids?.length) qQuery=qQuery.in('agente_id',ids);
-    } else if(currentRol !== 'admin' && window._agenteId){
-      qQuery=qQuery.eq('agente_id',window._agenteId);
-    }
-    const {data:allQ,error:allErr}=await qQuery;
+    // Quotes — RLS filtra por rol; NO usar created_at (no existe)
+    const {data:allQ,error:allErr}=await sb.from('cotizaciones')
+      .select('id,ref_id,agente_id,destino,estado,datos,creado_en,updated_at');
     let quotes=allQ||[];
     if(allErr){
-      let q2=sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos');
-      if(currentRol!=='admin'&&window._agenteId) q2=q2.eq('agente_id',window._agenteId);
-      const {data:d2}=await q2;
-      quotes=d2||[];
+      const {data:q2}=await sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos');
+      quotes=q2||[];
     }
 
     // Filtrar por fecha en JS
@@ -826,15 +792,8 @@ async function loadDashboardMetrics(){
       });
     }
 
-    // Clients count — filtrar por rol
-    let cQuery=sb.from('clientes').select('id');
-    if(currentRol==='agencia'){
-      const ids=await _getAgencyAgentIds();
-      if(ids?.length) cQuery=cQuery.in('agente_id',ids);
-    } else if(currentRol !== 'admin' && window._agenteId){
-      cQuery=cQuery.eq('agente_id',window._agenteId);
-    }
-    const {data:cliData}=await cQuery;
+    // Clients count — RLS filtra por rol
+    const {data:cliData}=await sb.from('clientes').select('id');
     const totalClients=(cliData||[]).length;
 
     // Calculations
