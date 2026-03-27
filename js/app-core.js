@@ -664,14 +664,17 @@ async function dbSaveQuote(d, supabaseId){
       if(nc) clientId = nc.id;
     }
   }
-  // Get agente id + num + pais_cod (non-fatal if not found)
-  let agId = null;
-  try {
-    const {data:ag} = await sb.from('agentes').select('id,agente_num,pais_cod').eq('email',currentUser.email).maybeSingle();
-    agId = ag?.id || null;
-    if(ag?.agente_num) window._agenteNum = ag.agente_num;
-    if(ag?.pais_cod) window._agentePaisCod = ag.pais_cod;
-  } catch(e) { console.warn('agente lookup warning:', e.message); }
+  // Usar _agenteId cacheado (seteado al login) — no hacer query innecesario
+  let agId = window._agenteId || null;
+  if(!agId){
+    // Fallback: buscar por email si _agenteId no existe
+    try {
+      const {data:ag} = await sb.from('agentes').select('id,agente_num,pais_cod').eq('email',currentUser.email).maybeSingle();
+      agId = ag?.id || null;
+      if(ag?.agente_num) window._agenteNum = ag.agente_num;
+      if(ag?.pais_cod) window._agentePaisCod = ag.pais_cod;
+    } catch(e) { console.warn('agente lookup warning:', e.message); }
+  }
   // Generate structured ref_id for NEW quotes: {pais_cod}-{agente_num_4d}-{seq_5d}
   if(!d.refId && !supabaseId){
     const {count} = await sb.from('cotizaciones').select('id',{count:'exact',head:true}).eq('agente_id',agId||'');
