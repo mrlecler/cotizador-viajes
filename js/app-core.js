@@ -33,6 +33,17 @@ let formDraft=null; // BUG3 — draft en memoria para preservar el formulario en
 let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editando (null = nueva)
 
 // ═══════════════════════════════════════════
+// PERMISOS — helpers centralizados
+// ═══════════════════════════════════════════
+function _canEdit(record){return record.agente_id===window._agenteId;}
+function _canView(record){
+  if(record.agente_id===window._agenteId) return true;
+  if(currentRol==='admin') return true;
+  if(currentRol==='agencia') return true; // RLS ya filtra por agencia
+  return false;
+}
+
+// ═══════════════════════════════════════════
 // WORDMARK — función compartida ermix
 // ═══════════════════════════════════════════
 function buildWordmark(targetId, fontSize, textCol, xType) {
