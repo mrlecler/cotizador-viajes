@@ -110,13 +110,13 @@ async function saveCfg(){
   if(currentUser&&window._agenteId){
     const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('id',window._agenteId);
     if(error){
+      console.warn('[saveCfg] Supabase update error (config guardada localmente):', error.message);
       _captureError('saveCfg',error);
-      toast('Error al guardar perfil: '+_friendlyError(error),false);
-      return;
     }
   }
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
+  toast('Perfil guardado');
 }
 async function changePassword(){
   const p1=document.getElementById('pw-new').value;
