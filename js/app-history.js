@@ -282,8 +282,11 @@ function _setCliPageSize(n){_cliPageSize=parseInt(n);renderClients();}
 function openClientModal(id){
   const c=allClients.find(x=>x.id===id)||{};
   const _v=(k)=>c[k]||'';
+  const isOwner=!c.agente_id||c.agente_id===window._agenteId;
+  const ownerName=(!isOwner&&c.agente_id&&_agentNamesCache[c.agente_id])?_agentNamesCache[c.agente_id]:'';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:4px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
+    ${ownerName?`<div style="font-size:.75rem;color:var(--g4);margin-bottom:12px">Cliente de: <span style="color:var(--primary);font-weight:600">${ownerName}</span></div>`:'<div style="margin-bottom:8px"></div>'}`
     <div class="cli-tabs">
       <div class="cli-tab on" onclick="_cliTab(0,this)">Datos</div>
       <div class="cli-tab" onclick="_cliTab(1,this)">Viaje</div>

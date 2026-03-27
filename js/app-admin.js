@@ -374,6 +374,7 @@ function addTicket(d){
   </div>
   <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="tk${id}-desc" placeholder="Canjeables en ventanilla..." value="${d.desc||''}"></div>`;
   document.getElementById('tickets-cont').appendChild(el);
+  _populateProvSel('tk'+id+'-sel',d.prov||'');
   if(d.tipo) document.getElementById('tk'+id+'-tipo').value=d.tipo;
 }
 
