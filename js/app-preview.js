@@ -249,6 +249,11 @@ function removeSectionPhoto(k){
 // EDIT FROM PREVIEW
 // ═══════════════════════════════════════════
 function _editFromPreview(){
+  // Bloquear si no es propietario
+  if(window._viewingQuoteOwnerId && window._viewingQuoteOwnerId !== window._agenteId && currentRol !== 'admin'){
+    toast('Solo podés ver esta cotización, no editarla',false);
+    return;
+  }
   if(qData){
     formDraft=qData;
   }

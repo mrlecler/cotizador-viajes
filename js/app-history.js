@@ -88,17 +88,26 @@ async function loadFromHistory(refId, id){
   window._hFotos={};
   qData=data.datos;
   editingQuoteId=id;
+  window._viewingQuoteOwnerId=data.agente_id||null;
   if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
   renderPreview(qData);switchTab('preview');
+  // Ocultar botones de edición si no es propietario
+  _applyPreviewPermissions();
 }
 
 async function editFromHistory(refId, id){
   // Cargar en formulario para editar
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data){ toast('No se encontró la cotización.',false); return; }
+  // Verificar ownership — solo el propietario puede editar
+  if(data.agente_id && data.agente_id !== window._agenteId && currentRol !== 'admin'){
+    toast('Solo podés ver esta cotización, no editarla',false);
+    return;
+  }
   window._hFotos={};
   // Store editing context
   editingQuoteId = id;
+  window._viewingQuoteOwnerId=data.agente_id||null;
   const d = data.datos;
   if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
   // Restore into form via restoreDraft
@@ -506,6 +515,21 @@ async function removeFromGroup(clienteId,grupoId){
   await sb.from('grupo_miembros').delete().eq('cliente_id',clienteId).eq('grupo_id',grupoId);
   toast('Removido del grupo');
   loadClientGroups(clienteId);
+}
+
+// ═══════════════════════════════════════════
+// PREVIEW PERMISSIONS
+// ═══════════════════════════════════════════
+function _applyPreviewPermissions(){
+  const isOwner=!window._viewingQuoteOwnerId || window._viewingQuoteOwnerId===window._agenteId;
+  // Botones en la toolbar de preview
+  document.querySelectorAll('#prev-toolbar .btn').forEach(btn=>{
+    const txt=btn.textContent||'';
+    // Ocultar "Editar" y "Guardar" si no es propietario
+    if(txt.includes('Editar')||txt.includes('Guardar')){
+      btn.style.display=isOwner?'':'none';
+    }
+  });
 }
 
 // ═══════════════════════════════════════════
