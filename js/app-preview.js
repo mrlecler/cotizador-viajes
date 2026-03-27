@@ -132,7 +132,7 @@ async function changePassword(){
   toast('Contraseña actualizada');
 }
 function loadCfg(){
-  [{id:'cfg-nm',k:'nm'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+  [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
   if(agCfg.pdf_theme) selectPdfTheme(agCfg.pdf_theme);
 }
 
@@ -256,11 +256,6 @@ function removeSectionPhoto(k){
 // EDIT FROM PREVIEW
 // ═══════════════════════════════════════════
 function _editFromPreview(){
-  // Bloquear si no es propietario
-  if(window._viewingQuoteOwnerId && window._viewingQuoteOwnerId !== window._agenteId && currentRol !== 'admin'){
-    toast('Solo podés ver esta cotización, no editarla',false);
-    return;
-  }
   if(qData){
     formDraft=qData;
   }

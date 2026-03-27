@@ -1,22 +1,10 @@
 let _histPageSize=25;
 let _cliPageSize=25;
 
-// Cache de nombres de agentes para mostrar en historial
-let _agentNamesCache={};
-async function _loadAgentNames(){
-  if(Object.keys(_agentNamesCache).length) return;
-  try{
-    const {data}=await sb.from('agentes').select('id,nombre,email');
-    (data||[]).forEach(a=>{_agentNamesCache[a.id]=a.nombre||a.email||'';});
-  }catch(e){}
-}
-
 async function renderHistory(){
   const el=document.getElementById('hist-list');
   el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
   const rows=await dbLoadQuotes();
-  // Cargar nombres de agentes si es admin o agencia (ven cotizaciones de otros)
-  if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase().trim();
   const dateFrom=document.getElementById('hist-date-from')?.value||'';
@@ -55,7 +43,7 @@ async function renderHistory(){
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
-        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}${!isOwner&&r.agente_id&&_agentNamesCache[r.agente_id]?' · <span style="color:var(--primary);font-weight:600">'+_agentNamesCache[r.agente_id]+'</span>':''}</div>
+        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}</div>
         <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
@@ -88,28 +76,19 @@ async function loadFromHistory(refId, id){
   window._hFotos={};
   qData=data.datos;
   editingQuoteId=id;
-  window._viewingQuoteOwnerId=data.agente_id||null;
-  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
+  if(data.cover_url) coverUrl=data.cover_url;
   renderPreview(qData);switchTab('preview');
-  // Ocultar botones de edición si no es propietario
-  _applyPreviewPermissions();
 }
 
 async function editFromHistory(refId, id){
   // Cargar en formulario para editar
   const {data}=await sb.from('cotizaciones').select('*').eq('id',id).single();
   if(!data){ toast('No se encontró la cotización.',false); return; }
-  // Verificar ownership — solo el propietario puede editar
-  if(data.agente_id && data.agente_id !== window._agenteId && currentRol !== 'admin'){
-    toast('Solo podés ver esta cotización, no editarla',false);
-    return;
-  }
   window._hFotos={};
   // Store editing context
   editingQuoteId = id;
-  window._viewingQuoteOwnerId=data.agente_id||null;
   const d = data.datos;
-  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
+  if(data.cover_url) coverUrl=data.cover_url;
   // Restore into form via restoreDraft
   formDraft = d;
   switchTab('form');
@@ -133,7 +112,7 @@ async function duplicateFromHistory(refId, id){
   // Reset editing state — this will be a NEW quote
   editingQuoteId=null;
   _hideEditBanner();
-  if(data.cover_url) coverUrl=data.cover_url; else if(data.datos?._coverUrl) coverUrl=data.datos._coverUrl;
+  if(data.cover_url) coverUrl=data.cover_url;
   formDraft=d;
   switchTab('form');
   setTimeout(()=>{
@@ -235,9 +214,6 @@ async function applyStatus(s){
 // ═══════════════════════════════════════════
 async function renderClients(){
   await loadClients();
-  // Cargar nombres de agentes si es admin o agencia
-  const showAgent=(currentRol==='admin'||currentRol==='agencia');
-  if(showAgent) await _loadAgentNames();
   const q=(document.getElementById('cli-filter')?.value||'').toLowerCase().trim();
   const filtered=allClients.filter(c=>!q||(c.nombre||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.celular||'').includes(q));
   const el=document.getElementById('cli-list');
@@ -246,20 +222,18 @@ async function renderClients(){
     return;
   }
   const shown=filtered.slice(0,_cliPageSize);
-  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th>${showAgent?'<th>Agente</th>':''}<th>Notas</th><th></th></tr></thead><tbody>
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Notas</th><th></th></tr></thead><tbody>
   ${shown.map(c=>{
     const isOwner = (c.agente_id === window._agenteId);
-    const agentName = showAgent&&c.agente_id&&!isOwner ? (_agentNamesCache[c.agente_id]||'—') : '';
     const editBtn = isOwner
       ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
-      : ((currentRol==='admin'||currentRol==='agencia') ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
+      : (currentRol==='admin' ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
     const delBtn = isOwner
       ? `<button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
     return `<tr>
     <td><strong>${c.nombre||'—'}</strong></td>
     <td>${c.celular||'—'}</td>
     <td>${c.email||'—'}</td>
-    ${showAgent?`<td style="font-size:.78rem;color:var(--primary);font-weight:600">${isOwner?'Yo':agentName}</td>`:''}
     <td style="font-size:.75rem;color:var(--g3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notas||''}</td>
     <td style="white-space:nowrap">${editBtn}${delBtn}</td>
   </tr>`;
@@ -282,11 +256,8 @@ function _setCliPageSize(n){_cliPageSize=parseInt(n);renderClients();}
 function openClientModal(id){
   const c=allClients.find(x=>x.id===id)||{};
   const _v=(k)=>c[k]||'';
-  const isOwner=!c.agente_id||c.agente_id===window._agenteId;
-  const ownerName=(!isOwner&&c.agente_id&&_agentNamesCache[c.agente_id])?_agentNamesCache[c.agente_id]:'';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:4px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
-    ${ownerName?`<div style="font-size:.75rem;color:var(--g4);margin-bottom:12px">Cliente de: <span style="color:var(--primary);font-weight:600">${ownerName}</span></div>`:'<div style="margin-bottom:8px"></div>'}`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">${id?'Editar cliente':'+ Nuevo cliente'}</div>
     <div class="cli-tabs">
       <div class="cli-tab on" onclick="_cliTab(0,this)">Datos</div>
       <div class="cli-tab" onclick="_cliTab(1,this)">Viaje</div>
@@ -523,21 +494,6 @@ async function removeFromGroup(clienteId,grupoId){
   await sb.from('grupo_miembros').delete().eq('cliente_id',clienteId).eq('grupo_id',grupoId);
   toast('Removido del grupo');
   loadClientGroups(clienteId);
-}
-
-// ═══════════════════════════════════════════
-// PREVIEW PERMISSIONS
-// ═══════════════════════════════════════════
-function _applyPreviewPermissions(){
-  const isOwner=!window._viewingQuoteOwnerId || window._viewingQuoteOwnerId===window._agenteId;
-  // Botones en la toolbar de preview
-  document.querySelectorAll('#prev-toolbar .btn').forEach(btn=>{
-    const txt=btn.textContent||'';
-    // Ocultar "Editar" y "Guardar" si no es propietario
-    if(txt.includes('Editar')||txt.includes('Guardar')){
-      btn.style.display=isOwner?'':'none';
-    }
-  });
 }
 
 // ═══════════════════════════════════════════

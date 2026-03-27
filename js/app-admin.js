@@ -386,7 +386,6 @@ function addTicket(d){
   </div>
   <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="tk${id}-desc" placeholder="Canjeables en ventanilla..." value="${d.desc||''}"></div>`;
   document.getElementById('tickets-cont').appendChild(el);
-  _populateProvSel('tk'+id+'-sel',d.prov||'');
   if(d.tipo) document.getElementById('tk'+id+'-tipo').value=d.tipo;
 }
 
@@ -517,7 +516,23 @@ async function sendInvite(){
 // Legacy alias
 function openAgentModal(){openInviteModal('agente');}
 
-// selfRegisterAsAgent eliminado — agencias pueden cotizar directamente
+async function selfRegisterAsAgent(){
+  if(!confirm('Al activarte como agente podras crear cotizaciones. Deberas reingresar para que los cambios tomen efecto.')) return;
+  // Obtener nombre actual del agente (agencia)
+  const {data:agRow}=await sb.from('agentes').select('nombre').eq('id',window._agenteId).single();
+  const insertRow={
+    email: currentUser.email,
+    nombre: agRow?.nombre || '',
+    rol: 'agente',
+    activo: true
+  };
+  // agencia_id puede no existir como columna — asignar defensivamente
+  if(window._agenteId) insertRow.agencia_id = window._agenteId;
+  const {error}=await sb.from('agentes').insert(insertRow);
+  if(error){ toast('Error: '+error.message, false); return; }
+  toast('Te registraste como agente. Cerrando sesion...');
+  setTimeout(async()=>{ await sb.auth.signOut(); location.reload(); }, 2000);
+}
 
 // ═══════════════════════════════════════════
 // MODAL
@@ -787,7 +802,15 @@ async function renderAgency(){
   if(agEl){
     // Boton "Activarme como agente" para agencias que no son agentes
     let selfRegBtn='';
-    // Agencias pueden cotizar directamente — no se necesita botón de activación
+    if(currentRol==='agencia' && currentUser){
+      const isAlsoAgent = (ags||[]).some(a => a.email === currentUser.email && a.rol === 'agente');
+      if(!isAlsoAgent){
+        selfRegBtn=`<div style="padding:12px;margin-bottom:12px;border-radius:var(--r2);background:rgba(27,158,143,.07);border:1px solid rgba(27,158,143,.12);display:flex;align-items:center;gap:12px">
+          <div style="flex:1;font-size:.82rem;color:var(--text)">Para cotizar, necesitas activarte como agente de tu agencia</div>
+          <button class="btn btn-cta btn-sm" onclick="selfRegisterAsAgent()">Activarme como agente</button>
+        </div>`;
+      }
+    }
     agEl.innerHTML=selfRegBtn+(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
     ${ags.map(a=>`<tr>
       <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>

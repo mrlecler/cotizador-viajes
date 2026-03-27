@@ -826,7 +826,7 @@ function collectForm(){
     vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
-    total_comision,_coverUrl:coverUrl||null};
+    total_comision};
 }
 
 // ═══════════════════════════════════════════
@@ -849,14 +849,16 @@ async function saveQuote(){
   try{
     await dbSaveQuote(qData, editingQuoteId);
     const wasEditing = !!editingQuoteId;
-    // Capturar ID si fue un INSERT nuevo (para que autosave haga UPDATE)
-    if(!editingQuoteId && window._lastInsertedQuoteId){
-      editingQuoteId = window._lastInsertedQuoteId;
-      window._lastInsertedQuoteId = null;
-    }
-    // NO limpiar editingQuoteId — el autosave necesita el ID para hacer UPDATE
-    // Solo se limpia al hacer "Nueva cotización" o al salir del form
-    if(typeof _hideEditBanner==='function') _hideEditBanner();
+    // Detener autosave antes de limpiar estado
+    _stopAutosave();
+    // ── SIEMPRE limpiar modo edición después de guardar manual ──────────────
+    editingQuoteId = null;
+    formDraft = null;
+    // Limpiar m-ref para que la próxima cotización genere un ref_id nuevo
+    const refField = document.getElementById('m-ref');
+    if(refField) refField.value = '';
+    _hideEditBanner();
+    // Toast según operación
     toast(wasEditing ? 'Cotizacion actualizada en la nube' : 'Guardado en la nube');
   }catch(e){
     console.error('saveQuote error:',e);
@@ -916,11 +918,11 @@ async function _autosaveTick(){
     const d=collectForm();
     qData=d;
     await dbSaveQuote(d, editingQuoteId);
-    // Si era nueva, capturar el ID del INSERT para futuros autosaves
-    if(!editingQuoteId && window._lastInsertedQuoteId){
-      editingQuoteId = window._lastInsertedQuoteId;
-      window._lastInsertedQuoteId = null;
-      console.log('[AUTOSAVE] capturado editingQuoteId:', editingQuoteId);
+    // Si era nueva, guardar el ID para futuros autosaves
+    if(!editingQuoteId&&d.ref_id){
+      // Buscar la cotización recién creada para obtener su ID
+      const {data}=await sb.from('cotizaciones').select('id').eq('ref_id',d.ref_id).maybeSingle();
+      if(data) editingQuoteId=data.id;
     }
     _autosaveSnapshot=current;
     // Indicador visual sutil

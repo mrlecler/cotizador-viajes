@@ -19,56 +19,15 @@ let allClients=[], allQuotes=[];
 
 // ── Error log global (debug) ──────────────────────────
 window._appLog = window._appLog || [];
-const _errorMessages={
-  '23505':'Ya existe un registro con esos datos. Intenta con datos diferentes.',
-  '42703':'Error de base de datos: columna no encontrada. Contacta soporte.',
-  '23503':'No se puede completar porque hay datos relacionados que faltan.',
-  '42501':'No tenes permisos para esta accion. Contacta al administrador.',
-  '23514':'Los datos ingresados no cumplen las validaciones requeridas.',
-  'PGRST301':'Sesion expirada. Volvé a iniciar sesion.',
-  'PGRST204':'No se encontró el registro solicitado.',
-  'new row violates row-level security':'No tenes permisos para esta accion. Pedi al administrador que active tu cuenta.',
-  'duplicate key':'Ya existe un registro con esos datos (duplicado).',
-  'Failed to fetch':'Error de conexion. Verifica tu internet e intenta de nuevo.'
-};
-function _friendlyError(err){
-  const msg=err?.message||String(err);
-  const code=err?.code||'';
-  if(code && _errorMessages[code]) return _errorMessages[code];
-  for(const [k,v] of Object.entries(_errorMessages)){
-    if(msg.toLowerCase().includes(k.toLowerCase())) return v;
-  }
-  return msg;
-}
 function _captureError(ctx, err){
-  const friendly=_friendlyError(err);
-  const entry={ts:new Date().toISOString(),ctx,msg:err?.message||String(err),code:err?.code||'',details:err?.details||'',friendly};
+  const entry={ts:new Date().toISOString(),ctx,msg:err?.message||String(err),code:err?.code||'',details:err?.details||''};
   window._appLog.unshift(entry);
   if(window._appLog.length>100) window._appLog.length=100;
   console.error('[appLog]',ctx,err);
-  // Refrescar log de admin si está abierto
-  if(document.getElementById('admin-log') && typeof loadAdminLog==='function') loadAdminLog();
-  // Refrescar log de actividad del usuario si está abierto
-  if(document.getElementById('user-activity-log')) _renderUserLog();
-}
-function _renderUserLog(){
-  const el=document.getElementById('user-activity-log');if(!el)return;
-  const logs=window._appLog||[];
-  if(!logs.length){
-    el.innerHTML='<div style="color:var(--g3);font-size:.82rem;padding:8px 0">Sin eventos en esta sesion</div>';
-    return;
+  // Si el panel de admin está abierto, refrescar el log
+  if(document.getElementById('admin-log') && typeof loadAdminLog==='function'){
+    loadAdminLog();
   }
-  const _relT=ts=>{const d=Math.floor((Date.now()-new Date(ts))/1000);if(d<60)return 'ahora';if(d<3600)return Math.floor(d/60)+'m';if(d<86400)return Math.floor(d/3600)+'h';return Math.floor(d/86400)+'d';};
-  el.innerHTML=logs.slice(0,20).map(e=>{
-    const codeTag=e.code?`<span style="font-size:.65rem;padding:1px 6px;border-radius:8px;background:rgba(220,38,38,.1);color:#DC2626;font-weight:600;margin-left:6px">${e.code}</span>`:'';
-    return `<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start">
-      <div style="width:6px;height:6px;border-radius:50%;background:#DC2626;margin-top:6px;flex-shrink:0"></div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:.82rem;font-weight:600;color:var(--text)">${e.friendly||e.msg}${codeTag}</div>
-        <div style="font-size:.7rem;color:var(--g3);margin-top:2px">${e.ctx} · hace ${_relT(e.ts)}</div>
-      </div>
-    </div>`;
-  }).join('');
 }
 let formDraft=null; // BUG3 — draft en memoria para preservar el formulario entre tabs
 let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editando (null = nueva)
@@ -703,10 +662,7 @@ async function dbSaveQuote(d, supabaseId){
     const {data:existing} = await sb.from('clientes').select('id').eq('nombre',d.cliente.nombre).eq('celular',d.cliente.celular||'').maybeSingle();
     if(existing){ clientId = existing.id; }
     else{
-      const clientRow={nombre:d.cliente.nombre,celular:d.cliente.celular||'',email:d.cliente.email||''};
-      if(window._agenteId) clientRow.agente_id=window._agenteId;
-      const {data:nc,error:ncErr} = await sb.from('clientes').insert(clientRow).select().single();
-      if(ncErr) console.warn('[dbSaveQuote] client insert error:',ncErr);
+      const {data:nc} = await sb.from('clientes').insert({nombre:d.cliente.nombre,celular:d.cliente.celular||'',email:d.cliente.email||''}).select().single();
       if(nc) clientId = nc.id;
     }
   }
@@ -749,28 +705,14 @@ async function dbSaveQuote(d, supabaseId){
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
-    // INSERT — incluir agente_id, retornar id para autosave
+    // INSERT — incluir agente_id en el registro nuevo
     const row = {...baseRow, agente_id: agId||null};
-    const insertResult = await sb.from('cotizaciones').insert(row).select('id').single();
-    error = insertResult.error;
-    if(insertResult.data?.id) window._lastInsertedQuoteId = insertResult.data.id;
-    // Si falla con ref_id duplicado (23505), buscar existente y hacer UPDATE
-    if(error && error.code==='23505' && baseRow.ref_id){
-      console.warn('[dbSaveQuote] ref_id duplicado, buscando existente para UPDATE...');
-      const {data:existing}=await sb.from('cotizaciones').select('id').eq('ref_id',baseRow.ref_id).maybeSingle();
-      if(existing?.id){
-        const {ref_id:_rid, ...updateRow} = baseRow;
-        ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', existing.id));
-        window._lastInsertedQuoteId = existing.id;
-      }
-    }
+    ({error} = await sb.from('cotizaciones').insert(row));
     // Si falla con columna inexistente, intentar con payload mínimo garantizado
     if(error && (error.code==='42703'||error.message?.includes('column'))){
       _captureError('dbSaveQuote:insert:fallback', error);
       const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
-      const fb = await sb.from('cotizaciones').insert(safeRow).select('id').single();
-      error = fb.error;
-      if(fb.data?.id) window._lastInsertedQuoteId = fb.data.id;
+      ({error} = await sb.from('cotizaciones').insert(safeRow));
     }
   }
   if(error){
@@ -779,16 +721,6 @@ async function dbSaveQuote(d, supabaseId){
     throw new Error(error.message||(error.details||JSON.stringify(error)));
   }
   await loadClients();
-}
-
-async function _getAgencyAgentIds(){
-  // Para agencias: obtener IDs de sus agentes + el propio
-  if(currentRol!=='agencia'||!window._agenteId) return null;
-  try{
-    const {data}=await sb.from('agentes').select('id').eq('agencia_id',window._agenteId);
-    const ids=[window._agenteId,...(data||[]).map(a=>a.id)];
-    return [...new Set(ids)]; // dedup
-  }catch(e){ return [window._agenteId]; }
 }
 
 async function dbLoadQuotes(){
@@ -921,7 +853,11 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
 function switchTab(id){
-  // Agencias pueden cotizar directamente + ver las de sus agentes (solo lectura)
+  // Restricción: agencias no pueden cotizar (deben darse de alta como agente)
+  if(id==='form'&&currentRol==='agencia'){
+    toast('Para cotizar necesitas darte de alta como agente dentro de tu agencia',false);
+    return;
+  }
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
   if(activePanel?.id==='tab-form' && id!=='form'){
@@ -953,7 +889,6 @@ function switchTab(id){
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
-  if(id==='config') _renderUserLog();
 }
 
 // BUG3 — restore simple fields from draft
