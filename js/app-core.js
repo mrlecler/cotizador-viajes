@@ -508,11 +508,11 @@ async function showApp(user){
   // Then load Supabase data in background (non-blocking)
   try {
     // select('*') evita fallar si alguna columna específica no existe en la DB
-    const {data, error:agErr} = await sb.from('agentes').select('*').eq('email', user.email).maybeSingle();
+    const {data, error:agErr} = await sb.from('agentes').select('*').eq('id', user.id).maybeSingle();
     if(agErr) console.warn('agentes query error:', agErr.message, agErr.details);
-    if(!data) console.warn('agentes: sin registro para', user.email, '— verificar DB');
+    if(!data) console.warn('agentes: sin registro para uid:', user.id, '— verificar DB');
     // Bloquear acceso si el usuario fue desactivado
-    if(data && data.activo===false && !data.invite_token){
+    if(data && data.activo===false){
       await sb.auth.signOut();
       currentUser=null;
       document.getElementById('ui').style.display='none';
