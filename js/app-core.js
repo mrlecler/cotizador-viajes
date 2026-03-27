@@ -760,7 +760,9 @@ async function dbLoadQuotes(){
   } else if(currentRol !== 'admin' && window._agenteId){
     query = query.eq('agente_id', window._agenteId);
   }
+  console.log('[dbLoadQuotes] rol:',currentRol,'agenteId:',window._agenteId);
   const {data,error} = await query;
+  console.log('[dbLoadQuotes] results:',data?.length,'err:',error);
   if(error){
     console.warn('dbLoadQuotes error:', error);
     let q2 = sb.from('cotizaciones').select('*').limit(200);

@@ -478,9 +478,15 @@ async function sendInvite(){
     }
   }
 
-  // Create row in agentes with invite_token
+  // Create row in agentes with invite_token + auto agente_num
   const token=crypto.randomUUID();
-  const row={email,rol,activo:false,invite_token:token};
+  // Asignar agente_num secuencial
+  let nextNum=1;
+  try{
+    const {data:maxRow}=await sb.from('agentes').select('agente_num').order('agente_num',{ascending:false}).limit(1).single();
+    if(maxRow?.agente_num) nextNum=maxRow.agente_num+1;
+  }catch(e){}
+  const row={email,rol,activo:false,invite_token:token,agente_num:nextNum};
   if(nombre) row.nombre=nombre;
   // Vincular al agencia si es una agencia invitando
   if(currentRol === 'agencia' && window._agenteId){
