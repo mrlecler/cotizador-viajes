@@ -235,6 +235,9 @@ async function applyStatus(s){
 // ═══════════════════════════════════════════
 async function renderClients(){
   await loadClients();
+  // Cargar nombres de agentes si es admin o agencia
+  const showAgent=(currentRol==='admin'||currentRol==='agencia');
+  if(showAgent) await _loadAgentNames();
   const q=(document.getElementById('cli-filter')?.value||'').toLowerCase().trim();
   const filtered=allClients.filter(c=>!q||(c.nombre||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.celular||'').includes(q));
   const el=document.getElementById('cli-list');
@@ -243,18 +246,20 @@ async function renderClients(){
     return;
   }
   const shown=filtered.slice(0,_cliPageSize);
-  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Notas</th><th></th></tr></thead><tbody>
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th>${showAgent?'<th>Agente</th>':''}<th>Notas</th><th></th></tr></thead><tbody>
   ${shown.map(c=>{
     const isOwner = (c.agente_id === window._agenteId);
+    const agentName = showAgent&&c.agente_id&&!isOwner ? (_agentNamesCache[c.agente_id]||'—') : '';
     const editBtn = isOwner
       ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
-      : (currentRol==='admin' ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
+      : ((currentRol==='admin'||currentRol==='agencia') ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
     const delBtn = isOwner
       ? `<button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
     return `<tr>
     <td><strong>${c.nombre||'—'}</strong></td>
     <td>${c.celular||'—'}</td>
     <td>${c.email||'—'}</td>
+    ${showAgent?`<td style="font-size:.78rem;color:var(--primary);font-weight:600">${isOwner?'Yo':agentName}</td>`:''}
     <td style="font-size:.75rem;color:var(--g3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notas||''}</td>
     <td style="white-space:nowrap">${editBtn}${delBtn}</td>
   </tr>`;
