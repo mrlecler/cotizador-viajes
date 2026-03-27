@@ -106,19 +106,17 @@ async function saveCfg(){
   agCfg={nm:gv('cfg-nm'),ag:agCfg.ag||'',em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR',pdf_theme:rawTheme};
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
-  // Update in Supabase
-  if(currentUser){
-    let _cfgQuery=sb.from('agentes').update({nombre:agCfg.nm||'',agencia:agCfg.ag||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme});
-    if(window._agenteId) _cfgQuery=_cfgQuery.eq('id',window._agenteId);
-    else _cfgQuery=_cfgQuery.eq('email',currentUser.email);
-    const {error}=await _cfgQuery;
+  // Update in Supabase — usar _agenteId, NO email
+  if(currentUser&&window._agenteId){
+    const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('id',window._agenteId);
     if(error){
+      console.warn('[saveCfg] Supabase update error (config guardada localmente):', error.message);
       _captureError('saveCfg',error);
-      toast('Error al guardar perfil: '+_friendlyError(error),false);
     }
   }
   updateHeader();updateLogoPreview();
   const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
+  toast('Perfil guardado');
 }
 async function changePassword(){
   const p1=document.getElementById('pw-new').value;

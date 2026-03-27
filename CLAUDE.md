@@ -281,18 +281,41 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 
 ## Supabase
 
-- RLS habilitado en `public.agentes` — NO hacer upsert desde cliente (403)
-- Tabla `cotizaciones` — usar `select('*')`, NO nombrar columnas individualmente (riesgo de 400 por columna inexistente)
-- `total_comision` NO existe como columna en `cotizaciones` — vive dentro del JSONB `datos`
-- Columnas seguras de `cotizaciones`: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `creado_en`, `updated_at`, `grupo_id`
-- **`created_at` NO EXISTE** en `cotizaciones` — la columna de fecha es `creado_en`
-- Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback si fallan
-- Tabla `agentes`: tiene `id`, `email`, `nombre`, `rol`, y más — usar `select('*')`
-- Tabla `clientes`: campos expandidos (documento, doc_tipo, fecha_nac, nacionalidad, visa_*, ff_*, etc.) — `saveClient` solo envía campos con valor
-- Tabla `grupos_viaje` + `grupo_miembros` — grupos de viaje con miembros
-- Tabla `documentos_cliente` — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
+### Identidad — CRÍTICO
+- **`agentes.id = auth.uid()` siempre** — la migración sincronizó todos los IDs (2026-03)
+- **`window._agenteId = user.id`** se asigna sincrónicamente en `showApp()` como primera línea
+- NUNCA buscar agente por email para obtener su id — usar `window._agenteId`
+- RLS filtra automáticamente según rol — NO agregar filtros JS por `currentRol` en queries
+
+### Modelo de datos
+```
+Admin (1)
+  └── Agencias (N)  → tabla: public.agencias
+        └── Agentes (N)  → tabla: public.agentes (agencia_id → agencias.id)
+```
+
+### Tablas principales
+- **`agentes`**: `id` (= auth.uid()), `email`, `nombre`, `rol` (admin/agencia/agente), `activo`, `agencia_id` → `agencias.id`
+- **`agencias`**: `id`, `nombre`, `email`, `telefono`, `direccion`, `logo_url`, `plan`, `max_agentes`, `activa`
+- **`invitaciones`**: `id`, `email`, `nombre`, `rol`, `tipo` (invite/reset), `agencia_id`, `token`, `usado`, `creado_en`
+  - Invitaciones pendientes viven acá — NO en `agentes.invite_token`
+  - Al aceptar → `agentes.insert({id: auth.uid(), ...})` + `invitaciones.update({usado:true})`
+- **`cotizaciones`**: columnas seguras: `id`, `ref_id`, `agente_id`, `cliente_id`, `destino`, `fecha_sal`, `fecha_reg`, `noches`, `pasajeros`, `estado`, `datos`, `creado_en`, `updated_at`, `grupo_id`
+  - **`created_at` NO EXISTE** — la columna de fecha es `creado_en`
+  - `total_comision` NO existe como columna — vive dentro del JSONB `datos`
+  - Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback
+- **`clientes`**: campos expandidos (documento, doc_tipo, fecha_nac, nacionalidad, visa_*, ff_*, etc.) — `saveClient` solo envía campos con valor
+- **`grupos_viaje`** + **`grupo_miembros`** — grupos de viaje con miembros
+- **`documentos_cliente`** — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
+
+### Reglas de consulta
+- RLS habilitado en todas las tablas — NO hacer upsert en `agentes` desde cliente (403)
+- Usar `select('*')` — NO nombrar columnas individualmente (riesgo de 400 por columna inexistente)
 - Storage buckets: fotos de secciones, logos de agencia, `documentos-clientes` (privado)
 - NO modificar políticas RLS ni funciones de DB sin confirmar primero
+
+### localStorage
+- Config per-user: `mp_cfg_<uid>` (antes era `mp_cfg_<email>` — migración automática en primer login)
 
 ## Workflow para cada cambio
 
