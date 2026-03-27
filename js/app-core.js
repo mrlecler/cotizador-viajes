@@ -538,13 +538,13 @@ async function showApp(user){
       isAdmin = currentRol === 'admin';
       window._agenteId = data.id;
       localStorage.setItem('mp_rol', currentRol);
-      // Supabase es la fuente de verdad — siempre pisar localStorage al login
-      if(data.nombre)    agCfg.nm        = data.nombre;
-      if(data.agencia)   agCfg.ag        = data.agencia;
-      if(data.telefono)  agCfg.tel       = data.telefono;
-      if(data.soc)       agCfg.soc       = data.soc;
-      if(data.pais_cod)  agCfg.pais_cod  = data.pais_cod;
-      if(data.pdf_theme) agCfg.pdf_theme = data.pdf_theme;
+      // Supabase es la fuente de verdad — != null permite 0 y '' como valores validos
+      if(data.nombre!=null)    agCfg.nm        = data.nombre;
+      if(data.agencia!=null)   agCfg.ag        = data.agencia;
+      if(data.telefono!=null)  agCfg.tel       = data.telefono;
+      if(data.soc!=null)       agCfg.soc       = data.soc;
+      if(data.pais_cod!=null)  agCfg.pais_cod  = data.pais_cod;
+      if(data.pdf_theme!=null) agCfg.pdf_theme = data.pdf_theme;
       agCfg.em = user.email;
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
