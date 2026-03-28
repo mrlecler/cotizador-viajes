@@ -36,7 +36,7 @@ let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editan
 // PERMISOS — helpers centralizados
 // ═══════════════════════════════════════════
 function _canEdit(record){
-  if(currentRol==='admin') return false; // admin es solo lectura
+  if(currentRol==='admin'||currentRol==='agencia') return false; // admin y agencia son solo lectura
   return record.agente_id===window._agenteId;
 }
 function _canView(record){
@@ -592,11 +592,14 @@ function _applyRolUI(){
   }
   // Perfil dropdown — reconstruir contenido según rol
   _buildProfileDropdown();
-  // Admin: ocultar items de cotización (sidebar + bottom nav + inicio) y botón nuevo proveedor
-  const isAdm=currentRol==='admin';
-  document.querySelectorAll('[data-tab="form"]').forEach(el=>el.style.display=isAdm?'none':'');
+  // Admin/agencia: ocultar items de cotización + botón nuevo proveedor (admin)
+  const hideForm=currentRol==='admin'||currentRol==='agencia';
+  document.querySelectorAll('[data-tab="form"]').forEach(el=>el.style.display=hideForm?'none':'');
   const btnNewProv=document.getElementById('btn-new-prov');
-  if(btnNewProv) btnNewProv.style.display=isAdm?'none':'';
+  if(btnNewProv) btnNewProv.style.display=currentRol==='admin'?'none':'';
+  // Preview toolbar: admin/agencia solo ven la cotización, sin botones de acción
+  const prevToolbar=document.getElementById('prev-toolbar');
+  if(prevToolbar) prevToolbar.style.display=(currentRol==='admin'||currentRol==='agencia')?'none':'';
   // Guardar en localStorage
   if(currentRol!=='agente') localStorage.setItem('mp_rol',currentRol);
   if(currentRol==='admin') localStorage.setItem('mp_admin','1');
@@ -873,9 +876,9 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11};
 function switchTab(id){
-  // Admin es solo lectura — no puede cotizar
-  if(id==='form'&&currentRol==='admin'){
-    toast('Admin es solo lectura. Para cotizar, usá una cuenta de agencia o agente.',false);
+  // Admin y agencia son solo lectura — no pueden cotizar
+  if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
+    toast('Solo los agentes pueden crear cotizaciones.',false);
     return;
   }
   // Guardar borrador al salir del formulario

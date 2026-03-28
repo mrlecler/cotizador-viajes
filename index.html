@@ -962,15 +962,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
   <div class="card">
     <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl">Mi perfil de agente</div></div></div>
     <div class="card-body">
-      <div class="fg"><label class="lbl">Logo</label>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div id="logo-wrap"><div id="logo-ini" style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">M</div></div>
-          <button class="btn btn-out btn-sm" onclick="document.getElementById('logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
-          <button class="btn btn-del btn-xs" id="btn-rmlogo" onclick="removeLogo()" style="display:none">✕</button>
-          <input type="file" id="logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
-        </div>
-        <div style="font-size:11px;color:var(--g3);margin-top:6px">Formato: PNG o JPG &middot; Tamaño recomendado: 300&times;80px &middot; Peso máximo: 500KB &middot; Fondo transparente o blanco</div>
-      </div>
       <div class="g2">
         <div class="fg"><label class="lbl" for="cfg-nm">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
         <div class="fg"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
@@ -982,20 +973,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotización · ej: AR-0001-00001</div>
         </div>
         <div class="fg full"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
-      </div>
-      <!-- Tema del PDF -->
-      <div class="fg full" style="margin-top:8px">
-        <label class="lbl">Tema del PDF</label>
-        <input type="hidden" id="cfg-pdf-theme" value="1">
-        <div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">
-          <button type="button" class="pdf-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Turquesa ermix"></button>
-          <button type="button" class="pdf-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Azul marino"></button>
-          <button type="button" class="pdf-sw" data-t="3" onclick="selectPdfTheme(3)" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)" title="Negro y dorado"></button>
-          <button type="button" class="pdf-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Verde selva"></button>
-          <button type="button" class="pdf-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Borgoña premium"></button>
-          <span id="pdf-theme-lbl" style="font-size:.72rem;color:var(--g4);margin-left:4px">Turquesa ermix</span>
-        </div>
-        <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Se aplica a barras de color, badges, precios y acentos del PDF generado.</div>
       </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
