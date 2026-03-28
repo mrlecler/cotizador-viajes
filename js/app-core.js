@@ -1,4 +1,9 @@
 // ═══════════════════════════════════════════
+// VERSION
+// ═══════════════════════════════════════════
+const APP_VERSION = '0.4.0';
+
+// ═══════════════════════════════════════════
 // SUPABASE
 // ═══════════════════════════════════════════
 const SB_URL = 'https://jsgxoygyvibredxqyinj.supabase.co';
@@ -496,7 +501,9 @@ async function showApp(user){
     document.getElementById('ui').classList.add('sb-open');
     const _pl=document.getElementById('sb-prof-label');if(_pl)_pl.style.display='';
   }
-  document.getElementById('hdr-user').textContent = user.email;
+  document.getElementById('hdr-user').textContent = user.user_metadata?.full_name || user.email;
+  // Version label
+  const _verEl=document.getElementById('sb-version');if(_verEl)_verEl.textContent='v'+APP_VERSION;
   // Restaurar rol del caché — se confirma/deniega cuando llega Supabase
   const _cachedRol=localStorage.getItem('mp_rol')||'agente';
   currentRol=_cachedRol;
@@ -566,6 +573,9 @@ async function showApp(user){
         }
         const sal=document.getElementById('inicio-saludo');
         if(sal) sal.textContent='Hola, '+data.nombre.trim().split(/\s+/)[0]+'.';
+        // Update header with real name
+        const hdrU=document.getElementById('hdr-user');
+        if(hdrU) hdrU.textContent=data.nombre;
       }
     }
     // (upsert eliminado — RLS bloquea con 403 y el registro ya existe)
