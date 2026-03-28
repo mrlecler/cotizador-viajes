@@ -172,56 +172,67 @@
     <svg id="sb-ico-close" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
 
-  <!-- Inicio -->
-  <button class="sb-item on" onclick="switchTab('inicio')" title="Inicio" data-tab="inicio">
+  <!-- Inicio — todos -->
+  <button class="sb-item on" onclick="switchTab('inicio')" title="Inicio" data-tab="inicio" data-role="agente agencia admin">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span class="sb-lbl">Inicio</span>
   </button>
 
-  <!-- Cotización -->
-  <button class="sb-item" onclick="switchTab('form')" title="Nueva cotización" data-tab="form">
+  <!-- Cotizar — solo agente -->
+  <button class="sb-item" onclick="switchTab('form')" title="Nueva cotizacion" data-tab="form" data-role="agente">
     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    <span class="sb-lbl">Cotización</span>
+    <span class="sb-lbl">Cotizar</span>
   </button>
 
-  <!-- Vista previa -->
-  <button class="sb-item" onclick="switchTab('preview')" title="Vista previa" data-tab="preview">
-    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-    <span class="sb-lbl">Vista previa</span>
-  </button>
-
-  <!-- Historial -->
-  <button class="sb-item" onclick="switchTab('history')" title="Historial" data-tab="history">
+  <!-- Historial — solo agente -->
+  <button class="sb-item" onclick="switchTab('history')" title="Historial" data-tab="history" data-role="agente">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     <span class="sb-lbl">Historial</span>
   </button>
 
-  <!-- Promociones -->
-  <button class="sb-item" onclick="switchTab('promos')" title="Promociones" data-tab="promos">
-    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    <span class="sb-lbl">Promociones</span>
-  </button>
-
-  <!-- Clientes -->
-  <button class="sb-item" onclick="switchTab('clients')" title="Clientes" data-tab="clients">
+  <!-- Clientes — solo agente -->
+  <button class="sb-item" onclick="switchTab('clients')" title="Clientes" data-tab="clients" data-role="agente">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span class="sb-lbl">Clientes</span>
   </button>
 
-  <!-- Proveedores -->
-  <button class="sb-item" onclick="switchTab('providers')" title="Proveedores" data-tab="providers">
+  <!-- Proveedores — solo agente -->
+  <button class="sb-item" onclick="switchTab('providers')" title="Proveedores" data-tab="providers" data-role="agente">
     <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
     <span class="sb-lbl">Proveedores</span>
   </button>
 
-  <div class="sb-div"></div>
-
-  <!-- Dark/light toggle -->
-  <button class="sb-item" onclick="toggleTheme()" title="Cambiar tema" id="btn-theme">
-    <svg id="theme-icon-dark" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    <svg id="theme-icon-light" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    <span class="sb-lbl">Tema</span>
+  <!-- Promociones — solo agente -->
+  <button class="sb-item" onclick="switchTab('promos')" title="Promociones" data-tab="promos" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span class="sb-lbl">Promociones</span>
   </button>
+
+  <!-- Mi Agencia — solo agencia -->
+  <button class="sb-item" onclick="switchTab('agency')" title="Mi Agencia" data-tab="agency" data-role="agencia">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span class="sb-lbl">Mi Agencia</span>
+  </button>
+
+  <!-- Gestion — solo admin -->
+  <button class="sb-item" onclick="switchTab('admin')" title="Gestion" data-tab="admin" data-role="admin">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span class="sb-lbl">Gestion</span>
+  </button>
+
+  <!-- Soporte — solo admin -->
+  <button class="sb-item" onclick="switchTab('support')" title="Soporte" data-tab="support" data-role="admin">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="sb-lbl">Soporte</span>
+  </button>
+
+  <!-- Config — solo admin -->
+  <button class="sb-item" onclick="switchTab('adminconfig')" title="Config" data-tab="adminconfig" data-role="admin">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12"/><polyline points="6 12 2 12"/><circle cx="12" cy="12" r="4"/></svg>
+    <span class="sb-lbl">Config</span>
+  </button>
+
+  <div class="sb-div"></div>
 
   <!-- Profile dropdown trigger -->
   <div id="sb-prof-dd" style="position:relative;margin-top:auto">
@@ -238,23 +249,31 @@
 
 <!-- BOTTOM NAVIGATION — mobile only, shown by JS after login -->
 <nav id="bottom-nav">
-  <button class="bnav-item on" data-tab="inicio" onclick="switchTab('inicio')">
+  <button class="bnav-item on" data-tab="inicio" data-role="agente agencia admin" onclick="switchTab('inicio')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span>Inicio</span>
   </button>
-  <button class="bnav-item" data-tab="form" onclick="switchTab('form')">
+  <button class="bnav-item" data-tab="form" data-role="agente" onclick="switchTab('form')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    <span>Cotización</span>
+    <span>Cotizar</span>
   </button>
-  <button class="bnav-item" data-tab="history" onclick="switchTab('history')">
+  <button class="bnav-item" data-tab="history" data-role="agente" onclick="switchTab('history')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     <span>Historial</span>
   </button>
-  <button class="bnav-item" data-tab="clients" onclick="switchTab('clients')">
+  <button class="bnav-item" data-tab="clients" data-role="agente" onclick="switchTab('clients')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span>Clientes</span>
   </button>
-  <button class="bnav-item" data-tab="config" onclick="switchTab('config')">
+  <button class="bnav-item" data-tab="agency" data-role="agencia" onclick="switchTab('agency')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span>Agencia</span>
+  </button>
+  <button class="bnav-item" data-tab="admin" data-role="admin" onclick="switchTab('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Gestion</span>
+  </button>
+  <button class="bnav-item" data-tab="config" data-role="agente agencia admin" onclick="switchTab('config')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span>Perfil</span>
   </button>
@@ -898,6 +917,33 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
+</div>
+
+<!-- ═══ SOPORTE (admin) ═══ -->
+<div id="tab-support" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Soporte</h2>
+    <p>Tickets de soporte de agentes y agencias.</p>
+  </div>
+  <div id="support-list"></div>
+</div>
+
+<!-- ═══ ADMIN CONFIG ═══ -->
+<div id="tab-adminconfig" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12"/><polyline points="6 12 2 12"/><circle cx="12" cy="12" r="4"/></svg> Configuracion global</h2>
+    <p>API keys y settings del sistema.</p>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ttl">API Keys</div></div>
+    <div class="card-body" id="admin-api-keys">
+      <div class="g2">
+        <div class="fg"><label class="lbl">Unsplash Access Key</label><input class="finput" id="ak-unsplash" type="password" placeholder="Cargando..."></div>
+        <div class="fg"><label class="lbl">IA Descriptions Key</label><input class="finput" id="ak-ia" type="password" placeholder="Cargando..."></div>
+      </div>
+      <button class="btn btn-cta" onclick="saveApiKeys()">Guardar API Keys</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ AGENCY ═══ -->
