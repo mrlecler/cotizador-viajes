@@ -800,18 +800,7 @@ async function renderAgency(){
   }
   const agEl=document.getElementById('agency-agentes');
   if(agEl){
-    // Boton "Activarme como agente" para agencias que no son agentes
-    let selfRegBtn='';
-    if(currentRol==='agencia' && currentUser){
-      const isAlsoAgent = (ags||[]).some(a => a.email === currentUser.email && a.rol === 'agente');
-      if(!isAlsoAgent){
-        selfRegBtn=`<div style="padding:12px;margin-bottom:12px;border-radius:var(--r2);background:rgba(27,158,143,.07);border:1px solid rgba(27,158,143,.12);display:flex;align-items:center;gap:12px">
-          <div style="flex:1;font-size:.82rem;color:var(--text)">Para cotizar, necesitas activarte como agente de tu agencia</div>
-          <button class="btn btn-cta btn-sm" onclick="selfRegisterAsAgent()">Activarme como agente</button>
-        </div>`;
-      }
-    }
-    agEl.innerHTML=selfRegBtn+(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
+    agEl.innerHTML=(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
     ${ags.map(a=>`<tr>
       <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>
       <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
