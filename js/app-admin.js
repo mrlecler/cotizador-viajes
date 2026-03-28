@@ -203,10 +203,13 @@ async function renderProviders(){
   const {data,error}=await sb.from('proveedores').select('*').order('nombre');
   if(error){el.innerHTML=`<p style="color:var(--red);font-size:.82rem">Error: ${error.message}</p>`;return;}
   _allProvs=data||[];
-  // Filtro JS por rol: agente ve suyos + globales de su agencia
+  // Filtro JS por rol: agente ve suyos + todos los de su agencia
   let visible=_allProvs;
   if(currentRol==='agente'){
-    visible=_allProvs.filter(p=>!p.agente_id||p.agente_id===window._agenteId||(p.agencia_id&&p.agencia_id===window._agenciaId&&!p.agente_id));
+    visible=_allProvs.filter(p=>
+      p.agente_id===window._agenteId || // propios
+      (window._agenciaId && p.agencia_id===window._agenciaId) // de la agencia (cualquier creador)
+    );
   }
   // Filtros UI
   const q=(document.getElementById('prov-filter')?.value||'').toLowerCase().trim();
