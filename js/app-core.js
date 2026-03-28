@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.6.0';
+const APP_VERSION = '0.7.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE
@@ -801,12 +801,20 @@ async function loadDashboardMetrics(){
     if(sal){const nm=agCfg.nm||currentUser?.email?.split('@')[0]||'';sal.textContent='Hola'+(nm?', '+nm.split(' ')[0]:'')+'.'}
     _loadAdminDashboard();
     return;
+  } else if(currentRol==='agencia'){
+    if(admDash)admDash.style.display='none';
+    if(agtDash)agtDash.style.display='none';
+    const agcDash=document.getElementById('inicio-agencia');
+    if(agcDash)agcDash.style.display='';
+    const sal=document.getElementById('inicio-saludo-agencia');
+    if(sal){const nm=agCfg.nm||currentUser?.email?.split('@')[0]||'';sal.textContent='Hola'+(nm?', '+nm.split(' ')[0]:'')+'.'}
+    _loadAgenciaDashboard();
+    return;
   } else {
     if(admDash)admDash.style.display='none';
     if(agtDash)agtDash.style.display='';
-    // Hide promos for agencia
-    const promCard=document.getElementById('inicio-promos-card');
-    if(promCard) promCard.style.display=currentRol==='agente'?'':'none';
+    const agcDash=document.getElementById('inicio-agencia');
+    if(agcDash)agcDash.style.display='none';
   }
   // Skeleton
   ['met-cot','met-conf','met-act','met-com','met-com-conf','met-com-pend','met-clients'].forEach(id=>{
@@ -937,9 +945,71 @@ async function _loadAdminDashboard(){
 }
 
 // ═══════════════════════════════════════════
+// AGENCIA DASHBOARD
+// ═══════════════════════════════════════════
+async function _loadAgenciaDashboard(){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setBar=(id,pct)=>{const el=document.getElementById(id);if(el)el.style.width=Math.min(100,pct)+'%';};
+  try{
+    const agId=window._agenciaId;
+    if(!agId) return;
+    // Get agents of this agency
+    const {data:agentes}=await sb.from('agentes').select('id,nombre,email').eq('agencia_id',agId);
+    const ids=(agentes||[]).map(a=>a.id);
+    const nAgents=ids.length;
+    // Quotes from all agents
+    let quotes=[];
+    if(ids.length){
+      const {data}=await sb.from('cotizaciones').select('id,agente_id,destino,estado,datos').in('agente_id',ids);
+      quotes=data||[];
+    }
+    // Clients from all agents
+    let nClients=0;
+    if(ids.length){
+      const {data}=await sb.from('clientes').select('id').in('agente_id',ids);
+      nClients=(data||[]).length;
+    }
+    const nQ=quotes.length;
+    const nConf=quotes.filter(q=>q.estado==='confirmada').length;
+    const getCom=q=>Number(q.datos?.total_comision||q.total_comision)||0;
+    const comTotal=quotes.reduce((s,q)=>s+getCom(q),0);
+    const comConf=quotes.filter(q=>q.estado==='confirmada').reduce((s,q)=>s+getCom(q),0);
+    const comPend=quotes.filter(q=>q.estado==='enviada').reduce((s,q)=>s+getCom(q),0);
+    const fmtUSD=n=>n>=1000?'$'+(n/1000).toFixed(1)+'k':'$'+n.toLocaleString('es-AR');
+
+    set('met-agc-agents',nAgents||'0');
+    set('met-agc-quotes',nQ||'0');
+    set('met-agc-confirmed',nConf||'0');
+    set('met-agc-clients',nClients||'0');
+    setBar('met-agc-agents-bar',Math.min(100,nAgents/10*100));
+    setBar('met-agc-quotes-bar',Math.min(100,nQ/100*100));
+    setBar('met-agc-confirmed-bar',nQ>0?nConf/nQ*100:0);
+    setBar('met-agc-clients-bar',Math.min(100,nClients/50*100));
+    set('met-agc-com',comTotal>0?fmtUSD(comTotal):'—');
+    set('met-agc-com-conf',comConf>0?fmtUSD(comConf):'—');
+    set('met-agc-com-pend',comPend>0?fmtUSD(comPend):'—');
+    // Top agentes por cotizaciones
+    const agMap={};
+    (agentes||[]).forEach(a=>{agMap[a.id]={nombre:a.nombre||a.email,count:0};});
+    quotes.forEach(q=>{if(agMap[q.agente_id])agMap[q.agente_id].count++;});
+    const sorted=Object.values(agMap).sort((a,b)=>b.count-a.count);
+    const topEl=document.getElementById('agc-top-agentes');
+    if(topEl){
+      if(!sorted.length){topEl.innerHTML='<span style="color:var(--g3)">Sin agentes.</span>';return;}
+      const max=Math.max(sorted[0].count,1);
+      topEl.innerHTML=sorted.map(a=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="min-width:120px;font-weight:600;font-size:.8rem">${a.nombre}</span>
+        <div style="flex:1;height:6px;background:var(--g1);border-radius:3px;overflow:hidden"><div style="width:${a.count/max*100}%;height:100%;background:var(--grad);border-radius:3px"></div></div>
+        <span style="font-size:.72rem;color:var(--g4);min-width:20px;text-align:right">${a.count}</span>
+      </div>`).join('');
+    }
+  }catch(e){console.error('[_loadAgenciaDashboard]',e);}
+}
+
+// ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14};
 function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
@@ -977,6 +1047,7 @@ function switchTab(id){
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
   if(id==='support'){if(typeof renderSupportTickets==='function')renderSupportTickets();}
+  if(id==='promosvig'){if(typeof _loadPromosVigAgente==='function')_loadPromosVigAgente();}
   if(id==='adminconfig'){if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}

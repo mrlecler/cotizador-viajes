@@ -174,7 +174,7 @@
 
   <!-- Inicio — todos -->
   <button class="sb-item on" onclick="switchTab('inicio')" title="Inicio" data-tab="inicio" data-role="agente agencia admin">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
     <span class="sb-lbl">Inicio</span>
   </button>
 
@@ -206,6 +206,12 @@
   <button class="sb-item" onclick="switchTab('promos')" title="Promociones" data-tab="promos" data-role="agente">
     <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     <span class="sb-lbl">Promociones</span>
+  </button>
+
+  <!-- Promos vigentes — solo agente (RO de la agencia) -->
+  <button class="sb-item" onclick="switchTab('promosvig')" title="Promos vigentes" data-tab="promosvig" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span class="sb-lbl">Promos vigentes</span>
   </button>
 
   <!-- Mi Agencia — solo agencia -->
@@ -251,7 +257,7 @@
 <!-- BOTTOM NAVIGATION — mobile only, shown by JS after login -->
 <nav id="bottom-nav">
   <button class="bnav-item on" data-tab="inicio" data-role="agente agencia admin" onclick="switchTab('inicio')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
     <span>Inicio</span>
   </button>
   <button class="bnav-item" data-tab="form" data-role="agente" onclick="switchTab('form')">
@@ -343,7 +349,68 @@
     </div>
   </div>
 
-  <!-- Agente/agencia dashboard -->
+  <!-- Agencia dashboard (solo agencia) -->
+  <div id="inicio-agencia" style="display:none">
+    <div class="intro-bar" style="margin-bottom:16px">
+      <h2 id="inicio-saludo-agencia">Hola.</h2>
+      <p>Resumen de tu agencia.</p>
+    </div>
+    <div class="dm-grid">
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agentes</div>
+        <div class="dm-card-val grad" id="met-agc-agents">—</div>
+        <div class="dm-card-sub">en tu equipo</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-agents-bar" style="width:0%"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+        <div class="dm-card-val" id="met-agc-quotes" style="color:#0EA5E9">—</div>
+        <div class="dm-card-sub">de toda la agencia</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-quotes-bar" style="width:0%;background:#0EA5E9"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmadas</div>
+        <div class="dm-card-val" id="met-agc-confirmed" style="color:#22c55e">—</div>
+        <div class="dm-card-sub">viajes vendidos</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-confirmed-bar" style="width:0%;background:#22c55e"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</div>
+        <div class="dm-card-val" id="met-agc-clients" style="color:#9B7FD4">—</div>
+        <div class="dm-card-sub">de tus agentes</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-clients-bar" style="width:0%;background:#9B7FD4"></div></div>
+      </div>
+    </div>
+    <!-- Comisiones agencia -->
+    <div class="dm-wide" style="margin-bottom:20px">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Comisiones estimadas de la agencia · USD</span>
+      </div>
+      <div class="dm-com-row">
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">Total</div>
+          <div class="dm-com-item-val tq" id="met-agc-com">—</div>
+        </div>
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">Confirmadas</div>
+          <div class="dm-com-item-val ok" id="met-agc-com-conf">—</div>
+        </div>
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">En proceso</div>
+          <div class="dm-com-item-val muted" id="met-agc-com-pend">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- Top agentes -->
+    <div class="dm-wide">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Rendimiento por agente</span>
+      </div>
+      <div id="agc-top-agentes" style="padding:8px 0;font-size:.82rem;color:var(--g3)">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- Agente dashboard -->
   <div id="inicio-agent">
   <!-- Quick actions -->
   <div class="quick-actions">
@@ -462,6 +529,18 @@
     </button>
   </div>
   <div id="promos-grid" class="promo-grid"></div>
+</div>
+
+<!-- ═══ PROMOS VIGENTES (agente, RO) ═══ -->
+<div id="tab-promosvig" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Promos vigentes</h2>
+    <p>Promociones cargadas por tu agencia. Solo lectura.</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <input class="finput" id="pvag-search" placeholder="Buscar por titulo o categoria..." oninput="_renderPromosVigAgente()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+  </div>
+  <div id="promos-vig-agente-list"><div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
 </div>
 
 <!-- ═══ FORM ═══ -->
@@ -1042,6 +1121,10 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
       Proveedores
     </button>
+    <button class="ag-tab" data-agtab="promos-vig" onclick="_agTab('promos-vig')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Promos vigentes
+    </button>
   </div>
 
   <!-- Panel: Agentes -->
@@ -1099,6 +1182,27 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           <input class="finput" id="ag-prov-search" placeholder="Buscar por nombre o tipo..." oninput="_renderAgProviders()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
         </div>
         <div id="agency-proveedores"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Promos vigentes -->
+  <div class="ag-panel" id="agp-promos-vig">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Promociones vigentes</div><div class="card-sub">Disney, Universal, hoteles, cruceros, descuentos y mas</div></div>
+        <button class="btn btn-pri btn-sm" onclick="_openPromoVigModal()">+ Nueva promo</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="pv-search" placeholder="Buscar por titulo o categoria..." oninput="_renderPromosVig()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+          <select class="finput" id="pv-filter-estado" onchange="_renderPromosVig()" style="width:auto;padding:6px 10px;font-size:.78rem">
+            <option value="">Todas</option>
+            <option value="vigente">Vigentes</option>
+            <option value="vencida">Vencidas</option>
+          </select>
+        </div>
+        <div id="promos-vig-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
       </div>
     </div>
   </div>

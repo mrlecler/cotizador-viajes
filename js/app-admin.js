@@ -802,6 +802,7 @@ function _agTab(tab){
   if(tab==='cotizaciones') _loadAgQuotes();
   if(tab==='clientes') _loadAgClients();
   if(tab==='proveedores') _loadAgProviders();
+  if(tab==='promos-vig') _loadPromosVig();
 }
 
 // Get agencia_id (cached)
@@ -1206,6 +1207,221 @@ async function _updateTicketStatus(id){
   toast('Estado actualizado');
   closeModal();
   _loadTickets();
+}
+
+// ═══════════════════════════════════════════
+// PROMOCIONES VIGENTES (agencia CRUD + agente RO)
+// ═══════════════════════════════════════════
+let _promosVigData=[];
+const _pvCatLabels={disney:'Disney',universal:'Universal',hotel:'Hotel',crucero:'Crucero',tickets:'Tickets',comida:'Plan de comida',paquete:'Paquete',descuento:'Descuento',otro:'Otro'};
+const _pvCatColors={disney:'#0EA5E9',universal:'#9B7FD4',hotel:'#D4A017',crucero:'#0288D1',tickets:'#22c55e',comida:'#E8826A',paquete:'#1B9E8F',descuento:'#ef4444',otro:'#94a3b8'};
+
+function _pvEstado(p){
+  if(!p.activa) return {label:'Inactiva',color:'#94a3b8'};
+  const hoy=new Date().toISOString().slice(0,10);
+  if(p.fecha_vencimiento<hoy) return {label:'Vencida',color:'#ef4444'};
+  // Warn if expires in 7 days
+  const diff=(new Date(p.fecha_vencimiento)-new Date(hoy))/(1000*60*60*24);
+  if(diff<=7) return {label:'Por vencer',color:'#f59e0b'};
+  return {label:'Vigente',color:'#22c55e'};
+}
+
+// ── Load promos for agencia tab ──
+async function _loadPromosVig(){
+  const el=document.getElementById('promos-vig-list');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  const agId=window._agenciaId;
+  if(!agId){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agencia asociada.</div>';return;}
+  const {data,error}=await sb.from('promociones_agencia').select('*').eq('agencia_id',agId).order('fecha_vencimiento',{ascending:false});
+  if(error){el.innerHTML=`<div style="padding:20px;color:var(--red);font-size:.82rem">Error: ${error.message}</div>`;return;}
+  _promosVigData=data||[];
+  _renderPromosVig();
+}
+
+function _renderPromosVig(){
+  const el=document.getElementById('promos-vig-list');
+  if(!el) return;
+  const srch=(document.getElementById('pv-search')?.value||'').toLowerCase().trim();
+  const estFilter=document.getElementById('pv-filter-estado')?.value||'';
+  const hoy=new Date().toISOString().slice(0,10);
+  const filtered=_promosVigData.filter(p=>{
+    if(srch&&!(p.titulo||'').toLowerCase().includes(srch)&&!(_pvCatLabels[p.categoria]||'').toLowerCase().includes(srch)) return false;
+    if(estFilter==='vigente'&&(p.fecha_vencimiento<hoy||!p.activa)) return false;
+    if(estFilter==='vencida'&&p.fecha_vencimiento>=hoy) return false;
+    return true;
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin promociones.</div>';
+    return;
+  }
+  const fmtD=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return d;}};
+  const isAgencia=currentRol==='agencia';
+  el.innerHTML=filtered.map(p=>{
+    const st=_pvEstado(p);
+    const catC=_pvCatColors[p.categoria]||'#94a3b8';
+    return `<div class="tk-item">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:3px">${p.titulo}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:2px">
+            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${catC}22;color:${catC}">${_pvCatLabels[p.categoria]||p.categoria}</span>
+            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${st.color}22;color:${st.color}">${st.label}</span>
+          </div>
+          <div style="font-size:.72rem;color:var(--g4)">Vence: ${fmtD(p.fecha_vencimiento)}</div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="btn btn-out btn-xs" onclick="_viewPromoVig('${p.id}')" title="Ver detalle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          ${isAgencia?`<button class="btn btn-out btn-xs" onclick="_openPromoVigModal('${p.id}')" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="btn btn-del btn-xs" onclick="_deletePromoVig('${p.id}')" title="Eliminar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── View promo detail (modal, all roles) ──
+function _viewPromoVig(id){
+  const p=_promosVigData.find(x=>x.id===id);
+  if(!p) return;
+  const st=_pvEstado(p);
+  const fmtD=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return d;}};
+  const catC=_pvCatColors[p.categoria]||'#94a3b8';
+  const html=`
+    <div style="margin-bottom:16px">
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+        <span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:${catC}22;color:${catC}">${_pvCatLabels[p.categoria]||p.categoria}</span>
+        <span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:${st.color}22;color:${st.color}">${st.label}</span>
+      </div>
+      <div style="font-size:1.05rem;font-weight:700;color:var(--text)">${p.titulo}</div>
+    </div>
+    ${p.descripcion?`<div style="margin-bottom:16px"><div class="lbl" style="margin-bottom:4px">Descripcion</div><div style="background:var(--g1);padding:12px;border-radius:var(--r2);font-size:.82rem;color:var(--text);white-space:pre-wrap">${p.descripcion}</div></div>`:''}
+    ${p.condiciones?`<div style="margin-bottom:16px"><div class="lbl" style="margin-bottom:4px">Condiciones</div><div style="background:var(--g1);padding:12px;border-radius:var(--r2);font-size:.82rem;color:var(--text);white-space:pre-wrap">${p.condiciones}</div></div>`:''}
+    <div style="display:flex;gap:16px;font-size:.8rem;color:var(--g4);margin-bottom:16px">
+      <span>Inicio: ${fmtD(p.fecha_inicio)}</span>
+      <span>Vence: ${fmtD(p.fecha_vencimiento)}</span>
+    </div>
+    <button class="btn btn-out" onclick="closeModal()" style="width:100%;justify-content:center">Cerrar</button>`;
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').style.display='block';
+  document.getElementById('modal-box').style.display='block';
+}
+
+// ── Create/edit promo modal (agencia only) ──
+function _openPromoVigModal(editId){
+  const p=editId?_promosVigData.find(x=>x.id===editId):null;
+  const hoy=new Date().toISOString().slice(0,10);
+  const catOpts=Object.entries(_pvCatLabels).map(([k,v])=>`<option value="${k}"${p?.categoria===k?' selected':''}>${v}</option>`).join('');
+  const html=`
+    <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:16px">${p?'Editar':'Nueva'} promocion</div>
+    <div class="g2">
+      <div class="fg full"><label class="lbl">Titulo</label><input class="finput" id="pvm-titulo" value="${p?.titulo||''}" placeholder="Ej: Disney 4 dias + comida gratis"></div>
+      <div class="fg"><label class="lbl">Categoria</label><select class="finput" id="pvm-cat">${catOpts}</select></div>
+      <div class="fg"><label class="lbl">Prioridad / estado</label><select class="finput" id="pvm-activa"><option value="true"${!p||p.activa?' selected':''}>Activa</option><option value="false"${p&&!p.activa?' selected':''}>Inactiva</option></select></div>
+      <div class="fg"><label class="lbl">Fecha inicio</label><input class="finput" type="date" id="pvm-inicio" value="${p?.fecha_inicio||hoy}"></div>
+      <div class="fg"><label class="lbl">Fecha vencimiento</label><input class="finput" type="date" id="pvm-venc" value="${p?.fecha_vencimiento||''}"></div>
+      <div class="fg full"><label class="lbl">Descripcion</label><textarea class="finput" id="pvm-desc" rows="3" style="resize:vertical" placeholder="Detalle de la promocion...">${p?.descripcion||''}</textarea></div>
+      <div class="fg full"><label class="lbl">Condiciones</label><textarea class="finput" id="pvm-cond" rows="2" style="resize:vertical" placeholder="Condiciones, restricciones, blackout dates...">${p?.condiciones||''}</textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-cta" onclick="_savePromoVig('${editId||''}')">Guardar</button>
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+    </div>`;
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').style.display='block';
+  document.getElementById('modal-box').style.display='block';
+}
+
+async function _savePromoVig(editId){
+  const v=id=>(document.getElementById(id)?.value||'').trim();
+  const titulo=v('pvm-titulo');
+  if(!titulo){toast('Ingresa un titulo.',false);return;}
+  const venc=v('pvm-venc');
+  if(!venc){toast('Ingresa fecha de vencimiento.',false);return;}
+  const row={
+    titulo,
+    categoria:v('pvm-cat')||'otro',
+    descripcion:v('pvm-desc'),
+    condiciones:v('pvm-cond'),
+    fecha_inicio:v('pvm-inicio')||new Date().toISOString().slice(0,10),
+    fecha_vencimiento:venc,
+    activa:v('pvm-activa')==='true',
+    agencia_id:window._agenciaId,
+    creado_por:window._agenteId
+  };
+  let error;
+  if(editId){
+    ({error}=await sb.from('promociones_agencia').update(row).eq('id',editId));
+  } else {
+    ({error}=await sb.from('promociones_agencia').insert(row));
+  }
+  if(error){toast('Error: '+error.message,false);console.error('[_savePromoVig]',error);return;}
+  toast(editId?'Promocion actualizada':'Promocion creada');
+  closeModal();
+  _loadPromosVig();
+}
+
+async function _deletePromoVig(id){
+  if(!confirm('Eliminar esta promocion?')) return;
+  const {error}=await sb.from('promociones_agencia').delete().eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Promocion eliminada');
+  _loadPromosVig();
+}
+
+// ── Agente: load promos vigentes RO ──
+let _promosVigAgenteData=[];
+async function _loadPromosVigAgente(){
+  const el=document.getElementById('promos-vig-agente-list');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  const agId=window._agenciaId;
+  if(!agId){el.innerHTML='<div style="padding:20px;color:var(--g3)">No perteneces a una agencia o tu agencia no tiene promociones.</div>';return;}
+  const {data,error}=await sb.from('promociones_agencia').select('*').eq('agencia_id',agId).eq('activa',true).order('fecha_vencimiento');
+  if(error){el.innerHTML=`<div style="padding:20px;color:var(--red);font-size:.82rem">Error: ${error.message}</div>`;return;}
+  _promosVigAgenteData=data||[];
+  _renderPromosVigAgente();
+}
+
+function _renderPromosVigAgente(){
+  const el=document.getElementById('promos-vig-agente-list');
+  if(!el) return;
+  const srch=(document.getElementById('pvag-search')?.value||'').toLowerCase().trim();
+  const hoy=new Date().toISOString().slice(0,10);
+  const filtered=_promosVigAgenteData.filter(p=>{
+    if(srch&&!(p.titulo||'').toLowerCase().includes(srch)&&!(_pvCatLabels[p.categoria]||'').toLowerCase().includes(srch)) return false;
+    return true;
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)">Sin promociones vigentes de tu agencia.</div>';
+    return;
+  }
+  const fmtD=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return d;}};
+  el.innerHTML=filtered.map(p=>{
+    const st=_pvEstado(p);
+    const catC=_pvCatColors[p.categoria]||'#94a3b8';
+    return `<div class="tk-item">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:3px">${p.titulo}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:2px">
+            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${catC}22;color:${catC}">${_pvCatLabels[p.categoria]||p.categoria}</span>
+            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${st.color}22;color:${st.color}">${st.label}</span>
+          </div>
+          <div style="font-size:.72rem;color:var(--g4)">Vence: ${fmtD(p.fecha_vencimiento)}</div>
+        </div>
+        <button class="btn btn-out btn-xs" onclick="_viewPromoVigAgente('${p.id}')" title="Ver detalle"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _viewPromoVigAgente(id){
+  const p=_promosVigAgenteData.find(x=>x.id===id);
+  if(!p) return;
+  // Reuse the same view function
+  _promosVigData=[..._promosVigAgenteData];
+  _viewPromoVig(id);
 }
 
 // ═══════════════════════════════════════════
