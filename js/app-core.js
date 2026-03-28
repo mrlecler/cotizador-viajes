@@ -592,9 +592,11 @@ function _applyRolUI(){
   }
   // Perfil dropdown — reconstruir contenido según rol
   _buildProfileDropdown();
-  // Admin: ocultar items de cotización (sidebar + bottom nav + inicio)
+  // Admin: ocultar items de cotización (sidebar + bottom nav + inicio) y botón nuevo proveedor
   const isAdm=currentRol==='admin';
   document.querySelectorAll('[data-tab="form"]').forEach(el=>el.style.display=isAdm?'none':'');
+  const btnNewProv=document.getElementById('btn-new-prov');
+  if(btnNewProv) btnNewProv.style.display=isAdm?'none':'';
   // Guardar en localStorage
   if(currentRol!=='agente') localStorage.setItem('mp_rol',currentRol);
   if(currentRol==='admin') localStorage.setItem('mp_admin','1');
@@ -869,7 +871,7 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11};
 function switchTab(id){
   // Admin es solo lectura — no puede cotizar
   if(id==='form'&&currentRol==='admin'){
@@ -905,6 +907,7 @@ function switchTab(id){
   if(id==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
+  if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }
