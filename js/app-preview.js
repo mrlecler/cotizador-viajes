@@ -102,27 +102,16 @@ function _loadApiKeyFields(){
 // ═══════════════════════════════════════════
 async function saveCfg(){
   const rawPais=(gv('cfg-pais')||'').toUpperCase().trim().slice(0,3);
-  const rawTheme=parseInt(document.getElementById('cfg-pdf-theme')?.value||'1')||1;
-  agCfg={nm:gv('cfg-nm'),ag:agCfg.ag||'',em:gv('cfg-em'),tel:gv('cfg-tel'),soc:gv('cfg-soc'),pais_cod:rawPais||'AR',pdf_theme:rawTheme};
+  agCfg.nm=gv('cfg-nm');agCfg.em=gv('cfg-em');agCfg.tel=gv('cfg-tel');agCfg.soc=gv('cfg-soc');agCfg.pais_cod=rawPais||'AR';
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
-  // Update in Supabase — usar _agenteId, NO email
+  // Update in Supabase — sin pdf_theme (se maneja solo en preview via localStorage)
   if(currentUser&&window._agenteId){
-    let {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('id',window._agenteId);
-    // Si falla por columna inexistente, reintentar sin pdf_theme
-    if(error&&(error.code==='42703'||error.message?.includes('column'))){
-      console.warn('[saveCfg] pdf_theme column missing, retrying without it');
-      ({error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod}).eq('id',window._agenteId));
-    }
-    if(error){
-      console.warn('[saveCfg] Supabase error:', error.message, error.code);
-      _captureError('saveCfg',error);
-    } else {
-      console.log('[saveCfg] OK — pdf_theme:', rawTheme);
-    }
+    const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod}).eq('id',window._agenteId);
+    if(error){console.warn('[saveCfg] Supabase error:',error.message);_captureError('saveCfg',error);}
   }
-  updateHeader();updateLogoPreview();
-  const ok=document.getElementById('cfg-ok');ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);
+  updateHeader();
+  const ok=document.getElementById('cfg-ok');if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);}
   toast('Perfil guardado');
 }
 async function changePassword(){

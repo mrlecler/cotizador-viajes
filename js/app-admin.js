@@ -186,7 +186,7 @@ async function deleteUser(id,nombre){
   toast('Usuario eliminado');renderAdminUsers();
 }
 
-const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursion'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerolinea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
+const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursion'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC (Dest. Management)'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerolinea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
 function _tiposBadges(tipos){
   if(!tipos||!tipos.length) return '<span style="color:var(--g3);font-size:.72rem">—</span>';
   return (Array.isArray(tipos)?tipos:[tipos]).map(t=>{
@@ -395,6 +395,7 @@ function addTicket(d){
   <div class="fg"><label class="lbl">Notas</label><input class="finput" type="text" id="tk${id}-desc" placeholder="Canjeables en ventanilla..." value="${d.desc||''}"></div>`;
   document.getElementById('tickets-cont').appendChild(el);
   if(d.tipo) document.getElementById('tk'+id+'-tipo').value=d.tipo;
+  _populateProvSel('tk'+id+'-sel',d.prov||'','');
 }
 
 // ═══════════════════════════════════════════
