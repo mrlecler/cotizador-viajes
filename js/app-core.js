@@ -518,13 +518,14 @@ async function showApp(user){
       : nm.substring(0,2)
     ).toUpperCase();
   }
-  init();
+  try{ init(); }catch(e){ console.warn('init() error (non-fatal):',e.message); }
   // Then load Supabase data in background (non-blocking)
   try {
     // select('*') evita fallar si alguna columna específica no existe en la DB
     const {data, error:agErr} = await sb.from('agentes').select('*').eq('id', user.id).maybeSingle();
     if(agErr) console.warn('agentes query error:', agErr.message, agErr.details);
     if(!data) console.warn('agentes: sin registro para uid:', user.id, '— verificar DB');
+    console.log('[showApp] auth.uid:', user.id, '| agentes.rol:', data?.rol, '| data:', data?.id, data?.email);
     // Bloquear acceso si el usuario fue desactivado
     if(data && data.activo===false){
       await sb.auth.signOut();

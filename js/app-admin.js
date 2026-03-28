@@ -790,42 +790,218 @@ function _escHtml(s){
 }
 
 // ═══════════════════════════════════════════
-// AGENCY PANEL
+// AGENCY PANEL — Tabs: Agentes | Cotizaciones | Clientes | Proveedores
 // ═══════════════════════════════════════════
+let _agAgencyId=null; // cached agencia_id for current user
+let _agQuotesData=[]; // cached quotes for agency
+let _agClientsData=[]; // cached clients for agency
+
+// Tab switching
+function _agTab(tab){
+  document.querySelectorAll('.ag-tab').forEach(b=>b.classList.toggle('on',b.dataset.agtab===tab));
+  document.querySelectorAll('.ag-panel').forEach(p=>p.classList.toggle('on',p.id==='agp-'+tab));
+  // Lazy load data for the tab
+  if(tab==='cotizaciones') _loadAgQuotes();
+  if(tab==='clientes') _loadAgClients();
+  if(tab==='proveedores') _loadAgProviders();
+}
+
+// Get agencia_id (cached)
+async function _getAgencyId(){
+  if(_agAgencyId) return _agAgencyId;
+  if(!window._agenteId) return null;
+  const {data}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
+  _agAgencyId=data?.agencia_id||null;
+  return _agAgencyId;
+}
+
 async function renderAgency(){
   if(currentRol!=='agencia'&&currentRol!=='admin') return;
-
-  // Agentes — filtrar por agencia_id de la agencia del usuario actual
-  let ags=[];
-  if(currentRol==='agencia'&&window._agenteId){
-    const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
-    if(aRow?.agencia_id){
-      const {data}=await sb.from('agentes').select('*').eq('agencia_id',aRow.agencia_id).order('nombre');
-      ags=data||[];
-    }
-  } else if(currentRol==='admin'){
-    const {data}=await sb.from('agentes').select('*').order('nombre');
-    ags=data||[];
+  const agId=await _getAgencyId();
+  // Show agency name preview in collapsed header
+  if(agId){
+    const {data:ag}=await sb.from('agencias').select('nombre').eq('id',agId).maybeSingle();
+    const prev=document.getElementById('ag-name-preview');
+    if(prev&&ag?.nombre) prev.textContent=ag.nombre;
   }
-  const agEl=document.getElementById('agency-agentes');
-  if(agEl){
-    agEl.innerHTML=(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
-    ${ags.map(a=>`<tr>
-      <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>
-      <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
-      <td>${a.activo?'S\u00ed':'No'}</td>
-    </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>');
-  }
-
-  // Proveedores — redirigir al tab unificado
-  const pvEl=document.getElementById('agency-proveedores');
-  if(pvEl) pvEl.innerHTML='<p style="color:var(--g3);font-size:.82rem">Los proveedores se gestionan desde el tab <a href="#" onclick="event.preventDefault();switchTab(\'providers\')" style="color:var(--primary);font-weight:600">Proveedores</a> en el sidebar.</p>';
-  // Cargar proveedores para datalists
+  // Load first tab (agentes) by default
+  await _loadAgAgentes();
+  // Also load providers for datalists
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
   _allProvs=provs||[];
   buildDataLists(provs||[]);
 }
 
+// ── Tab: Agentes ──
+async function _loadAgAgentes(){
+  const agId=await _getAgencyId();
+  let ags=[];
+  if(agId){
+    const {data}=await sb.from('agentes').select('*').eq('agencia_id',agId).order('nombre');
+    ags=data||[];
+  }
+  const el=document.getElementById('agency-agentes');
+  if(!el) return;
+  if(!ags.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin agentes en tu agencia.</div>';
+    return;
+  }
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Activo</th><th></th></tr></thead><tbody>
+  ${ags.map(a=>`<tr>
+    <td><strong>${a.nombre||'\u2014'}</strong></td>
+    <td>${a.email||''}</td>
+    <td><span class="status-badge ${a.rol==='agencia'?'st-enviada':'st-borrador'}">${{agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
+    <td>${a.activo?'<span style="color:var(--primary);font-weight:600">S\u00ed</span>':'<span style="color:var(--g3)">No</span>'}</td>
+    <td style="text-align:right">${a.id!==window._agenteId?`<button class="btn btn-out btn-xs" onclick="_toggleAgentActive('${a.id}',${!a.activo})">${a.activo?'Desactivar':'Activar'}</button>`:''}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+async function _toggleAgentActive(agId,active){
+  const {error}=await sb.from('agentes').update({activo:active}).eq('id',agId);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast(active?'Agente activado':'Agente desactivado');
+  _loadAgAgentes();
+}
+
+// ── Tab: Cotizaciones (RO) ──
+async function _loadAgQuotes(){
+  const el=document.getElementById('agency-quotes');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  await _loadAgentNames();
+  const agId=await _getAgencyId();
+  if(!agId){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agencia asociada.</div>';return;}
+  // Get all agentes of this agency, then their quotes
+  const {data:agentes}=await sb.from('agentes').select('id').eq('agencia_id',agId);
+  const ids=(agentes||[]).map(a=>a.id);
+  if(!ids.length){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agentes en la agencia.</div>';return;}
+  const {data}=await sb.from('cotizaciones').select('*').in('agente_id',ids).order('creado_en',{ascending:false}).limit(200);
+  _agQuotesData=data||[];
+  _renderAgQuotes();
+}
+
+function _renderAgQuotes(){
+  const el=document.getElementById('agency-quotes');
+  if(!el) return;
+  const srch=(document.getElementById('ag-quot-search')?.value||'').toLowerCase().trim();
+  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+  const filtered=_agQuotesData.filter(r=>{
+    if(!srch) return true;
+    const nm=(r.datos?.cliente?.nombre||'').toLowerCase();
+    const dest=(r.destino||'').toLowerCase();
+    const ref=(r.ref_id||'').toLowerCase();
+    return nm.includes(srch)||dest.includes(srch)||ref.includes(srch);
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin cotizaciones.</div>';
+    return;
+  }
+  const shown=filtered.slice(0,50);
+  el.innerHTML=`<table class="tbl" style="font-size:.82rem"><thead><tr><th>Ref</th><th>Cliente</th><th>Destino</th><th>Agente</th><th>Estado</th><th>Fecha</th><th></th></tr></thead><tbody>
+  ${shown.map(r=>{
+    const agName=_agentNames[r.agente_id]||'';
+    return `<tr>
+    <td style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--g4)">${r.ref_id||'\u2014'}</td>
+    <td>${r.datos?.cliente?.nombre||'\u2014'}</td>
+    <td>${r.destino||'\u2014'}</td>
+    <td style="color:var(--primary);font-weight:600">${agName}</td>
+    <td><span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado||'borrador'}</span></td>
+    <td style="font-size:.75rem;color:var(--g4)">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}</td>
+    <td><button class="btn btn-out btn-xs" onclick="loadFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver</button></td>
+    </tr>`;}).join('')}</tbody></table>
+  <div style="padding:8px 16px;font-size:.75rem;color:var(--g3)">Mostrando ${shown.length} de ${filtered.length}</div>`;
+}
+
+// ── Tab: Clientes (RO) ──
+async function _loadAgClients(){
+  const el=document.getElementById('agency-clients');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  await _loadAgentNames();
+  const agId=await _getAgencyId();
+  if(!agId){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agencia asociada.</div>';return;}
+  const {data:agentes}=await sb.from('agentes').select('id').eq('agencia_id',agId);
+  const ids=(agentes||[]).map(a=>a.id);
+  if(!ids.length){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agentes.</div>';return;}
+  const {data}=await sb.from('clientes').select('*').in('agente_id',ids).order('nombre');
+  _agClientsData=data||[];
+  _renderAgClients();
+}
+
+function _renderAgClients(){
+  const el=document.getElementById('agency-clients');
+  if(!el) return;
+  const srch=(document.getElementById('ag-cli-search')?.value||'').toLowerCase().trim();
+  const filtered=_agClientsData.filter(c=>{
+    if(!srch) return true;
+    return (c.nombre||'').toLowerCase().includes(srch)||(c.email||'').toLowerCase().includes(srch)||(c.celular||'').includes(srch);
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin clientes.</div>';
+    return;
+  }
+  const shown=filtered.slice(0,50);
+  el.innerHTML=`<table class="tbl" style="font-size:.82rem"><thead><tr><th>Nombre</th><th>Email</th><th>Telefono</th><th>Agente</th><th></th></tr></thead><tbody>
+  ${shown.map(c=>{
+    const agName=_agentNames[c.agente_id]||'';
+    return `<tr>
+    <td><strong>${c.nombre||'\u2014'}</strong></td>
+    <td>${c.email||'\u2014'}</td>
+    <td>${c.celular||'\u2014'}</td>
+    <td style="color:var(--primary);font-weight:600">${agName}</td>
+    <td><button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+    </tr>`;}).join('')}</tbody></table>
+  <div style="padding:8px 16px;font-size:.75rem;color:var(--g3)">Mostrando ${shown.length} de ${filtered.length}</div>`;
+}
+
+// ── Tab: Proveedores ──
+let _agProvsData=[];
+async function _loadAgProviders(){
+  const el=document.getElementById('agency-proveedores');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  const agId=await _getAgencyId();
+  if(!agId){el.innerHTML='<div style="padding:20px;color:var(--g3)">Sin agencia asociada.</div>';return;}
+  const {data}=await sb.from('proveedores').select('*').eq('agencia_id',agId).order('nombre');
+  _agProvsData=data||[];
+  _renderAgProviders();
+}
+
+function _renderAgProviders(){
+  const el=document.getElementById('agency-proveedores');
+  if(!el) return;
+  const srch=(document.getElementById('ag-prov-search')?.value||'').toLowerCase().trim();
+  const typeLbl={hotel:'Hotel',traslado:'Traslado',excursion:'Excursion',seguro:'Seguro',asistencia:'Asistencia',DMC:'DMC',receptivo:'Receptivo',aerolinea:'Aerolinea',crucero:'Crucero',otro:'Otro'};
+  const filtered=_agProvsData.filter(p=>{
+    if(!srch) return true;
+    return (p.nombre||'').toLowerCase().includes(srch)||(p.tipo||'').toLowerCase().includes(srch)||(p.ciudad||'').toLowerCase().includes(srch);
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin proveedores.</div>';
+    return;
+  }
+  el.innerHTML=`<table class="tbl" style="font-size:.82rem"><thead><tr><th>Nombre</th><th>Tipo</th><th>Ciudad</th><th>Contacto</th><th></th></tr></thead><tbody>
+  ${filtered.map(p=>`<tr>
+    <td><strong>${p.nombre||'\u2014'}</strong></td>
+    <td><span class="status-badge st-borrador">${typeLbl[p.tipo]||p.tipo||'\u2014'}</span></td>
+    <td>${p.ciudad||'\u2014'}</td>
+    <td style="font-size:.75rem">${p.email||p.telefono||'\u2014'}</td>
+    <td style="text-align:right">
+      <button class="btn btn-out btn-xs" onclick="openProvModal('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="btn btn-del btn-xs" onclick="_deleteAgProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    </td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+async function _deleteAgProv(id){
+  if(!confirm('Eliminar este proveedor?')) return;
+  const {error}=await sb.from('proveedores').delete().eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Proveedor eliminado');
+  _loadAgProviders();
+}
+
+// ── Save agency data ──
 async function saveAgencyData(){
   if(!window._agenteId){toast('Error: no se pudo identificar tu cuenta',false);return;}
   const v=id=>(document.getElementById(id)?.value||'').trim();
@@ -834,12 +1010,15 @@ async function saveAgencyData(){
   if(v('ag-email')) agData.email=v('ag-email');
   if(v('ag-tel')) agData.telefono=v('ag-tel');
   if(v('ag-dir')) agData.direccion=v('ag-dir');
-  // Obtener agencia_id del agente actual
-  const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
-  if(!aRow?.agencia_id){toast('Error: no se encontro tu agencia',false);return;}
-  const {error}=await sb.from('agencias').update(agData).eq('id',aRow.agencia_id);
+  const agId=await _getAgencyId();
+  if(!agId){toast('Error: no se encontro tu agencia',false);return;}
+  const {error}=await sb.from('agencias').update(agData).eq('id',agId);
   if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
-  if(agData.nombre) agCfg.ag=agData.nombre;
+  if(agData.nombre){
+    agCfg.ag=agData.nombre;
+    const prev=document.getElementById('ag-name-preview');
+    if(prev) prev.textContent=agData.nombre;
+  }
   _saveAgCfg();
   toast('Datos de agencia guardados');
 }
@@ -848,15 +1027,17 @@ async function saveAgencyData(){
 async function _loadAgencyFields(){
   if(!window._agenteId)return;
   try{
-    const {data:aRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
-    if(!aRow?.agencia_id)return;
-    const {data}=await sb.from('agencias').select('nombre,email,telefono,direccion').eq('id',aRow.agencia_id).maybeSingle();
+    const agId=await _getAgencyId();
+    if(!agId)return;
+    const {data}=await sb.from('agencias').select('nombre,email,telefono,direccion').eq('id',agId).maybeSingle();
     if(!data)return;
     const el=id=>document.getElementById(id);
     if(data.nombre && el('ag-nombre')) el('ag-nombre').value=data.nombre;
     if(data.email && el('ag-email')) el('ag-email').value=data.email;
     if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
     if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
+    const prev=document.getElementById('ag-name-preview');
+    if(prev&&data.nombre) prev.textContent=data.nombre;
   }catch(e){console.warn('[_loadAgencyFields]',e);}
 }
 

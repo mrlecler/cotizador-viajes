@@ -68,6 +68,7 @@ function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReade
 function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogoPreview();}
 function updateLogoPreview(){
   const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
+  if(!w) return; // element may not exist yet
   if(logoUrl){w.innerHTML=`<img src="${logoUrl}" style="height:50px;max-width:160px;object-fit:contain;border-radius:8px;border:1px solid var(--g2);padding:5px;background:white">`;if(b)b.style.display='';}
   else{const ini=(agCfg.nm||'M')[0].toUpperCase();w.innerHTML=`<div style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber),var(--sky));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:1.1rem;color:white">${ini}</div>`;if(b)b.style.display='none';}
   updateHeader();

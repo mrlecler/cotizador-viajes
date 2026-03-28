@@ -948,18 +948,19 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 <!-- ═══ AGENCY ═══ -->
 <div id="tab-agency" class="panel">
-  <div class="intro-bar">
+  <div class="intro-bar" style="margin-bottom:0">
     <h2>Mi Agencia</h2>
-    <p>Datos de tu agencia, equipo de agentes y proveedores.</p>
+    <p>Gestiona tu agencia, equipo, cotizaciones y proveedores.</p>
   </div>
 
-  <!-- DATOS DE AGENCIA -->
-  <div class="card">
-    <div class="card-hd">
+  <!-- DATOS DE AGENCIA (siempre visible arriba) -->
+  <div class="card" style="margin-bottom:8px">
+    <div class="card-hd" style="cursor:pointer" onclick="document.getElementById('ag-data-body').classList.toggle('on');this.querySelector('.ag-chevron').classList.toggle('rot')">
       <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div>
-      <div><div class="card-ttl">Datos de agencia</div></div>
+      <div style="flex:1"><div class="card-ttl">Datos de agencia</div><div id="ag-name-preview" class="card-sub"></div></div>
+      <svg class="ag-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-    <div class="card-body">
+    <div id="ag-data-body" class="card-body ag-collapse">
       <div class="g2">
         <div class="fg"><label class="lbl" for="ag-nombre">Nombre de la agencia</label><input class="finput" type="text" id="ag-nombre" placeholder="Patoyro Travel"></div>
         <div class="fg"><label class="lbl" for="ag-email">Email</label><input class="finput" type="text" id="ag-email" placeholder="info@agencia.com" inputmode="email"></div>
@@ -978,27 +979,82 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
-  <!-- MIS AGENTES -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <div style="flex:1"><div class="card-ttl">Mis agentes</div></div>
-      <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
-    </div>
-    <div class="card-body">
-      <div id="agency-agentes"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
+  <!-- TABS horizontales -->
+  <div class="ag-tabs">
+    <button class="ag-tab on" data-agtab="agentes" onclick="_agTab('agentes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Agentes
+    </button>
+    <button class="ag-tab" data-agtab="cotizaciones" onclick="_agTab('cotizaciones')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Cotizaciones
+    </button>
+    <button class="ag-tab" data-agtab="clientes" onclick="_agTab('clientes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Clientes
+    </button>
+    <button class="ag-tab" data-agtab="proveedores" onclick="_agTab('proveedores')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
+      Proveedores
+    </button>
+  </div>
+
+  <!-- Panel: Agentes -->
+  <div class="ag-panel on" id="agp-agentes">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Equipo de agentes</div></div>
+        <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
+      </div>
+      <div class="card-body">
+        <div id="agency-agentes"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
     </div>
   </div>
 
-  <!-- PROVEEDORES -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-      <div style="flex:1"><div class="card-ttl">Proveedores</div></div>
-      <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar proveedor</button>
+  <!-- Panel: Cotizaciones (RO) -->
+  <div class="ag-panel" id="agp-cotizaciones">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Cotizaciones de la agencia</div><div class="card-sub">Solo lectura</div></div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-quot-search" placeholder="Buscar por cliente, destino o ref..." oninput="_renderAgQuotes()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-quotes"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
     </div>
-    <div class="card-body">
-      <div id="agency-proveedores"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
+  </div>
+
+  <!-- Panel: Clientes (RO) -->
+  <div class="ag-panel" id="agp-clientes">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Clientes de la agencia</div><div class="card-sub">Solo lectura</div></div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-cli-search" placeholder="Buscar por nombre, email o telefono..." oninput="_renderAgClients()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-clients"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Proveedores -->
+  <div class="ag-panel" id="agp-proveedores">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Proveedores de la agencia</div></div>
+        <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar proveedor</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-prov-search" placeholder="Buscar por nombre o tipo..." oninput="_renderAgProviders()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-proveedores"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
     </div>
   </div>
 </div>
