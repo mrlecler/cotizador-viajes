@@ -220,8 +220,8 @@
     <span class="sb-lbl">Gestion</span>
   </button>
 
-  <!-- Soporte — solo admin -->
-  <button class="sb-item" onclick="switchTab('support')" title="Soporte" data-tab="support" data-role="admin">
+  <!-- Soporte — todos los roles -->
+  <button class="sb-item" onclick="switchTab('support')" title="Soporte" data-tab="support" data-role="admin agencia agente">
     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     <span class="sb-lbl">Soporte</span>
   </button>
@@ -924,27 +924,51 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 </div>
 
-<!-- ═══ SOPORTE (admin) ═══ -->
+<!-- ═══ SOPORTE ═══ -->
 <div id="tab-support" class="panel">
   <div class="intro-bar">
     <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Soporte</h2>
-    <p>Tickets de soporte de agentes y agencias.</p>
+    <p id="support-subtitle">Tickets de soporte.</p>
   </div>
+
+  <!-- Formulario crear ticket (agente/agencia) -->
+  <div id="support-form-wrap" style="display:none">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Nuevo ticket</div></div>
+      </div>
+      <div class="card-body">
+        <div class="g2">
+          <div class="fg"><label class="lbl" for="tk-asunto">Asunto</label><input class="finput" type="text" id="tk-asunto" placeholder="Describe brevemente tu consulta"></div>
+          <div class="fg"><label class="lbl" for="tk-prioridad">Prioridad</label>
+            <select class="finput" id="tk-prioridad">
+              <option value="baja">Baja</option>
+              <option value="normal" selected>Normal</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+          <div class="fg full"><label class="lbl" for="tk-desc">Descripcion</label><textarea class="finput" id="tk-desc" rows="4" placeholder="Explica con detalle tu problema o consulta..." style="resize:vertical"></textarea></div>
+        </div>
+        <button class="btn btn-cta" onclick="_submitTicket()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de tickets -->
   <div class="card">
     <div class="card-hd">
-      <div style="flex:1"><div class="card-ttl">Tickets</div><div class="card-sub">Consultas y problemas reportados</div></div>
-    </div>
-    <div class="card-body">
-      <div id="support-list">
-        <div class="empty-state" style="padding:40px 20px">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <p style="margin-top:12px;font-weight:600;color:var(--text)">Sin tickets de soporte</p>
-          <small style="color:var(--g3)">Cuando los agentes o agencias envien consultas, apareceran aca.</small>
-          <div style="margin-top:16px;padding:12px 16px;background:var(--g1);border-radius:var(--r2);font-size:.75rem;color:var(--g4)">
-            La tabla <code style="font-size:.7rem;background:var(--surface2);padding:2px 6px;border-radius:4px">tickets_soporte</code> debe crearse en Supabase para habilitar esta funcionalidad.
-          </div>
-        </div>
+      <div style="flex:1"><div class="card-ttl" id="support-list-title">Mis tickets</div></div>
+      <div id="support-filters" style="display:none;gap:8px">
+        <select class="finput" id="tk-filter-estado" onchange="_renderTickets()" style="width:auto;padding:6px 10px;font-size:.78rem">
+          <option value="">Todos</option>
+          <option value="abierto">Abiertos</option>
+          <option value="en_progreso">En progreso</option>
+          <option value="resuelto">Resueltos</option>
+        </select>
       </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div id="support-list"><div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
     </div>
   </div>
 </div>

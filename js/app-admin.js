@@ -1040,4 +1040,173 @@ async function _loadAgencyFields(){
 }
 
 // ═══════════════════════════════════════════
+// SOPORTE / TICKETS
+// ═══════════════════════════════════════════
+let _ticketsData=[];
+
+async function renderSupportTickets(){
+  const isAdm=currentRol==='admin';
+  // UI toggles
+  const sub=document.getElementById('support-subtitle');
+  if(sub) sub.textContent=isAdm?'Tickets de soporte de agentes y agencias.':'Envia consultas o reporta problemas al equipo de ermix.';
+  const formW=document.getElementById('support-form-wrap');
+  if(formW) formW.style.display=isAdm?'none':'';
+  const filters=document.getElementById('support-filters');
+  if(filters) filters.style.display=isAdm?'flex':'none';
+  const listTitle=document.getElementById('support-list-title');
+  if(listTitle) listTitle.textContent=isAdm?'Todos los tickets':'Mis tickets';
+  // Load tickets
+  await _loadTickets();
+}
+
+async function _loadTickets(){
+  const el=document.getElementById('support-list');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  try{
+    const isAdm=currentRol==='admin';
+    let q=sb.from('tickets_soporte').select('*').order('creado_en',{ascending:false});
+    if(!isAdm) q=q.eq('agente_id',window._agenteId);
+    const {data,error}=await q;
+    if(error){
+      el.innerHTML=`<div style="padding:20px;color:var(--red);font-size:.82rem">Error: ${error.message}</div>`;
+      return;
+    }
+    _ticketsData=data||[];
+    // Load agent names for admin view
+    if(isAdm) await _loadAgentNames();
+    _renderTickets();
+  }catch(e){
+    el.innerHTML='<div style="padding:20px;color:var(--red);font-size:.82rem">Error al cargar tickets.</div>';
+    console.error('[_loadTickets]',e);
+  }
+}
+
+function _renderTickets(){
+  const el=document.getElementById('support-list');
+  if(!el) return;
+  const isAdm=currentRol==='admin';
+  const filtro=document.getElementById('tk-filter-estado')?.value||'';
+  const filtered=_ticketsData.filter(t=>!filtro||t.estado===filtro);
+
+  if(!filtered.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px 20px">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p style="margin-top:10px;font-weight:600;color:var(--text)">Sin tickets${filtro?' con ese estado':''}</p>
+      <small style="color:var(--g3)">${isAdm?'No hay consultas pendientes.':'Usa el formulario de arriba para enviar una consulta.'}</small>
+    </div>`;
+    return;
+  }
+
+  const estBadge=e=>{
+    const c={abierto:'#f59e0b',en_progreso:'#0EA5E9',resuelto:'#22c55e'};
+    const l={abierto:'Abierto',en_progreso:'En progreso',resuelto:'Resuelto'};
+    return `<span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:12px;background:${c[e]||'var(--g1)'}22;color:${c[e]||'var(--g4)'}">${l[e]||e}</span>`;
+  };
+  const priBadge=p=>{
+    const c={baja:'var(--g3)',normal:'var(--primary)',alta:'#ef4444'};
+    return `<span style="font-size:.62rem;font-weight:600;color:${c[p]||'var(--g3)'};text-transform:uppercase;letter-spacing:.5px">${p||'normal'}</span>`;
+  };
+  const fmtDate=d=>{try{return new Date(d).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return'';}};
+
+  el.innerHTML=filtered.map(t=>{
+    const resp=(t.respuestas||[]);
+    const agName=isAdm&&t.agente_id&&_agentNames[t.agente_id]?_agentNames[t.agente_id]:'';
+    return `<div class="tk-item" onclick="_openTicket('${t.id}')">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:3px">${t.asunto||'Sin asunto'}</div>
+          <div style="font-size:.75rem;color:var(--g4)">${fmtDate(t.creado_en)}${agName?' · <span style="color:var(--primary);font-weight:600">'+agName+'</span>':''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          ${estBadge(t.estado)}
+          ${priBadge(t.prioridad)}
+        </div>
+      </div>
+      ${resp.length?`<div style="padding:0 16px 8px;font-size:.72rem;color:var(--g3)">${resp.length} respuesta${resp.length>1?'s':''}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function _submitTicket(){
+  const asunto=(document.getElementById('tk-asunto')?.value||'').trim();
+  const desc=(document.getElementById('tk-desc')?.value||'').trim();
+  const prio=document.getElementById('tk-prioridad')?.value||'normal';
+  if(!asunto){toast('Ingresa un asunto para el ticket.',false);return;}
+  const row={asunto,descripcion:desc,prioridad:prio,agente_id:window._agenteId,estado:'abierto'};
+  if(window._agenciaId) row.agencia_id=window._agenciaId;
+  const {error}=await sb.from('tickets_soporte').insert(row);
+  if(error){toast('Error al crear ticket: '+error.message,false);console.error('[_submitTicket]',error);return;}
+  toast('Ticket enviado');
+  document.getElementById('tk-asunto').value='';
+  document.getElementById('tk-desc').value='';
+  document.getElementById('tk-prioridad').value='normal';
+  _loadTickets();
+}
+
+function _openTicket(id){
+  const t=_ticketsData.find(x=>x.id===id);
+  if(!t) return;
+  const isAdm=currentRol==='admin';
+  const fmtDate=d=>{try{return new Date(d).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return'';}};
+  const resp=(t.respuestas||[]);
+  const estOpts=isAdm?`<select class="finput" id="tk-modal-estado" style="width:auto;padding:6px 10px;font-size:.78rem">
+    <option value="abierto"${t.estado==='abierto'?' selected':''}>Abierto</option>
+    <option value="en_progreso"${t.estado==='en_progreso'?' selected':''}>En progreso</option>
+    <option value="resuelto"${t.estado==='resuelto'?' selected':''}>Resuelto</option>
+  </select>`:`<span style="font-weight:600;color:var(--primary)">${{abierto:'Abierto',en_progreso:'En progreso',resuelto:'Resuelto'}[t.estado]||t.estado}</span>`;
+
+  const html=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:1rem;font-weight:700;color:var(--text)">${t.asunto}</div>
+      <div style="font-size:.75rem;color:var(--g4);margin-top:4px">${fmtDate(t.creado_en)} · Prioridad: ${t.prioridad||'normal'}</div>
+    </div>
+    ${t.descripcion?`<div style="background:var(--g1);padding:12px;border-radius:var(--r2);font-size:.82rem;color:var(--text);margin-bottom:16px;white-space:pre-wrap">${t.descripcion}</div>`:''}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <span class="lbl" style="margin:0">Estado:</span> ${estOpts}
+    </div>
+    ${resp.length?`<div style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:8px">Historial (${resp.length})</div>
+      ${resp.map(r=>`<div style="padding:10px 12px;background:${r.from==='admin'?'rgba(27,158,143,0.06)':'var(--g1)'};border-radius:var(--r2);margin-bottom:6px;font-size:.8rem">
+        <div style="font-weight:600;font-size:.72rem;color:${r.from==='admin'?'var(--primary)':'var(--g4)'};margin-bottom:3px">${r.from==='admin'?'Soporte ermix':'Tu'} · ${fmtDate(r.fecha)}</div>
+        <div style="color:var(--text);white-space:pre-wrap">${r.texto}</div>
+      </div>`).join('')}
+    </div>`:''}
+    ${isAdm?`<div class="fg full" style="margin-bottom:12px"><label class="lbl">Responder</label><textarea class="finput" id="tk-modal-resp" rows="3" placeholder="Escribe tu respuesta..." style="resize:vertical"></textarea></div>`:''}
+    <div style="display:flex;gap:8px">
+      ${isAdm?`<button class="btn btn-cta" onclick="_replyTicket('${t.id}')">Enviar respuesta</button>`:''}
+      ${isAdm?`<button class="btn btn-pri" onclick="_updateTicketStatus('${t.id}')">Guardar estado</button>`:''}
+      <button class="btn btn-out" onclick="closeModal()" style="margin-left:auto">Cerrar</button>
+    </div>`;
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').style.display='block';
+  document.getElementById('modal-box').style.display='block';
+}
+
+async function _replyTicket(id){
+  const texto=(document.getElementById('tk-modal-resp')?.value||'').trim();
+  if(!texto){toast('Escribe una respuesta.',false);return;}
+  const t=_ticketsData.find(x=>x.id===id);
+  if(!t) return;
+  const resp=[...(t.respuestas||[]),{from:'admin',texto,fecha:new Date().toISOString()}];
+  const {error}=await sb.from('tickets_soporte').update({respuestas:resp}).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Respuesta enviada');
+  closeModal();
+  _loadTickets();
+}
+
+async function _updateTicketStatus(id){
+  const estado=document.getElementById('tk-modal-estado')?.value;
+  if(!estado) return;
+  const upd={estado};
+  if(estado==='resuelto') upd.resuelto_en=new Date().toISOString();
+  const {error}=await sb.from('tickets_soporte').update(upd).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Estado actualizado');
+  closeModal();
+  _loadTickets();
+}
+
+// ═══════════════════════════════════════════
 // BUILD QUOTE HTML (PDF renderer)
