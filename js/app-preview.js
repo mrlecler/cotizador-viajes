@@ -131,17 +131,21 @@ async function changePassword(){
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
   if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
-  // Admin profile: hide agent-specific fields
+  // Profile card: adapt per role
+  const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
+  const ttl=document.getElementById('cfg-card-title');
   if(currentRol==='admin'){
+    // Admin: only name, email, tel + password
     const hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
-    hide('cfg-ag-wrap');   // no tiene agencia
-    hide('cfg-pais-wrap'); // no genera cotizaciones
-    hide('cfg-soc-wrap');  // no tiene redes
-    const ttl=document.getElementById('cfg-card-title');
+    hide('cfg-ag-wrap');
+    hide('cfg-pais-wrap');
+    hide('cfg-soc-wrap');
     if(ttl) ttl.textContent='Mi perfil de administrador';
+  } else if(currentRol==='agencia'){
+    // Agencia: hide entire profile card (managed in Mi Agencia), only password
+    if(cfgCard) cfgCard.style.display='none';
   } else {
-    const ttl=document.getElementById('cfg-card-title');
-    if(ttl) ttl.textContent=currentRol==='agencia'?'Mi perfil de agencia':'Mi perfil de agente';
+    if(ttl) ttl.textContent='Mi perfil de agente';
     // Load agencia name readonly from Supabase relation
     if(window._agenciaId){
       sb.from('agencias').select('nombre').eq('id',window._agenciaId).maybeSingle().then(({data})=>{
