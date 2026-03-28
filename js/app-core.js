@@ -592,12 +592,20 @@ function _applyRolUI(){
   }
   // Perfil dropdown — reconstruir contenido según rol
   _buildProfileDropdown();
-  // Admin/agencia: ocultar items de cotización + botón nuevo proveedor (admin)
-  const hideForm=currentRol==='admin'||currentRol==='agencia';
-  document.querySelectorAll('[data-tab="form"]').forEach(el=>el.style.display=hideForm?'none':'');
+  // Sidebar: mostrar/ocultar items segun data-role
+  document.querySelectorAll('#sidebar [data-role]').forEach(el=>{
+    const roles=(el.dataset.role||'').split(' ');
+    el.style.display=roles.includes(currentRol)?'':'none';
+  });
+  // Bottom nav: misma logica
+  document.querySelectorAll('#bottom-nav [data-role]').forEach(el=>{
+    const roles=(el.dataset.role||'').split(' ');
+    el.style.display=roles.includes(currentRol)?'':'none';
+  });
+  // Boton nuevo proveedor: ocultar para admin
   const btnNewProv=document.getElementById('btn-new-prov');
   if(btnNewProv) btnNewProv.style.display=currentRol==='admin'?'none':'';
-  // Preview toolbar: admin/agencia solo ven la cotización, sin botones de acción
+  // Preview toolbar: admin/agencia solo ven la cotizacion sin botones
   const prevToolbar=document.getElementById('prev-toolbar');
   if(prevToolbar) prevToolbar.style.display=(currentRol==='admin'||currentRol==='agencia')?'none':'';
   // Guardar en localStorage
@@ -874,7 +882,7 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13};
 function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
@@ -911,6 +919,8 @@ function switchTab(id){
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
+  if(id==='support'){if(typeof renderSupportTickets==='function')renderSupportTickets();}
+  if(id==='adminconfig'){if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }
