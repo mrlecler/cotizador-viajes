@@ -83,19 +83,22 @@ function updateHeader(){
 // API KEYS (localStorage only — never sent to server)
 // ═══════════════════════════════════════════
 function saveApiKeys(){
-  const unsplash=document.getElementById('cfg-unsplash')?.value?.trim();
+  // Unsplash — check both old (cfg-unsplash) and new (ak-unsplash) fields
+  const unsplash=(document.getElementById('ak-unsplash')?.value||document.getElementById('cfg-unsplash')?.value||'').trim();
   if(unsplash) localStorage.setItem('mp_unsplash_key',unsplash);
   else localStorage.removeItem('mp_unsplash_key');
-  const ok=document.getElementById('api-ok');
-  if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',3000);}
+  // IA key
+  const ia=(document.getElementById('ak-ia')?.value||'').trim();
+  if(ia) localStorage.setItem('mp_ia_key',ia);
+  else localStorage.removeItem('mp_ia_key');
   toast('API Keys guardadas');
 }
 function _loadApiKeyFields(){
-  const el=document.getElementById('cfg-unsplash');
-  if(el){
-    const k=localStorage.getItem('mp_unsplash_key')||'';
-    el.value=k;
-  }
+  const k=localStorage.getItem('mp_unsplash_key')||'';
+  const el1=document.getElementById('ak-unsplash');if(el1)el1.value=k;
+  const el2=document.getElementById('cfg-unsplash');if(el2)el2.value=k;
+  const iak=localStorage.getItem('mp_ia_key')||'';
+  const el3=document.getElementById('ak-ia');if(el3)el3.value=iak;
 }
 
 // ═══════════════════════════════════════════

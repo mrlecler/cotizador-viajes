@@ -227,7 +227,9 @@ async function renderProviders(){
     const editBtn=canE?`<button class="btn btn-out btn-xs" onclick="openProviderModal('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
       :(_canView(p)?`<button class="btn btn-out btn-xs" onclick="openProviderModal('${p.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:'');
     const delBtn=canE?`<button class="btn btn-del btn-xs" onclick="deleteProvider('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:'';
-    return `<tr><td><strong>${p.nombre||'—'}</strong></td><td>${_tiposBadges(p.tipos||[p.tipo])}</td><td>${p.ciudad||'—'}</td><td style="font-size:.75rem">${p.contacto||p.email||'—'}</td><td style="font-size:.75rem">${comTxt}</td><td style="white-space:nowrap">${editBtn}${delBtn}</td></tr>`;
+    const isAgencyProv=currentRol==='agente'&&p.agencia_id===window._agenciaId&&p.agente_id!==window._agenteId;
+    const agBadge=isAgencyProv?'<span style="font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(212,160,23,0.12);color:#D4A017;margin-left:4px;vertical-align:middle">AGENCIA</span>':'';
+    return `<tr><td><strong>${p.nombre||'—'}</strong>${agBadge}</td><td>${_tiposBadges(p.tipos||[p.tipo])}</td><td>${p.ciudad||'—'}</td><td style="font-size:.75rem">${p.contacto||p.email||'—'}</td><td style="font-size:.75rem">${comTxt}</td><td style="white-space:nowrap">${editBtn}${delBtn}</td></tr>`;
   }).join('')}</tbody></table>`;
   // Actualizar provsList global para dropdowns del formulario
   window.provsList=(_allProvs||[]).filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||''}));
@@ -1172,13 +1174,13 @@ function _openTicket(id){
     ${resp.length?`<div style="margin-bottom:16px">
       <div class="lbl" style="margin-bottom:8px">Historial (${resp.length})</div>
       ${resp.map(r=>`<div style="padding:10px 12px;background:${r.from==='admin'?'rgba(27,158,143,0.06)':'var(--g1)'};border-radius:var(--r2);margin-bottom:6px;font-size:.8rem">
-        <div style="font-weight:600;font-size:.72rem;color:${r.from==='admin'?'var(--primary)':'var(--g4)'};margin-bottom:3px">${r.from==='admin'?'Soporte ermix':'Tu'} · ${fmtDate(r.fecha)}</div>
+        <div style="font-weight:600;font-size:.72rem;color:${r.from==='admin'?'var(--primary)':'var(--g4)'};margin-bottom:3px">${r.from==='admin'?'Soporte ermix':(isAdm?'Usuario':'Tu')} · ${fmtDate(r.fecha)}</div>
         <div style="color:var(--text);white-space:pre-wrap">${r.texto}</div>
       </div>`).join('')}
     </div>`:''}
-    ${isAdm?`<div class="fg full" style="margin-bottom:12px"><label class="lbl">Responder</label><textarea class="finput" id="tk-modal-resp" rows="3" placeholder="Escribe tu respuesta..." style="resize:vertical"></textarea></div>`:''}
+    <div class="fg full" style="margin-bottom:12px"><label class="lbl">Responder</label><textarea class="finput" id="tk-modal-resp" rows="3" placeholder="${isAdm?'Escribe tu respuesta al usuario...':'Agrega informacion o seguimiento...'}" style="resize:vertical"></textarea></div>
     <div style="display:flex;gap:8px">
-      ${isAdm?`<button class="btn btn-cta" onclick="_replyTicket('${t.id}')">Enviar respuesta</button>`:''}
+      <button class="btn btn-cta" onclick="_replyTicket('${t.id}')">Enviar respuesta</button>
       ${isAdm?`<button class="btn btn-pri" onclick="_updateTicketStatus('${t.id}')">Guardar estado</button>`:''}
       <button class="btn btn-out" onclick="closeModal()" style="margin-left:auto">Cerrar</button>
     </div>`;
@@ -1192,7 +1194,8 @@ async function _replyTicket(id){
   if(!texto){toast('Escribe una respuesta.',false);return;}
   const t=_ticketsData.find(x=>x.id===id);
   if(!t) return;
-  const resp=[...(t.respuestas||[]),{from:'admin',texto,fecha:new Date().toISOString()}];
+  const fromTag=currentRol==='admin'?'admin':'usuario';
+  const resp=[...(t.respuestas||[]),{from:fromTag,texto,fecha:new Date().toISOString()}];
   const {error}=await sb.from('tickets_soporte').update({respuestas:resp}).eq('id',id);
   if(error){toast('Error: '+error.message,false);return;}
   toast('Respuesta enviada');
