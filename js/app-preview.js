@@ -108,10 +108,17 @@ async function saveCfg(){
   window._agentePaisCod=agCfg.pais_cod;
   // Update in Supabase — usar _agenteId, NO email
   if(currentUser&&window._agenteId){
-    const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('id',window._agenteId);
+    let {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod,pdf_theme:rawTheme}).eq('id',window._agenteId);
+    // Si falla por columna inexistente, reintentar sin pdf_theme
+    if(error&&(error.code==='42703'||error.message?.includes('column'))){
+      console.warn('[saveCfg] pdf_theme column missing, retrying without it');
+      ({error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod}).eq('id',window._agenteId));
+    }
     if(error){
-      console.warn('[saveCfg] Supabase update error (config guardada localmente):', error.message);
+      console.warn('[saveCfg] Supabase error:', error.message, error.code);
       _captureError('saveCfg',error);
+    } else {
+      console.log('[saveCfg] OK — pdf_theme:', rawTheme);
     }
   }
   updateHeader();updateLogoPreview();

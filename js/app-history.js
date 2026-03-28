@@ -1,9 +1,16 @@
 let _histPageSize=25;
 let _cliPageSize=25;
+let _agentNames={};
+async function _loadAgentNames(){
+  if(Object.keys(_agentNames).length) return;
+  try{const{data}=await sb.from('agentes').select('id,nombre,email');
+  (data||[]).forEach(a=>{_agentNames[a.id]=a.nombre||a.email||'';});}catch(e){}
+}
 
 async function renderHistory(){
   const el=document.getElementById('hist-list');
   el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   const rows=await dbLoadQuotes();
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase().trim();
@@ -45,7 +52,7 @@ async function renderHistory(){
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
-        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}</div>
+        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}${(!canE&&r.agente_id&&_agentNames[r.agente_id])?' · <span style="color:var(--primary);font-weight:600">'+_agentNames[r.agente_id]+'</span>':''}</div>
         <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
@@ -218,6 +225,7 @@ async function applyStatus(s){
 // CLIENTES
 // ═══════════════════════════════════════════
 async function renderClients(){
+  if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   await loadClients();
   const q=(document.getElementById('cli-filter')?.value||'').toLowerCase().trim();
   const filtered=allClients.filter(c=>!q||(c.nombre||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.celular||'').includes(q));
@@ -229,7 +237,8 @@ async function renderClients(){
     return;
   }
   const shown=visible.slice(0,_cliPageSize);
-  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th><th>Notas</th><th></th></tr></thead><tbody>
+  const showAgent=currentRol==='admin'||currentRol==='agencia';
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Celular</th><th>Email</th>${showAgent?'<th>Agente</th>':''}<th>Notas</th><th></th></tr></thead><tbody>
   ${shown.map(c=>{
     const canE=_canEdit(c), canV=_canView(c);
     const editBtn = canE
@@ -237,10 +246,12 @@ async function renderClients(){
       : (canV ? `<button class="btn btn-out btn-xs" onclick="openClientModal('${c.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>` : '');
     const delBtn = canE
       ? `<button class="btn btn-del btn-xs" onclick="deleteClient('${c.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
+    const agName=showAgent&&c.agente_id&&_agentNames[c.agente_id]?`<td style="font-size:.78rem;color:var(--primary);font-weight:600">${_agentNames[c.agente_id]}</td>`:(showAgent?'<td style="color:var(--g3);font-size:.78rem">—</td>':'');
     return `<tr>
     <td><strong>${c.nombre||'—'}</strong></td>
     <td>${c.celular||'—'}</td>
     <td>${c.email||'—'}</td>
+    ${agName}
     <td style="font-size:.75rem;color:var(--g3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notas||''}</td>
     <td style="white-space:nowrap">${editBtn}${delBtn}</td>
   </tr>`;

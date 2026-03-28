@@ -5,19 +5,14 @@ async function renderAdmin(){
   // Usuarios (unificado)
   await renderAdminUsers();
 
-  // Proveedores
+  // Proveedores — redirigir al tab unificado
+  const provEl=document.getElementById('admin-prov');
+  if(provEl) provEl.innerHTML='<p style="color:var(--g3);font-size:.82rem">Los proveedores y seguros se gestionan desde el tab <a href="#" onclick="event.preventDefault();switchTab(\'providers\')" style="color:var(--primary);font-weight:600">Proveedores</a> en el sidebar.</p>';
+  // Cargar proveedores para datalists y dropdown de seguros
   const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
-  document.getElementById('admin-prov').innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>Pa\u00eds</th><th>Email</th><th>Contacto</th><th></th></tr></thead><tbody>
-  ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'\u2014'}</td><td>${p.pais||'\u2014'}</td><td style="font-size:.75rem">${p.email||''}</td><td style="font-size:.75rem">${p.contacto||''}</td>
-    <td style="white-space:nowrap">
-      <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-    </td></tr>`).join('')}</tbody></table>`:'<p>Sin proveedores.</p>';
-
-  // Datalists for autocomplete
+  _allProvs=provs||[];
   buildDataLists(provs||[]);
-  // Seguros
-  loadSeguros();
+  _updateSeguroDropdown();
   // Agencias (solo admin)
   if(currentRol==='admin') renderAdminAgencias();
   // Actividad reciente
@@ -191,123 +186,161 @@ async function deleteUser(id,nombre){
   toast('Usuario eliminado');renderAdminUsers();
 }
 
-const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursi\u00f3n'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerol\u00ednea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
-function _provTipoOpts(sel){return _provTipos.map(t=>`<option value="${t.v}"${t.v===sel?' selected':''}>${t.l}</option>`).join('');}
+const _provTipos=[{v:'traslado',l:'Traslado'},{v:'excursion',l:'Excursion'},{v:'hotel',l:'Hotel'},{v:'seguro',l:'Seguro'},{v:'asistencia',l:'Asistencia'},{v:'DMC',l:'DMC'},{v:'receptivo',l:'Receptivo'},{v:'aerolinea',l:'Aerolinea'},{v:'crucero',l:'Crucero'},{v:'otro',l:'Otro'}];
+function _tiposBadges(tipos){
+  if(!tipos||!tipos.length) return '<span style="color:var(--g3);font-size:.72rem">—</span>';
+  return (Array.isArray(tipos)?tipos:[tipos]).map(t=>{
+    const lbl=_provTipos.find(x=>x.v===t);
+    return `<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:.68rem;font-weight:600;background:rgba(27,158,143,0.1);color:var(--primary);margin:1px 2px">${lbl?lbl.l:t}</span>`;
+  }).join('');
+}
 
-function openProvModal(){
+// ═══════════════════════════════════════════
+// PROVEEDORES — Tab unificado (proveedores + seguros)
+// ═══════════════════════════════════════════
+let _allProvs=[];
+async function renderProviders(){
+  const el=document.getElementById('prov-list');if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  const {data,error}=await sb.from('proveedores').select('*').order('nombre');
+  if(error){el.innerHTML=`<p style="color:var(--red);font-size:.82rem">Error: ${error.message}</p>`;return;}
+  _allProvs=data||[];
+  // Filtro JS por rol: agente ve suyos + globales de su agencia
+  let visible=_allProvs;
+  if(currentRol==='agente'){
+    visible=_allProvs.filter(p=>!p.agente_id||p.agente_id===window._agenteId||(p.agencia_id&&p.agencia_id===window._agenciaId&&!p.agente_id));
+  }
+  // Filtros UI
+  const q=(document.getElementById('prov-filter')?.value||'').toLowerCase().trim();
+  const tf=document.getElementById('prov-type-filter')?.value||'';
+  if(q) visible=visible.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.ciudad||'').toLowerCase().includes(q)||(p.email||'').toLowerCase().includes(q));
+  if(tf) visible=visible.filter(p=>(p.tipos||[p.tipo]).includes(tf));
+  if(!visible.length){
+    el.innerHTML=`<div class="empty-state"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><p>${q||tf?'Sin resultados':'Sin proveedores'}</p><small>${q||tf?'Proba cambiando los filtros':'Agrega tu primer proveedor con el boton + Nuevo proveedor'}</small></div>`;
+    return;
+  }
+  el.innerHTML=`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipos</th><th>Ciudad</th><th>Contacto</th><th>Comision</th><th></th></tr></thead><tbody>
+  ${visible.map(p=>{
+    const canE=_canEdit(p);
+    const comTxt=p.comision?(p.comision_tipo==='fijo_usd'?'USD '+p.comision:p.comision+'%'):'—';
+    const editBtn=canE?`<button class="btn btn-out btn-xs" onclick="openProviderModal('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`
+      :(_canView(p)?`<button class="btn btn-out btn-xs" onclick="openProviderModal('${p.id}')" title="Solo lectura"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:'');
+    const delBtn=canE?`<button class="btn btn-del btn-xs" onclick="deleteProvider('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:'';
+    return `<tr><td><strong>${p.nombre||'—'}</strong></td><td>${_tiposBadges(p.tipos||[p.tipo])}</td><td>${p.ciudad||'—'}</td><td style="font-size:.75rem">${p.contacto||p.email||'—'}</td><td style="font-size:.75rem">${comTxt}</td><td style="white-space:nowrap">${editBtn}${delBtn}</td></tr>`;
+  }).join('')}</tbody></table>`;
+  // Actualizar provsList global para dropdowns del formulario
+  window.provsList=(_allProvs||[]).filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||''}));
+  // Actualizar select de seguros en formulario
+  _updateSeguroDropdown();
+}
+
+function _updateSeguroDropdown(){
+  const sel=document.getElementById('seg-nm');if(!sel)return;
+  const seguros=(_allProvs||[]).filter(p=>p.nombre&&(p.tipos||[p.tipo]).some(t=>t==='seguro'||t==='asistencia'));
+  sel.innerHTML='<option value="">— Elegir aseguradora —</option>'+seguros.map(s=>`<option value="${s.nombre}">${s.nombre}</option>`).join('');
+}
+
+// Alias legacy para seguros — ahora son proveedores tipo seguro
+async function loadSeguros(){_updateSeguroDropdown();}
+
+function openProviderModal(id){
+  const p=id?_allProvs.find(x=>x.id===id):null;
+  const readOnly=!!p&&!_canEdit(p);
+  const _v=k=>(p&&p[k])||'';
+  const tipos=p?(p.tipos||[p.tipo||'']):[];
+  const _dis=readOnly?' disabled':'';
   document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Proveedor</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px">${readOnly?'Ver proveedor':id?'Editar proveedor':'+ Nuevo proveedor'}</div>
     <div class="g2">
-      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="mp-nm" placeholder="Orlantours"></div>
-      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="mp-tipo">${_provTipoOpts('')}</select></div>
-      <div class="fg"><label class="lbl">Pa\u00eds</label><input class="finput" id="mp-pais" placeholder="Estados Unidos"></div>
-      <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="mp-ciudad" placeholder="Orlando"></div>
-      <div class="fg"><label class="lbl">Email</label><input class="finput" id="mp-email" placeholder="info@proveedor.com" inputmode="email"></div>
-      <div class="fg"><label class="lbl">Telefono</label><input class="finput" id="mp-tel" placeholder="+1 407 555-1234" inputmode="tel"></div>
-      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="mp-not" placeholder="Gabriel Quezada"></div>
+      <div class="fg"><label class="lbl">Nombre *</label><input class="finput" id="mp-nm" value="${_v('nombre')}" placeholder="Orlantours"${_dis}></div>
+      <div class="fg"><label class="lbl">CUIT / RUT</label><input class="finput" id="mp-cuit" value="${_v('cuit')}" placeholder="30-12345678-9"${_dis}></div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-cta" onclick="saveProv()">Guardar</button>
-    </div>`;openModal();
+    <div class="g2">
+      <div class="fg"><label class="lbl">Email</label><input class="finput" id="mp-email" value="${_v('email')}" placeholder="info@proveedor.com" inputmode="email"${_dis}></div>
+      <div class="fg"><label class="lbl">Telefono</label><input class="finput" id="mp-tel" value="${_v('telefono')}" placeholder="+54 11 5555-1234" inputmode="tel"${_dis}></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Contacto</label><input class="finput" id="mp-contacto" value="${_v('contacto')}" placeholder="Gabriel Quezada"${_dis}></div>
+      <div class="fg"><label class="lbl">Web</label><input class="finput" id="mp-web" value="${_v('web')}" placeholder="www.proveedor.com"${_dis}></div>
+    </div>
+    <div class="fg"><label class="lbl">Direccion</label><input class="finput" id="mp-dir" value="${_v('direccion')}" placeholder="Av. Corrientes 1234, CABA"${_dis}></div>
+    <div class="g2">
+      <div class="fg"><label class="lbl">Pais</label><input class="finput" id="mp-pais" value="${_v('pais')}" placeholder="Argentina"${_dis}></div>
+      <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="mp-ciudad" value="${_v('ciudad')}" placeholder="Buenos Aires"${_dis}></div>
+    </div>
+    <div class="fg" style="margin-top:8px">
+      <label class="lbl">Tipos de servicio</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:4px">
+        ${_provTipos.map(t=>`<label style="display:flex;align-items:center;gap:4px;font-size:.82rem;cursor:${readOnly?'default':'pointer'}"><input type="checkbox" class="prov-tipo-chk" value="${t.v}" ${tipos.includes(t.v)?'checked':''}${_dis}> ${t.l}</label>`).join('')}
+      </div>
+    </div>
+    <div class="g2" style="margin-top:8px">
+      <div class="fg"><label class="lbl">Comision</label><input class="finput" id="mp-com" value="${_v('comision')}" placeholder="15" inputmode="decimal"${_dis}></div>
+      <div class="fg"><label class="lbl">Tipo comision</label><select class="fsel" id="mp-com-tipo"${_dis}><option value="porcentaje" ${_v('comision_tipo')!=='fijo_usd'?'selected':''}>Porcentaje %</option><option value="fijo_usd" ${_v('comision_tipo')==='fijo_usd'?'selected':''}>Monto fijo USD</option></select></div>
+    </div>
+    <div class="fg"><label class="lbl">Notas internas</label><textarea class="ftxt" id="mp-notas" rows="2" placeholder="Notas sobre este proveedor..."${_dis}>${_v('notas')}</textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn btn-out" onclick="closeModal()">${readOnly?'Cerrar':'Cancelar'}</button>
+      ${readOnly?'':`<button class="btn btn-cta" onclick="saveProvider('${id||''}')">Guardar</button>`}
+    </div>`;
+  const box=document.getElementById('modal-box');if(box)box.style.maxWidth='600px';
+  openModal();
 }
-async function saveProv(){
-  const nm=document.getElementById('mp-nm').value.trim();if(!nm)return;
-  await sb.from('proveedores').insert({nombre:nm,tipo:document.getElementById('mp-tipo').value,pais:document.getElementById('mp-pais').value,ciudad:document.getElementById('mp-ciudad').value,email:document.getElementById('mp-email').value,telefono:document.getElementById('mp-tel').value,contacto:document.getElementById('mp-not').value});
-  closeModal();toast('Proveedor agregado');
-  if(typeof renderAgency==='function'&&document.getElementById('tab-agency')?.classList.contains('on'))renderAgency();
-  else renderAdmin();
-}
-async function deleteProv(id){if(!confirm('¿Eliminar?'))return;await sb.from('proveedores').delete().eq('id',id);toast('Eliminado');renderAdmin();}
 
-// ═══════════════════════════════════════════
-// SEGUROS
-// ═══════════════════════════════════════════
-async function loadSeguros(){
-  const {data:segs, error}=await sb.from('seguros').select('*').order('nombre');
-  // Renderizar tabla en admin
-  const el=document.getElementById('admin-seguros');
-  if(el){
-    if(error){
-      const isSchemaError=error.message&&(error.message.includes('schema cache')||error.message.includes('does not exist')||error.message.includes('relation'));
-      if(isSchemaError){
-        el.innerHTML=`<div style="border:1px solid rgba(27,158,143,0.3);border-radius:12px;padding:16px 20px;background:rgba(27,158,143,0.07)">
-          <div style="font-size:.8rem;font-weight:700;color:var(--primary);margin-bottom:10px">La tabla de seguros no está creada aún. Ejecutá el siguiente SQL en Supabase:</div>
-          <pre style="background:rgba(0,0,0,0.06);border:1px solid rgba(27,158,143,0.2);border-radius:8px;padding:12px;font-size:.72rem;color:var(--text);overflow-x:auto;cursor:pointer;white-space:pre-wrap;word-break:break-all" title="Click para copiar" onclick="navigator.clipboard.writeText(this.textContent).then(()=>toast('SQL copiado'))">CREATE TABLE public.seguros (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  nombre text NOT NULL,
-  activo boolean DEFAULT true,
-  created_at timestamptz DEFAULT now()
-);
-ALTER TABLE public.seguros ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Acceso autenticado" ON public.seguros
-  FOR ALL USING (auth.role() = 'authenticated');</pre>
-          <div style="font-size:.72rem;color:var(--g3);margin-top:8px">Click en el bloque SQL para copiarlo · Luego ir a Supabase Dashboard &rarr; SQL Editor &rarr; pegar y ejecutar.</div>
-        </div>`;
-      } else {
-        el.innerHTML=`<p style="color:var(--red);font-size:.8rem">Error al cargar seguros: ${error.message}</p>`;
-      }
-    } else {
-      el.innerHTML=segs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Activo</th><th></th></tr></thead><tbody>
-      ${segs.map(s=>`<tr><td>${s.nombre}</td><td>${s.activo?'Sí':'No'}</td>
-        <td style="white-space:nowrap">
-          <button class="btn btn-out btn-xs" onclick="editSeguroModal('${s.id}','${(s.nombre||'').replace(/'/g,"\'")}','${s.activo}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="btn btn-del btn-xs" onclick="deleteSeguro('${s.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-        </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin seguros.</p>';
+async function saveProvider(id){
+  const nm=document.getElementById('mp-nm').value.trim();
+  if(!nm){toast('El nombre es obligatorio',false);return;}
+  const tipos=[...document.querySelectorAll('.prov-tipo-chk:checked')].map(c=>c.value);
+  const row={
+    nombre:nm,
+    tipo:tipos[0]||'otro',
+    tipos:tipos.length?tipos:['otro'],
+    cuit:document.getElementById('mp-cuit')?.value||'',
+    email:document.getElementById('mp-email')?.value||'',
+    telefono:document.getElementById('mp-tel')?.value||'',
+    contacto:document.getElementById('mp-contacto')?.value||'',
+    web:document.getElementById('mp-web')?.value||'',
+    direccion:document.getElementById('mp-dir')?.value||'',
+    pais:document.getElementById('mp-pais')?.value||'',
+    ciudad:document.getElementById('mp-ciudad')?.value||'',
+    comision:parseFloat(document.getElementById('mp-com')?.value)||null,
+    comision_tipo:document.getElementById('mp-com-tipo')?.value||'porcentaje',
+    notas:document.getElementById('mp-notas')?.value||''
+  };
+  let error;
+  if(id){
+    ({error}=await sb.from('proveedores').update(row).eq('id',id));
+    // Fallback si columnas nuevas no existen
+    if(error&&(error.code==='42703'||error.message?.includes('column'))){
+      const safe={nombre:row.nombre,tipo:row.tipo,pais:row.pais,ciudad:row.ciudad,email:row.email,telefono:row.telefono,contacto:row.contacto};
+      ({error}=await sb.from('proveedores').update(safe).eq('id',id));
+    }
+  } else {
+    row.agente_id=window._agenteId;
+    row.agencia_id=window._agenciaId||null;
+    ({error}=await sb.from('proveedores').insert(row));
+    if(error&&(error.code==='42703'||error.message?.includes('column'))){
+      const safe={nombre:row.nombre,tipo:row.tipo,pais:row.pais,ciudad:row.ciudad,email:row.email,telefono:row.telefono,contacto:row.contacto,agente_id:row.agente_id,agencia_id:row.agencia_id};
+      ({error}=await sb.from('proveedores').insert(safe));
     }
   }
-  // Actualizar select del formulario
-  const sel=document.getElementById('seg-nm');
-  if(sel){
-    if(error||!segs){
-      sel.innerHTML='<option value="">— Sin seguros disponibles —</option>';
-    } else {
-      const activos=segs.filter(s=>s.activo!==false);
-      sel.innerHTML='<option value="">— Elegir aseguradora —</option>'+activos.map(s=>`<option value="${s.nombre}">${s.nombre}</option>`).join('');
-    }
-  }
+  if(error){toast('Error: '+error.message,false);_captureError('saveProvider',error);return;}
+  closeModal();toast(id?'Proveedor actualizado':'Proveedor creado');
+  renderProviders();
 }
 
-function openSeguroModal(){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">+ Aseguradora</div>
-    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="ms-nm" placeholder="PAX Assistance"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-cta" onclick="saveSeguro()">Guardar</button>
-    </div>`;openModal();
+async function deleteProvider(id){
+  if(!confirm('Eliminar este proveedor?'))return;
+  const p=_allProvs.find(x=>x.id===id);
+  if(p&&!_canEdit(p)){toast('No podes eliminar proveedores de otro agente',false);return;}
+  await sb.from('proveedores').delete().eq('id',id);
+  toast('Proveedor eliminado');renderProviders();
 }
 
-async function saveSeguro(){
-  const nm=document.getElementById('ms-nm').value.trim();if(!nm)return;
-  await sb.from('seguros').insert({nombre:nm,activo:true});
-  closeModal();toast('Aseguradora agregada');await renderAdmin();await loadSeguros();
-}
-
-function editSeguroModal(id,nombre,activo){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar aseguradora</div>
-    <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="es-nm" value="${nombre}" placeholder="PAX Assistance"></div>
-    <div class="fg"><label class="lbl">Activo</label>
-      <select class="fsel" id="es-activo">
-        <option value="true" ${activo==='true'?'selected':''}>Sí</option>
-        <option value="false" ${activo==='false'?'selected':''}>No</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-cta" onclick="saveSeguroEdit('${id}')">Guardar</button>
-    </div>`;openModal();
-}
-
-async function saveSeguroEdit(id){
-  const nm=document.getElementById('es-nm').value.trim();if(!nm)return;
-  const activo=document.getElementById('es-activo').value==='true';
-  await sb.from('seguros').update({nombre:nm,activo}).eq('id',id);
-  closeModal();toast('Aseguradora actualizada');await renderAdmin();await loadSeguros();
-}
-
-async function deleteSeguro(id){if(!confirm('¿Eliminar?'))return;await sb.from('seguros').delete().eq('id',id);toast('Eliminado');await renderAdmin();await loadSeguros();}
+// Legacy aliases para compatibilidad con admin/agency panels
+function openProvModal(){openProviderModal();}
+async function saveProv(){/* deprecated — usar saveProvider */}
+async function deleteProv(id){deleteProvider(id);}
 
 // ═══════════════════════════════════════════
 // ADMIN EDIT MODALS
@@ -327,32 +360,7 @@ async function saveAgentEdit(id){
   const nm=document.getElementById('ea-nm').value.trim();
   const rol=document.getElementById('ea-rol').value;
   await sb.from('agentes').update({nombre:nm,rol}).eq('id',id);
-  closeModal();toast('✓ Agente actualizado');renderAdmin();
-}
-
-function editProvModal(id,nombre,tipo,pais,ciudad,contacto,email,telefono){
-  document.getElementById('modal-content').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar proveedor</div>
-    <div class="g2">
-      <div class="fg"><label class="lbl">Nombre</label><input class="finput" id="epv-nm" value="${nombre}" placeholder="Orlantours"></div>
-      <div class="fg"><label class="lbl">Tipo</label><select class="fsel" id="epv-tipo">${_provTipoOpts(tipo)}</select></div>
-      <div class="fg"><label class="lbl">Pa\u00eds</label><input class="finput" id="epv-pais" value="${pais}" placeholder="Estados Unidos"></div>
-      <div class="fg"><label class="lbl">Ciudad</label><input class="finput" id="epv-ciudad" value="${ciudad}" placeholder="Orlando"></div>
-      <div class="fg"><label class="lbl">Email</label><input class="finput" id="epv-email" value="${email||''}" placeholder="info@proveedor.com" inputmode="email"></div>
-      <div class="fg"><label class="lbl">Telefono</label><input class="finput" id="epv-tel" value="${telefono||''}" placeholder="+1 407 555-1234" inputmode="tel"></div>
-      <div class="fg full"><label class="lbl">Contacto / Notas</label><input class="finput" id="epv-not" value="${contacto}" placeholder="Gabriel"></div>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-cta" onclick="saveProvEdit('${id}')">Guardar</button>
-    </div>`;openModal();
-}
-async function saveProvEdit(id){
-  const nm=document.getElementById('epv-nm').value.trim();if(!nm)return;
-  await sb.from('proveedores').update({nombre:nm,tipo:document.getElementById('epv-tipo').value,pais:document.getElementById('epv-pais').value,ciudad:document.getElementById('epv-ciudad').value,email:document.getElementById('epv-email').value,telefono:document.getElementById('epv-tel').value,contacto:document.getElementById('epv-not').value}).eq('id',id);
-  closeModal();toast('Proveedor actualizado');
-  if(typeof renderAgency==='function'&&document.getElementById('tab-agency')?.classList.contains('on'))renderAgency();
-  else renderAdmin();
+  closeModal();toast('Agente actualizado');renderAdmin();
 }
 
 // ═══════════════════════════════════════════
@@ -800,18 +808,7 @@ async function renderAgency(){
   }
   const agEl=document.getElementById('agency-agentes');
   if(agEl){
-    // Boton "Activarme como agente" para agencias que no son agentes
-    let selfRegBtn='';
-    if(currentRol==='agencia' && currentUser){
-      const isAlsoAgent = (ags||[]).some(a => a.email === currentUser.email && a.rol === 'agente');
-      if(!isAlsoAgent){
-        selfRegBtn=`<div style="padding:12px;margin-bottom:12px;border-radius:var(--r2);background:rgba(27,158,143,.07);border:1px solid rgba(27,158,143,.12);display:flex;align-items:center;gap:12px">
-          <div style="flex:1;font-size:.82rem;color:var(--text)">Para cotizar, necesitas activarte como agente de tu agencia</div>
-          <button class="btn btn-cta btn-sm" onclick="selfRegisterAsAgent()">Activarme como agente</button>
-        </div>`;
-      }
-    }
-    agEl.innerHTML=selfRegBtn+(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
+    agEl.innerHTML=(ags?.length?`<table class="tbl"><thead><tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
     ${ags.map(a=>`<tr>
       <td>${a.email}</td><td>${a.nombre||'\u2014'}</td>
       <td><span class="status-badge ${a.rol==='admin'?'st-confirmada':a.rol==='agencia'?'st-enviada':'st-borrador'}">${{admin:'Admin',agencia:'Agencia',agente:'Agente'}[a.rol]||a.rol}</span></td>
@@ -819,19 +816,12 @@ async function renderAgency(){
     </tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin agentes.</p>');
   }
 
-  // Proveedores
-  const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
+  // Proveedores — redirigir al tab unificado
   const pvEl=document.getElementById('agency-proveedores');
-  if(pvEl){
-    pvEl.innerHTML=provs?.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>Pa\u00eds</th><th>Email</th><th>Contacto</th><th></th></tr></thead><tbody>
-    ${provs.map(p=>`<tr><td>${p.nombre}</td><td>${p.tipo||'\u2014'}</td><td>${p.pais||'\u2014'}</td><td style="font-size:.75rem">${p.email||''}</td><td style="font-size:.75rem">${p.contacto||''}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-out btn-xs" onclick="editProvModal('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${p.tipo||''}','${(p.pais||'').replace(/'/g,"\\'")}','${(p.ciudad||'').replace(/'/g,"\\'")}','${(p.contacto||'').replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="btn btn-del btn-xs" onclick="deleteProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-      </td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--g3)">Sin proveedores.</p>';
-  }
-
-  // Build datalists for form autocomplete
+  if(pvEl) pvEl.innerHTML='<p style="color:var(--g3);font-size:.82rem">Los proveedores se gestionan desde el tab <a href="#" onclick="event.preventDefault();switchTab(\'providers\')" style="color:var(--primary);font-weight:600">Proveedores</a> en el sidebar.</p>';
+  // Cargar proveedores para datalists
+  const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
+  _allProvs=provs||[];
   buildDataLists(provs||[]);
 }
 

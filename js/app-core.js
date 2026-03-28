@@ -35,7 +35,10 @@ let editingQuoteId=null; // MEJORA3 — ID de la cotización que se está editan
 // ═══════════════════════════════════════════
 // PERMISOS — helpers centralizados
 // ═══════════════════════════════════════════
-function _canEdit(record){return record.agente_id===window._agenteId;}
+function _canEdit(record){
+  if(currentRol==='admin') return false; // admin es solo lectura
+  return record.agente_id===window._agenteId;
+}
 function _canView(record){
   if(record.agente_id===window._agenteId) return true;
   if(currentRol==='admin') return true;
@@ -545,6 +548,7 @@ async function showApp(user){
       if(data.soc!=null)       agCfg.soc       = data.soc;
       if(data.pais_cod!=null)  agCfg.pais_cod  = data.pais_cod;
       if(data.pdf_theme!=null) agCfg.pdf_theme = data.pdf_theme;
+      console.log('[showApp] pdf_theme from Supabase:', data.pdf_theme, '→ agCfg:', agCfg.pdf_theme);
       agCfg.em = user.email;
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
@@ -588,6 +592,11 @@ function _applyRolUI(){
   }
   // Perfil dropdown — reconstruir contenido según rol
   _buildProfileDropdown();
+  // Admin: ocultar items de cotización (sidebar + bottom nav + inicio) y botón nuevo proveedor
+  const isAdm=currentRol==='admin';
+  document.querySelectorAll('[data-tab="form"]').forEach(el=>el.style.display=isAdm?'none':'');
+  const btnNewProv=document.getElementById('btn-new-prov');
+  if(btnNewProv) btnNewProv.style.display=isAdm?'none':'';
   // Guardar en localStorage
   if(currentRol!=='agente') localStorage.setItem('mp_rol',currentRol);
   if(currentRol==='admin') localStorage.setItem('mp_admin','1');
@@ -862,11 +871,11 @@ async function loadDashboardMetrics(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,dashboard:7,admin:8,config:9,agency:10};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11};
 function switchTab(id){
-  // Restricción: agencias no pueden cotizar (deben darse de alta como agente)
-  if(id==='form'&&currentRol==='agencia'){
-    toast('Para cotizar necesitas darte de alta como agente dentro de tu agencia',false);
+  // Admin es solo lectura — no puede cotizar
+  if(id==='form'&&currentRol==='admin'){
+    toast('Admin es solo lectura. Para cotizar, usá una cuenta de agencia o agente.',false);
     return;
   }
   // Guardar borrador al salir del formulario
@@ -898,6 +907,7 @@ function switchTab(id){
   if(id==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
+  if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
 }

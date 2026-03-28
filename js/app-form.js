@@ -113,15 +113,16 @@ function _selCity(inputId,val){
   if(d)d.style.display='none';
 }
 
-// ── Fetch de proveedores para selects de traslados/excursiones ──
-(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,ciudad');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',ciudad:p.ciudad||''}));// Poblar cualquier prov-sel ya renderizado (ej: al cargar historial)
-document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'');});}}}catch(e){}})();
+// ── Fetch de proveedores para selects ──
+(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,tipos,ciudad');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||''}));
+document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'',sel.getAttribute('data-filter')||'');});}}}catch(e){console.warn('[provs]',e);}})();
 
-// Poblar un select de proveedor específico con la lista global
-function _populateProvSel(selId,savedVal){
+// Poblar un select de proveedor — filterType filtra por tipo de servicio
+function _populateProvSel(selId,savedVal,filterType){
   const sel=document.getElementById(selId);
   if(!sel)return;
-  const list=window.provsList||[];
+  const all=window.provsList||[];
+  const list=filterType?all.filter(p=>(p.tipos||[p.tipo]).includes(filterType)):all;
   sel.innerHTML='<option value="">— Elegir proveedor —</option>';
   list.forEach(p=>{
     const opt=document.createElement('option');
@@ -582,7 +583,7 @@ function addTraslado(d){
   // Autocomplete aeropuertos para origen/destino (IATA null — son lugares, no solo aeropuertos)
   initAirportAutocomplete('t'+id+'-or',null);
   initAirportAutocomplete('t'+id+'-de',null);
-  _populateProvSel('t'+id+'-sel',d.prov||'');
+  _populateProvSel('t'+id+'-sel',d.prov||'','traslado');
   if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
   if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
   _onPriceChange('traslados-cont','TRASLADOS');
@@ -628,7 +629,7 @@ function addExcursion(d){
   </div>`;
   document.getElementById('excursiones-cont').appendChild(el);
   initCityAutocomplete('e'+id+'-punto');
-  _populateProvSel('e'+id+'-sel',d.prov||'');
+  _populateProvSel('e'+id+'-sel',d.prov||'','excursion');
   _onPriceChange('excursiones-cont','EXCURSIONES');
 }
 

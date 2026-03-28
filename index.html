@@ -208,6 +208,12 @@
     <span class="sb-lbl">Clientes</span>
   </button>
 
+  <!-- Proveedores -->
+  <button class="sb-item" onclick="switchTab('providers')" title="Proveedores" data-tab="providers">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
+    <span class="sb-lbl">Proveedores</span>
+  </button>
+
   <div class="sb-div"></div>
 
   <!-- Dark/light toggle -->
@@ -749,6 +755,32 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <div id="group-list"></div>
     </div>
   </div>
+</div>
+
+<!-- ═══ PROVEEDORES ═══ -->
+<div id="tab-providers" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg> Proveedores</h2>
+    <p>Hoteles, traslados, seguros, excursiones y otros proveedores de servicios.</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+    <input class="finput" id="prov-filter" placeholder="Buscar por nombre, tipo o ciudad..." oninput="renderProviders()" style="flex:1;min-width:200px">
+    <select class="fsel" id="prov-type-filter" onchange="renderProviders()" style="width:auto">
+      <option value="">Todos los tipos</option>
+      <option value="hotel">Hotel</option>
+      <option value="traslado">Traslado</option>
+      <option value="excursion">Excursion</option>
+      <option value="seguro">Seguro</option>
+      <option value="asistencia">Asistencia</option>
+      <option value="aerolinea">Aerolinea</option>
+      <option value="crucero">Crucero</option>
+      <option value="DMC">DMC</option>
+      <option value="receptivo">Receptivo</option>
+      <option value="otro">Otro</option>
+    </select>
+    <button class="btn btn-cta btn-sm" id="btn-new-prov" onclick="openProviderModal()">+ Nuevo proveedor</button>
+  </div>
+  <div id="prov-list"></div>
 </div>
 
 <!-- ═══ DASHBOARD ═══ -->
