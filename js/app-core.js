@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.7.0';
+const APP_VERSION = '0.8.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE
@@ -151,10 +151,16 @@ function toggleTheme(){
   const next=current==='light'?'dark':'light';
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('ermix-theme',next);
+  // Legacy login icons
   const di=document.getElementById('theme-icon-dark');
   const li=document.getElementById('theme-icon-light');
   if(di) di.style.display=next==='light'?'block':'none';
   if(li) li.style.display=next==='dark'?'block':'none';
+  // Topbar toggle icons
+  const moon=document.getElementById('theme-ico-moon');
+  const sun=document.getElementById('theme-ico-sun');
+  if(moon) moon.style.display=next==='light'?'':'none';
+  if(sun) sun.style.display=next==='dark'?'':'none';
   const lbl=document.getElementById('login-theme-lbl');
   if(lbl) lbl.textContent='Tema al ingresar: '+(next==='light'?'claro':'oscuro');
 }
@@ -168,6 +174,11 @@ function toggleTheme(){
     const li=document.getElementById('theme-icon-light');
     if(di) di.style.display=saved==='light'?'block':'none';
     if(li) li.style.display=saved==='dark'?'block':'none';
+    // Topbar toggle icons
+    const moon=document.getElementById('theme-ico-moon');
+    const sun=document.getElementById('theme-ico-sun');
+    if(moon) moon.style.display=saved==='light'?'':'none';
+    if(sun) sun.style.display=saved==='dark'?'':'none';
     const lbl=document.getElementById('login-theme-lbl');
     if(lbl) lbl.textContent='Tema al ingresar: '+(saved==='light'?'claro':'oscuro');
   });
