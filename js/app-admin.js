@@ -1,20 +1,10 @@
 let _adminUsersData=[];
+let _adminAgenciasMap={}; // id → nombre
 
 async function renderAdmin(){
   if(currentRol!=='admin'&&currentRol!=='agencia') return;
   // Usuarios (unificado)
   await renderAdminUsers();
-
-  // Proveedores — redirigir al tab unificado
-  const provEl=document.getElementById('admin-prov');
-  if(provEl) provEl.innerHTML='<p style="color:var(--g3);font-size:.82rem">Los proveedores y seguros se gestionan desde el tab <a href="#" onclick="event.preventDefault();switchTab(\'providers\')" style="color:var(--primary);font-weight:600">Proveedores</a> en el sidebar.</p>';
-  // Cargar proveedores para datalists y dropdown de seguros
-  const {data:provs}=await sb.from('proveedores').select('*').order('nombre');
-  _allProvs=provs||[];
-  buildDataLists(provs||[]);
-  _updateSeguroDropdown();
-  // Agencias (solo admin)
-  if(currentRol==='admin') renderAdminAgencias();
   // Actividad reciente
   loadAdminLog();
 }
@@ -61,10 +51,14 @@ function buildDataLists(provs){
 
 async function renderAdminUsers(){
   const el=document.getElementById('admin-users-list');if(!el)return;
-  const [{data:agents,error},{data:pendingInvs}]=await Promise.all([
+  const [{data:agents,error},{data:pendingInvs},{data:agencias}]=await Promise.all([
     sb.from('agentes').select('*').order('nombre'),
-    sb.from('invitaciones').select('*').eq('tipo','invite').eq('usado',false).order('creado_en',{ascending:false})
+    sb.from('invitaciones').select('*').eq('tipo','invite').eq('usado',false).order('creado_en',{ascending:false}),
+    sb.from('agencias').select('id,nombre')
   ]);
+  // Build agencias map
+  _adminAgenciasMap={};
+  (agencias||[]).forEach(a=>{_adminAgenciasMap[a.id]=a.nombre||'';});
   if(error){el.innerHTML='<div style="color:var(--red);font-size:.82rem">Error: '+error.message+'</div>';return;}
   // Merge: pending invites que aún no tienen cuenta (no aparecen en agentes)
   const activeEmails=new Set((agents||[]).map(a=>a.email));
@@ -109,13 +103,17 @@ function _renderAdminUsersTable(){
 
   const myId=currentUser?.id||'';
 
+  const fmtDate=d=>{if(!d)return'\u2014';try{return new Date(d).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return'\u2014';}};
+
   el.innerHTML=`<table class="tbl" style="width:100%">
-    <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+    <thead><tr><th>Nombre</th><th>Email</th><th>Agencia</th><th>Rol</th><th>Estado</th><th>Alta</th><th style="text-align:right">Acciones</th></tr></thead>
     <tbody>${filtered.map(a=>`<tr>
       <td style="font-weight:600">${a.nombre||'\u2014'}</td>
       <td style="font-size:.82rem;color:var(--g4)">${a.email||'\u2014'}</td>
+      <td style="font-size:.78rem">${a.agencia_id&&_adminAgenciasMap[a.agencia_id]?_adminAgenciasMap[a.agencia_id]:'<span style="color:var(--g3)">\u2014</span>'}</td>
       <td>${rolBadge(a.rol)}</td>
       <td>${statusBadge(a)}</td>
+      <td style="font-size:.72rem;color:var(--g4);white-space:nowrap">${fmtDate(a.creado_en||a.created_at)}</td>
       <td style="text-align:right">
         <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
           ${!a.activo?`<button class="btn btn-out btn-xs" style="color:var(--primary);border-color:var(--primary)" onclick="activateUser('${a.id}')">Activar</button>`:''}

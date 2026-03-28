@@ -302,11 +302,54 @@
 
 <!-- ═══ INICIO ═══ -->
 <div id="tab-inicio" class="panel on">
+  <!-- Admin dashboard (solo admin) -->
+  <div id="inicio-admin" style="display:none">
+    <div class="intro-bar" style="margin-bottom:16px">
+      <h2 id="inicio-saludo-admin">Hola.</h2>
+      <p>Panel de control global de ermix.</p>
+    </div>
+    <div class="dm-grid">
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg>Agencias</div>
+        <div class="dm-card-val grad" id="met-adm-agencies">—</div>
+        <div class="dm-card-sub">activas en la plataforma</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-agencies-bar" style="width:0%"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agentes</div>
+        <div class="dm-card-val" id="met-adm-agents" style="color:#9B7FD4">—</div>
+        <div class="dm-card-sub">registrados en total</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-agents-bar" style="width:0%;background:#9B7FD4"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+        <div class="dm-card-val" id="met-adm-quotes" style="color:#0EA5E9">—</div>
+        <div class="dm-card-sub">generadas en la plataforma</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-quotes-bar" style="width:0%;background:#0EA5E9"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Confirmadas</div>
+        <div class="dm-card-val" id="met-adm-confirmed" style="color:#22c55e">—</div>
+        <div class="dm-card-sub">viajes vendidos</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-confirmed-bar" style="width:0%;background:#22c55e"></div></div>
+      </div>
+    </div>
+    <!-- Top destinos -->
+    <div class="dm-wide" style="margin-top:16px">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Destinos mas cotizados</span>
+      </div>
+      <div id="adm-top-destinos" style="padding:8px 0;font-size:.82rem;color:var(--g3)">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- Agente/agencia dashboard -->
+  <div id="inicio-agent">
   <!-- Quick actions -->
   <div class="quick-actions">
     <div class="qa-card qa-card-pri" onclick="switchTab('form')">
       <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-      <div class="qa-card-label">Nueva cotización</div>
+      <div class="qa-card-label">Nueva cotizacion</div>
       <div class="qa-card-sub">Crear desde cero</div>
     </div>
     <div class="qa-card" onclick="switchTab('history')">
@@ -392,17 +435,18 @@
       </div>
     </div>
   </div>
-  <!-- Promociones -->
-  <div class="card" style="margin-bottom:20px">
+  <!-- Promociones (solo agente) -->
+  <div class="card" id="inicio-promos-card" style="margin-bottom:20px">
     <div class="card-hd">
       <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <div><div class="card-ttl">Mis Promociones</div><div class="card-sub">Clic en una para cargar la cotización</div></div>
+      <div><div class="card-ttl">Mis Promociones</div><div class="card-sub">Clic en una para cargar la cotizacion</div></div>
       <button class="btn btn-out btn-xs" onclick="switchTab('promos')" style="margin-left:auto">Ver todas</button>
     </div>
     <div class="card-body" style="padding-top:10px;padding-bottom:14px">
       <div id="home-promos-grid" class="home-promos-grid"></div>
     </div>
   </div>
+  </div><!-- /inicio-agent -->
 </div>
 
 <!-- ═══ PROMOCIONES ═══ -->
@@ -857,30 +901,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
-  <!-- PROVEEDORES -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-      <div style="flex:1"><div class="card-ttl">Proveedores</div></div>
-      <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar</button>
-    </div>
-    <div class="card-body">
-      <div id="admin-prov"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
-    </div>
-  </div>
-
-  <!-- SEGUROS -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <div style="flex:1"><div class="card-ttl">Seguros</div></div>
-      <button class="btn btn-pri btn-sm" onclick="openSeguroModal()">+ Agregar</button>
-    </div>
-    <div class="card-body">
-      <div id="admin-seguros"><div style="text-align:center;padding:30px;color:var(--g3)"></div></div>
-    </div>
-  </div>
-
   <!-- ACTIVIDAD RECIENTE -->
   <div class="card">
     <div class="card-hd">
@@ -901,22 +921,6 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
-  <!-- API KEYS -->
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
-      <div><div class="card-ttl">API Keys</div><div class="card-sub">Claves de servicios externos para toda la plataforma ermix</div></div>
-    </div>
-    <div class="card-body">
-      <div class="fg">
-        <label class="lbl" for="cfg-unsplash">Unsplash Access Key</label>
-        <input class="finput" type="password" id="cfg-unsplash" placeholder="Access Key de unsplash.com/developers" autocomplete="off">
-        <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Para fotos de portada por destino. Se guarda en localStorage, no se sube al servidor.</div>
-      </div>
-      <button class="btn btn-cta btn-sm" onclick="saveApiKeys()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar keys</button>
-      <span id="api-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
-    </div>
-  </div>
 
 </div>
 
@@ -926,7 +930,23 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Soporte</h2>
     <p>Tickets de soporte de agentes y agencias.</p>
   </div>
-  <div id="support-list"></div>
+  <div class="card">
+    <div class="card-hd">
+      <div style="flex:1"><div class="card-ttl">Tickets</div><div class="card-sub">Consultas y problemas reportados</div></div>
+    </div>
+    <div class="card-body">
+      <div id="support-list">
+        <div class="empty-state" style="padding:40px 20px">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p style="margin-top:12px;font-weight:600;color:var(--text)">Sin tickets de soporte</p>
+          <small style="color:var(--g3)">Cuando los agentes o agencias envien consultas, apareceran aca.</small>
+          <div style="margin-top:16px;padding:12px 16px;background:var(--g1);border-radius:var(--r2);font-size:.75rem;color:var(--g4)">
+            La tabla <code style="font-size:.7rem;background:var(--surface2);padding:2px 6px;border-radius:4px">tickets_soporte</code> debe crearse en Supabase para habilitar esta funcionalidad.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ ADMIN CONFIG ═══ -->
@@ -1063,22 +1083,22 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 <!-- ═══ CONFIG ═══ -->
 <div id="tab-config" class="panel">
   <div class="card">
-    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl">Mi perfil de agente</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl" id="cfg-card-title">Mi perfil</div></div></div>
     <div class="card-body">
       <div class="g2">
         <div class="fg"><label class="lbl" for="cfg-nm">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
-        <div class="fg"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel"></div>
-        <div class="fg"><label class="lbl" for="cfg-em">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com" inputmode="email"></div>
-        <div class="fg"><label class="lbl" for="cfg-tel">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
-        <div class="fg"><label class="lbl" for="cfg-pais">País <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(código ISO)</span></label>
+        <div class="fg" id="cfg-ag-wrap"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel" readonly style="background:var(--g1);cursor:not-allowed"></div>
+        <div class="fg"><label class="lbl" for="cfg-em">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com" inputmode="email" readonly style="background:var(--g1);cursor:not-allowed"></div>
+        <div class="fg" id="cfg-tel-wrap"><label class="lbl" for="cfg-tel">Telefono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
+        <div class="fg" id="cfg-pais-wrap"><label class="lbl" for="cfg-pais">Pais <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(codigo ISO)</span></label>
           <input class="finput" id="cfg-pais" list="cfg-pais-list" maxlength="3" placeholder="AR" style="text-transform:uppercase">
-          <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">España</option><option value="MX">México</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Perú</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panamá</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
-          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotización · ej: AR-0001-00001</div>
+          <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">Espana</option><option value="MX">Mexico</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Peru</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panama</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotizacion</div>
         </div>
-        <div class="fg full"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
+        <div class="fg full" id="cfg-soc-wrap"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
       </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
-      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">✓ Guardado</span>
+      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
     </div>
   </div>
   <div class="card" style="margin-top:16px">

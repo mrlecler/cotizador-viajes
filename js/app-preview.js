@@ -131,6 +131,25 @@ async function changePassword(){
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
   if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
+  // Admin profile: hide agent-specific fields
+  if(currentRol==='admin'){
+    const hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
+    hide('cfg-ag-wrap');   // no tiene agencia
+    hide('cfg-pais-wrap'); // no genera cotizaciones
+    hide('cfg-soc-wrap');  // no tiene redes
+    const ttl=document.getElementById('cfg-card-title');
+    if(ttl) ttl.textContent='Mi perfil de administrador';
+  } else {
+    const ttl=document.getElementById('cfg-card-title');
+    if(ttl) ttl.textContent=currentRol==='agencia'?'Mi perfil de agencia':'Mi perfil de agente';
+    // Load agencia name readonly from Supabase relation
+    if(window._agenciaId){
+      sb.from('agencias').select('nombre').eq('id',window._agenciaId).maybeSingle().then(({data})=>{
+        const el=document.getElementById('cfg-ag');
+        if(el&&data?.nombre) el.value=data.nombre;
+      });
+    }
+  }
 }
 
 // ═══════════════════════════════════════════

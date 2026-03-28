@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.4.0';
+const APP_VERSION = '0.5.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE
@@ -637,14 +637,9 @@ function _buildProfileDropdown(){
   if(rolEl) rolEl.textContent=rolLblMap[currentRol]||'Agente';
   const email=currentUser?.email||'';
   const rolLbl={admin:'Administrador',agencia:'Agencia',agente:'Agente'}[currentRol]||'Agente';
-  // Build management link based on role
+  // Build management link based on role (only agencia — admin has it in sidebar already)
   let mgmtLink='';
-  if(currentRol==='admin'){
-    mgmtLink=`<button class="prof-dd-item" onclick="_closeProfDD();switchTab('admin')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Gesti\u00f3n
-    </button>`;
-  } else if(currentRol==='agencia'){
+  if(currentRol==='agencia'){
     mgmtLink=`<button class="prof-dd-item" onclick="_closeProfDD();switchTab('agency')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
       Mi Agencia
@@ -803,6 +798,24 @@ function _setDashPeriod(p,btn){
 }
 
 async function loadDashboardMetrics(){
+  // Toggle admin vs agent dashboard
+  const admDash=document.getElementById('inicio-admin');
+  const agtDash=document.getElementById('inicio-agent');
+  if(currentRol==='admin'){
+    if(admDash)admDash.style.display='';
+    if(agtDash)agtDash.style.display='none';
+    // Update admin saludo
+    const sal=document.getElementById('inicio-saludo-admin');
+    if(sal){const nm=agCfg.nm||currentUser?.email?.split('@')[0]||'';sal.textContent='Hola'+(nm?', '+nm.split(' ')[0]:'')+'.'}
+    _loadAdminDashboard();
+    return;
+  } else {
+    if(admDash)admDash.style.display='none';
+    if(agtDash)agtDash.style.display='';
+    // Hide promos for agencia
+    const promCard=document.getElementById('inicio-promos-card');
+    if(promCard) promCard.style.display=currentRol==='agente'?'':'none';
+  }
   // Skeleton
   ['met-cot','met-conf','met-act','met-com','met-com-conf','met-com-pend','met-clients'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.textContent='...';
@@ -888,6 +901,47 @@ async function loadDashboardMetrics(){
     console.error('loadDashboardMetrics error:',e);
     if(typeof _captureError==='function') _captureError('DASHBOARD',e);
   }
+}
+
+// ═══════════════════════════════════════════
+// ADMIN DASHBOARD
+// ═══════════════════════════════════════════
+async function _loadAdminDashboard(){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setBar=(id,pct)=>{const el=document.getElementById(id);if(el)el.style.width=Math.min(100,pct)+'%';};
+  try{
+    const [{data:agencias},{data:agentes},{data:cotiz}]=await Promise.all([
+      sb.from('agencias').select('id'),
+      sb.from('agentes').select('id,rol').neq('rol','admin'),
+      sb.from('cotizaciones').select('id,destino,estado')
+    ]);
+    const nAg=(agencias||[]).length;
+    const nAgents=(agentes||[]).length;
+    const nQ=(cotiz||[]).length;
+    const nConf=(cotiz||[]).filter(q=>q.estado==='confirmada').length;
+    set('met-adm-agencies',nAg||'0');
+    set('met-adm-agents',nAgents||'0');
+    set('met-adm-quotes',nQ||'0');
+    set('met-adm-confirmed',nConf||'0');
+    setBar('met-adm-agencies-bar',Math.min(100,nAg/10*100));
+    setBar('met-adm-agents-bar',Math.min(100,nAgents/50*100));
+    setBar('met-adm-quotes-bar',Math.min(100,nQ/200*100));
+    setBar('met-adm-confirmed-bar',nQ>0?nConf/nQ*100:0);
+    // Top destinos
+    const destMap={};
+    (cotiz||[]).forEach(q=>{if(q.destino){destMap[q.destino]=(destMap[q.destino]||0)+1;}});
+    const sorted=Object.entries(destMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const topEl=document.getElementById('adm-top-destinos');
+    if(topEl){
+      if(!sorted.length){topEl.innerHTML='<span style="color:var(--g3)">Sin datos aun.</span>';return;}
+      const max=sorted[0][1];
+      topEl.innerHTML=sorted.map(([d,n])=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="min-width:120px;font-weight:600;font-size:.8rem">${d}</span>
+        <div style="flex:1;height:6px;background:var(--g1);border-radius:3px;overflow:hidden"><div style="width:${n/max*100}%;height:100%;background:var(--grad);border-radius:3px"></div></div>
+        <span style="font-size:.72rem;color:var(--g4);min-width:20px;text-align:right">${n}</span>
+      </div>`).join('');
+    }
+  }catch(e){console.error('[_loadAdminDashboard]',e);}
 }
 
 // ═══════════════════════════════════════════
