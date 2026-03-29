@@ -1307,6 +1307,21 @@ function _buildItinerario(){
     const fe=(document.getElementById('t'+i+'-fe')?.value||'').trim();
     if(fe&&(or||de))addEv(fe,'TRASLADO',[or,de].filter(Boolean).join(' → '));
   });
+  // Excursiones
+  document.querySelectorAll('[id^="eb-"]').forEach(blk=>{
+    const i=blk.id.replace('eb-','');
+    const nm=(document.getElementById('e'+i+'-nm')?.value||'').trim();
+    const fe=(document.getElementById('e'+i+'-fe')?.value||'').trim();
+    if(fe&&nm)addEv(fe,'EXCURSIÓN',nm);
+  });
+  // Tickets / Parques / Shows
+  document.querySelectorAll('[id^="tkb-"]').forEach(blk=>{
+    const i=blk.id.replace('tkb-','');
+    const nm=(document.getElementById('tk'+i+'-nm')?.value||'').trim();
+    const fe=(document.getElementById('tk'+i+'-fe')?.value||'').trim();
+    const tipo=(document.getElementById('tk'+i+'-tipo')?.value||'PARQUE').toUpperCase();
+    if(fe&&nm)addEv(fe,tipo==='PARQUE'?'PARQUE':tipo==='SHOW'?'EVENTO ESPECIAL':'PARQUE',nm);
+  });
   // Build days array
   _itiData=[];
   let cur=new Date(salida);const end=new Date(regreso);
