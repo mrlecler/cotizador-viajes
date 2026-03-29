@@ -924,10 +924,15 @@ async function _autosaveTick(){
     qData=d;
     await dbSaveQuote(d, editingQuoteId);
     // Si era nueva, guardar el ID para futuros autosaves
-    if(!editingQuoteId&&d.ref_id){
+    if(!editingQuoteId&&d.refId){
       // Buscar la cotización recién creada para obtener su ID
-      const {data}=await sb.from('cotizaciones').select('id').eq('ref_id',d.ref_id).maybeSingle();
-      if(data) editingQuoteId=data.id;
+      const {data}=await sb.from('cotizaciones').select('id').eq('ref_id',d.refId).maybeSingle();
+      if(data){
+        editingQuoteId=data.id;
+        // Reflejar el ref_id en el campo del formulario para que próximos collectForm() lo lean
+        const refEl=document.getElementById('m-ref');
+        if(refEl&&!refEl.value) refEl.value=d.refId;
+      }
     }
     _autosaveSnapshot=current;
     // Indicador visual sutil
@@ -1257,6 +1262,9 @@ function _itiTipoColor(t){return(_ITI_TIPOS.find(x=>x.k===t)||{c:'#9CA3AF'}).c;}
 function _itiFromStr(s){if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');return yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0');}return s;}
 
 function _buildItinerario(){
+  // Forzar que la sección quede expandida al regenerar
+  const itiCard=document.getElementById('itinerario-card');
+  if(itiCard) itiCard.classList.remove('collapsed');
   const salida=document.getElementById('m-sal')?.value;
   const regreso=document.getElementById('m-reg')?.value;
   const cont=document.getElementById('itinerario-cont');
@@ -1352,7 +1360,12 @@ function _itiCollect(){
   const fmt3=(d)=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
   _itiData.forEach(day=>{
     day.locked.forEach(lk=>{result.push({fecha:fmt3(day.date),actividad:lk.actividad,tipo:lk.tipo,locked:true});});
-    if(day.manual.actividad||(day.manual.tipo&&day.manual.tipo!=='LIBRE')){result.push({fecha:fmt3(day.date),actividad:day.manual.actividad||'',tipo:day.manual.tipo||'LIBRE',locked:false});}
+    if(day.manual.actividad||(day.manual.tipo&&day.manual.tipo!=='LIBRE')){
+      result.push({fecha:fmt3(day.date),actividad:day.manual.actividad||'',tipo:day.manual.tipo||'LIBRE',locked:false});
+    } else if(!day.locked.length){
+      // Guardar días sin actividad como "LIBRE" para que el PDF muestre todos los días
+      result.push({fecha:fmt3(day.date),actividad:'Día libre',tipo:'LIBRE',locked:false});
+    }
   });
   return result.length?result:null;
 }
