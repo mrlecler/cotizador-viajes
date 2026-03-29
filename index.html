@@ -671,7 +671,10 @@
     </div>
     <div class="card-body">
       <div id="traslados-cont"></div>
-      <button class="add-row" onclick="addTraslado()">+ Agregar traslado</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addTraslado()">+ Agregar traslado</button>
+        <button class="add-row" style="background:rgba(27,158,143,0.07);border-color:rgba(27,158,143,0.22);color:var(--primary)" onclick="_showProvCatalog(event,'traslado',addTraslado)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
     </div>
   </div>
 
@@ -684,7 +687,10 @@
     </div>
     <div class="card-body">
       <div id="excursiones-cont"></div>
-      <button class="add-row" onclick="addExcursion()">+ Agregar excursión</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addExcursion()">+ Agregar excursión</button>
+        <button class="add-row" style="background:rgba(212,160,23,0.07);border-color:rgba(212,160,23,0.22);color:#D4A017" onclick="_showProvCatalog(event,'excursion',addExcursion)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
     </div>
   </div>
 
@@ -697,7 +703,10 @@
     </div>
     <div class="card-body">
       <div id="tickets-cont"></div>
-      <button class="add-row" onclick="addTicket()">+ Agregar ticket / entrada</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addTicket()">+ Agregar ticket / entrada</button>
+        <button class="add-row" style="background:rgba(212,160,23,0.07);border-color:rgba(212,160,23,0.22);color:#D4A017" onclick="_showProvCatalog(event,'excursion',addTicket)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
     </div>
   </div>
 
@@ -710,7 +719,10 @@
     </div>
     <div class="card-body">
       <div id="autos-cont"></div>
-      <button class="add-row" onclick="addAuto()">+ Agregar auto</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addAuto()">+ Agregar auto</button>
+        <button class="add-row" style="background:rgba(232,130,106,0.07);border-color:rgba(232,130,106,0.22);color:#E8826A" onclick="_showProvCatalog(event,'auto',addAuto)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
     </div>
   </div>
 
@@ -723,7 +735,10 @@
     </div>
     <div class="card-body">
       <div id="cruceros-cont"></div>
-      <button class="add-row" onclick="addCrucero()">+ Agregar crucero</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addCrucero()">+ Agregar crucero</button>
+        <button class="add-row" style="background:rgba(14,165,233,0.07);border-color:rgba(14,165,233,0.22);color:#0EA5E9" onclick="_showProvCatalog(event,'crucero',addCrucero)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
     </div>
   </div>
 
@@ -737,7 +752,10 @@
     <div class="card-body">
       <div class="g3">
         <div class="fg"><label class="lbl" for="seg-nm">Aseguradora</label>
-          <select class="fsel" id="seg-nm"><option value="">— Elegir aseguradora —</option></select>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="fsel" id="seg-nm" style="flex:1"><option value="">— Elegir aseguradora —</option></select>
+            <button type="button" class="btn btn-out btn-xs" onclick="_showProvCatalog(event,'seguro',null)" title="Ver catalogo de aseguradoras" style="white-space:nowrap;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></button>
+          </div>
         </div>
         <div class="fg"><label class="lbl" for="seg-med">Cobertura médica</label><input class="finput" type="text" id="seg-med" placeholder="USD 2.000.000"></div>
         <div class="fg"><label class="lbl" for="seg-eq">Equipaje</label><input class="finput" type="text" id="seg-eq" placeholder="USD 1.500"></div>
