@@ -115,7 +115,10 @@ function _selCity(inputId,val){
 
 // ── Fetch de proveedores para selects ──
 (async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,tipos,ciudad,comision,comision_tipo,notas');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||'',comision:p.comision||null,comision_tipo:p.comision_tipo||'porcentaje',notas:p.notas||''}));
-document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'',sel.getAttribute('data-filter')||'');});}}}catch(e){console.warn('[provs]',e);}})();
+document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'',sel.getAttribute('data-filter')||'');});
+// Poblar seg-nm con proveedores de tipo seguro O asistencia (no usan clase prov-sel)
+const _segSel=document.getElementById('seg-nm');
+if(_segSel){const _segs=(window.provsList||[]).filter(p=>(p.tipos||[p.tipo||'']).some(t=>t==='seguro'||t==='asistencia'));_segSel.innerHTML='<option value="">— Elegir aseguradora —</option>';_segs.forEach(p=>{const o=document.createElement('option');o.value=p.nombre;o.textContent=p.nombre+(p.ciudad?' ('+p.ciudad+')':'');_segSel.appendChild(o);});}}}}catch(e){console.warn('[provs]',e);}})();
 
 // Poblar un select de proveedor — filterType filtra por tipo de servicio
 function _populateProvSel(selId,savedVal,filterType){
