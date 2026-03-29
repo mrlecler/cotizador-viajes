@@ -64,8 +64,9 @@ function _showUnsplashCredit(){
 }
 function removeCover(){coverUrl=null;window._unsplashCredit=null;updCovers();}
 
-function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;localStorage.setItem('mp_logo',logoUrl);updateLogoPreview();};r.readAsDataURL(f);}
-function removeLogo(){logoUrl=null;localStorage.removeItem('mp_logo');updateLogoPreview();}
+function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;localStorage.setItem('mp_logo',logoUrl);_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
+function removeLogo(){logoUrl=null;agCfg.logo_url=null;localStorage.removeItem('mp_logo');_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
+function _logoUrlInput(url){url=(url||'').trim();if(!url){return;}logoUrl=url;agCfg.logo_url=url;localStorage.setItem('mp_logo',url);_saveAgCfg();updateLogoPreview();}
 function updateLogoPreview(){
   const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
   if(!w) return; // element may not exist yet
@@ -116,10 +117,24 @@ async function saveCfg(){
   agCfg.nm=gv('cfg-nm');agCfg.em=gv('cfg-em');agCfg.tel=gv('cfg-tel');agCfg.soc=gv('cfg-soc');agCfg.pais_cod=rawPais||'AR';
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
+  // Logo URL desde campo (si cambió)
+  const rawLogoUrl=(document.getElementById('cfg-logo-url')?.value||'').trim();
+  if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;localStorage.setItem('mp_logo',rawLogoUrl);}
   // Update in Supabase — sin pdf_theme (se maneja solo en preview via localStorage)
   if(currentUser&&window._agenteId){
-    const {error}=await sb.from('agentes').update({nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod}).eq('id',window._agenteId);
-    if(error){console.warn('[saveCfg] Supabase error:',error.message);_captureError('saveCfg',error);}
+    const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod};
+    if(agCfg.logo_url) upd.logo_url=agCfg.logo_url;
+    const {error}=await sb.from('agentes').update(upd).eq('id',window._agenteId);
+    if(error){
+      // logo_url puede no existir — retry sin ese campo
+      if(error.code==='42703'||error.message?.includes('column')){
+        delete upd.logo_url;
+        const {error:e2}=await sb.from('agentes').update(upd).eq('id',window._agenteId);
+        if(e2){console.warn('[saveCfg] Supabase error:',e2.message);_captureError('saveCfg',e2);}
+      } else {
+        console.warn('[saveCfg] Supabase error:',error.message);_captureError('saveCfg',error);
+      }
+    }
   }
   updateHeader();
   const ok=document.getElementById('cfg-ok');if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2500);}
@@ -140,6 +155,15 @@ async function changePassword(){
 }
 function loadCfg(){
   [{id:'cfg-nm',k:'nm'},{id:'cfg-ag',k:'ag'},{id:'cfg-em',k:'em'},{id:'cfg-tel',k:'tel'},{id:'cfg-soc',k:'soc'},{id:'cfg-pais',k:'pais_cod'}].forEach(({id,k})=>{const e=document.getElementById(id);if(e&&agCfg[k])e.value=agCfg[k];});
+  // Logo — mostrar en preview y poblar campo URL si es una URL (no base64)
+  if(logoUrl||agCfg.logo_url){
+    if(!logoUrl) logoUrl=agCfg.logo_url;
+    updateLogoPreview();
+    const uf=document.getElementById('cfg-logo-url');
+    if(uf&&logoUrl&&!logoUrl.startsWith('data:')) uf.value=logoUrl;
+  } else {
+    updateLogoPreview(); // muestra inicial (avatar con letra)
+  }
   if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
   // Profile card: adapt per role
   const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
