@@ -114,7 +114,7 @@ function _selCity(inputId,val){
 }
 
 // ── Fetch de proveedores para selects ──
-(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,tipos,ciudad');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||''}));
+(async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('proveedores').select('nombre,tipo,tipos,ciudad,comision,comision_tipo,notas');if(data){window.provsList=data.filter(p=>p.nombre).map(p=>({nombre:p.nombre,tipo:p.tipo||'',tipos:p.tipos||[p.tipo||'otro'],ciudad:p.ciudad||'',comision:p.comision||null,comision_tipo:p.comision_tipo||'porcentaje',notas:p.notas||''}));
 document.querySelectorAll('.prov-sel').forEach(sel=>{_populateProvSel(sel.id,sel.getAttribute('data-val')||'',sel.getAttribute('data-filter')||'');});}}}catch(e){console.warn('[provs]',e);}})();
 
 // Poblar un select de proveedor — filterType filtra por tipo de servicio
@@ -586,6 +586,7 @@ function addTraslado(d){
   _populateProvSel('t'+id+'-sel',d.prov||'','traslado');
   if(d.tipo) document.getElementById('t'+id+'-tipo').value=d.tipo;
   if(d.vehiculo) document.getElementById('t'+id+'-veh').value=d.vehiculo;
+  if(d.comision_moneda){const cm=document.getElementById('t'+id+'-com-cur');if(cm)cm.value=d.comision_moneda;}
   _onPriceChange('traslados-cont','TRASLADOS');
 }
 
@@ -630,6 +631,7 @@ function addExcursion(d){
   document.getElementById('excursiones-cont').appendChild(el);
   initCityAutocomplete('e'+id+'-punto');
   _populateProvSel('e'+id+'-sel',d.prov||'','excursion');
+  if(d.comision_moneda){const cm=document.getElementById('e'+id+'-com-cur');if(cm)cm.value=d.comision_moneda;}
   _onPriceChange('excursiones-cont','EXCURSIONES');
 }
 
@@ -687,6 +689,7 @@ function addAuto(d){
   initCityAutocomplete('au'+id+'-de');
   if(d.categoria) document.getElementById('au'+id+'-cat').value=d.categoria;
   if(d.moneda) document.getElementById('au'+id+'-cur').value=d.moneda;
+  if(d.comision_moneda){const cm=document.getElementById('au'+id+'-com-cur');if(cm)cm.value=d.comision_moneda;}
   _initDurInfo('au'+id+'-fr','au'+id+'-fd','au'+id+'-dur-info','días');
   _onPriceChange('autos-cont','AUTOS');
 }
@@ -749,6 +752,7 @@ function addCrucero(d){
   if(d.cabina) document.getElementById('cr'+id+'-cab').value=d.cabina;
   if(d.regimen) document.getElementById('cr'+id+'-reg').value=d.regimen;
   if(d.moneda) document.getElementById('cr'+id+'-cur').value=d.moneda;
+  if(d.comision_moneda){const cm=document.getElementById('cr'+id+'-com-cur');if(cm)cm.value=d.comision_moneda;}
   _initDurInfo('cr'+id+'-fe','cr'+id+'-fd','cr'+id+'-dur-info','noches');
   _onPriceChange('cruceros-cont','CRUCEROS');
 }
@@ -852,6 +856,88 @@ function _calcMarkup(){
     bdEl.style.display='';
     bdEl.innerHTML=`Costo base: <strong>USD ${base.toLocaleString('es-AR')}</strong> + Markup ${pct}% = Precio de venta: <strong>USD ${venta.toLocaleString('es-AR')}</strong>`;
   }
+}
+
+// ═══════════════════════════════════════════
+// CATÁLOGO DE PROVEEDORES — inserción one-click
+// ═══════════════════════════════════════════
+function _showProvCatalog(event, tipo, addFn){
+  event.stopPropagation();
+  const btn=event.currentTarget;
+
+  // Crear o reusar dropdown global
+  let drop=document.getElementById('pcat-global-drop');
+  if(!drop){
+    drop=document.createElement('div');
+    drop.id='pcat-global-drop';
+    drop.style.cssText='position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--sh2);min-width:240px;max-width:360px;max-height:300px;overflow-y:auto;padding:4px 0;display:none';
+    document.body.appendChild(drop);
+    document.addEventListener('click',function(){drop.style.display='none';},{passive:true});
+  }
+
+  const all=window.provsList||[];
+  const list=all.filter(p=>(p.tipos||[p.tipo||'']).some(t=>t===tipo||(tipo==='seguro'&&t==='asistencia')));
+
+  if(!list.length){
+    drop.innerHTML=`<div style="padding:16px 14px;text-align:center;color:var(--muted);font-size:.83rem;line-height:1.5">Sin proveedores de tipo <strong>${tipo}</strong>.<br><span style="font-size:.75rem">Agregá desde Mi Agencia.</span></div>`;
+  } else {
+    const bkItem='padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;';
+    drop.innerHTML=`<div style="padding:8px 14px 6px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--g3);border-bottom:1px solid var(--border)">Proveedores · ${tipo.toUpperCase()}</div>`+
+    list.map((p,i)=>`
+      <div style="${bkItem}" onmouseover="this.style.background='var(--g1)'" onmouseout="this.style.background=''" onclick="event.stopPropagation();_insertProvCatalog(${i})">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.85rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.nombre}</div>
+          ${p.ciudad?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${p.ciudad}</div>`:''}
+        </div>
+        ${p.comision?`<div style="font-size:.72rem;font-weight:700;color:var(--primary);white-space:nowrap">${p.comision}${p.comision_tipo==='fijo_usd'?' USD':'%'}</div>`:''}
+      </div>`).join('');
+  }
+
+  // Posicionar relativo al botón
+  drop.style.display='block';
+  const rect=btn.getBoundingClientRect();
+  const dropH=Math.min(300,list.length*46+40);
+  const spaceBelow=window.innerHeight-rect.bottom;
+  drop.style.top=(spaceBelow>=dropH?(rect.bottom+4):(rect.top-dropH-4))+'px';
+  drop.style.left=Math.min(rect.left,window.innerWidth-370)+'px';
+
+  // Guardar contexto para onclick
+  window._pcatCtx={list,addFn,tipo};
+}
+
+function _insertProvCatalog(idx){
+  const drop=document.getElementById('pcat-global-drop');
+  if(drop) drop.style.display='none';
+  const ctx=window._pcatCtx;
+  if(!ctx) return;
+  const p=ctx.list[idx];
+  if(!p) return;
+
+  const com=p.comision||null;
+  const comMon=p.comision_tipo==='fijo_usd'?'USD':'%';
+  const notas=p.notas||'';
+
+  if(ctx.tipo==='traslado'){
+    ctx.addFn({prov:p.nombre, notas, comision:com, comision_moneda:comMon});
+  } else if(ctx.tipo==='excursion'){
+    ctx.addFn({prov:p.nombre, notas, comision:com, comision_moneda:comMon});
+  } else if(ctx.tipo==='auto'){
+    ctx.addFn({proveedor:p.nombre, notas, comision:com, comision_moneda:comMon});
+  } else if(ctx.tipo==='crucero'){
+    ctx.addFn({naviera:p.nombre, notas, comision:com, comision_moneda:comMon});
+  } else if(ctx.tipo==='seguro'){
+    // Seguros: seleccionar directamente en el dropdown existente
+    const sel=document.getElementById('seg-nm');
+    if(sel){
+      const opt=[...sel.options].find(o=>o.value===p.nombre);
+      if(opt){sel.value=p.nombre;if(typeof toast==='function')toast('Aseguradora: '+p.nombre);}
+      else{if(typeof toast==='function')toast('"'+p.nombre+'" no está en la lista. Actualizá la sección Seguros.',false);}
+    }
+    return;
+  } else {
+    ctx.addFn({prov:p.nombre, notas, comision:com, comision_moneda:comMon});
+  }
+  if(typeof toast==='function') toast(p.nombre+' agregado');
 }
 
 // ═══════════════════════════════════════════
