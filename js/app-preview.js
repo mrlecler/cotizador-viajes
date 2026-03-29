@@ -161,6 +161,11 @@ function loadCfg(){
       sb.from('agencias').select('nombre').eq('id',window._agenciaId).maybeSingle().then(({data})=>{
         const el=document.getElementById('cfg-ag');
         if(el&&data?.nombre) el.value=data.nombre;
+        // Persistir en agCfg para que el PDF lo use
+        if(data?.nombre && agCfg.ag!==data.nombre){
+          agCfg.ag=data.nombre;
+          if(typeof _saveAgCfg==='function') _saveAgCfg();
+        }
       });
     }
   }

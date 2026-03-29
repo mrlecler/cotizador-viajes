@@ -246,9 +246,11 @@ function _updateSeguroDropdown(){
 // Alias legacy para seguros — ahora son proveedores tipo seguro
 async function loadSeguros(){_updateSeguroDropdown();}
 
-function openProviderModal(id){
-  const p=id?_allProvs.find(x=>x.id===id):null;
-  const readOnly=!!p&&!_canEdit(p);
+function openProviderModal(id, forceEdit){
+  // Buscar en _allProvs (agente) primero, luego en _agProvsData (agencia)
+  let p=id?_allProvs.find(x=>x.id===id):null;
+  if(!p&&id&&typeof _agProvsData!=='undefined') p=_agProvsData.find(x=>x.id===id);
+  const readOnly=!!p&&(forceEdit!==undefined?!forceEdit:!_canEdit(p));
   const _v=k=>(p&&p[k])||'';
   const tipos=p?(p.tipos||[p.tipo||'']):[];
   const _dis=readOnly?' disabled':'';
@@ -319,8 +321,14 @@ async function saveProvider(id){
       ({error}=await sb.from('proveedores').update(safe).eq('id',id));
     }
   } else {
-    row.agente_id=window._agenteId;
-    row.agencia_id=window._agenciaId||null;
+    // Agencia crea proveedor sin agente_id (proveedor de agencia, no personal)
+    if(currentRol==='agencia'){
+      row.agente_id=null;
+      row.agencia_id=window._agenciaId||null;
+    } else {
+      row.agente_id=window._agenteId;
+      row.agencia_id=window._agenciaId||null;
+    }
     ({error}=await sb.from('proveedores').insert(row));
     if(error&&(error.code==='42703'||error.message?.includes('column'))){
       const safe={nombre:row.nombre,tipo:row.tipo,pais:row.pais,ciudad:row.ciudad,email:row.email,telefono:row.telefono,contacto:row.contacto,agente_id:row.agente_id,agencia_id:row.agencia_id};
@@ -329,7 +337,8 @@ async function saveProvider(id){
   }
   if(error){toast('Error: '+error.message,false);_captureError('saveProvider',error);return;}
   closeModal();toast(id?'Proveedor actualizado':'Proveedor creado');
-  renderProviders();
+  // Recargar lista correcta según contexto
+  if(currentRol==='agencia') _loadAgProviders(); else renderProviders();
 }
 
 async function deleteProvider(id){
@@ -341,7 +350,18 @@ async function deleteProvider(id){
 }
 
 // Legacy aliases para compatibilidad con admin/agency panels
-function openProvModal(){openProviderModal();}
+function openProvModal(id){
+  // Contexto agencia: buscar en _agProvsData primero (no están en _allProvs)
+  if(id && typeof _agProvsData!=='undefined'){
+    const p=_agProvsData.find(x=>x.id===id);
+    if(p){
+      // Proveedor de agencia (sin agente_id) → editable; de agente → RO
+      openProviderModal(id, !p.agente_id);
+      return;
+    }
+  }
+  openProviderModal(id);
+}
 async function saveProv(){/* deprecated — usar saveProvider */}
 async function deleteProv(id){deleteProvider(id);}
 
