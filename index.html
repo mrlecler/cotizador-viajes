@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=22">
 </head>
 <body>
 
@@ -802,6 +802,34 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     </div>
   </div>
 
+  <!-- CALCULADORA DE COMISION — solo agente, no aparece en PDF -->
+  <div class="card" id="markup-card" data-role="agente">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div><div class="card-ttl">Calculadora de comision</div><div class="card-sub" style="color:var(--primary);font-size:.72rem;font-weight:600;letter-spacing:.5px">INTERNO — no aparece en el PDF</div></div>
+    </div>
+    <div class="card-body">
+      <div class="g3" style="align-items:flex-end">
+        <div class="fg">
+          <label class="lbl" for="p-markup">Markup %</label>
+          <input class="finput" type="number" id="p-markup" placeholder="15" min="0" max="100" inputmode="decimal" oninput="_calcMarkup()">
+        </div>
+        <div class="fg">
+          <label class="lbl">Costo base (USD)</label>
+          <input class="finput" id="p-base-cost" type="number" placeholder="Auto" inputmode="decimal" oninput="_calcMarkup()" style="background:var(--g1)">
+        </div>
+        <div class="fg">
+          <label class="lbl">Mi comision</label>
+          <div id="markup-result" style="display:flex;align-items:center;gap:8px;min-height:38px">
+            <span style="font-size:1.1rem;font-weight:800;color:var(--primary);letter-spacing:-0.5px" id="markup-amount">—</span>
+            <span style="font-size:.75rem;color:var(--g3)" id="markup-label"></span>
+          </div>
+        </div>
+      </div>
+      <div id="markup-breakdown" style="display:none;margin-top:8px;padding:10px 14px;background:var(--g1);border-radius:var(--r2);font-size:.78rem;color:var(--g4)"></div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div><div class="card-ttl">Foto de cierre</div><div class="card-sub">Imagen final del PDF</div></div></div>
     <div class="card-body">
@@ -1303,13 +1331,14 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/app-core.js?v=21"></script>
-<script src="js/app-form.js?v=21"></script>
-<script src="js/app-ia.js?v=21"></script>
-<script src="js/app-preview.js?v=21"></script>
-<script src="js/app-history.js?v=21"></script>
-<script src="js/app-admin.js?v=21"></script>
-<script src="js/app-quote.js?v=21"></script>
-<script src="js/app-promos.js?v=21"></script>
+<script src="js/config.js?v=22"></script>
+<script src="js/app-core.js?v=22"></script>
+<script src="js/app-form.js?v=22"></script>
+<script src="js/app-ia.js?v=22"></script>
+<script src="js/app-preview.js?v=22"></script>
+<script src="js/app-history.js?v=22"></script>
+<script src="js/app-admin.js?v=22"></script>
+<script src="js/app-quote.js?v=22"></script>
+<script src="js/app-promos.js?v=22"></script>
 </body>
 </html>

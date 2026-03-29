@@ -4,11 +4,9 @@
 const APP_VERSION = '0.13.0';
 
 // ═══════════════════════════════════════════
-// SUPABASE
+// SUPABASE — credenciales en js/config.js
 // ═══════════════════════════════════════════
-const SB_URL = 'https://jsgxoygyvibredxqyinj.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns';
-const sb = supabase.createClient(SB_URL, SB_KEY);
+const sb = supabase.createClient(ERMIX_CONFIG.supabaseUrl, ERMIX_CONFIG.supabaseKey);
 
 // ═══════════════════════════════════════════
 // STATE
@@ -567,12 +565,16 @@ async function showApp(user){
       if(data.soc!=null)       agCfg.soc       = data.soc;
       if(data.pais_cod!=null)  agCfg.pais_cod  = data.pais_cod;
       if(data.pdf_theme!=null) agCfg.pdf_theme = data.pdf_theme;
+      if(data.logo_url!=null)  agCfg.logo_url  = data.logo_url;
       console.log('[showApp] pdf_theme from Supabase:', data.pdf_theme, '→ agCfg:', agCfg.pdf_theme);
       agCfg.em = user.email;
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.agencia_id) window._agenciaId = data.agencia_id;
-      if(data.logo_url && !logoUrl){ logoUrl = data.logo_url; updateLogoPreview(); }
+      if(data.logo_url){
+        agCfg.logo_url = data.logo_url;
+        if(!logoUrl) { logoUrl = data.logo_url; updateLogoPreview(); }
+      }
       _saveAgCfg();
       loadCfg();
       // Actualizar avatar del sidebar y saludo con nombre real

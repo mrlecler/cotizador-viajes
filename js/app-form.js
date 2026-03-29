@@ -819,6 +819,9 @@ function collectForm(){
   const calcCom=(arr)=>arr.reduce((sum,x)=>sum+(x.comision&&x.com_cur!=='%'?x.comision:0),0);
   const segCom=(gv('seg-com-cur')!=='%'?gn('seg-com'):0);
   const total_comision=calcCom(vuelos)+calcCom(hoteles)+calcCom(traslados)+calcCom(excursiones)+calcCom(tickets_arr)+segCom;
+  const markup_pct=gn('p-markup')||null;
+  const markup_base=gn('p-base-cost')||null;
+  const markup_comision=markup_pct&&markup_base?Math.round(markup_base*(markup_pct/100)*100)/100:null;
   return{refId,ts:Date.now(),_clientId:document.getElementById('_clientId')?.value||null,
     estado:gv('m-estado')||'borrador',notas_int:gv('m-notas'),
     cliente:{nombre:gv('m-nombre'),celular:gv('m-cel'),email:gv('m-email'),pasajeros:paxStr()},
@@ -827,7 +830,28 @@ function collectForm(){
     vuelos,hoteles,traslados,excursiones,tickets:tickets_arr,autos,cruceros,
     seguro:{nombre:gv('seg-nm'),cobertura_medica:gv('seg-med'),equipaje_seg:gv('seg-eq'),preexistencias:gv('seg-pre'),dias:gv('seg-dias'),moneda:gv('seg-cur'),precio:gn('seg-precio'),fin:gv('seg-fin'),extra:gv('seg-extra'),comision:gn('seg-com'),com_cur:gv('seg-com-cur')},
     precios:{moneda:gv('p-cur'),por_persona:gn('p-pp'),moneda2:gv('p-cur2'),total:gn('p-tot'),moneda3:gv('p-cur3'),reserva:gn('p-res'),cuotas:gv('p-cuo'),cancelacion:gv('p-can'),validez:gv('p-val')||'24 horas',tyc:gv('p-tyc')},
-    total_comision};
+    total_comision,markup_pct,markup_base,markup_comision};
+}
+
+// ═══════════════════════════════════════════
+// CALCULADORA DE MARKUP (comision interna)
+// ═══════════════════════════════════════════
+function _calcMarkup(){
+  const pct=parseFloat(document.getElementById('p-markup')?.value)||0;
+  const base=parseFloat(document.getElementById('p-base-cost')?.value)||0;
+  const amtEl=document.getElementById('markup-amount');
+  const lblEl=document.getElementById('markup-label');
+  const bdEl=document.getElementById('markup-breakdown');
+  if(!amtEl) return;
+  if(!pct||!base){amtEl.textContent='—';if(lblEl)lblEl.textContent='';if(bdEl)bdEl.style.display='none';return;}
+  const com=Math.round(base*(pct/100)*100)/100;
+  const venta=Math.round((base+com)*100)/100;
+  amtEl.textContent='USD '+com.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(lblEl) lblEl.textContent='sobre costo de USD '+base.toLocaleString('es-AR');
+  if(bdEl){
+    bdEl.style.display='';
+    bdEl.innerHTML=`Costo base: <strong>USD ${base.toLocaleString('es-AR')}</strong> + Markup ${pct}% = Precio de venta: <strong>USD ${venta.toLocaleString('es-AR')}</strong>`;
+  }
 }
 
 // ═══════════════════════════════════════════
