@@ -36,23 +36,34 @@ async function renderHistory(){
   }
   const shown=visible.slice(0,_histPageSize);
   const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+  // Calcular cuántas versiones tiene cada base ref_id (para mostrar indicador en V1)
+  const _vBase=r=>(r.ref_id||'').replace(/-V\d+$/,'');
+  const _vN=r=>{const m=(r.ref_id||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;};
+  const baseCounts={};
+  visible.forEach(r=>{const b=_vBase(r);baseCounts[b]=(baseCounts[b]||0)+1;});
+
   el.innerHTML=shown.map(r=>{
     const canE=_canEdit(r), canV=_canView(r);
+    // Badge de versión
+    const vn=_vN(r);
+    const vBadge=`<span style="display:inline-flex;align-items:center;background:${vn>1?'rgba(27,158,143,0.12)':'rgba(45,31,20,0.06)'};border:1px solid ${vn>1?'rgba(27,158,143,0.3)':'rgba(45,31,20,0.1)'};border-radius:20px;padding:1px 7px;font-size:9px;font-weight:800;color:${vn>1?'var(--primary)':'var(--g3)'};letter-spacing:.5px;margin-left:5px">V${vn}</span>`;
+    // Indicador de versiones extra (solo en V1 original)
+    const extraVers=baseCounts[_vBase(r)]>1&&vn===1?`<span style="font-size:.7rem;color:var(--primary);font-weight:600;margin-left:6px">${baseCounts[_vBase(r)]} versiones</span>`:'';
     const editBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();editFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>`
       : (canV ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();loadFromHistory('${r.ref_id}','${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver</button>` : '');
     const dupBtn = canE
-      ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();duplicateFromHistory('${r.ref_id}','${r.id}')" title="Duplicar cotizacion con nuevo numero"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Duplicar</button>` : '';
+      ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();duplicateFromHistory('${r.ref_id}','${r.id}')" title="Duplicar cotizacion con nuevo numero"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : '';
     const statusBtn = canE
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Estado</button>` : '';
     const delBtn = (canE && (!r.estado || r.estado==='borrador'))
       ? `<button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')" title="Eliminar borrador"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
     return `
-    <div class="hist-item" onclick="loadFromHistory('${r.ref_id}','${r.id}')">
+    <div class="hist-item${vn>1?' hist-item-ver':''}" onclick="loadFromHistory('${r.ref_id}','${r.id}')" style="${vn>1?'border-left:3px solid rgba(27,158,143,0.35);margin-left:12px;':''}">
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
       <div class="hist-info">
-        <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}</div>
-        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${r.pasajeros?' · '+r.pasajeros:''}${(!canE&&r.agente_id&&_agentNames[r.agente_id])?' · <span style="color:var(--primary);font-weight:600">'+_agentNames[r.agente_id]+'</span>':''}</div>
+        <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}${extraVers}</div>
+        <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${vBadge}${r.pasajeros?' · '+r.pasajeros:''}${(!canE&&r.agente_id&&_agentNames[r.agente_id])?' · <span style="color:var(--primary);font-weight:600">'+_agentNames[r.agente_id]+'</span>':''}</div>
         <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
@@ -145,19 +156,28 @@ function _showEditBanner(refId){
     const formPanel = document.getElementById('tab-form');
     if(formPanel) formPanel.insertBefore(banner, formPanel.firstChild);
   }
+  // Badge de versión si el ref_id tiene sufijo -Vn
+  const vMatch=(refId||'').match(/-V(\d+)$/);
+  const vBadge=vMatch?'<span style="display:inline-flex;align-items:center;background:rgba(27,158,143,0.15);border:1px solid rgba(27,158,143,0.3);border-radius:20px;padding:1px 8px;font-size:10px;font-weight:800;color:var(--primary);letter-spacing:.5px;margin-left:6px">V'+vMatch[1]+'</span>':'';
   banner.innerHTML =
     '<div class="edit-banner-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>' +
     '<div class="edit-banner-body">' +
-      '<div class="edit-banner-ttl">Editando cotización <strong>' + refId + '</strong></div>' +
-      '<div class="edit-banner-sub">Los cambios se guardarán sobre esta cotización al presionar Guardar.</div>' +
+      '<div class="edit-banner-ttl">Editando <strong>' + refId + '</strong>' + vBadge + '</div>' +
+      '<div class="edit-banner-sub">Los cambios se guardarán sobre esta cotización. Usá V+ para crear una versión alternativa.</div>' +
     '</div>' +
-    '<button onclick="cancelEdit()" class="edit-banner-btn">Descartar cambios</button>';
+    '<button onclick="cancelEdit()" class="edit-banner-btn">Descartar</button>';
   banner.style.display = 'flex';
+  // Mostrar botón "Nueva versión" en la sticky bar
+  const vBtn=document.getElementById('btn-new-version');
+  if(vBtn)vBtn.style.display='';
 }
 
 function _hideEditBanner(){
   const banner = document.getElementById('edit-banner');
   if(banner) banner.style.display = 'none';
+  // Ocultar botón "Nueva versión"
+  const vBtn=document.getElementById('btn-new-version');
+  if(vBtn)vBtn.style.display='none';
 }
 
 function _confirmDialog(msg, yesLbl, noLbl, onYes){

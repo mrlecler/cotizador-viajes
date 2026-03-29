@@ -859,6 +859,52 @@ function _calcMarkup(){
 }
 
 // ═══════════════════════════════════════════
+// VERSIONES DE COTIZACIÓN
+// ═══════════════════════════════════════════
+// ref_id base (sin sufijo -Vn)
+function _vBaseRef(r){return (r||'').replace(/-V\d+$/,'');}
+// Número de versión (1 si no tiene sufijo)
+function _vNum(r){const m=(r||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;}
+// Próximo ref_id de versión
+function _vNextRef(r){return _vBaseRef(r)+'-V'+(_vNum(r)+1);}
+
+async function saveAsNewVersion(){
+  if(!editingQuoteId){toast('Guardá primero la cotización para poder crear versiones',false);return;}
+  const currRef=document.getElementById('m-ref')?.value||'';
+  if(!currRef){toast('Sin referencia — guardá primero',false);return;}
+
+  const nextRef=_vNextRef(currRef);
+  const vNum=_vNum(nextRef);
+
+  if(!confirm('¿Crear '+nextRef+' como nueva versión?\n\nSe guardará una copia independiente. La versión anterior no se modifica.'))return;
+
+  let d;
+  try{d=collectForm();}catch(err){toast('Error al procesar el formulario',false);return;}
+
+  d.refId=nextRef;
+  const prevEditId=editingQuoteId;
+  editingQuoteId=null; // forzar INSERT
+
+  const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
+  btns.forEach(b=>{if(b){b.disabled=true;b.textContent='Guardando v'+vNum+'...';}});
+  try{
+    await dbSaveQuote(d,null);
+    const {data:saved}=await sb.from('cotizaciones').select('id').eq('ref_id',nextRef).maybeSingle();
+    if(saved)editingQuoteId=saved.id;
+    const refEl=document.getElementById('m-ref');if(refEl)refEl.value=nextRef;
+    qData=d;
+    if(editingQuoteId){_showEditBanner(nextRef);_startAutosave();}
+    toast('V'+vNum+' creada — ahora editás '+nextRef);
+  }catch(e){
+    editingQuoteId=prevEditId;
+    console.error('saveAsNewVersion:',e);
+    toast('No se pudo crear la versión',false);
+  }finally{
+    btns.forEach(b=>{if(b){b.disabled=false;b.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg> Guardar';}});
+  }
+}
+
+// ═══════════════════════════════════════════
 // CATÁLOGO DE PROVEEDORES — inserción one-click
 // ═══════════════════════════════════════════
 function _showProvCatalog(event, tipo, addFn){
