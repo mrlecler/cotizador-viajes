@@ -1011,17 +1011,30 @@ function _renderAgProviders(){
     el.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)">Sin proveedores.</div>';
     return;
   }
-  el.innerHTML=`<table class="tbl" style="font-size:.82rem"><thead><tr><th>Nombre</th><th>Tipo</th><th>Ciudad</th><th>Contacto</th><th></th></tr></thead><tbody>
-  ${filtered.map(p=>`<tr>
-    <td><strong>${p.nombre||'\u2014'}</strong></td>
+  // Separar: proveedores de agencia (sin agente_id) = CRUD, de agentes (con agente_id) = RO
+  const agencyProvs=filtered.filter(p=>!p.agente_id);
+  const agentProvs=filtered.filter(p=>!!p.agente_id);
+  const ICO_EDIT='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const ICO_DEL='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  const ICO_VIEW='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const rowHtml=(p,isAgency)=>`<tr>
+    <td><strong>${p.nombre||'\u2014'}</strong>${!isAgency?'<span class="prov-badge-ag" style="margin-left:6px;font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(212,160,23,0.15);color:#D4A017;padding:1px 6px;border-radius:10px">AGENTE</span>':''}</td>
     <td><span class="status-badge st-borrador">${typeLbl[p.tipo]||p.tipo||'\u2014'}</span></td>
     <td>${p.ciudad||'\u2014'}</td>
     <td style="font-size:.75rem">${p.email||p.telefono||'\u2014'}</td>
     <td style="text-align:right">
-      <button class="btn btn-out btn-xs" onclick="openProvModal('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="btn btn-del btn-xs" onclick="_deleteAgProv('${p.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      ${isAgency
+        ? `<button class="btn btn-out btn-xs" onclick="openProvModal('${p.id}')" title="Editar">${ICO_EDIT}</button>
+           <button class="btn btn-del btn-xs" onclick="_deleteAgProv('${p.id}')" title="Eliminar">${ICO_DEL}</button>`
+        : `<button class="btn btn-out btn-xs" onclick="openProvModal('${p.id}')" title="Solo lectura — proveedor del agente">${ICO_VIEW}</button>`}
     </td>
-  </tr>`).join('')}</tbody></table>`;
+  </tr>`;
+  let html=`<table class="tbl" style="font-size:.82rem"><thead><tr><th>Nombre</th><th>Tipo</th><th>Ciudad</th><th>Contacto</th><th></th></tr></thead><tbody>`;
+  html+=agencyProvs.map(p=>rowHtml(p,true)).join('');
+  html+=agentProvs.map(p=>rowHtml(p,false)).join('');
+  html+='</tbody></table>';
+  if(agentProvs.length>0) html+=`<div style="padding:6px 14px 10px;font-size:.72rem;color:var(--g3)">Los proveedores marcados con <span style="color:#D4A017;font-weight:700">AGENTE</span> pertenecen a agentes de la agencia y son solo lectura.</div>`;
+  el.innerHTML=html;
 }
 
 async function _deleteAgProv(id){
