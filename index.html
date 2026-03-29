@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=22">
+<link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
 
@@ -1290,6 +1290,21 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotizacion</div>
         </div>
         <div class="fg full" id="cfg-soc-wrap"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
+        <div class="fg full" id="cfg-logo-wrap">
+          <label class="lbl">Logo personal <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(aparece en el PDF)</span></label>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:6px;flex-wrap:wrap">
+            <div id="logo-wrap" style="flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+              <button type="button" class="btn btn-out btn-sm" onclick="document.getElementById('cfg-logo-f').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+              <button type="button" id="btn-rmlogo" class="btn btn-del btn-xs" onclick="removeLogo()" style="display:none">Quitar</button>
+              <input type="file" id="cfg-logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+            </div>
+            <div style="flex:1;min-width:180px">
+              <input class="finput" type="url" id="cfg-logo-url" placeholder="O pegar URL de imagen..." oninput="_logoUrlInput(this.value)">
+              <div style="font-size:.68rem;color:var(--g4);margin-top:3px">URL externa del logo (JPEG, PNG, SVG)</div>
+            </div>
+          </div>
+        </div>
       </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
@@ -1349,14 +1364,14 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=22"></script>
-<script src="js/app-core.js?v=22"></script>
-<script src="js/app-form.js?v=22"></script>
-<script src="js/app-ia.js?v=22"></script>
-<script src="js/app-preview.js?v=22"></script>
-<script src="js/app-history.js?v=22"></script>
-<script src="js/app-admin.js?v=22"></script>
-<script src="js/app-quote.js?v=22"></script>
-<script src="js/app-promos.js?v=22"></script>
+<script src="js/config.js?v=23"></script>
+<script src="js/app-core.js?v=23"></script>
+<script src="js/app-form.js?v=23"></script>
+<script src="js/app-ia.js?v=23"></script>
+<script src="js/app-preview.js?v=23"></script>
+<script src="js/app-history.js?v=23"></script>
+<script src="js/app-admin.js?v=23"></script>
+<script src="js/app-quote.js?v=23"></script>
+<script src="js/app-promos.js?v=23"></script>
 </body>
 </html>
