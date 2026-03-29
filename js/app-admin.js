@@ -466,13 +466,25 @@ async function renderDashboard(){
   </tr>`).join('')}</tbody></table>`:'<div style="text-align:center;padding:30px;color:var(--g3)">Sin comisiones registradas todavía.</div>';
 }
 
-function openInviteModal(rol){
+async function openInviteModal(rol){
   rol=rol||'agente';
   const label=rol==='agencia'?'agencia':'agente';
+  // Si admin invita agente, necesita elegir agencia destino
+  let agenciaSelect='';
+  if(currentRol==='admin'&&rol==='agente'){
+    const {data:ags}=await sb.from('agencias').select('id,nombre').eq('activa',true).order('nombre');
+    if(ags?.length){
+      agenciaSelect=`<div class="fg"><label class="lbl">Agencia</label><select class="finput" id="inv-agencia"><option value="">— Seleccionar agencia —</option>${ags.map(a=>`<option value="${a.id}">${a.nombre}</option>`).join('')}</select></div>`;
+    }
+  }
+  // Si admin invita agencia, pedir nombre de la agencia
+  const agenciaNm=currentRol==='admin'&&rol==='agencia'?`<div class="fg"><label class="lbl">Nombre de la agencia *</label><input class="finput" id="inv-agencia-nm" placeholder="Ej: Patoyro Travel"></div>`:'';
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:16px">Invitar ${label}</div>
     <div class="fg"><label class="lbl">Email</label><input class="finput" id="inv-email" type="email" placeholder="usuario@email.com" inputmode="email"></div>
-    <div class="fg"><label class="lbl">Nombre (opcional)</label><input class="finput" id="inv-nombre" placeholder="Nombre completo"></div>
+    <div class="fg"><label class="lbl">Nombre del usuario</label><input class="finput" id="inv-nombre" placeholder="Nombre completo"></div>
+    ${agenciaNm}
+    ${agenciaSelect}
     <input type="hidden" id="inv-rol" value="${rol}">
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
       <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
@@ -504,11 +516,26 @@ async function sendInvite(){
   const token=crypto.randomUUID();
   const row={email,rol,tipo:'invite',token,usado:false};
   if(nombre) row.nombre=nombre;
-  if(currentRol==='agencia'&&window._agenteId){
-    // Vincular a la agencia de quien invita
+
+  // Determinar agencia_id segun contexto
+  if(currentRol==='admin'&&rol==='agencia'){
+    // Admin invita agencia → crear registro en tabla agencias
+    const agNm=(document.getElementById('inv-agencia-nm')?.value||'').trim();
+    if(!agNm){toast('Ingresa el nombre de la agencia',false);return;}
+    const {data:newAg,error:agErr}=await sb.from('agencias').insert({nombre:agNm,activa:true}).select('id').single();
+    if(agErr){toast('Error al crear agencia: '+agErr.message,false);return;}
+    row.agencia_id=newAg.id;
+  } else if(currentRol==='admin'&&rol==='agente'){
+    // Admin invita agente → debe elegir agencia
+    const agId=document.getElementById('inv-agencia')?.value;
+    if(!agId){toast('Selecciona la agencia del agente',false);return;}
+    row.agencia_id=agId;
+  } else if(currentRol==='agencia'&&window._agenteId){
+    // Agencia invita agente → heredar su propia agencia
     const {data:agRow}=await sb.from('agentes').select('agencia_id').eq('id',window._agenteId).maybeSingle();
     if(agRow?.agencia_id) row.agencia_id=agRow.agencia_id;
   }
+
   const {error}=await sb.from('invitaciones').insert(row);
   if(error){toast('Error: '+error.message,false);return;}
 

@@ -75,8 +75,15 @@ function updateLogoPreview(){
 }
 function updateHeader(){
   // El logo de agente solo aparece en el PDF — el header siempre muestra el wordmark ermix
-  // buildWordmark() es llamado desde app-core.js en fonts.ready
-  document.fonts.ready.then(function(){ buildWordmark('hdr-wm',22,'currentColor','grad'); });
+  // Esperar a que DM Sans esté lista antes de medir
+  function _buildHdr(){
+    if(document.fonts.check('900 48px "DM Sans"')){
+      buildWordmark('hdr-wm',22,'currentColor','grad');
+    } else {
+      document.fonts.ready.then(()=>buildWordmark('hdr-wm',22,'currentColor','grad'));
+    }
+  }
+  _buildHdr();
 }
 
 // ═══════════════════════════════════════════
