@@ -6,7 +6,6 @@ Fotos/
 
 # Config local — credenciales y MCP
 .mcp.json
-js/config.js
 pdf_muestra/
 *.pdf
 update.md
