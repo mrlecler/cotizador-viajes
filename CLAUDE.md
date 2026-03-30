@@ -7,6 +7,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
 - Deploy: GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`
+- Versión actual: `0.23.1` — cache-bust `?v=32` en index.html
 
 ## Archivos principales
 
@@ -14,12 +15,13 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 |---|---|
 | `index.html` | Shell principal |
 | `styles.css` | Todos los estilos — variables CSS, layout, componentes |
-| `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle dark/light, roles, `_captureError()`, profile dropdown |
-| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades, `saveQuote()` |
+| `js/config.js` | Entorno: `supabaseUrl`, `supabaseKey`, `env`, `version` |
+| `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle dark/light, roles, `_captureError()`, profile dropdown, `dbSaveQuote()` |
+| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades, `saveQuote()`, autosave |
 | `js/app-quote.js` | Generación HTML cotización y PDF (`window.print()`) |
-| `js/app-admin.js` | Panel admin, activity log + error log, gestión de agentes/seguros |
-| `js/app-preview.js` | Vista previa de cotización, perfil de usuario, cambio de contraseña |
-| `js/app-history.js` | Historial de cotizaciones |
+| `js/app-admin.js` | Panel admin, activity log + error log, gestión de agentes/seguros, `renderAgency()` |
+| `js/app-preview.js` | Vista previa de cotización, perfil de usuario, cambio de contraseña, link público (`_initPublicView()`) |
+| `js/app-history.js` | Historial de cotizaciones, CRM clientes (`openClientModal()`), grupos de viaje |
 | `js/app-ia.js` | Integración con Claude API para generar descripciones |
 | `js/app-promos.js` | Gestión de promos |
 | `data/airports.json` | 915 aeropuertos con IATA |
@@ -39,6 +41,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - ❌ Emojis en ningún lugar de la UI
 - ❌ Escribir "Ermix" — siempre "ermix" en minúscula
 - ❌ npm, bundlers, librerías externas pesadas
+- ❌ Usar `window.coverUrl` o `window.logoUrl` — son `let` en `app-core.js`, no propiedades de `window`
 
 ## Brand v4 — Aurora Teal
 
@@ -93,6 +96,13 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 --sh2:      0 8px 32px rgba(0,0,0,0.5);
 ```
 
+### `.intro-bar` en dark mode
+La clase `.intro-bar` usa `var(--grad)` (teal brillante) que contrasta mucho en dark mode. Ya hay override:
+```css
+[data-theme="dark"] .intro-bar { background: linear-gradient(135deg,#0D2B1E 0%,#0A1A12 50%,#112218 100%) }
+[data-theme="dark"] .intro-bar::before { background: radial-gradient(circle,rgba(11,197,184,.12) 0%,transparent 70%) }
+```
+
 ## Pasteles por sección de formulario
 
 | Sección | Fondo | Acento | Gradiente header fallback |
@@ -123,6 +133,8 @@ Autos:       <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1
 Cruceros:    <path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/>
              <path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/>
 Seguros:     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+Usuario:     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+             <circle cx="12" cy="7" r="4"/>
 ```
 
 ## Logo ermix
@@ -136,23 +148,40 @@ Seguros:     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
 ## Sidebar
 
 - Colapsado: `54px`, solo íconos + tooltips CSS (`::after`)
-- Expandido: `200px`, clase `sb open` — ícono + label + avatar con nombre/agencia
+- Expandido: `200px`, clase `#sidebar.open` — ícono + label + avatar con nombre/agencia
 - Toggle: ☰ para abrir, ← para cerrar
 - Estado en `localStorage('sb-open')`
 - `margin-left` del contenido animado: `54px → 200px`, `transition: 0.22s ease`
-- Ítems activos: `background: rgba(27,158,143,0.1)`, stroke turquesa
+- Ítems activos: `background: rgba(27,158,143,0.12)`, `box-shadow: inset 3px 0 0 var(--primary)`
+- En mobile (`< 768px`): sidebar oculto, reemplazado por `#bottom-nav`
 
-**Orden de ítems:**
-1. Inicio
-2. Cotizaciones
-3. Historial
-4. Clientes
-5. [separador]
-6. Perfil (avatar con iniciales abajo, `#sb-prof-dd`)
+**Ítems reales del sidebar (por `data-role`):**
 
-- **Ya no hay botón "Admin" en el sidebar** — Admin se accede desde el dropdown del avatar
-- El dropdown del perfil (`#sb-prof-menu.prof-dd`) se abre con `_toggleProfDD(event)` en el `#sb-avatar`
-- Contenido del dropdown: nombre, badge de rol, links a Admin/Perfil/Cerrar sesión (según `currentRol`)
+| Ítem | `data-tab` | Roles |
+|---|---|---|
+| Inicio | `inicio` | agente / agencia / admin |
+| Cotizar | `form` | agente |
+| Historial | `history` | agente |
+| Clientes | `clients` | agente |
+| Proveedores | `providers` | agente |
+| Promociones | `promos` | agente |
+| Promos vigentes | `promosvig` | agente |
+| Mi Agencia | `agency` | agencia |
+| Gestión | `dashboard` | admin |
+| Soporte | `support` | agente / agencia / admin |
+| Config | `adminconfig` | admin |
+
+- El perfil/avatar (`#sb-prof-dd`, `#sb-avatar`) está al fondo del sidebar — **no es un ítem de nav**
+- `#sb-prof-label` (nombre + rol + versión) se muestra/oculta por JS en `_sbToggle()` — `display:none` cuando colapsado
+- **Admin se accede desde el dropdown del avatar** — no hay ítem directo de nav para admin
+- El dropdown (`#sb-prof-menu.prof-dd`) se abre con `_toggleProfDD(event)` en `#sb-avatar`
+- Dropdown contiene: nombre, badge rol, links a Admin/Mi perfil/Cerrar sesión (según `currentRol`)
+
+**Bottom nav mobile (< 768px):**
+```
+Inicio | Cotizar | Historial | Clientes | Mi Agencia (agencia) | Soporte | Perfil
+```
+Clase activa: `.bnav-item.on`. La class `.bn-lbl` es mobile-only.
 
 ## Photo headers (secciones del formulario)
 
@@ -180,18 +209,42 @@ Seguros:     https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&
 - Chip cliente: label chico lowercase gris, nombre grande turquesa
 - Barra total: `background: var(--grad)`, texto blanco
 
+## Link público del pasajero (`?q=<token>`)
+
+Cuando la URL tiene `?q=<public_token>`, `_initPublicView()` en `app-preview.js` carga la cotización sin login.
+
+**Datos embebidos en `datos` JSONB al guardar:**
+```js
+datos._cover_url      // URL de la foto de portada
+datos._logo_url       // URL del logo del agente
+datos._unsplash_credit // crédito de foto Unsplash
+datos._agent          // { nm, ag, logo_url, tel, soc } — info del agente
+```
+
+**CRÍTICO — variable scope:**
+En `app-core.js` línea 17: `let coverUrl = null, logoUrl = null` son **`let` variables**, NO propiedades de `window`.
+- `window.coverUrl = url` crea una propiedad DIFERENTE — `buildQuoteHTML()` lee el `let`, no el `window`
+- Siempre asignar directamente: `coverUrl = url` y `logoUrl = url` (sin `window.`)
+- `_unsplashCredit` NO tiene `let` declarado — ese sí usa `window._unsplashCredit`
+
+`_buildPublicWall()` en `app-preview.js`:
+1. Asigna `coverUrl` y `logoUrl` (sin `window.`)
+2. Si hay `_agent`, mergea en `agCfg` via `Object.assign`
+3. Llama `buildQuoteHTML(d)` — que lee los `let` variables
+
 ## Print / PDF
 
 ```css
 @media print {
-  .sb, #sidebar, [class*="sidebar"] { display: none !important; }
-  .cnt, #main-content { margin-left: 0 !important; }
   #bottom-nav, #bottom-nav.active,
-  #form-sticky-bar, #prev-toolbar, #hdr { display: none !important; }
+  #form-sticky-bar, #prev-toolbar, #hdr,
+  #sidebar, .sb { display: none !important; }
+  #ui, #main-content, .cnt { margin-left: 0 !important; }
+  body, #ui { padding: 0 !important; margin: 0 !important; }
 }
 ```
 
-**IMPORTANTE:** El bloque `@media print` FINAL en `styles.css` debe ser el ÚLTIMO bloque del archivo. Si se agregan reglas mobile con `!important` después, ganan por cascada y rompen el PDF (ej: `#bottom-nav.active{display:flex!important}` apareció después del print y se mostraba en PDF).
+**IMPORTANTE:** El bloque `@media print` FINAL en `styles.css` debe ser el **ÚLTIMO bloque del archivo**. Reglas mobile con `!important` agregadas después ganan por cascada y rompen el PDF.
 
 ## Modales
 
@@ -199,6 +252,12 @@ Seguros:     https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&
 .modal-overlay { background: rgba(45,31,20,0.4); backdrop-filter: blur(8px); }
 .modal { background: var(--surface); border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(45,31,20,0.15); }
 /* SIN box-shadow violeta — eso es del brand v2, está eliminado */
+```
+
+**Mobile:** Los modales se convierten en bottom sheets en `< 768px`:
+```css
+.modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+.modal { width: 100% !important; border-radius: var(--r) var(--r) 0 0 !important; max-height: 85vh !important; }
 ```
 
 ## Glassmorphism (v4)
@@ -223,6 +282,16 @@ Usar `.glass` en cards que necesiten efecto frosted sobre fondos con contenido v
 ```
 Usar para acciones de **guardar/confirmar**. El teal (`.btn-pri`) queda para acciones de navegación y estados activos.
 
+## Clases CSS — trampas conocidas
+
+**`.ok` vs `.com-ok`:**
+La clase utilitaria `.ok` en `styles.css` tiene `background:#ECFDF5; border:1px solid #A7F3D0` — estilos de alerta de éxito.
+NO usarla en `.dm-com-item-val`. Usar `.com-ok` que solo aplica `color:#22c55e`.
+```css
+.dm-com-item-val.com-ok { color: #22c55e }  /* sin background ni border */
+.dm-com-item-val.ok { color: #22c55e }      /* LEGACY — igual al anterior, pero evitar */
+```
+
 ## Funcionalidad IA
 
 La API de Claude está en `https://api.anthropic.com/v1/messages`.
@@ -237,12 +306,13 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 | Rol | Acceso |
 |---|---|
 | `admin` | Todo: admin panel, config global, ver todos los agentes, editar roles |
-| `agencia` | Config agencia, ver cotizaciones de sus agentes, invitar hasta 3 agentes |
-| `agente` | Solo sus propias cotizaciones, clientes, config PDF |
+| `agencia` | Config agencia, ver cotizaciones de sus agentes, Mi Agencia, invitar hasta 3 agentes |
+| `agente` | Sus propias cotizaciones, clientes, proveedores, promos, config PDF |
 
 - El rol viene de `agentes.rol` en Supabase; se cachea en `localStorage('mp_rol')`
 - `_applyRolUI()` en `app-core.js` muestra badge `ADMIN`/`AGENCIA` en header y arma el dropdown
 - `isAdmin` (boolean legacy) se mantiene sincronizado con `currentRol==='admin'`
+- Los ítems del sidebar se filtran por `data-role` — `_applyRolUI()` oculta los que no corresponden
 
 ## Sistema de error log (debug)
 
@@ -254,7 +324,7 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 
 ## Tab Agency (Mi Agencia)
 
-- Panel `tab-agency` — accesible solo para `agencia` y `admin` desde dropdown del avatar
+- Panel `tab-agency` — accesible solo para `agencia` y `admin` desde sidebar (y desde dropdown del avatar)
 - `renderAgency()` en `app-admin.js` — renderiza datos de agencia, agentes y proveedores
 - 3 cards: Datos de agencia, Mis agentes, Proveedores
 - Proveedores unificados: tipos expandidos (traslado, excursion, hotel, seguro, asistencia, DMC, receptivo, aerolinea, crucero, otro)
@@ -278,6 +348,23 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 - `openGroupModal()` — modal con nombre + picker de miembros (checkboxes + buscador)
 - `saveGroup()` — upsert grupo + sync miembros (delete all + re-insert)
 - `deleteGroup()` — elimina grupo (cascade elimina miembros)
+
+## Proveedores
+
+- Panel `tab-providers` — accesible para `agente`
+- Catálogo propio de proveedores del agente: hoteles, traslados, seguros, excursiones, aerolíneas, cruceros, etc.
+- Se pueden cargar desde el formulario via "Desde catálogo" en cada sección
+
+## Promos
+
+- Panel `tab-promos` — carga/gestión de promociones del agente
+- Panel `tab-promosvig` — promos vigentes (readonly, las de la agencia)
+- `js/app-promos.js` — lógica de ambos panels
+
+## Soporte
+
+- Panel `tab-support` — accesible para todos los roles
+- Formulario de contacto / ayuda
 
 ## Supabase
 
@@ -304,6 +391,7 @@ Admin (1)
   - **`created_at` NO EXISTE** — la columna de fecha es `creado_en`
   - `total_comision` NO existe como columna — vive dentro del JSONB `datos`
   - Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback
+  - `datos` JSONB embebe también: `_cover_url`, `_logo_url`, `_unsplash_credit`, `_agent` — para el link público
 - **`clientes`**: campos expandidos (documento, doc_tipo, fecha_nac, nacionalidad, visa_*, ff_*, etc.) — `saveClient` solo envía campos con valor
 - **`grupos_viaje`** + **`grupo_miembros`** — grupos de viaje con miembros
 - **`documentos_cliente`** — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
@@ -316,6 +404,9 @@ Admin (1)
 
 ### localStorage
 - Config per-user: `mp_cfg_<uid>` (antes era `mp_cfg_<email>` — migración automática en primer login)
+- Tema: `localStorage('theme')` — `'light'` | `'dark'`
+- Sidebar: `localStorage('sb-open')` — `'1'` | `''`
+- Rol: `localStorage('mp_rol')` — cache del rol del usuario
 
 ## Workflow para cada cambio
 
@@ -324,4 +415,4 @@ Admin (1)
 3. Confirmar qué vas a cambiar antes de aplicar
 4. Aplicar el cambio mínimo necesario — no reescribir lo que funciona
 5. Verificar que no rompiste nada relacionado
-
+6. Hacer commit + push (producción en `master`, test en `claude/thirsty-spence`)
