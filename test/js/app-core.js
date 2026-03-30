@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.21.0';
+const APP_VERSION = '0.22.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -746,10 +746,12 @@ async function dbSaveQuote(d, supabaseId){
   const _cUrl=typeof coverUrl!=='undefined'?coverUrl:null;
   const _lUrl=(typeof logoUrl!=='undefined'?logoUrl:null)||(typeof agCfg!=='undefined'?agCfg.logo_url:null)||null;
   const _uCredit=(typeof window!=='undefined'&&window._unsplashCredit)||null;
+  const _agentInfo=(typeof agCfg!=='undefined'&&(agCfg.nm||agCfg.ag))?{nm:agCfg.nm||'',ag:agCfg.ag||'',logo_url:agCfg.logo_url||null,tel:agCfg.tel||'',soc:agCfg.soc||''}:null;
   const _datosConMedia={...d,_cover_url:_cUrl,_logo_url:_lUrl,_unsplash_credit:_uCredit||undefined};
   if(!_cUrl) delete _datosConMedia._cover_url;
   if(!_lUrl) delete _datosConMedia._logo_url;
   if(!_uCredit) delete _datosConMedia._unsplash_credit;
+  if(_agentInfo) _datosConMedia._agent=_agentInfo; else delete _datosConMedia._agent;
   const baseRow = {
     ref_id: String(d.refId),
     cliente_id: clientId||null,

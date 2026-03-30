@@ -1000,10 +1000,15 @@ async function saveQuote(){
     return;
   }
   let d;
-  try{ d=collectForm(); }
-  catch(err){ toast('Hubo un error al procesar el formulario, revisá los campos',false); console.error('collectForm error:',err); return; }
-  qData=d;
-  try{ renderPreview(qData); }catch(err){ console.warn('renderPreview warning:',err); }
+  const _inPreview = document.querySelector('.panel.on')?.id === 'tab-preview';
+  if(_inPreview && qData){
+    d = qData; // en preview: usar datos ya cargados, no leer formulario vacío
+  } else {
+    try{ d=collectForm(); }
+    catch(err){ toast('Hubo un error al procesar el formulario, revisá los campos',false); console.error('collectForm error:',err); return; }
+    qData=d;
+    try{ renderPreview(qData); }catch(err){ console.warn('renderPreview warning:',err); }
+  }
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
   btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Guardando...';}});
   try{
@@ -1069,7 +1074,7 @@ async function _autosaveTick(){
   if(!currentUser) return; // no logueado
   // Solo autoguardar si estamos en el tab del formulario
   const formTab=document.getElementById('tab-form');
-  if(!formTab||formTab.style.display==='none') return;
+  if(!formTab||!formTab.classList.contains('on')) return;
   // Verificar si hay contenido mínimo (al menos destino o cliente)
   const dest=document.getElementById('m-dest')?.value?.trim()||'';
   const cli=document.getElementById('m-nm')?.value?.trim()||'';
