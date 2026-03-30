@@ -909,6 +909,7 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           <button class="btn btn-cta btn-sm" id="btn-save-prev" onclick="saveQuote()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar</button>
           <button class="btn btn-pdf btn-sm" onclick="doPrint()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF</button>
           <button class="btn btn-out btn-sm" onclick="_shareQuote()" style="color:var(--primary);border-color:rgba(27,158,143,0.35)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Compartir</button>
+          <button class="btn btn-out btn-sm" onclick="_sendQuoteEmail()" style="color:var(--primary);border-color:rgba(27,158,143,0.35)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Enviar</button>
         </div>
       </div>
     </div>
@@ -1316,6 +1317,25 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div><div><div class="card-ttl">Integraciones</div><div class="card-sub">API keys para funcionalidades externas</div></div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="cfg-resend-key">Resend API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(envío de emails)</span></label>
+          <input class="finput" type="password" id="cfg-resend-key" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Obtenila en <a href="https://resend.com" target="_blank" style="color:var(--primary)">resend.com</a> — se guarda solo en tu dispositivo</div>
+        </div>
+        <div class="fg"><label class="lbl" for="cfg-validez-dias">Validez cotización <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(días)</span></label>
+          <input class="finput" type="number" id="cfg-validez-dias" placeholder="7" min="1" max="90" inputmode="numeric" style="max-width:120px">
+        </div>
+        <div class="fg"><label class="lbl" for="cfg-from-email">Email remitente <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(verificado en Resend)</span></label>
+          <input class="finput" type="email" id="cfg-from-email" placeholder="cotizaciones@tudominio.com">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Dejá vacío para usar el dominio de prueba de Resend</div>
+        </div>
+      </div>
+      <button class="btn btn-cta" onclick="saveCfgIntegrations()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar integraciones</button>
     </div>
   </div>
   <div class="card" style="margin-top:16px">
