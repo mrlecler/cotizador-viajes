@@ -1,0 +1,7 @@
+<svg viewBox="0 0 400 536" width="400" height="536" xmlns="http://www.w3.org/2000/svg">
+      
+      <rect x="0" y="0" width="400" height="400" rx="100" fill="#09000F"/>
+      <path transform="translate(8.000000000000007,8.000000000000007) scale(6)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="#7C3AED"/>
+      <text x="66.67601928710937" y="523.68" font-family="'DM Sans',sans-serif" font-weight="900" font-size="88" letter-spacing="-1" fill="#09000F">ermi</text>
+      <path transform="translate(254.8906473795573,449.24666666666667) scale(1.3291666666666666)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="#7C3AED"/>
+    </svg>
