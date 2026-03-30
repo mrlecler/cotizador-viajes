@@ -99,22 +99,27 @@ function updateHeader(){
 // API KEYS (localStorage only — never sent to server)
 // ═══════════════════════════════════════════
 function saveApiKeys(){
-  // Unsplash — check both old (cfg-unsplash) and new (ak-unsplash) fields
-  const unsplash=(document.getElementById('ak-unsplash')?.value||document.getElementById('cfg-unsplash')?.value||'').trim();
+  const unsplash=(document.getElementById('ak-unsplash')?.value||'').trim();
   if(unsplash) localStorage.setItem('mp_unsplash_key',unsplash);
   else localStorage.removeItem('mp_unsplash_key');
-  // IA key
   const ia=(document.getElementById('ak-ia')?.value||'').trim();
   if(ia) localStorage.setItem('mp_ia_key',ia);
   else localStorage.removeItem('mp_ia_key');
+  // Resend (envío de emails) — solo admin
+  const resend=(document.getElementById('ak-resend')?.value||'').trim();
+  if(resend) localStorage.setItem('mp_resend_key',resend);
+  else localStorage.removeItem('mp_resend_key');
+  const from=(document.getElementById('ak-resend-from')?.value||'').trim();
+  if(from) agCfg.resend_from=from;
+  else delete agCfg.resend_from;
+  _saveAgCfg();
   toast('API Keys guardadas');
 }
 function _loadApiKeyFields(){
-  const k=localStorage.getItem('mp_unsplash_key')||'';
-  const el1=document.getElementById('ak-unsplash');if(el1)el1.value=k;
-  const el2=document.getElementById('cfg-unsplash');if(el2)el2.value=k;
-  const iak=localStorage.getItem('mp_ia_key')||'';
-  const el3=document.getElementById('ak-ia');if(el3)el3.value=iak;
+  const el1=document.getElementById('ak-unsplash');if(el1)el1.value=localStorage.getItem('mp_unsplash_key')||'';
+  const el2=document.getElementById('ak-ia');if(el2)el2.value=localStorage.getItem('mp_ia_key')||'';
+  const el3=document.getElementById('ak-resend');if(el3)el3.value=localStorage.getItem('mp_resend_key')||'';
+  const el4=document.getElementById('ak-resend-from');if(el4)el4.value=agCfg.resend_from||'';
 }
 
 // ═══════════════════════════════════════════
@@ -123,6 +128,8 @@ function _loadApiKeyFields(){
 async function saveCfg(){
   const rawPais=(gv('cfg-pais')||'').toUpperCase().trim().slice(0,3);
   agCfg.nm=gv('cfg-nm');agCfg.em=gv('cfg-em');agCfg.tel=gv('cfg-tel');agCfg.soc=gv('cfg-soc');agCfg.pais_cod=rawPais||'AR';
+  const _vd=(document.getElementById('cfg-validez-dias')?.value||'').trim();
+  if(_vd) agCfg.validez_dias=parseInt(_vd); else delete agCfg.validez_dias;
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
@@ -421,24 +428,9 @@ async function _publicApprove(quoteId,token){
 // ═══════════════════════════════════════════
 // EMAIL VIA RESEND
 // ═══════════════════════════════════════════
-function saveCfgIntegrations(){
-  const key=(document.getElementById('cfg-resend-key')?.value||'').trim();
-  const dias=(document.getElementById('cfg-validez-dias')?.value||'').trim();
-  const from=(document.getElementById('cfg-from-email')?.value||'').trim();
-  if(key) localStorage.setItem('mp_resend_key',key);
-  else localStorage.removeItem('mp_resend_key');
-  if(dias) agCfg.validez_dias=parseInt(dias);
-  else delete agCfg.validez_dias;
-  if(from) agCfg.resend_from=from;
-  else delete agCfg.resend_from;
-  _saveAgCfg();
-  toast('Integraciones guardadas');
-}
 function _loadIntegrationFields(){
-  const rk=localStorage.getItem('mp_resend_key')||'';
-  const el=document.getElementById('cfg-resend-key');if(el)el.value=rk;
+  // Solo carga validez_dias (en tab-config) — resend/unsplash/ia son admin-only
   const vd=document.getElementById('cfg-validez-dias');if(vd)vd.value=agCfg.validez_dias||'';
-  const fr=document.getElementById('cfg-from-email');if(fr)fr.value=agCfg.resend_from||'';
 }
 async function _sendQuoteEmail(){
   // Verificar que hay cotización y email del cliente
