@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.15.0';
+const APP_VERSION = '0.16.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -473,6 +473,8 @@ async function _completeGoogleInvite(user){
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
+  // Vista pública ?q=TOKEN — no requiere login, reemplaza toda la UI
+  if(typeof _initPublicView==='function'){const isPublic=await _initPublicView();if(isPublic)return;}
   // Check invite or reset token first
   const isInvite=await _checkInviteToken();
   if(isInvite)return;

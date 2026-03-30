@@ -310,6 +310,107 @@ function removeSectionPhoto(k){
 }
 
 // ═══════════════════════════════════════════
+// LINK PÚBLICO + APROBACIÓN CLIENTE
+// ═══════════════════════════════════════════
+async function _shareQuote(){
+  if(!editingQuoteId){toast('Guardá primero la cotización para poder compartirla',false);return;}
+  let token=null;
+  try{
+    const{data:row}=await sb.from('cotizaciones').select('datos').eq('id',editingQuoteId).single();
+    const d=typeof row?.datos==='string'?JSON.parse(row.datos):(row?.datos||{});
+    if(d.public_token) token=d.public_token;
+    if(!token){
+      token=(typeof crypto.randomUUID==='function')?crypto.randomUUID():(Math.random().toString(36).slice(2)+Date.now().toString(36)).slice(0,32);
+      const newD={...d,public_token:token};
+      const{error}=await sb.from('cotizaciones').update({datos:newD}).eq('id',editingQuoteId);
+      if(error){toast('Error al generar el link: '+error.message,false);return;}
+    }
+  }catch(e){toast('No se pudo generar el link',false);return;}
+  const url=window.location.origin+window.location.pathname+'?q='+token;
+  _showShareModal(url);
+}
+function _showShareModal(url){
+  let m=document.getElementById('share-modal');
+  if(!m){
+    m=document.createElement('div');m.id='share-modal';m.className='modal-overlay';
+    m.style.cssText='display:none';
+    m.innerHTML=`<div class="modal" style="max-width:420px;padding:28px 24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--text);margin:0">Compartir cotización</h3>
+        <button onclick="document.getElementById('share-modal').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.2rem;line-height:1">✕</button>
+      </div>
+      <p style="font-size:.83rem;color:var(--muted);margin-bottom:14px;line-height:1.5">El cliente puede ver la cotización y aprobarla desde este link. No requiere login.</p>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input id="share-url-inp" class="finput" type="text" readonly style="flex:1;font-size:.78rem;background:var(--g1)">
+        <button class="btn btn-pri btn-sm" onclick="_copyShareUrl()">Copiar</button>
+      </div>
+      <div id="share-rls-info" style="display:none;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.3);border-radius:10px;padding:12px 14px;font-size:.78rem;color:var(--text);line-height:1.6">
+        <strong style="color:var(--cta)">Configurar RLS en Supabase</strong><br>
+        Para que el link público funcione, ejecutá esta policy en Supabase SQL Editor:<br>
+        <code id="share-rls-code" style="display:block;background:var(--surface2);border-radius:6px;padding:8px;margin-top:8px;font-family:'DM Mono',monospace;font-size:.72rem;white-space:pre-wrap;word-break:break-all"></code>
+      </div>
+      <button class="btn btn-out btn-xs" onclick="_showRlsInfo()" style="color:var(--muted);font-size:.75rem;margin-top:8px">Ver config RLS</button>
+    </div>`;
+    document.body.appendChild(m);
+  }
+  document.getElementById('share-url-inp').value=url;
+  m.style.display='flex';
+}
+function _copyShareUrl(){
+  const inp=document.getElementById('share-url-inp');
+  if(!inp)return;
+  navigator.clipboard.writeText(inp.value).then(()=>toast('Link copiado')).catch(()=>{inp.select();document.execCommand('copy');toast('Link copiado');});
+}
+function _showRlsInfo(){
+  const wrap=document.getElementById('share-rls-info');
+  const code=document.getElementById('share-rls-code');
+  if(!wrap||!code)return;
+  const sql=`CREATE POLICY "public_token_read"\nON cotizaciones FOR SELECT\nUSING (datos->>'public_token' IS NOT NULL);`;
+  code.textContent=sql;
+  wrap.style.display=wrap.style.display==='none'?'':'none';
+}
+// Vista pública — se activa si hay ?q=TOKEN en la URL (sin login)
+async function _initPublicView(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('q');
+  if(!token)return false;
+  // Reemplazar toda la UI por spinner
+  document.body.innerHTML='<div id="pub-loading" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;gap:16px"><div style="width:40px;height:40px;border:3px solid rgba(27,158,143,0.3);border-top-color:#1B9E8F;border-radius:50%;animation:spin .8s linear infinite"></div><p style="font-size:.9rem;color:rgba(240,237,230,0.6)">Cargando cotización...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
+  try{
+    const{data,error}=await sb.from('cotizaciones').select('datos,estado,id').filter('datos->>public_token','eq',token).maybeSingle();
+    if(error||!data){
+      document.body.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;text-align:center;padding:24px"><div><p style="font-size:1.1rem;font-weight:600;margin-bottom:8px">Cotización no encontrada</p><p style="font-size:.85rem;color:rgba(240,237,230,0.5)">El link puede haber expirado o no ser válido.</p></div></div>`;
+      return true;
+    }
+    const d=typeof data.datos==='string'?JSON.parse(data.datos):data.datos;
+    _buildPublicWall(d,data.estado,data.id,token);
+  }catch(e){
+    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif"><p>Error al cargar la cotización.</p></div>';
+  }
+  return true;
+}
+function _buildPublicWall(d,estado,quoteId,token){
+  if(typeof buildQuoteHTML!=='function'){setTimeout(()=>_buildPublicWall(d,estado,quoteId,token),200);return;}
+  const html=buildQuoteHTML(d);
+  const approved=estado==='aprobado';
+  const approveBar=approved
+    ?`<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:600;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Cotización aprobada</div>`
+    :`<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,18,15,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(27,158,143,0.2);padding:16px 20px;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+      <p style="color:rgba(240,237,230,0.7);font-size:.82rem;margin:0">¿Todo listo? Aprobá esta cotización</p>
+      <button onclick="_publicApprove('${quoteId}','${token}')" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;border:none;border-radius:10px;padding:10px 24px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Aprobar cotización</button>
+    </div>`;
+  document.body.innerHTML=`<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding-bottom:80px">${html}</div>${approveBar}`;
+}
+async function _publicApprove(quoteId,token){
+  const btn=document.querySelector('[onclick*="_publicApprove"]');
+  if(btn){btn.disabled=true;btn.textContent='Aprobando...';}
+  try{
+    const{error}=await sb.from('cotizaciones').update({estado:'aprobado'}).filter('datos->>public_token','eq',token);
+    if(error){alert('No se pudo aprobar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
+    const bar=btn?.closest('[style*="position:fixed"]');
+    if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
+  }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
+}
 
 // ═══════════════════════════════════════════
 // EDIT FROM PREVIEW
