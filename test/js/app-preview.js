@@ -404,6 +404,10 @@ async function _initPublicView(){
 }
 function _buildPublicWall(d,estado,quoteId,token){
   if(typeof buildQuoteHTML!=='function'){setTimeout(()=>_buildPublicWall(d,estado,quoteId,token),200);return;}
+  // Restaurar cover/logo desde datos JSONB (guardados al momento de compartir)
+  window.coverUrl=d._cover_url||null;
+  window.logoUrl=d._logo_url||null;
+  if(d._unsplash_credit) window._unsplashCredit=d._unsplash_credit;
   const html=buildQuoteHTML(d);
   const approved=estado==='aprobado';
   const approveBar=approved
