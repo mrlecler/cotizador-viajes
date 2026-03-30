@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=26">
+<link rel="stylesheet" href="styles.css?v=27">
 </head>
 <body>
 
@@ -1135,13 +1135,21 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
     <p>API keys y settings del sistema.</p>
   </div>
   <div class="card">
-    <div class="card-hd"><div class="card-ttl">API Keys</div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div><div><div class="card-ttl">Integraciones</div><div class="card-sub">API keys del sistema — solo visibles para admin</div></div></div>
     <div class="card-body" id="admin-api-keys">
       <div class="g2">
-        <div class="fg"><label class="lbl">Unsplash Access Key</label><input class="finput" id="ak-unsplash" type="password" placeholder="Cargando..."></div>
-        <div class="fg"><label class="lbl">IA Descriptions Key</label><input class="finput" id="ak-ia" type="password" placeholder="Cargando..."></div>
+        <div class="fg"><label class="lbl">Unsplash Access Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(fotos de portada)</span></label><input class="finput" id="ak-unsplash" type="password" placeholder="Pegar key..."></div>
+        <div class="fg"><label class="lbl">Claude API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(descripciones IA)</span></label><input class="finput" id="ak-ia" type="password" placeholder="sk-ant-..."></div>
+        <div class="fg"><label class="lbl">Resend API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(envío de emails)</span></label>
+          <input class="finput" id="ak-resend" type="password" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Obtenila en <a href="https://resend.com" target="_blank" style="color:var(--primary)">resend.com</a></div>
+        </div>
+        <div class="fg"><label class="lbl">Email remitente <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(verificado en Resend)</span></label>
+          <input class="finput" id="ak-resend-from" type="email" placeholder="cotizaciones@tudominio.com">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Dejá vacío para usar el dominio de prueba de Resend</div>
+        </div>
       </div>
-      <button class="btn btn-cta" onclick="saveApiKeys()">Guardar API Keys</button>
+      <button class="btn btn-cta" onclick="saveApiKeys()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar integraciones</button>
     </div>
   </div>
 </div>
@@ -1316,27 +1324,12 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           </div>
         </div>
       </div>
-      <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
-      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
-    </div>
-  </div>
-  <div class="card" style="margin-top:16px">
-    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div><div><div class="card-ttl">Integraciones</div><div class="card-sub">API keys para funcionalidades externas</div></div></div>
-    <div class="card-body">
-      <div class="g2">
-        <div class="fg"><label class="lbl" for="cfg-resend-key">Resend API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(envío de emails)</span></label>
-          <input class="finput" type="password" id="cfg-resend-key" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off">
-          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Obtenila en <a href="https://resend.com" target="_blank" style="color:var(--primary)">resend.com</a> — se guarda solo en tu dispositivo</div>
-        </div>
         <div class="fg"><label class="lbl" for="cfg-validez-dias">Validez cotización <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(días)</span></label>
           <input class="finput" type="number" id="cfg-validez-dias" placeholder="7" min="1" max="90" inputmode="numeric" style="max-width:120px">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Días hasta que vence una cotización enviada</div>
         </div>
-        <div class="fg"><label class="lbl" for="cfg-from-email">Email remitente <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(verificado en Resend)</span></label>
-          <input class="finput" type="email" id="cfg-from-email" placeholder="cotizaciones@tudominio.com">
-          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Dejá vacío para usar el dominio de prueba de Resend</div>
-        </div>
-      </div>
-      <button class="btn btn-cta" onclick="saveCfgIntegrations()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar integraciones</button>
+      <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
+      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
     </div>
   </div>
   <div class="card" style="margin-top:16px">
@@ -1394,14 +1387,14 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=26"></script>
-<script src="js/app-core.js?v=26"></script>
-<script src="js/app-form.js?v=26"></script>
-<script src="js/app-ia.js?v=26"></script>
-<script src="js/app-preview.js?v=26"></script>
-<script src="js/app-history.js?v=26"></script>
-<script src="js/app-admin.js?v=26"></script>
-<script src="js/app-quote.js?v=26"></script>
-<script src="js/app-promos.js?v=26"></script>
+<script src="js/config.js?v=27"></script>
+<script src="js/app-core.js?v=27"></script>
+<script src="js/app-form.js?v=27"></script>
+<script src="js/app-ia.js?v=27"></script>
+<script src="js/app-preview.js?v=27"></script>
+<script src="js/app-history.js?v=27"></script>
+<script src="js/app-admin.js?v=27"></script>
+<script src="js/app-quote.js?v=27"></script>
+<script src="js/app-promos.js?v=27"></script>
 </body>
 </html>
