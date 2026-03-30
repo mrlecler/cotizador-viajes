@@ -766,6 +766,9 @@ input:focus,textarea:focus,select:focus{
 .st-enviada,.status-enviada{background:var(--badge-blue-bg);color:var(--badge-blue-c);border:1px solid var(--badge-blue-brd)}
 .st-confirmada,.status-confirmada{background:var(--badge-green-bg);color:var(--badge-green-c);border:1px solid var(--badge-green-brd)}
 .st-cancelada,.status-cancelada{background:var(--badge-red-bg);color:var(--badge-red-c);border:1px solid var(--badge-red-brd)}
+.st-pendiente,.status-pendiente{background:rgba(212,160,23,0.12);color:#B8860B;border:1px solid rgba(212,160,23,0.3)}
+.st-vencida,.status-vencida{background:rgba(180,80,80,0.1);color:#A0404A;border:1px solid rgba(180,80,80,0.25)}
+.st-aprobado,.status-aprobado{background:rgba(27,158,143,0.12);color:var(--primary);border:1px solid rgba(27,158,143,0.3)}
 
 /* ══════════════════════════
    ADMIN TABLE

@@ -1,6 +1,26 @@
 let _histPageSize=25;
 let _cliPageSize=25;
 let _agentNames={};
+
+// ── Estado helpers ──
+function _isExpired(r){
+  const fv=r.datos?.fecha_vencimiento;
+  if(!fv)return false;
+  const today=new Date();today.setHours(0,0,0,0);
+  return new Date(fv+'T12:00:00')<today;
+}
+// Auto-expirar filas con fecha_vencimiento pasada (modifica rows in-place y actualiza Supabase)
+async function _autoExpireQuotes(rows){
+  const today=new Date();today.setHours(0,0,0,0);
+  const toExpire=rows.filter(r=>(r.estado==='enviada'||r.estado==='pendiente')&&r.datos?.fecha_vencimiento&&new Date(r.datos.fecha_vencimiento+'T12:00:00')<today);
+  if(!toExpire.length)return;
+  const ids=toExpire.map(r=>r.id);
+  try{
+    await sb.from('cotizaciones').update({estado:'vencida'}).in('id',ids);
+    toExpire.forEach(r=>{r.estado='vencida';});
+  }catch(e){console.warn('[autoExpire]',e);}
+}
+
 async function _loadAgentNames(){
   if(Object.keys(_agentNames).length) return;
   try{const{data}=await sb.from('agentes').select('id,nombre,email');
@@ -12,6 +32,8 @@ async function renderHistory(){
   el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
   if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   const rows=await dbLoadQuotes();
+  // Auto-expirar cotizaciones enviadas/pendientes con fecha_vencimiento pasada
+  await _autoExpireQuotes(rows);
   const filt=document.getElementById('hist-filter')?.value||'';
   const srch=(document.getElementById('hist-search')?.value||'').toLowerCase().trim();
   const dateFrom=document.getElementById('hist-date-from')?.value||'';
@@ -35,7 +57,7 @@ async function renderHistory(){
     return;
   }
   const shown=visible.slice(0,_histPageSize);
-  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida'};
   // Calcular cuántas versiones tiene cada base ref_id (para mostrar indicador en V1)
   const _vBase=r=>(r.ref_id||'').replace(/-V\d+$/,'');
   const _vN=r=>{const m=(r.ref_id||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;};
@@ -64,7 +86,7 @@ async function renderHistory(){
       <div class="hist-info">
         <div class="hist-nm">${r.datos?.cliente?.nombre||'Sin nombre'} — ${r.destino||'Sin destino'}${extraVers}</div>
         <div class="hist-meta"><span class="hist-refid">${r.ref_id||'—'}</span>${vBadge}${r.pasajeros?' · '+r.pasajeros:''}${(!canE&&r.agente_id&&_agentNames[r.agente_id])?' · <span style="color:var(--primary);font-weight:600">'+_agentNames[r.agente_id]+'</span>':''}</div>
-        <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}</div>
+        <div class="hist-meta">${new Date(r.creado_en||r.updated_at||Date.now()).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})}${r.fecha_sal?' · salida: '+r.fecha_sal:''}${r.datos?.fecha_vencimiento?' · vence: <span style="color:'+(_isExpired(r)?'var(--red)':'var(--g4)')+'">'+new Date(r.datos.fecha_vencimiento+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short'})+'</span>':''}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
@@ -233,11 +255,20 @@ function openStatusModal(id){ _statusTargetId=id; const m=document.getElementByI
 function closeStatusModal(){ document.getElementById('modal-status').style.display='none'; _statusTargetId=null; }
 async function applyStatus(s){
   if(!_statusTargetId) return;
-  const {data:q}=await sb.from('cotizaciones').select('agente_id').eq('id',_statusTargetId).maybeSingle();
+  const {data:q}=await sb.from('cotizaciones').select('agente_id,datos').eq('id',_statusTargetId).maybeSingle();
   if(q&&!_canEdit(q)){toast('No podés cambiar el estado de cotizaciones de otro agente',false);closeStatusModal();return;}
   closeStatusModal();
-  await sb.from('cotizaciones').update({estado:s}).eq('id',_statusTargetId);
-  toast('✓ Estado actualizado a: '+s);
+  const upd={estado:s};
+  // Al marcar como enviada: guardar fecha_vencimiento = hoy + validez_dias (default 7)
+  if(s==='enviada'||s==='pendiente'){
+    const dias=parseInt(agCfg?.validez_dias)||7;
+    const vence=new Date();vence.setDate(vence.getDate()+dias);
+    const fv=vence.toISOString().slice(0,10);
+    const dCurrent=typeof q?.datos==='string'?JSON.parse(q.datos):(q?.datos||{});
+    upd.datos={...dCurrent,fecha_vencimiento:fv};
+  }
+  await sb.from('cotizaciones').update(upd).eq('id',_statusTargetId);
+  toast('Estado actualizado a: '+s);
   renderHistory();
 }
 
@@ -505,7 +536,7 @@ async function loadClientQuotes(clienteId, clienteNombre){
   const {data}=await sb.from('cotizaciones').select('*').order('creado_en',{ascending:false});
   const matches=(data||[]).filter(r=>r.cliente_id===clienteId || (r.datos?.cliente?.nombre||'').toLowerCase()===clienteNombre.toLowerCase());
   if(!matches.length){el.innerHTML='<div style="color:var(--g3);font-size:.82rem;padding:12px 0">Sin cotizaciones</div>';return;}
-  const stLbl={borrador:'Borrador',enviada:'Enviada',confirmada:'Confirmada',cancelada:'Cancelada'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida'};
   el.innerHTML=`<table class="tbl" style="width:100%"><thead><tr><th>Ref</th><th>Destino</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>${matches.map(r=>`<tr style="cursor:pointer" onclick="document.getElementById('modal-box').style.maxWidth='500px';closeModal();loadFromHistory('${r.ref_id}','${r.id}')">
     <td style="font-family:'DM Mono',monospace;font-size:.75rem">${r.ref_id||'---'}</td>
     <td>${r.destino||'---'}</td>

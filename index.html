@@ -620,8 +620,11 @@
         <select class="fsel" id="m-estado" style="max-width:220px">
           <option value="borrador">Borrador</option>
           <option value="enviada">Enviada</option>
+          <option value="pendiente">Pendiente</option>
           <option value="confirmada">Confirmada</option>
+          <option value="aprobado">Aprobada</option>
           <option value="cancelada">Cancelada</option>
+          <option value="vencida">Vencida</option>
         </select>
       </div>
       <div class="fg"><label class="lbl" for="m-notas">Notas internas</label>
@@ -928,8 +931,11 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
           <option value="">Todos los estados</option>
           <option value="borrador">Borradores</option>
           <option value="enviada">Enviadas</option>
+          <option value="pendiente">Pendientes</option>
           <option value="confirmada">Confirmadas</option>
+          <option value="aprobado">Aprobadas</option>
           <option value="cancelada">Canceladas</option>
+          <option value="vencida">Vencidas</option>
         </select>
         <input class="finput" type="date" id="hist-date-from" onchange="renderHistory()" title="Desde" style="margin:0;min-width:130px">
         <input class="finput" type="date" id="hist-date-to" onchange="renderHistory()" title="Hasta" style="margin:0;min-width:130px">
@@ -1346,6 +1352,7 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <button class="btn btn-st-sent" onclick="applyStatus('enviada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviada</button>
       <button class="btn btn-st-confirmed" onclick="applyStatus('confirmada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmada</button>
       <button class="btn btn-st-cancelled" onclick="applyStatus('cancelada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelada</button>
+      <button class="btn" onclick="applyStatus('pendiente')" style="background:rgba(212,160,23,0.1);color:#B8860B;border:1px solid rgba(212,160,23,0.3)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pendiente</button>
     </div>
     <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:14px" onclick="closeStatusModal()">Cancelar</button>
   </div>
