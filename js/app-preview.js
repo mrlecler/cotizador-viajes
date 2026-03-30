@@ -357,12 +357,6 @@ function _showShareModal(url){
         <input id="share-url-inp" class="finput" type="text" readonly style="flex:1;font-size:.78rem;background:var(--g1)">
         <button class="btn btn-pri btn-sm" onclick="_copyShareUrl()">Copiar</button>
       </div>
-      <div id="share-rls-info" style="display:none;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.3);border-radius:10px;padding:12px 14px;font-size:.78rem;color:var(--text);line-height:1.6">
-        <strong style="color:var(--cta)">Configurar RLS en Supabase</strong><br>
-        Para que el link público funcione, ejecutá esta policy en Supabase SQL Editor:<br>
-        <code id="share-rls-code" style="display:block;background:var(--surface2);border-radius:6px;padding:8px;margin-top:8px;font-family:'DM Mono',monospace;font-size:.72rem;white-space:pre-wrap;word-break:break-all"></code>
-      </div>
-      <button class="btn btn-out btn-xs" onclick="_showRlsInfo()" style="color:var(--muted);font-size:.75rem;margin-top:8px">Ver config RLS</button>
     </div>`;
     document.body.appendChild(m);
   }
@@ -373,14 +367,6 @@ function _copyShareUrl(){
   const inp=document.getElementById('share-url-inp');
   if(!inp)return;
   navigator.clipboard.writeText(inp.value).then(()=>toast('Link copiado')).catch(()=>{inp.select();document.execCommand('copy');toast('Link copiado');});
-}
-function _showRlsInfo(){
-  const wrap=document.getElementById('share-rls-info');
-  const code=document.getElementById('share-rls-code');
-  if(!wrap||!code)return;
-  const sql=`CREATE POLICY "public_token_read"\nON cotizaciones FOR SELECT\nUSING (datos->>'public_token' IS NOT NULL);`;
-  code.textContent=sql;
-  wrap.style.display=wrap.style.display==='none'?'':'none';
 }
 // Vista pública — se activa si hay ?q=TOKEN en la URL (sin login)
 async function _initPublicView(){
@@ -405,8 +391,8 @@ async function _initPublicView(){
 function _buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl){
   if(typeof buildQuoteHTML!=='function'){setTimeout(()=>_buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl),200);return;}
   // Restaurar cover/logo/agent desde datos JSONB (guardados al momento de compartir)
-  window.coverUrl=d._cover_url||fallbackCoverUrl||null;
-  window.logoUrl=d._logo_url||null;
+  coverUrl=d._cover_url||fallbackCoverUrl||null;
+  logoUrl=d._logo_url||null;
   if(d._unsplash_credit) window._unsplashCredit=d._unsplash_credit;
   if(d._agent&&typeof agCfg!=='undefined') Object.assign(agCfg,d._agent);
   const html=buildQuoteHTML(d);
