@@ -7,5 +7,5 @@ const ERMIX_CONFIG = {
   supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns',
   // env: 'production' en master, 'test' en ramas feature/test
   env: 'test',
-  version: '24'
+  version: '25'
 };
