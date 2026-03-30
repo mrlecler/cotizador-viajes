@@ -55,16 +55,22 @@ function autoCover(){
 function _showUnsplashCredit(){
   const c=window._unsplashCredit;
   if(!c) return;
-  // Mostrar crédito debajo de la portada en preview
-  const el=document.getElementById('unsplash-credit');
-  if(el){
-    const _photoBase=c.link||'https://unsplash.com';
-    const _photoUrl=_photoBase+(_photoBase.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';
-    el.innerHTML=`Foto de <a href="https://unsplash.com/@${c.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">${c.name}</a> en <a href="${_photoUrl}" target="_blank" style="color:var(--primary)">Unsplash</a>`;
-    el.style.display='';
-  }
+  const _photoBase=c.link||'https://unsplash.com';
+  const _photoUrl=_photoBase+(_photoBase.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';
+  const _html=`Foto de <a href="https://unsplash.com/@${c.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">${c.name}</a> en <a href="${_photoUrl}" target="_blank" style="color:var(--primary)">Unsplash</a>`;
+  // 1. Crédito en el formulario (junto al thumbnail de portada)
+  const elForm=document.getElementById('cov-form-credit');
+  if(elForm){elForm.innerHTML=_html;elForm.style.display='';}
+  // 2. Crédito en la vista previa (debajo del toolbar del preview)
+  const elPrev=document.getElementById('unsplash-credit');
+  if(elPrev){elPrev.innerHTML=_html;elPrev.style.display='';}
 }
-function removeCover(){coverUrl=null;window._unsplashCredit=null;updCovers();}
+function removeCover(){
+  coverUrl=null;window._unsplashCredit=null;
+  // Limpiar crédito en ambos lugares
+  ['cov-form-credit','unsplash-credit'].forEach(id=>{const e=document.getElementById(id);if(e){e.innerHTML='';e.style.display='none';}});
+  updCovers();
+}
 
 function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;localStorage.setItem('mp_logo',logoUrl);_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
 function removeLogo(){logoUrl=null;agCfg.logo_url=null;localStorage.removeItem('mp_logo');_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
@@ -251,14 +257,11 @@ function _applyCoversToDOM(){
 function updCovers(){
   _applyCoversToDOM();
   if(qData) renderPreview(qData);
-  // Mostrar/ocultar crédito Unsplash
-  const creditEl=document.getElementById('unsplash-credit');
-  if(creditEl){
-    if(window._unsplashCredit){
-      _showUnsplashCredit();
-    } else {
-      creditEl.style.display='none';
-    }
+  // Mostrar/ocultar crédito Unsplash (en preview y en form)
+  if(window._unsplashCredit){
+    _showUnsplashCredit();
+  } else {
+    ['unsplash-credit','cov-form-credit'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
   }
 }
 
