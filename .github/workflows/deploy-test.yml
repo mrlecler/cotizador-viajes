@@ -1,0 +1,28 @@
+name: Deploy TEST environment
+
+on:
+  push:
+    branches:
+      - claude/thirsty-spence
+
+# Permite al workflow escribir en GitHub Pages
+permissions:
+  contents: write
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: claude/thirsty-spence
+
+      - name: Deploy to /test subpath on gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          destination_dir: test
+          keep_files: true   # no borra el resto de gh-pages (prod en raíz)
+          exclude_assets: '.github,node_modules,.claude'
