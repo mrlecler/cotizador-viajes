@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=31">
+<link rel="stylesheet" href="styles.css?v=32">
 </head>
 <body>
 
@@ -179,7 +179,7 @@
   </button>
 
   <!-- Cotizar — solo agente -->
-  <button class="sb-item" onclick="switchTab('form')" title="Nueva cotizacion" data-tab="form" data-role="agente">
+  <button class="sb-item" onclick="switchTab('form')" title="Nueva cotización" data-tab="form" data-role="agente">
     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     <span class="sb-lbl">Cotizar</span>
   </button>
@@ -398,7 +398,7 @@
         </div>
         <div class="dm-com-item">
           <div class="dm-com-item-lbl">Confirmadas</div>
-          <div class="dm-com-item-val ok" id="met-agc-com-conf">—</div>
+          <div class="dm-com-item-val com-ok" id="met-agc-com-conf">—</div>
         </div>
         <div class="dm-com-item">
           <div class="dm-com-item-lbl">En proceso</div>
@@ -421,7 +421,7 @@
   <div class="quick-actions">
     <div class="qa-card qa-card-pri" onclick="switchTab('form')">
       <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-      <div class="qa-card-label">Nueva cotizacion</div>
+      <div class="qa-card-label">Nueva cotización</div>
       <div class="qa-card-sub">Crear desde cero</div>
     </div>
     <div class="qa-card" onclick="switchTab('history')">
@@ -484,7 +484,7 @@
       </div>
       <div class="dm-com-item">
         <div class="dm-com-item-lbl">Confirmadas</div>
-        <div class="dm-com-item-val ok" id="met-com-conf">—</div>
+        <div class="dm-com-item-val com-ok" id="met-com-conf">—</div>
       </div>
       <div class="dm-com-item">
         <div class="dm-com-item-lbl">En proceso</div>
@@ -737,7 +737,7 @@
   <div class="card">
     <div class="form-sec-hd" id="sph-cruceros" style="background:#E8F4FD">
       <div class="form-sec-ico" style="background:rgba(14,165,233,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg></div>
-      <div class="form-sec-ttl">Crucero</div>
+      <div class="form-sec-ttl">Cruceros</div>
       <div class="form-sec-badge" style="color:#0EA5E9">CRUCEROS</div>
       <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
     </div>
@@ -1295,17 +1295,17 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 <!-- ═══ CONFIG ═══ -->
 <div id="tab-config" class="panel">
   <div class="card">
-    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl" id="cfg-card-title">Mi perfil</div></div></div>
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="card-ttl" id="cfg-card-title">Mi perfil</div></div></div>
     <div class="card-body">
       <div class="g2">
         <div class="fg"><label class="lbl" for="cfg-nm">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
         <div class="fg" id="cfg-ag-wrap"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel" readonly style="background:var(--g1);cursor:not-allowed"></div>
         <div class="fg"><label class="lbl" for="cfg-em">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com" inputmode="email" readonly style="background:var(--g1);cursor:not-allowed"></div>
-        <div class="fg" id="cfg-tel-wrap"><label class="lbl" for="cfg-tel">Telefono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
-        <div class="fg" id="cfg-pais-wrap"><label class="lbl" for="cfg-pais">Pais <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(codigo ISO)</span></label>
+        <div class="fg" id="cfg-tel-wrap"><label class="lbl" for="cfg-tel">Teléfono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
+        <div class="fg" id="cfg-pais-wrap"><label class="lbl" for="cfg-pais">País <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(código ISO)</span></label>
           <input class="finput" id="cfg-pais" list="cfg-pais-list" maxlength="3" placeholder="AR" style="text-transform:uppercase">
           <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">Espana</option><option value="MX">Mexico</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Peru</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panama</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
-          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotizacion</div>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotización</div>
         </div>
         <div class="fg full" id="cfg-soc-wrap"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
         <div class="fg full" id="cfg-logo-wrap">
@@ -1387,14 +1387,14 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=31"></script>
-<script src="js/app-core.js?v=31"></script>
-<script src="js/app-form.js?v=31"></script>
-<script src="js/app-ia.js?v=31"></script>
-<script src="js/app-preview.js?v=31"></script>
-<script src="js/app-history.js?v=31"></script>
-<script src="js/app-admin.js?v=31"></script>
-<script src="js/app-quote.js?v=31"></script>
-<script src="js/app-promos.js?v=31"></script>
+<script src="js/config.js?v=32"></script>
+<script src="js/app-core.js?v=32"></script>
+<script src="js/app-form.js?v=32"></script>
+<script src="js/app-ia.js?v=32"></script>
+<script src="js/app-preview.js?v=32"></script>
+<script src="js/app-history.js?v=32"></script>
+<script src="js/app-admin.js?v=32"></script>
+<script src="js/app-quote.js?v=32"></script>
+<script src="js/app-promos.js?v=32"></script>
 </body>
 </html>
