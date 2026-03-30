@@ -514,7 +514,24 @@ async function showApp(user){
   }
   document.getElementById('hdr-user').textContent = user.user_metadata?.full_name || user.email;
   // Version label
-  const _verEl=document.getElementById('sb-version');if(_verEl)_verEl.textContent='v'+APP_VERSION;
+  const _verEl=document.getElementById('sb-version');
+  if(_verEl){
+    const _isTest=(typeof ERMIX_CONFIG!=='undefined')&&ERMIX_CONFIG.env!=='production';
+    _verEl.textContent='v'+APP_VERSION+(_isTest?' · TEST':'');
+    if(_isTest) _verEl.style.cssText='color:#FF6B35;font-weight:700';
+  }
+  // Banner de entorno TEST — visible en topbar
+  if((typeof ERMIX_CONFIG!=='undefined')&&ERMIX_CONFIG.env!=='production'){
+    let _envBar=document.getElementById('env-test-bar');
+    if(!_envBar){
+      _envBar=document.createElement('div');
+      _envBar.id='env-test-bar';
+      _envBar.style.cssText='position:fixed;top:0;left:0;right:0;height:3px;background:repeating-linear-gradient(90deg,#FF6B35 0,#FF6B35 8px,transparent 8px,transparent 16px);z-index:9999;pointer-events:none';
+      document.body.appendChild(_envBar);
+    }
+    // Tooltip al hacer hover en la versión
+    if(_verEl) _verEl.title='Entorno de TEST — no es producción';
+  }
   // Restaurar rol del caché — se confirma/deniega cuando llega Supabase
   const _cachedRol=localStorage.getItem('mp_rol')||'agente';
   currentRol=_cachedRol;
