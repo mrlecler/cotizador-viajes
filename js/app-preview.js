@@ -28,7 +28,7 @@ function autoCover(){
       };
       // Trigger download event (requerido por Unsplash TOS)
       if(d.links?.download_location){
-        fetch(d.links.download_location+'?client_id='+key).catch(()=>{});
+        fetch(d.links.download_location,{headers:{Authorization:'Client-ID '+key}}).catch(()=>{});
       }
       updCovers();
       _showUnsplashCredit();
@@ -58,7 +58,9 @@ function _showUnsplashCredit(){
   // Mostrar crédito debajo de la portada en preview
   const el=document.getElementById('unsplash-credit');
   if(el){
-    el.innerHTML=`Foto de <a href="https://unsplash.com/@${c.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">${c.name}</a> en <a href="https://unsplash.com/?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">Unsplash</a>`;
+    const _photoBase=c.link||'https://unsplash.com';
+    const _photoUrl=_photoBase+(_photoBase.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';
+    el.innerHTML=`Foto de <a href="https://unsplash.com/@${c.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:var(--primary)">${c.name}</a> en <a href="${_photoUrl}" target="_blank" style="color:var(--primary)">Unsplash</a>`;
     el.style.display='';
   }
 }
