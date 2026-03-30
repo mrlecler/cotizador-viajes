@@ -1,12 +1,15 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.20.0';
+const APP_VERSION = '0.21.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
 // ═══════════════════════════════════════════
-const sb = supabase.createClient(ERMIX_CONFIG.supabaseUrl, ERMIX_CONFIG.supabaseKey);
+// storageKey separada por env — prod y test no comparten sesión en el mismo browser
+const sb = supabase.createClient(ERMIX_CONFIG.supabaseUrl, ERMIX_CONFIG.supabaseKey,
+  ERMIX_CONFIG.env==='test' ? {auth:{storageKey:'ermix-auth-test'}} : {}
+);
 
 // ═══════════════════════════════════════════
 // STATE
