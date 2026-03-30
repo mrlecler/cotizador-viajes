@@ -28,7 +28,7 @@ function autoCover(){
       };
       // Trigger download event (requerido por Unsplash TOS)
       if(d.links?.download_location){
-        fetch(d.links.download_location+'?client_id='+key).catch(()=>{});
+        fetch(d.links.download_location,{headers:{Authorization:'Client-ID '+key}}).catch(()=>{});
       }
       updCovers();
       _showUnsplashCredit();
@@ -70,6 +70,7 @@ function removeCover(){
   // Limpiar crédito en ambos lugares
   ['cov-form-credit','unsplash-credit'].forEach(id=>{const e=document.getElementById(id);if(e){e.innerHTML='';e.style.display='none';}});
   updCovers();
+}
 
 function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;localStorage.setItem('mp_logo',logoUrl);_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
 function removeLogo(){logoUrl=null;agCfg.logo_url=null;localStorage.removeItem('mp_logo');_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
@@ -256,14 +257,11 @@ function _applyCoversToDOM(){
 function updCovers(){
   _applyCoversToDOM();
   if(qData) renderPreview(qData);
-  // Mostrar/ocultar crédito Unsplash
-  const creditEl=document.getElementById('unsplash-credit');
-  if(creditEl){
-    if(window._unsplashCredit){
-      _showUnsplashCredit();
-    } else {
-      creditEl.style.display='none';
-    }
+  // Mostrar/ocultar crédito Unsplash (en preview y en form)
+  if(window._unsplashCredit){
+    _showUnsplashCredit();
+  } else {
+    ['unsplash-credit','cov-form-credit'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
   }
 }
 
