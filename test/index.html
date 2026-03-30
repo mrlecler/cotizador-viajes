@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ermix · Cotizador</title>
+<link rel="icon" type="image/png" sizes="32x32" href="ermix-brand-assets-v2/png/transparent/icon-gradient-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="ermix-brand-assets-v2/png/transparent/icon-gradient-16.png">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=24">
+</head>
+<body>
+
+<!-- LOGIN — Split + Boarding Pass -->
+<div id="login-wall">
+  <div class="login-split">
+    <!-- LEFT: Travel photo -->
+    <div class="login-photo">
+      <img id="login-bg" src="" alt="Destino de viaje">
+      <div class="login-photo-overlay"></div>
+      <div class="login-photo-content">
+        <div class="login-photo-logo"><div id="login-wm"></div></div>
+        <h2 class="login-photo-h2">Conecta con el mundo.<br>Cotiza sin limites.</h2>
+        <p class="login-photo-p">La plataforma de cotizacion preferida por agentes de viaje</p>
+        <div class="login-photo-dots"><span class="login-photo-dot on"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span><span class="login-photo-dot"></span></div>
+      </div>
+    </div>
+    <!-- RIGHT: Boarding pass ticket -->
+    <div class="login-ticket-wrap">
+      <div class="login-ticket">
+        <!-- Header con ruta -->
+        <div class="tk-hd">
+          <div id="tk-hd-wm"></div>
+          <div class="tk-route">
+            <div><div class="tk-iata" id="tk-from">EZE</div><div class="tk-iata-sub">Buenos Aires</div></div>
+            <div class="tk-route-line">
+              <div class="tk-route-dot"></div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,.55)" stroke="none" style="position:absolute;left:calc(50% + 16px);top:50%;transform:translate(-50%,-50%) rotate(90deg)"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            <div style="text-align:right"><div class="tk-iata" id="tk-to">BCN</div><div class="tk-iata-sub" id="tk-to-city">Barcelona</div></div>
+          </div>
+        </div>
+        <!-- Form -->
+        <div class="tk-body">
+          <div class="tk-subtitle">Boarding Pass / Acceso</div>
+          <div style="margin-bottom:14px">
+            <label class="tk-label">Email del pasajero</label>
+            <input class="tk-input" id="li-email" type="email" placeholder="tu@email.com">
+          </div>
+          <div style="margin-bottom:6px">
+            <label class="tk-label">Codigo de acceso</label>
+            <input class="tk-input" id="li-pass" type="password" placeholder="Tu contrasena" onkeydown="if(event.key==='Enter')doLogin()">
+          </div>
+          <div style="text-align:right;margin-bottom:16px">
+            <button onclick="showForgot()" class="tk-forgot" style="background:none;border:none;cursor:pointer">Olvidaste tu contrasena?</button>
+          </div>
+          <button class="tk-cta" onclick="doLogin()" id="li-btn">Embarcar</button>
+          <div id="login-status" style="min-height:22px;margin-top:8px;text-align:center;font-size:.82rem"></div>
+          <div class="tk-divider"><span>o</span></div>
+          <button onclick="doLoginGoogle()" class="tk-google">
+            <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5L31.8 34c-2 1.4-4.5 2-7.8 2-5.2 0-9.6-3-11.3-7.3l-6.5 5C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l5.7 5c3.4-3.1 5.8-7.7 5.8-15 0-1.3-.1-2.7-.4-4z"/></svg>
+            Continuar con Google
+          </button>
+        </div>
+        <!-- Tear line -->
+        <div class="tk-tear"><div class="tk-tear-c"></div><div class="tk-tear-line"></div><div class="tk-tear-c"></div></div>
+        <!-- Footer -->
+        <div class="tk-footer">
+          <div><div class="tk-meta-label">Gate</div><div class="tk-meta-value">A12</div></div>
+          <div><div class="tk-meta-label">Seat</div><div class="tk-meta-value">1A</div></div>
+          <div><div class="tk-meta-label">Class</div><div class="tk-meta-value" style="color:#1B9E8F">PRO</div></div>
+          <div class="tk-barcode"><span style="height:18px"></span><span style="height:24px"></span><span style="height:12px"></span><span style="height:24px"></span><span style="height:16px"></span><span style="height:24px"></span><span style="height:10px"></span><span style="height:20px"></span><span style="height:24px"></span><span style="height:14px"></span><span style="height:24px"></span><span style="height:18px"></span><span style="height:10px"></span><span style="height:24px"></span><span style="height:16px"></span><span style="height:20px"></span><span style="height:24px"></span><span style="height:12px"></span><span style="height:24px"></span><span style="height:18px"></span></div>
+        </div>
+        <!-- Theme toggle + access -->
+        <div class="tk-theme-toggle">
+          <span>Claro</span>
+          <button class="tk-theme-sw" id="login-theme-sw" onclick="toggleTheme()" aria-label="Cambiar tema"></button>
+          <span>Oscuro</span>
+        </div>
+        <div class="tk-access">Acceso restringido / Solo agentes autorizados</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVITE ACCEPT SCREEN -->
+<div id="invite-wall" class="auth-screen" style="display:none">
+  <div class="auth-screen-inner">
+    <div id="invite-wm" style="text-align:center;margin-bottom:8px"></div>
+    <div class="auth-tag">Travel Platform for Agents</div>
+    <div class="login-ticket" style="max-width:420px;margin:20px auto 0">
+      <div class="tk-hd" style="padding:22px 32px 18px">
+        <div class="tk-subtitle" style="color:rgba(255,255,255,.35);margin:0" id="invite-title">Crear tu cuenta</div>
+        <div id="invite-info" style="padding:8px 12px;border-radius:8px;background:rgba(27,158,143,.1);border:1px solid rgba(27,158,143,.15);margin-top:10px;display:flex;align-items:center;gap:10px">
+          <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-weight:700">Invitado como</div>
+          <div id="invite-rol-badge" style="font-size:.82rem;font-weight:700;color:#0BC5B8"></div>
+        </div>
+      </div>
+      <div class="tk-body">
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Nombre</label>
+          <input class="tk-input" id="inv-accept-nm" placeholder="Tu nombre completo">
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Email</label>
+          <input class="tk-input" id="inv-accept-em" type="email" readonly style="opacity:.6">
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Crear contrasena</label>
+          <input class="tk-input" id="inv-accept-pass" type="password" placeholder="Minimo 6 caracteres">
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Confirmar contrasena</label>
+          <input class="tk-input" id="inv-accept-pass2" type="password" placeholder="Repetir contrasena" onkeydown="if(event.key==='Enter')acceptInvite()">
+        </div>
+        <button class="tk-cta" onclick="acceptInvite()" id="inv-accept-btn">Crear cuenta</button>
+        <div id="invite-status" style="min-height:22px;margin-top:8px;text-align:center;font-size:.82rem"></div>
+        <div class="tk-divider"><span>o</span></div>
+        <button onclick="acceptInviteGoogle()" class="tk-google">
+          <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5L31.8 34c-2 1.4-4.5 2-7.8 2-5.2 0-9.6-3-11.3-7.3l-6.5 5C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l5.7 5c3.4-3.1 5.8-7.7 5.8-15 0-1.3-.1-2.7-.4-4z"/></svg>
+          Crear cuenta con Google
+        </button>
+        <div class="tk-access">Al crear tu cuenta aceptas los terminos de uso de ermix</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD SCREEN -->
+<div id="reset-wall" class="auth-screen" style="display:none">
+  <div class="auth-screen-inner">
+    <div id="reset-wm" style="text-align:center;margin-bottom:8px"></div>
+    <div class="auth-tag">Travel Platform for Agents</div>
+    <div class="login-ticket" style="max-width:420px;margin:20px auto 0">
+      <div class="tk-hd" style="padding:22px 32px 18px">
+        <div class="tk-subtitle" style="color:rgba(255,255,255,.35);margin:0">Restablecer contrasena</div>
+        <div id="reset-info" style="margin-top:10px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(11,197,184,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0BC5B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:.85rem;font-weight:600;color:white" id="reset-user-name"></div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.35)" id="reset-user-email"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tk-body">
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Nueva contrasena</label>
+          <input class="tk-input" id="reset-pass" type="password" placeholder="Minimo 6 caracteres">
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="tk-label">Confirmar contrasena</label>
+          <input class="tk-input" id="reset-pass2" type="password" placeholder="Repetir contrasena" onkeydown="if(event.key==='Enter')doManualReset()">
+        </div>
+        <button class="tk-cta" onclick="doManualReset()" id="reset-btn">Guardar contrasena</button>
+        <div id="reset-status" style="min-height:22px;margin-top:8px;text-align:center;font-size:.82rem"></div>
+        <div class="tk-access">Despues de guardar podras iniciar sesion con tu nueva contrasena</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR v3 -->
+<div id="sidebar" style="display:none">
+
+  <!-- Toggle hamburger / chevron -->
+  <button id="sb-toggle" onclick="_toggleSidebar()" title="Menú" aria-label="Abrir/cerrar menú">
+    <svg id="sb-ico-open" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg id="sb-ico-close" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+
+  <!-- Inicio — todos -->
+  <button class="sb-item on" onclick="switchTab('inicio')" title="Inicio" data-tab="inicio" data-role="agente agencia admin">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    <span class="sb-lbl">Inicio</span>
+  </button>
+
+  <!-- Cotizar — solo agente -->
+  <button class="sb-item" onclick="switchTab('form')" title="Nueva cotizacion" data-tab="form" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span class="sb-lbl">Cotizar</span>
+  </button>
+
+  <!-- Historial — solo agente -->
+  <button class="sb-item" onclick="switchTab('history')" title="Historial" data-tab="history" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span class="sb-lbl">Historial</span>
+  </button>
+
+  <!-- Clientes — solo agente -->
+  <button class="sb-item" onclick="switchTab('clients')" title="Clientes" data-tab="clients" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span class="sb-lbl">Clientes</span>
+  </button>
+
+  <!-- Proveedores — solo agente -->
+  <button class="sb-item" onclick="switchTab('providers')" title="Proveedores" data-tab="providers" data-role="agente">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
+    <span class="sb-lbl">Proveedores</span>
+  </button>
+
+  <!-- Promociones — solo agente -->
+  <button class="sb-item" onclick="switchTab('promos')" title="Promociones" data-tab="promos" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span class="sb-lbl">Promociones</span>
+  </button>
+
+  <!-- Promos vigentes — solo agente (RO de la agencia) -->
+  <button class="sb-item" onclick="switchTab('promosvig')" title="Promos vigentes" data-tab="promosvig" data-role="agente">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span class="sb-lbl">Promos vigentes</span>
+  </button>
+
+  <!-- Mi Agencia — solo agencia -->
+  <button class="sb-item" onclick="switchTab('agency')" title="Mi Agencia" data-tab="agency" data-role="agencia">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span class="sb-lbl">Mi Agencia</span>
+  </button>
+
+  <!-- Gestion — solo admin -->
+  <button class="sb-item" onclick="switchTab('admin')" title="Gestion" data-tab="admin" data-role="admin">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span class="sb-lbl">Gestion</span>
+  </button>
+
+  <!-- Soporte — todos los roles -->
+  <button class="sb-item" onclick="switchTab('support')" title="Soporte" data-tab="support" data-role="admin agencia agente">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="sb-lbl">Soporte</span>
+  </button>
+
+  <!-- Config — solo admin -->
+  <button class="sb-item" onclick="switchTab('adminconfig')" title="Config" data-tab="adminconfig" data-role="admin">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12"/><polyline points="6 12 2 12"/><circle cx="12" cy="12" r="4"/></svg>
+    <span class="sb-lbl">Config</span>
+  </button>
+
+  <div class="sb-div"></div>
+
+  <!-- Profile dropdown trigger -->
+  <div id="sb-prof-dd" style="position:relative;margin-top:auto">
+    <div id="sb-avatar" onclick="_toggleProfDD(event)" title="Mi perfil">DL</div>
+    <!-- Expanded label (sidebar open) -->
+    <div id="sb-prof-label" onclick="_toggleProfDD(event)" style="display:none;cursor:pointer;padding:0 12px 8px;margin-top:6px">
+      <div style="font-size:.78rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:136px;line-height:1.3" id="sb-prof-nm"></div>
+      <div id="sb-prof-rolbadge" style="font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);margin-top:4px"></div>
+      <div id="sb-version" style="font-size:.56rem;font-weight:500;color:var(--g3);margin-top:6px;letter-spacing:.5px;opacity:.7"></div>
+    </div>
+    <!-- Dropdown panel -->
+    <div id="sb-prof-menu" class="prof-dd"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION — mobile only, shown by JS after login -->
+<nav id="bottom-nav">
+  <button class="bnav-item on" data-tab="inicio" data-role="agente agencia admin" onclick="switchTab('inicio')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    <span>Inicio</span>
+  </button>
+  <button class="bnav-item" data-tab="form" data-role="agente" onclick="switchTab('form')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Cotizar</span>
+  </button>
+  <button class="bnav-item" data-tab="history" data-role="agente" onclick="switchTab('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span>Historial</span>
+  </button>
+  <button class="bnav-item" data-tab="clients" data-role="agente" onclick="switchTab('clients')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span>Clientes</span>
+  </button>
+  <button class="bnav-item" data-tab="agency" data-role="agencia" onclick="switchTab('agency')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span>Agencia</span>
+  </button>
+  <button class="bnav-item" data-tab="admin" data-role="admin" onclick="switchTab('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Gestion</span>
+  </button>
+  <button class="bnav-item" data-tab="support" data-role="agente agencia admin" onclick="switchTab('support')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Soporte</span>
+  </button>
+  <button class="bnav-item" data-tab="config" data-role="agente agencia admin" onclick="switchTab('config')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Perfil</span>
+  </button>
+</nav>
+
+<!-- APP -->
+<div id="ui" style="display:none">
+<div id="hdr">
+  <div id="hdr-logo-wrap" style="cursor:pointer;display:flex;align-items:center" onclick="switchTab('inicio')">
+    <svg id="hdr-wm" height="22"></svg>
+  </div>
+  <div id="hdr-right">
+    <span id="hdr-user"></span>
+    <span id="hdr-role-badge" class="hdr-badge" style="display:none">ADMIN</span>
+    <button id="hdr-theme-toggle" class="hdr-btn" onclick="toggleTheme()" aria-label="Cambiar tema" style="padding:6px 9px" title="Cambiar tema">
+      <svg id="theme-ico-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="theme-ico-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <button class="hdr-btn" onclick="doLogout()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Salir
+    </button>
+  </div>
+</div>
+<div class="wrap">
+
+<!-- ═══ INICIO ═══ -->
+<div id="tab-inicio" class="panel on">
+  <!-- Admin dashboard (solo admin) -->
+  <div id="inicio-admin" style="display:none">
+    <div class="intro-bar" style="margin-bottom:16px">
+      <h2 id="inicio-saludo-admin">Hola.</h2>
+      <p>Panel de control global de ermix.</p>
+    </div>
+    <div class="dm-grid">
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg>Agencias</div>
+        <div class="dm-card-val grad" id="met-adm-agencies">—</div>
+        <div class="dm-card-sub">activas en la plataforma</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-agencies-bar" style="width:0%"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agentes</div>
+        <div class="dm-card-val" id="met-adm-agents" style="color:#9B7FD4">—</div>
+        <div class="dm-card-sub">registrados en total</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-agents-bar" style="width:0%;background:#9B7FD4"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+        <div class="dm-card-val" id="met-adm-quotes" style="color:#0EA5E9">—</div>
+        <div class="dm-card-sub">generadas en la plataforma</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-quotes-bar" style="width:0%;background:#0EA5E9"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Confirmadas</div>
+        <div class="dm-card-val" id="met-adm-confirmed" style="color:#22c55e">—</div>
+        <div class="dm-card-sub">viajes vendidos</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-adm-confirmed-bar" style="width:0%;background:#22c55e"></div></div>
+      </div>
+    </div>
+    <!-- Top destinos -->
+    <div class="dm-wide" style="margin-top:16px">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Destinos mas cotizados</span>
+      </div>
+      <div id="adm-top-destinos" style="padding:8px 0;font-size:.82rem;color:var(--g3)">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- Agencia dashboard (solo agencia) -->
+  <div id="inicio-agencia" style="display:none">
+    <div class="intro-bar" style="margin-bottom:16px">
+      <h2 id="inicio-saludo-agencia">Hola.</h2>
+      <p>Resumen de tu agencia.</p>
+    </div>
+    <div class="dm-grid">
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Agentes</div>
+        <div class="dm-card-val grad" id="met-agc-agents">—</div>
+        <div class="dm-card-sub">en tu equipo</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-agents-bar" style="width:0%"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+        <div class="dm-card-val" id="met-agc-quotes" style="color:#0EA5E9">—</div>
+        <div class="dm-card-sub">de toda la agencia</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-quotes-bar" style="width:0%;background:#0EA5E9"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmadas</div>
+        <div class="dm-card-val" id="met-agc-confirmed" style="color:#22c55e">—</div>
+        <div class="dm-card-sub">viajes vendidos</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-confirmed-bar" style="width:0%;background:#22c55e"></div></div>
+      </div>
+      <div class="dm-card">
+        <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</div>
+        <div class="dm-card-val" id="met-agc-clients" style="color:#9B7FD4">—</div>
+        <div class="dm-card-sub">de tus agentes</div>
+        <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-agc-clients-bar" style="width:0%;background:#9B7FD4"></div></div>
+      </div>
+    </div>
+    <!-- Comisiones agencia -->
+    <div class="dm-wide" style="margin-bottom:20px">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Comisiones estimadas de la agencia · USD</span>
+      </div>
+      <div class="dm-com-row">
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">Total</div>
+          <div class="dm-com-item-val tq" id="met-agc-com">—</div>
+        </div>
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">Confirmadas</div>
+          <div class="dm-com-item-val ok" id="met-agc-com-conf">—</div>
+        </div>
+        <div class="dm-com-item">
+          <div class="dm-com-item-lbl">En proceso</div>
+          <div class="dm-com-item-val muted" id="met-agc-com-pend">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- Top agentes -->
+    <div class="dm-wide">
+      <div class="dm-wide-hd">
+        <span class="dm-wide-ttl">Rendimiento por agente</span>
+      </div>
+      <div id="agc-top-agentes" style="padding:8px 0;font-size:.82rem;color:var(--g3)">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- Agente dashboard -->
+  <div id="inicio-agent">
+  <!-- Quick actions -->
+  <div class="quick-actions">
+    <div class="qa-card qa-card-pri" onclick="switchTab('form')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      <div class="qa-card-label">Nueva cotizacion</div>
+      <div class="qa-card-sub">Crear desde cero</div>
+    </div>
+    <div class="qa-card" onclick="switchTab('history')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="qa-card-label">Historial</div>
+      <div class="qa-card-count" id="qac-hist">—</div>
+      <div class="qa-card-sub">cotizaciones guardadas</div>
+    </div>
+    <div class="qa-card" onclick="switchTab('clients')">
+      <div class="qa-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="qa-card-label">Clientes</div>
+      <div class="qa-card-count" id="qac-clients">—</div>
+      <div class="qa-card-sub">en tu base de datos</div>
+    </div>
+  </div>
+  <!-- Date filter -->
+  <div class="date-tabs">
+    <span style="font-size:.74rem;font-weight:600;color:var(--g4);align-self:center;margin-right:4px">Período:</span>
+    <button class="date-tab on" data-period="month" onclick="_setDashPeriod('month',this)">Este mes</button>
+    <button class="date-tab" data-period="year" onclick="_setDashPeriod('year',this)">Este año</button>
+    <button class="date-tab" data-period="all" onclick="_setDashPeriod('all',this)">Todo</button>
+  </div>
+  <!-- Metric cards -->
+  <div class="dm-grid">
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Cotizaciones</div>
+      <div class="dm-card-val grad" id="met-cot">—</div>
+      <div class="dm-card-sub" id="met-cot-sub">en el período</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-cot-bar" style="width:0%"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmadas</div>
+      <div class="dm-card-val" id="met-conf" style="color:#22c55e">—</div>
+      <div class="dm-card-sub" id="met-conf-sub">viajes confirmados</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-conf-bar" style="width:0%;background:#22c55e"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>En proceso</div>
+      <div class="dm-card-val" id="met-act" style="color:#f59e0b">—</div>
+      <div class="dm-card-sub">enviadas al cliente</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-act-bar" style="width:0%;background:#f59e0b"></div></div>
+    </div>
+    <div class="dm-card">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Clientes</div>
+      <div class="dm-card-val" id="met-clients">—</div>
+      <div class="dm-card-sub">en tu base de datos</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-clients-bar" style="width:0%;background:#8b5cf6"></div></div>
+    </div>
+  </div>
+  <!-- Commissions + status dist -->
+  <div class="dm-wide" style="margin-bottom:20px">
+    <div class="dm-wide-hd">
+      <span class="dm-wide-ttl">Comisiones estimadas · USD</span>
+      <span style="font-size:.7rem;color:var(--g4)">Basado en datos cargados en cada cotización</span>
+    </div>
+    <div class="dm-com-row">
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">Total período</div>
+        <div class="dm-com-item-val tq" id="met-com">—</div>
+      </div>
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">Confirmadas</div>
+        <div class="dm-com-item-val ok" id="met-com-conf">—</div>
+      </div>
+      <div class="dm-com-item">
+        <div class="dm-com-item-lbl">En proceso</div>
+        <div class="dm-com-item-val muted" id="met-com-pend">—</div>
+      </div>
+    </div>
+    <div class="stat-dist">
+      <div class="stat-dist-lbl">Distribución de estados</div>
+      <div class="stat-bar" id="stat-bar-track">
+        <div class="stat-bar-seg stat-bar-borrador" id="seg-borrador" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-enviada" id="seg-enviada" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-confirmada" id="seg-confirmada" style="width:25%"></div>
+        <div class="stat-bar-seg stat-bar-cancelada" id="seg-cancelada" style="width:25%"></div>
+      </div>
+      <div class="stat-legend">
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#94a3b8"></span><span id="leg-borrador">Borradores</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#f59e0b"></span><span id="leg-enviada">Enviadas</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#22c55e"></span><span id="leg-confirmada">Confirmadas</span></span>
+        <span class="stat-legend-item"><span class="stat-legend-dot" style="background:#ef4444"></span><span id="leg-cancelada">Canceladas</span></span>
+      </div>
+    </div>
+  </div>
+  <!-- Promociones (solo agente) -->
+  <div class="card" id="inicio-promos-card" style="margin-bottom:20px">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div><div class="card-ttl">Mis Promociones</div><div class="card-sub">Clic en una para cargar la cotizacion</div></div>
+      <button class="btn btn-out btn-xs" onclick="switchTab('promos')" style="margin-left:auto">Ver todas</button>
+    </div>
+    <div class="card-body" style="padding-top:10px;padding-bottom:14px">
+      <div id="home-promos-grid" class="home-promos-grid"></div>
+    </div>
+  </div>
+  </div><!-- /inicio-agent -->
+</div>
+
+<!-- ═══ PROMOCIONES ═══ -->
+<div id="tab-promos" class="panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text)">Mis Promociones</div>
+      <div style="font-size:.78rem;color:var(--g4);margin-top:2px">Paquetes tipo listos para cargar y personalizar</div>
+    </div>
+    <button class="btn btn-pri" onclick="switchTab('form')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva cotización
+    </button>
+  </div>
+  <div id="promos-grid" class="promo-grid"></div>
+</div>
+
+<!-- ═══ PROMOS VIGENTES (agente, RO) ═══ -->
+<div id="tab-promosvig" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Promos vigentes</h2>
+    <p>Promociones cargadas por tu agencia. Solo lectura.</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <input class="finput" id="pvag-search" placeholder="Buscar por titulo o categoria..." oninput="_renderPromosVigAgente()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+  </div>
+  <div id="promos-vig-agente-list"><div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+</div>
+
+<!-- ═══ FORM ═══ -->
+<div id="tab-form" class="panel">
+  <!-- Sticky actions bar -->
+  <div id="form-sticky-bar">
+    <span class="fsb-title" id="fsb-title">Nueva cotización</span>
+    <div class="fsb-right">
+      <button id="btn-new-version" class="btn btn-out btn-xs" onclick="saveAsNewVersion()" title="Crear nueva version de esta cotizacion" style="display:none;color:var(--primary);border-color:rgba(27,158,143,0.35)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span class="hide-xs">V+</span>
+      </button>
+      <button class="btn btn-promo btn-xs" onclick="openSavePromoModal()" title="Guardar como Promoción">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="hide-xs">Promo</span>
+      </button>
+      <button class="btn btn-out btn-xs" onclick="loadTestData()" title="Cargar datos de prueba" style="opacity:.7">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>
+        <span class="hide-xs">Prueba</span>
+      </button>
+      <button class="btn btn-nav btn-xs" onclick="buildAndPreview()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Vista previa
+      </button>
+      <button class="btn btn-cta btn-xs" onclick="saveQuote()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        Guardar
+      </button>
+      <button class="btn btn-pdf btn-xs" onclick="buildAndPrint()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        PDF
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="card-ttl">Pasajero</div></div></div>
+    <div class="card-body">
+      <div class="fg"><label class="lbl">Buscar cliente existente</label>
+        <div class="search-wrap">
+          <input class="finput" type="text" id="cli-search" placeholder="Escribí nombre o teléfono..." oninput="searchClients(this.value)" autocomplete="off">
+          <div class="cli-results" id="cli-results"></div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="fg"><label class="lbl" for="m-nombre">Nombre completo</label><input class="finput" type="text" id="m-nombre" placeholder="Hugo Martínez"></div>
+        <div class="fg"><label class="lbl" for="m-cel">Celular / WhatsApp</label><input class="finput" type="text" id="m-cel" placeholder="+54 362 470-3040" inputmode="tel"></div>
+        <div class="fg"><label class="lbl" for="m-email">Email</label><input class="finput" type="text" id="m-email" placeholder="hugo@email.com" inputmode="email"></div>
+      </div>
+      <div class="g4">
+        <div class="fg"><label class="lbl" for="m-adu">Adultos</label><input class="finput" type="number" id="m-adu" placeholder="2" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-nin">Niños</label><input class="finput" type="number" id="m-nin" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-inf">Infantes</label><input class="finput" type="number" id="m-inf" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="m-ref">N° cotización</label><input class="finput" type="text" id="m-ref" placeholder="Auto"></div>
+      </div>
+      <div class="g2">
+        <div class="fg">
+          <label class="lbl" for="m-dest">Destino</label>
+          <input class="finput" type="text" id="m-dest" placeholder="Orlando, Florida">
+          <button class="btn-ia-desc" id="btn-ia-desc" onclick="generarDescIA()" title="Generar descripción turística con IA">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg>
+            <span id="btn-ia-desc-txt">Generar descripción</span>
+          </button>
+        </div>
+        <div class="fg"><label class="lbl" for="m-pais">País</label><input class="finput" type="text" id="m-pais" placeholder="Estados Unidos"></div>
+        <div class="fg"><label class="lbl" for="m-sal">Fecha de salida</label><input class="finput" type="date" id="m-sal"></div>
+        <div class="fg"><label class="lbl" for="m-reg">Fecha de regreso</label><input class="finput" type="date" id="m-reg"></div>
+      </div>
+      <div class="fg"><label class="lbl" for="m-desc">Descripción del destino <span style="font-size:.6rem;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(visible en la cotización)</span></label>
+        <textarea class="ftxt" id="m-desc" rows="3" placeholder="Se mostrará en la cotización. Podés generarla automáticamente con IA..."></textarea>
+      </div>
+      <div class="fg"><label class="lbl" for="m-estado">Estado</label>
+        <select class="fsel" id="m-estado" style="max-width:220px">
+          <option value="borrador">Borrador</option>
+          <option value="enviada">Enviada</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="confirmada">Confirmada</option>
+          <option value="aprobado">Aprobada</option>
+          <option value="cancelada">Cancelada</option>
+          <option value="vencida">Vencida</option>
+        </select>
+      </div>
+      <div class="fg"><label class="lbl" for="m-notas">Notas internas</label>
+        <textarea class="ftxt" id="m-notas" rows="2" placeholder="Preferencias, observaciones (no aparecen en el PDF)..."></textarea>
+      </div>
+      <div class="fg" style="margin-top:4px">
+        <label class="lbl">Foto de portada</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <img id="cov-thumb" src="" style="display:none;height:48px;width:78px;object-fit:cover;border-radius:8px;border:2px solid var(--primary)" alt="">
+          <button class="btn btn-out btn-xs" onclick="document.getElementById('cov-f1').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto</button>
+          <button class="btn btn-out btn-xs" onclick="autoCover()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Por destino</button>
+          <button class="btn btn-del btn-xs" id="btn-rmcov" onclick="removeCover()" style="display:none">✕ Quitar</button>
+          <input type="file" id="cov-f1" accept="image/*" style="display:none" onchange="uploadCover(this)">
+        </div>
+        <div id="cov-form-credit" style="display:none;margin-top:5px;font-size:.68rem;color:var(--g4)"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-vuelos" style="background:#E8F7F3">
+      <div class="form-sec-ico" style="background:rgba(27,158,143,0.18)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+      <div class="form-sec-ttl">Vuelos</div>
+      <div class="form-sec-badge" style="color:#1B9E8F">VUELOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="vuelos-cont"></div>
+      <button class="add-row" onclick="addVuelo()">+ Agregar vuelo / segmento</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-hotel" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="form-sec-ttl">Alojamiento</div>
+      <div class="form-sec-badge" style="color:#D4A017">HOTEL</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="hoteles-cont"></div>
+      <button class="add-row" onclick="addHotel()">+ Agregar hotel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-traslados" style="background:#FFF0EC">
+      <div class="form-sec-ico" style="background:rgba(232,130,106,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8826A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2M6 6V4M18 6V4"/></svg></div>
+      <div class="form-sec-ttl">Traslados</div>
+      <div class="form-sec-badge" style="color:#E8826A">TRASLADOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="traslados-cont"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addTraslado()">+ Agregar traslado</button>
+        <button class="add-row" style="background:rgba(27,158,143,0.07);border-color:rgba(27,158,143,0.22);color:var(--primary)" onclick="_showProvCatalog(event,'traslado',addTraslado)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-excursiones" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
+      <div class="form-sec-ttl">Excursiones y Atracciones</div>
+      <div class="form-sec-badge" style="color:#D4A017">EXCURSIONES</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="excursiones-cont"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addExcursion()">+ Agregar excursión</button>
+        <button class="add-row" style="background:rgba(212,160,23,0.07);border-color:rgba(212,160,23,0.22);color:#D4A017" onclick="_showProvCatalog(event,'excursion',addExcursion)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-tickets" style="background:#FFF8E3">
+      <div class="form-sec-ico" style="background:rgba(212,160,23,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div>
+      <div class="form-sec-ttl">Tickets y Entradas</div>
+      <div class="form-sec-badge" style="color:#D4A017">TICKETS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="tickets-cont"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addTicket()">+ Agregar ticket / entrada</button>
+        <button class="add-row" style="background:rgba(212,160,23,0.07);border-color:rgba(212,160,23,0.22);color:#D4A017" onclick="_showProvCatalog(event,'excursion',addTicket)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-autos" style="background:#FFF0EC">
+      <div class="form-sec-ico" style="background:rgba(232,130,106,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8826A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.6A6 6 0 0 0 2 12.16V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg></div>
+      <div class="form-sec-ttl">Alquiler de Autos</div>
+      <div class="form-sec-badge" style="color:#E8826A">AUTOS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="autos-cont"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addAuto()">+ Agregar auto</button>
+        <button class="add-row" style="background:rgba(232,130,106,0.07);border-color:rgba(232,130,106,0.22);color:#E8826A" onclick="_showProvCatalog(event,'auto',addAuto)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-cruceros" style="background:#E8F4FD">
+      <div class="form-sec-ico" style="background:rgba(14,165,233,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21s2.5 1 5 1 2.5-1 5-1c1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/></svg></div>
+      <div class="form-sec-ttl">Crucero</div>
+      <div class="form-sec-badge" style="color:#0EA5E9">CRUCEROS</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div id="cruceros-cont"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-row" onclick="addCrucero()">+ Agregar crucero</button>
+        <button class="add-row" style="background:rgba(14,165,233,0.07);border-color:rgba(14,165,233,0.22);color:#0EA5E9" onclick="_showProvCatalog(event,'crucero',addCrucero)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Desde catalogo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-sec-hd" id="sph-seguro" style="background:#F0EEF9">
+      <div class="form-sec-ico" style="background:rgba(155,127,212,0.18)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9B7FD4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="form-sec-ttl">Asistencia al viajero</div>
+      <div class="form-sec-badge" style="color:#9B7FD4">SEGURO</div>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body">
+      <div class="g3">
+        <div class="fg"><label class="lbl" for="seg-nm">Aseguradora</label>
+          <select class="fsel" id="seg-nm"><option value="">— Elegir aseguradora —</option></select>
+        </div>
+        <div class="fg"><label class="lbl" for="seg-med">Cobertura médica</label><input class="finput" type="text" id="seg-med" placeholder="USD 2.000.000"></div>
+        <div class="fg"><label class="lbl" for="seg-eq">Equipaje</label><input class="finput" type="text" id="seg-eq" placeholder="USD 1.500"></div>
+        <div class="fg"><label class="lbl" for="seg-pre">Preexistencias</label><input class="finput" type="text" id="seg-pre" placeholder="USD 15.000"></div>
+        <div class="fg"><label class="lbl" for="seg-dias">Días</label><input class="finput" type="number" id="seg-dias" placeholder="14" inputmode="numeric"></div>
+        <div class="fg"><label class="lbl" for="seg-precio">Precio</label>
+          <div class="money-wrap"><div class="money-cur"><select id="seg-cur"><option>USD</option><option>ARS</option></select></div>
+          <input class="money-inp" type="number" id="seg-precio" placeholder="0" inputmode="decimal"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="seg-fin">Financiación</label><input class="finput" type="text" id="seg-fin" placeholder="12 cuotas sin interés · $27.347/mes"></div>
+        <div class="fg"><label class="lbl" for="seg-extra">Otras coberturas</label><input class="finput" type="text" id="seg-extra" placeholder="Covid · PAX Cash"></div>
+      </div>
+      <div class="fg"><label class="lbl" for="seg-com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Comisión agente</label>
+        <div class="money-wrap" style="max-width:260px"><div class="money-cur"><select id="seg-com-cur"><option>USD</option><option>ARS</option><option>%</option></select></div>
+        <input class="money-inp" type="number" id="seg-com" placeholder="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITINERARIO DÍA A DÍA — después de servicios, antes de precios -->
+  <div class="card" id="itinerario-card">
+    <div class="form-sec-hd" id="iti-sec-hd" style="background:#E8F4FD">
+      <div class="form-sec-ico" style="background:rgba(2,136,209,0.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0288D1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="form-sec-ttl">Día a Día</div>
+      <div class="form-sec-badge" style="color:#0288D1">ITINERARIO</div>
+      <button class="btn btn-out btn-xs" onclick="event.stopPropagation();_buildItinerario()" style="margin-right:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Regenerar</button>
+      <div class="form-sec-chv"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="card-body" id="itinerario-cont">
+      <div style="padding:14px 18px;color:var(--g3);font-size:.82rem">Ingresá las fechas de salida y regreso, completá los servicios y hacé click en Regenerar.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="card-ttl">Precios y condiciones</div></div></div>
+    <div class="card-body">
+      <div class="g3">
+        <div class="fg"><label class="lbl" for="p-pp">Precio por persona</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-pp" placeholder="2392" inputmode="decimal"></div>
+        </div>
+        <div class="fg"><label class="lbl" for="p-tot">Precio total</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur2"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-tot" placeholder="14352" inputmode="decimal"></div>
+        </div>
+        <div class="fg"><label class="lbl" for="p-res">Reserva inicial</label>
+          <div class="money-wrap"><div class="money-cur"><select id="p-cur3"><option>USD</option><option>ARS</option></select></div><input class="money-inp" type="number" id="p-res" placeholder="300" inputmode="decimal"></div>
+        </div>
+        <div class="fg"><label class="lbl" for="p-cuo">Cuotas</label><input class="finput" type="text" id="p-cuo" placeholder="12 cuotas sin interés"></div>
+        <div class="fg"><label class="lbl" for="p-can">Cancelación hasta</label><input class="finput" type="date" id="p-can"></div>
+        <div class="fg"><label class="lbl" for="p-val">Validez</label><input class="finput" type="text" id="p-val" placeholder="24 horas"></div>
+      </div>
+      <div class="fg"><label class="lbl" for="p-tyc">Términos y condiciones</label>
+        <textarea class="ftxt" id="p-tyc" rows="6">Aclaraciones importantes
+• Los pasajes son intransferibles; cambios o cancelaciones pueden tener costo según la tarifa.
+• Transferencia o depósito bancario en dólares. Pagos en sitios internacionales: solo tarjeta cuando el proveedor lo permite.
+• Valores expresados en USD (no incluyen impuestos locales del país de origen).
+• Cotización sujeta a disponibilidad y cambios al momento de reservar.
+• Validez de la cotización: 24 horas.
+Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo para asegurar precio y disponibilidad.</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA DE COMISION — solo agente, no aparece en PDF -->
+  <div class="card" id="markup-card" data-role="agente">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div><div class="card-ttl">Calculadora de comision</div><div class="card-sub" style="color:var(--primary);font-size:.72rem;font-weight:600;letter-spacing:.5px">INTERNO — no aparece en el PDF</div></div>
+    </div>
+    <div class="card-body">
+      <div class="g3" style="align-items:flex-end">
+        <div class="fg">
+          <label class="lbl" for="p-markup">Markup %</label>
+          <input class="finput" type="number" id="p-markup" placeholder="15" min="0" max="100" inputmode="decimal" oninput="_calcMarkup()">
+        </div>
+        <div class="fg">
+          <label class="lbl">Costo base (USD)</label>
+          <input class="finput" id="p-base-cost" type="number" placeholder="Auto" inputmode="decimal" oninput="_calcMarkup()" style="background:var(--g1)">
+        </div>
+        <div class="fg">
+          <label class="lbl">Mi comision</label>
+          <div id="markup-result" style="display:flex;align-items:center;gap:8px;min-height:38px">
+            <span style="font-size:1.1rem;font-weight:800;color:var(--primary);letter-spacing:-0.5px" id="markup-amount">—</span>
+            <span style="font-size:.75rem;color:var(--g3)" id="markup-label"></span>
+          </div>
+        </div>
+      </div>
+      <div id="markup-breakdown" style="display:none;margin-top:8px;padding:10px 14px;background:var(--g1);border-radius:var(--r2);font-size:.78rem;color:var(--g4)"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div><div class="card-ttl">Foto de cierre</div><div class="card-sub">Imagen final del PDF</div></div></div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('closing-f-form').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir foto de cierre</button>
+        <button class="btn btn-del btn-xs" id="btn-rmclosing-form" onclick="removeClosing()" style="display:none">✕ Quitar</button>
+        <input type="file" id="closing-f-form" accept="image/*" style="display:none" onchange="uploadClosing(this);document.getElementById('btn-rmclosing-form').style.display=''">
+        <span id="closing-form-name" style="font-size:.78rem;color:var(--g4)"></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:32px"></div>
+</div><!-- /form -->
+
+<!-- ═══ PREVIEW ═══ -->
+<div id="tab-preview" class="panel">
+  <div id="prev-empty" style="text-align:center;padding:80px 20px;color:var(--g3)">
+    <div style="margin-bottom:12px;opacity:.4"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div style="font-weight:600">Completá el formulario y hacé click en Vista previa</div>
+    <button class="btn btn-pri" style="margin-top:20px" onclick="switchTab('form')">← Formulario</button>
+  </div>
+  <div id="prev-content" style="display:none">
+    <div id="prev-toolbar">
+      <!-- Fila 1: Portada + tema -->
+      <div class="ptb-row">
+        <div class="ptb-group">
+          <span class="ptb-label">Portada</span>
+          <img id="tb-thumb" src="" style="display:none;height:30px;width:52px;object-fit:cover;border-radius:4px;border:1.5px solid var(--primary)" alt="">
+          <button class="btn btn-out btn-xs" onclick="document.getElementById('cov-f2').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+          <button class="btn btn-out btn-xs" onclick="autoCover()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Auto</button>
+          <button class="btn btn-del btn-xs" id="btn-rmcov2" onclick="removeCover()" style="display:none" aria-label="Quitar foto">x</button>
+          <input type="file" id="cov-f2" accept="image/*" style="display:none" onchange="uploadCover(this)">
+        </div>
+        <div class="ptb-sep"></div>
+        <div class="ptb-group">
+          <span class="ptb-label">Cierre</span>
+          <button class="btn btn-out btn-xs" onclick="document.getElementById('closing-f').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+          <button class="btn btn-del btn-xs" id="btn-rmclosing" onclick="removeClosing()" style="display:none" aria-label="Quitar foto">x</button>
+          <input type="file" id="closing-f" accept="image/*" style="display:none" onchange="uploadClosing(this)">
+        </div>
+        <div class="ptb-sep"></div>
+        <div class="ptb-group">
+          <span class="ptb-label">Tema</span>
+          <button type="button" class="pdf-sw tb-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Turquesa ermix"></button>
+          <button type="button" class="pdf-sw tb-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Azul marino"></button>
+          <button type="button" class="pdf-sw tb-sw" data-t="3" onclick="selectPdfTheme(3)" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)" title="Negro y dorado"></button>
+          <button type="button" class="pdf-sw tb-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Verde selva"></button>
+          <button type="button" class="pdf-sw tb-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Borgona premium"></button>
+        </div>
+        <div style="flex:1"></div>
+        <!-- Acciones principales -->
+        <div class="ptb-actions">
+          <button class="btn btn-out btn-sm" onclick="_editFromPreview()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+          <button class="btn btn-cta btn-sm" id="btn-save-prev" onclick="saveQuote()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar</button>
+          <button class="btn btn-pdf btn-sm" onclick="doPrint()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> PDF</button>
+          <button class="btn btn-out btn-sm" onclick="_shareQuote()" style="color:var(--primary);border-color:rgba(27,158,143,0.35)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Compartir</button>
+          <button class="btn btn-out btn-sm" onclick="_sendQuoteEmail()" style="color:var(--primary);border-color:rgba(27,158,143,0.35)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Enviar</button>
+        </div>
+      </div>
+    </div>
+    <div id="unsplash-credit" style="display:none;padding:4px 18px;font-size:.68rem;color:var(--g4)"></div>
+    <div id="qscreen"></div>
+  </div>
+</div>
+
+<!-- ═══ HISTORIAL ═══ -->
+<div id="tab-history" class="panel">
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+      <div><div class="card-ttl">Historial de cotizaciones</div><div class="card-sub">Sincronizado en la nube · Todos los dispositivos</div></div>
+    </div>
+    <div class="card-body">
+      <div class="hist-filters">
+        <input class="finput" type="text" id="hist-search" placeholder="Buscar destino, cliente, ref..." oninput="renderHistory()" style="margin:0">
+        <select class="fsel" id="hist-filter" onchange="renderHistory()">
+          <option value="">Todos los estados</option>
+          <option value="borrador">Borradores</option>
+          <option value="enviada">Enviadas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="aprobado">Aprobadas</option>
+          <option value="cancelada">Canceladas</option>
+          <option value="vencida">Vencidas</option>
+        </select>
+        <input class="finput" type="date" id="hist-date-from" onchange="renderHistory()" title="Desde" style="margin:0;min-width:130px">
+        <input class="finput" type="date" id="hist-date-to" onchange="renderHistory()" title="Hasta" style="margin:0;min-width:130px">
+      </div>
+      <div id="hist-list"><div style="text-align:center;padding:40px;color:var(--g3)">Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLIENTES ═══ -->
+<div id="tab-clients" class="panel">
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Clientes</div><div class="card-sub">CRM básico de pasajeros</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openClientModal()">+ Nuevo cliente</button>
+    </div>
+    <div class="card-body">
+      <div class="list-toolbar">
+        <input class="finput" type="text" id="cli-filter" placeholder="Buscar por nombre, email o teléfono..." oninput="renderClients()">
+      </div>
+      <div id="cli-list"><div style="text-align:center;padding:40px;color:var(--g3)">Cargando...</div></div>
+    </div>
+  </div>
+
+  <!-- Grupos de viaje -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Grupos de viaje</div><div class="card-sub">Familias o grupos que viajan juntos</div></div>
+      <button class="btn btn-pri btn-sm" onclick="openGroupModal()">+ Nuevo grupo</button>
+    </div>
+    <div class="card-body">
+      <div id="group-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROVEEDORES ═══ -->
+<div id="tab-providers" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg> Proveedores</h2>
+    <p>Hoteles, traslados, seguros, excursiones y otros proveedores de servicios.</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+    <input class="finput" id="prov-filter" placeholder="Buscar por nombre, tipo o ciudad..." oninput="renderProviders()" style="flex:1;min-width:200px">
+    <select class="fsel" id="prov-type-filter" onchange="renderProviders()" style="width:auto">
+      <option value="">Todos los tipos</option>
+      <option value="hotel">Hotel</option>
+      <option value="traslado">Traslado</option>
+      <option value="excursion">Excursion</option>
+      <option value="seguro">Seguro</option>
+      <option value="asistencia">Asistencia</option>
+      <option value="aerolinea">Aerolinea</option>
+      <option value="crucero">Crucero</option>
+      <option value="DMC">DMC</option>
+      <option value="receptivo">Receptivo</option>
+      <option value="otro">Otro</option>
+    </select>
+    <button class="btn btn-cta btn-sm" id="btn-new-prov" onclick="openProviderModal()">+ Nuevo proveedor</button>
+  </div>
+  <div id="prov-list"></div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="tab-dashboard" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Dashboard</h2>
+    <p>Métricas de rendimiento — cotizaciones, comisiones y conversión.</p>
+  </div>
+  <div id="dash-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px"></div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="card-ttl">Cotizaciones del mes</div></div></div>
+    <div class="card-body"><div id="dash-mes-list"><div style="text-align:center;padding:30px;color:var(--g3)">Cargando...</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="card-ttl">Últimas comisiones registradas</div></div></div>
+    <div class="card-body"><div id="dash-comisiones-list"><div style="text-align:center;padding:30px;color:var(--g3)">Cargando...</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ═══ -->
+<div id="tab-admin" class="panel">
+  <div class="intro-bar">
+    <h2>Panel de Administración</h2>
+    <p>Gestión global de la plataforma ermix.</p>
+  </div>
+
+  <!-- USUARIOS (unificado) -->
+  <div class="card" id="admin-users-card">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Usuarios</div><div class="card-sub">Agencias, agentes y administradores</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-pri btn-sm" onclick="openInviteModal('agencia')">+ Invitar agencia</button>
+        <button class="btn btn-pri btn-sm" onclick="openInviteModal('agente')">+ Invitar agente</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+        <input class="finput" id="admin-user-search" placeholder="Buscar por nombre o email..." oninput="_filterAdminUsers()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        <select class="finput" id="admin-user-filter-rol" onchange="_filterAdminUsers()" style="width:auto;padding:8px 12px;font-size:.78rem">
+          <option value="">Todos los roles</option>
+          <option value="admin">Admin</option>
+          <option value="agencia">Agencia</option>
+          <option value="agente">Agente</option>
+        </select>
+        <select class="finput" id="admin-user-filter-status" onchange="_filterAdminUsers()" style="width:auto;padding:8px 12px;font-size:.78rem">
+          <option value="">Todos</option>
+          <option value="active">Activos</option>
+          <option value="inactive">Inactivos</option>
+          <option value="pending">Pendientes</option>
+        </select>
+      </div>
+      <div id="admin-users-list"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVIDAD RECIENTE -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div style="flex:1"><div class="card-ttl">Actividad reciente</div><div style="font-size:.75rem;color:var(--g3);margin-top:1px">Últimas cotizaciones registradas</div></div>
+      <div class="alog-hd-right">
+        <span id="admin-log-count" class="alog-count"></span>
+        <button class="btn btn-out btn-sm" onclick="loadAdminLog()" title="Actualizar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Actualizar
+        </button>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0 0 4px">
+      <div id="admin-log"><div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- ═══ SOPORTE ═══ -->
+<div id="tab-support" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Soporte</h2>
+    <p id="support-subtitle">Tickets de soporte.</p>
+  </div>
+
+  <!-- Formulario crear ticket (agente/agencia) -->
+  <div id="support-form-wrap" style="display:none">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Nuevo ticket</div></div>
+      </div>
+      <div class="card-body">
+        <div class="g2">
+          <div class="fg"><label class="lbl" for="tk-asunto">Asunto</label><input class="finput" type="text" id="tk-asunto" placeholder="Describe brevemente tu consulta"></div>
+          <div class="fg"><label class="lbl" for="tk-prioridad">Prioridad</label>
+            <select class="finput" id="tk-prioridad">
+              <option value="baja">Baja</option>
+              <option value="normal" selected>Normal</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+          <div class="fg full"><label class="lbl" for="tk-desc">Descripcion</label><textarea class="finput" id="tk-desc" rows="4" placeholder="Explica con detalle tu problema o consulta..." style="resize:vertical"></textarea></div>
+        </div>
+        <button class="btn btn-cta" onclick="_submitTicket()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de tickets -->
+  <div class="card">
+    <div class="card-hd">
+      <div style="flex:1"><div class="card-ttl" id="support-list-title">Mis tickets</div></div>
+      <div id="support-filters" style="display:none;gap:8px">
+        <select class="finput" id="tk-filter-estado" onchange="_renderTickets()" style="width:auto;padding:6px 10px;font-size:.78rem">
+          <option value="">Todos</option>
+          <option value="abierto">Abiertos</option>
+          <option value="en_progreso">En progreso</option>
+          <option value="resuelto">Resueltos</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div id="support-list"><div style="text-align:center;padding:36px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN CONFIG ═══ -->
+<div id="tab-adminconfig" class="panel">
+  <div class="intro-bar">
+    <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12"/><polyline points="6 12 2 12"/><circle cx="12" cy="12" r="4"/></svg> Configuracion global</h2>
+    <p>API keys y settings del sistema.</p>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ttl">API Keys</div></div>
+    <div class="card-body" id="admin-api-keys">
+      <div class="g2">
+        <div class="fg"><label class="lbl">Unsplash Access Key</label><input class="finput" id="ak-unsplash" type="password" placeholder="Cargando..."></div>
+        <div class="fg"><label class="lbl">IA Descriptions Key</label><input class="finput" id="ak-ia" type="password" placeholder="Cargando..."></div>
+      </div>
+      <button class="btn btn-cta" onclick="saveApiKeys()">Guardar API Keys</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AGENCY ═══ -->
+<div id="tab-agency" class="panel">
+  <div class="intro-bar" style="margin-bottom:0">
+    <h2>Mi Agencia</h2>
+    <p>Gestiona tu agencia, equipo, cotizaciones y proveedores.</p>
+  </div>
+
+  <!-- DATOS DE AGENCIA (siempre visible arriba) -->
+  <div class="card" style="margin-bottom:8px">
+    <div class="card-hd" style="cursor:pointer" onclick="document.getElementById('ag-data-body').classList.toggle('on');this.querySelector('.ag-chevron').classList.toggle('rot')">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg></div>
+      <div style="flex:1"><div class="card-ttl">Datos de agencia</div><div id="ag-name-preview" class="card-sub"></div></div>
+      <svg class="ag-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="ag-data-body" class="card-body ag-collapse">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="ag-nombre">Nombre de la agencia</label><input class="finput" type="text" id="ag-nombre" placeholder="Patoyro Travel"></div>
+        <div class="fg"><label class="lbl" for="ag-email">Email</label><input class="finput" type="text" id="ag-email" placeholder="info@agencia.com" inputmode="email"></div>
+        <div class="fg"><label class="lbl" for="ag-tel">Telefono</label><input class="finput" type="text" id="ag-tel" placeholder="+54 9 11 1234-5678" inputmode="tel"></div>
+        <div class="fg"><label class="lbl" for="ag-dir">Direccion</label><input class="finput" type="text" id="ag-dir" placeholder="Av. Corrientes 1234, CABA"></div>
+        <div class="fg full">
+          <label class="lbl">Logo de agencia</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div id="ag-logo-wrap"><div id="ag-logo-ini" style="width:48px;height:48px;background:var(--g1);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--g3);font-size:.7rem">Logo</div></div>
+            <button class="btn btn-out btn-sm" onclick="document.getElementById('ag-logo-f').click()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+            <input type="file" id="ag-logo-f" accept="image/*" style="display:none">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px"><button class="btn btn-cta" onclick="saveAgencyData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar datos</button></div>
+    </div>
+  </div>
+
+  <!-- TABS horizontales -->
+  <div class="ag-tabs">
+    <button class="ag-tab on" data-agtab="agentes" onclick="_agTab('agentes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Agentes
+    </button>
+    <button class="ag-tab" data-agtab="cotizaciones" onclick="_agTab('cotizaciones')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Cotizaciones
+    </button>
+    <button class="ag-tab" data-agtab="clientes" onclick="_agTab('clientes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Clientes
+    </button>
+    <button class="ag-tab" data-agtab="proveedores" onclick="_agTab('proveedores')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 12v4"/><path d="M2 12h20"/></svg>
+      Proveedores
+    </button>
+    <button class="ag-tab" data-agtab="promos-vig" onclick="_agTab('promos-vig')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Promos vigentes
+    </button>
+  </div>
+
+  <!-- Panel: Agentes -->
+  <div class="ag-panel on" id="agp-agentes">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Equipo de agentes</div></div>
+        <button class="btn btn-pri btn-sm" onclick="openAgentModal()">+ Invitar agente</button>
+      </div>
+      <div class="card-body">
+        <div id="agency-agentes"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Cotizaciones (RO) -->
+  <div class="ag-panel" id="agp-cotizaciones">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Cotizaciones de la agencia</div><div class="card-sub">Solo lectura</div></div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-quot-search" placeholder="Buscar por cliente, destino o ref..." oninput="_renderAgQuotes()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-quotes"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Clientes (RO) -->
+  <div class="ag-panel" id="agp-clientes">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Clientes de la agencia</div><div class="card-sub">Solo lectura</div></div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-cli-search" placeholder="Buscar por nombre, email o telefono..." oninput="_renderAgClients()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-clients"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Proveedores -->
+  <div class="ag-panel" id="agp-proveedores">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Proveedores de la agencia</div></div>
+        <button class="btn btn-pri btn-sm" onclick="openProvModal()">+ Agregar proveedor</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="ag-prov-search" placeholder="Buscar por nombre o tipo..." oninput="_renderAgProviders()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+        </div>
+        <div id="agency-proveedores"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: Promos vigentes -->
+  <div class="ag-panel" id="agp-promos-vig">
+    <div class="card">
+      <div class="card-hd">
+        <div style="flex:1"><div class="card-ttl">Promociones vigentes</div><div class="card-sub">Disney, Universal, hoteles, cruceros, descuentos y mas</div></div>
+        <button class="btn btn-pri btn-sm" onclick="_openPromoVigModal()">+ Nueva promo</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div style="display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;align-items:center">
+          <input class="finput" id="pv-search" placeholder="Buscar por titulo o categoria..." oninput="_renderPromosVig()" style="flex:1;min-width:200px;max-width:350px;padding:8px 12px;font-size:.82rem">
+          <select class="finput" id="pv-filter-estado" onchange="_renderPromosVig()" style="width:auto;padding:6px 10px;font-size:.78rem">
+            <option value="">Todas</option>
+            <option value="vigente">Vigentes</option>
+            <option value="vencida">Vencidas</option>
+          </select>
+        </div>
+        <div id="promos-vig-list"><div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONFIG ═══ -->
+<div id="tab-config" class="panel">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></div><div><div class="card-ttl" id="cfg-card-title">Mi perfil</div></div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="cfg-nm">Nombre completo</label><input class="finput" type="text" id="cfg-nm" placeholder="Diego Lecler"></div>
+        <div class="fg" id="cfg-ag-wrap"><label class="lbl" for="cfg-ag">Agencia</label><input class="finput" type="text" id="cfg-ag" placeholder="Patoyro Travel" readonly style="background:var(--g1);cursor:not-allowed"></div>
+        <div class="fg"><label class="lbl" for="cfg-em">Email</label><input class="finput" type="text" id="cfg-em" placeholder="diego@patoyrotravel.com" inputmode="email" readonly style="background:var(--g1);cursor:not-allowed"></div>
+        <div class="fg" id="cfg-tel-wrap"><label class="lbl" for="cfg-tel">Telefono</label><input class="finput" type="text" id="cfg-tel" placeholder="+54 9 362 470-3040" inputmode="tel"></div>
+        <div class="fg" id="cfg-pais-wrap"><label class="lbl" for="cfg-pais">Pais <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(codigo ISO)</span></label>
+          <input class="finput" id="cfg-pais" list="cfg-pais-list" maxlength="3" placeholder="AR" style="text-transform:uppercase">
+          <datalist id="cfg-pais-list"><option value="AR">Argentina</option><option value="US">Estados Unidos</option><option value="ES">Espana</option><option value="MX">Mexico</option><option value="CL">Chile</option><option value="BR">Brasil</option><option value="CO">Colombia</option><option value="PE">Peru</option><option value="UY">Uruguay</option><option value="PY">Paraguay</option><option value="BO">Bolivia</option><option value="VE">Venezuela</option><option value="EC">Ecuador</option><option value="PA">Panama</option><option value="CR">Costa Rica</option><option value="DE">Alemania</option><option value="FR">Francia</option><option value="IT">Italia</option><option value="PT">Portugal</option><option value="GB">Reino Unido</option></datalist>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Aparece en el ID de cotizacion</div>
+        </div>
+        <div class="fg full" id="cfg-soc-wrap"><label class="lbl" for="cfg-soc">Instagram / Web</label><input class="finput" type="text" id="cfg-soc" placeholder="@diego.magicplanner"></div>
+        <div class="fg full" id="cfg-logo-wrap">
+          <label class="lbl">Logo personal <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(aparece en el PDF)</span></label>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:6px;flex-wrap:wrap">
+            <div id="logo-wrap" style="flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+              <button type="button" class="btn btn-out btn-sm" onclick="document.getElementById('cfg-logo-f').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir</button>
+              <button type="button" id="btn-rmlogo" class="btn btn-del btn-xs" onclick="removeLogo()" style="display:none">Quitar</button>
+              <input type="file" id="cfg-logo-f" accept="image/*" style="display:none" onchange="uploadLogo(this)">
+            </div>
+            <div style="flex:1;min-width:180px">
+              <input class="finput" type="url" id="cfg-logo-url" placeholder="O pegar URL de imagen..." oninput="_logoUrlInput(this.value)">
+              <div style="font-size:.68rem;color:var(--g4);margin-top:3px">URL externa del logo (JPEG, PNG, SVG)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
+      <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div><div><div class="card-ttl">Integraciones</div><div class="card-sub">API keys para funcionalidades externas</div></div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="cfg-resend-key">Resend API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(envío de emails)</span></label>
+          <input class="finput" type="password" id="cfg-resend-key" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Obtenila en <a href="https://resend.com" target="_blank" style="color:var(--primary)">resend.com</a> — se guarda solo en tu dispositivo</div>
+        </div>
+        <div class="fg"><label class="lbl" for="cfg-validez-dias">Validez cotización <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(días)</span></label>
+          <input class="finput" type="number" id="cfg-validez-dias" placeholder="7" min="1" max="90" inputmode="numeric" style="max-width:120px">
+        </div>
+        <div class="fg"><label class="lbl" for="cfg-from-email">Email remitente <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(verificado en Resend)</span></label>
+          <input class="finput" type="email" id="cfg-from-email" placeholder="cotizaciones@tudominio.com">
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Dejá vacío para usar el dominio de prueba de Resend</div>
+        </div>
+      </div>
+      <button class="btn btn-cta" onclick="saveCfgIntegrations()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar integraciones</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd"><div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><div class="card-ttl">Cambiar contraseña</div></div></div>
+    <div class="card-body">
+      <div class="g2">
+        <div class="fg"><label class="lbl" for="pw-new">Nueva contraseña</label><input class="finput" type="password" id="pw-new" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+        <div class="fg"><label class="lbl" for="pw-conf">Confirmar contraseña</label><input class="finput" type="password" id="pw-conf" placeholder="Repetir contraseña" autocomplete="new-password"></div>
+      </div>
+      <button class="btn btn-cta" onclick="changePassword()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Guardar contraseña</button>
+      <span id="pw-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">Contraseña actualizada</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+</div><!-- /ui -->
+
+<!-- MODALS -->
+<div id="modal-overlay" onclick="closeModal()" style="display:none;position:fixed;inset:0;background:rgba(45,31,20,0.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:1000"></div>
+<div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-box-ttl" tabindex="-1" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border-radius:16px;padding:28px;width:90%;max-width:500px;z-index:1001;max-height:90vh;overflow-y:auto;border:1px solid var(--border);outline:none">
+  <div id="modal-content"></div>
+</div>
+
+<!-- PRINT -->
+
+<!-- ═══ MODAL ESTADO ═══ -->
+<div id="modal-status" role="dialog" aria-modal="true" aria-labelledby="modal-status-ttl" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;align-items:center;justify-content:center;padding:20px">
+  <div class="status-modal-box">
+    <div class="status-modal-ttl" id="modal-status-ttl">Cambiar estado</div>
+    <div style="font-size:.8rem;color:var(--g3);margin-bottom:20px">Seleccioná el nuevo estado de la cotización</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-st-draft" onclick="applyStatus('borrador')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Borrador</button>
+      <button class="btn btn-st-sent" onclick="applyStatus('enviada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviada</button>
+      <button class="btn btn-st-confirmed" onclick="applyStatus('confirmada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmada</button>
+      <button class="btn btn-st-cancelled" onclick="applyStatus('cancelada')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancelada</button>
+      <button class="btn" onclick="applyStatus('pendiente')" style="background:rgba(212,160,23,0.1);color:#B8860B;border:1px solid rgba(212,160,23,0.3)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pendiente</button>
+    </div>
+    <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:14px" onclick="closeStatusModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══ MODAL EDITAR COTIZACION ═══ -->
+<div id="pz"><div id="qprint"></div></div>
+<div id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+
+<!-- Modal Secciones Fotos -->
+<div id="sec-photos-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeSPModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sec-photos-ttl" style="width:420px;max-height:80vh;overflow-y:auto">
+    <div class="modal-hd"><div class="modal-ttl" id="sec-photos-ttl">Fotos por sección</div><button class="modal-cls" onclick="closeSPModal()" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body" id="sec-photos-body"></div>
+  </div>
+</div>
+
+
+<!-- JS Modules -->
+<script src="js/config.js?v=24"></script>
+<script src="js/app-core.js?v=24"></script>
+<script src="js/app-form.js?v=24"></script>
+<script src="js/app-ia.js?v=24"></script>
+<script src="js/app-preview.js?v=24"></script>
+<script src="js/app-history.js?v=24"></script>
+<script src="js/app-admin.js?v=24"></script>
+<script src="js/app-quote.js?v=24"></script>
+<script src="js/app-promos.js?v=24"></script>
+</body>
+</html>

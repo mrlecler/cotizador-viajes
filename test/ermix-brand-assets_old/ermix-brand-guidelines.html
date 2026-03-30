@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ermix — Brand Guidelines</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --violet-dark:#1A0533;
+  --violet:#7C3AED;
+  --violet-mid:#A78BFA;
+  --violet-light:#E9D5FF;
+  --coral:#F43F5E;
+  --bg:#FAF7FF;
+  --text:#1A0533;
+  --muted:#64748B;
+  --border:#E2D9F3;
+  --white:#fff;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--violet-dark);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:56px;border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{width:28px;height:28px;flex-shrink:0}
+.nav-logo-text{font-size:14px;font-weight:700;background:linear-gradient(90deg,#E9D5FF,#A855F7,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:4px}
+.nav-links a{color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px;transition:all .2s}
+.nav-links a:hover{color:white;background:rgba(255,255,255,.08)}
+
+/* HERO */
+.hero{background:var(--violet-dark);padding:80px 40px 100px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(124,58,237,.4),transparent 70%)}
+.hero-tag{display:inline-block;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.4);color:var(--violet-light);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:24px;position:relative}
+.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-2px;color:white;position:relative;margin-bottom:12px}
+.hero h1 span{background:linear-gradient(90deg,#E9D5FF,#A855F7 40%,#F43F5E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:rgba(255,255,255,.5);font-size:1rem;position:relative}
+.hero-version{display:inline-block;margin-top:20px;font-size:11px;color:rgba(255,255,255,.25);letter-spacing:2px;position:relative}
+
+/* LAYOUT */
+.container{max-width:960px;margin:0 auto;padding:0 40px}
+.section{padding:72px 0 0}
+.section-header{margin-bottom:40px}
+.section-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--violet);background:rgba(124,58,237,.08);padding:4px 12px;border-radius:20px;margin-bottom:10px}
+.section-title{font-size:2rem;font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:8px}
+.section-desc{color:var(--muted);font-size:.95rem;max-width:560px}
+hr.divider{border:none;border-top:1px solid var(--border);margin:72px 0 0}
+
+/* CARDS GRID */
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 20px rgba(124,58,237,.1)}
+.card-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+/* LOGO SECTION */
+.logo-board{background:white;border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.logo-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border)}
+.logo-row:last-child{border-bottom:none}
+.logo-cell{padding:36px 28px;display:flex;flex-direction:column;gap:16px;align-items:flex-start;justify-content:center}
+.logo-cell.dark{background:var(--violet-dark)}
+.logo-cell.mid{background:#2D1048}
+.logo-cell-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.logo-cell.dark .logo-cell-label,.logo-cell.mid .logo-cell-label{color:rgba(255,255,255,.3)}
+
+/* PALETA */
+.swatch-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.swatch-item{display:flex;flex-direction:column;gap:8px}
+.swatch-color{height:80px;border-radius:12px;border:1px solid rgba(0,0,0,.06)}
+.swatch-name{font-size:13px;font-weight:600;color:var(--text)}
+.swatch-hex{font-size:11px;font-weight:500;color:var(--muted);font-family:monospace}
+.swatch-use{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* TIPOGRAFÍA */
+.type-scale{display:flex;flex-direction:column;gap:16px}
+.type-row{display:grid;grid-template-columns:140px 1fr;align-items:baseline;gap:24px;padding:16px 0;border-bottom:1px solid var(--border)}
+.type-row:last-child{border-bottom:none}
+.type-meta{font-size:11px;color:var(--muted);line-height:1.6}
+.type-meta strong{display:block;color:var(--text);font-weight:600;margin-bottom:2px}
+
+/* TONO */
+.tone-examples{display:flex;flex-direction:column;gap:12px}
+.tone-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tone-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px}
+.tone-card.correct{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.02)}
+.tone-card.wrong{border-color:#FECACA;background:#FFF5F5}
+.tone-indicator{display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tone-indicator.ok{color:#059669}
+.tone-indicator.no{color:#DC2626}
+.tone-dot{width:6px;height:6px;border-radius:50%}
+.tone-dot.ok{background:#059669}
+.tone-dot.no{background:#DC2626}
+.tone-text{font-size:.9rem;color:var(--text);line-height:1.5}
+
+/* ÍCONOS */
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.icon-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;background:white;border:1px solid var(--border);border-radius:12px}
+.icon-item svg{width:22px;height:22px}
+.icon-item span{font-size:10px;color:var(--muted);text-align:center;line-height:1.3}
+
+/* REGLAS */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rule-card{border-radius:16px;padding:24px;border:1px solid}
+.rule-card.do{background:rgba(5,150,105,.04);border-color:rgba(5,150,105,.2)}
+.rule-card.dont{background:rgba(220,38,38,.04);border-color:rgba(220,38,38,.2)}
+.rule-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.rule-card.do .rule-title{color:#059669}
+.rule-card.dont .rule-title{color:#DC2626}
+.rule-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.rule-list li{font-size:.88rem;color:var(--text);padding-left:16px;position:relative;line-height:1.5}
+.rule-list li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%}
+.rule-card.do .rule-list li::before{background:#059669}
+.rule-card.dont .rule-list li::before{background:#DC2626}
+
+/* FOOTER */
+footer{margin-top:80px;background:var(--violet-dark);padding:40px;text-align:center}
+footer p{color:rgba(255,255,255,.3);font-size:12px}
+footer strong{color:rgba(255,255,255,.7)}
+
+/* RESPONSIVE */
+@media(max-width:720px){
+  .grid-2,.grid-3,.grid-4,.grid-2-col{grid-template-columns:1fr}
+  .logo-row{grid-template-columns:1fr}
+  .swatch-grid{grid-template-columns:repeat(2,1fr)}
+  .tone-row{grid-template-columns:1fr}
+  .rules-grid{grid-template-columns:1fr}
+  .icon-grid{grid-template-columns:repeat(4,1fr)}
+  nav .nav-links{display:none}
+  .container{padding:0 20px}
+  .hero{padding:60px 20px 80px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon"><svg width="28" height="28" viewBox="0 0 200 200"><defs><linearGradient id="gnav" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#F43F5E"/></linearGradient></defs><rect width="200" height="200" rx="58" fill="url(#gnav)"/><g transform="translate(100,100) rotate(-45)"><ellipse cx="0" cy="-34" rx="14" ry="32" fill="white"/><ellipse cx="-36" cy="8" rx="34" ry="11" fill="white"/><ellipse cx="36" cy="8" rx="34" ry="11" fill="white"/><ellipse cx="0" cy="34" rx="15" ry="9" fill="white"/></g></svg></div>
+    <span class="nav-logo-text">ermix brand guidelines</span>
+  </div>
+  <div class="nav-links">
+    <a href="#logo">Logo</a>
+    <a href="#paleta">Paleta</a>
+    <a href="#tipografia">Tipografía</a>
+    <a href="#tono">Tono</a>
+    <a href="#iconografia">Iconografía</a>
+    <a href="#reglas">Reglas de uso</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Brand Guidelines</div>
+  <h1><span>ermix</span></h1>
+  <p>Travel Platform · Sistema de identidad visual y tono de marca</p>
+  <div class="hero-version">v1.0 · Marzo 2026</div>
+</div>
+
+<div class="container">
+
+  <!-- LOGO -->
+  <div class="section" id="logo">
+    <div class="section-header">
+      <div class="section-tag">01 · Logo</div>
+      <div class="section-title">Sistema de logo</div>
+      <div class="section-desc">El logo de Ermix existe en tres variantes: ícono, wordmark y logo completo (ícono + wordmark). Usá la variante que mejor se adapte al espacio disponible.</div>
+    </div>
+
+    <div class="logo-board">
+      <!-- Fila 1: Logo completo -->
+      <div class="logo-row">
+        <div class="logo-cell dark">
+          <svg width="220" height="52" viewBox="0 0 600 140">
+            <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#F43F5E"/></linearGradient></defs>
+            <rect x="0" y="10" width="120" height="120" rx="32" fill="url(#g1)"/>
+            <g transform="translate(60,70) rotate(-45)">
+              <ellipse cx="0" cy="-24" rx="9" ry="20" fill="white"/>
+              <ellipse cx="-26" cy="6" rx="21" ry="7" fill="white"/>
+              <ellipse cx="26" cy="6" rx="21" ry="7" fill="white"/>
+              <ellipse cx="0" cy="24" rx="9" ry="5.5" fill="white"/>
+            </g>
+            <text x="146" y="98" font-family="system-ui" font-weight="800" font-size="78" fill="white" letter-spacing="-2">ermix</text>
+          </svg>
+          <div class="logo-cell-label">Logo — fondo oscuro</div>
+        </div>
+        <div class="logo-cell" style="background:#F3EEFF">
+          <svg width="220" height="52" viewBox="0 0 600 140">
+            <defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#F43F5E"/></linearGradient></defs>
+            <rect x="0" y="10" width="120" height="120" rx="32" fill="url(#g2)"/>
+            <g transform="translate(60,70) rotate(-45)">
+              <ellipse cx="0" cy="-24" rx="9" ry="20" fill="white"/>
+              <ellipse cx="-26" cy="6" rx="21" ry="7" fill="white"/>
+              <ellipse cx="26" cy="6" rx="21" ry="7" fill="white"/>
+              <ellipse cx="0" cy="24" rx="9" ry="5.5" fill="white"/>
+            </g>
+            <text x="146" y="98" font-family="system-ui" font-weight="800" font-size="78" fill="#6D28D9" letter-spacing="-2">ermix</text>
+          </svg>
+          <div class="logo-cell-label" style="color:var(--muted)">Logo — fondo claro</div>
+        </div>
+        <div class="logo-cell" style="background:white;border-left:1px solid var(--border)">
+          <div style="font-size:.85rem;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text);display:block;margin-bottom:6px">Logo completo</strong>
+            Usar cuando hay espacio horizontal suficiente. Es la presentación principal de la marca en headers, documentos y materiales de marketing.
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Wordmark solo -->
+      <div class="logo-row">
+        <div class="logo-cell dark">
+          <svg width="180" height="42" viewBox="0 0 480 100">
+            <text x="0" y="72" font-family="system-ui" font-weight="800" font-size="80" fill="white" letter-spacing="-2">ermix</text>
+            <text x="2" y="95" font-family="system-ui" font-weight="400" font-size="16" fill="rgba(255,255,255,.35)" letter-spacing="6">TRAVEL PLATFORM</text>
+          </svg>
+          <div class="logo-cell-label">Wordmark — fondo oscuro</div>
+        </div>
+        <div class="logo-cell" style="background:#FAF7FF">
+          <svg width="180" height="42" viewBox="0 0 480 100">
+            <text x="0" y="72" font-family="system-ui" font-weight="800" font-size="80" fill="#6D28D9" letter-spacing="-2">ermix</text>
+            <text x="2" y="95" font-family="system-ui" font-weight="400" font-size="16" fill="#94A3B8" letter-spacing="6">TRAVEL PLATFORM</text>
+          </svg>
+          <div class="logo-cell-label" style="color:var(--muted)">Wordmark — fondo claro</div>
+        </div>
+        <div class="logo-cell" style="background:white;border-left:1px solid var(--border)">
+          <div style="font-size:.85rem;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text);display:block;margin-bottom:6px">Wordmark solo</strong>
+            Usar en login, emails y cuando el ícono ya está presente en otro lugar del diseño. Siempre incluye el subtítulo "TRAVEL PLATFORM".
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 3: Ícono solo -->
+      <div class="logo-row">
+        <div class="logo-cell dark" style="align-items:center">
+          <svg width="56" height="56" viewBox="0 0 200 200">
+            <defs><linearGradient id="gicon_d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#F43F5E"/></linearGradient></defs>
+            <rect width="200" height="200" rx="56" fill="url(#gicon_d)"/>
+            <g transform="translate(100,100) rotate(-45)">
+              <ellipse cx="0" cy="-34" rx="14" ry="32" fill="white"/>
+              <ellipse cx="-36" cy="8" rx="34" ry="11" fill="white"/>
+              <ellipse cx="36" cy="8" rx="34" ry="11" fill="white"/>
+              <ellipse cx="0" cy="34" rx="15" ry="9" fill="white"/>
+            </g>
+          </svg>
+          <div class="logo-cell-label">Ícono — fondo oscuro</div>
+        </div>
+        <div class="logo-cell" style="background:#FAF7FF;align-items:center">
+          <svg width="56" height="56" viewBox="0 0 200 200">
+            <defs><linearGradient id="gicon_l" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#F43F5E"/></linearGradient></defs>
+            <rect width="200" height="200" rx="56" fill="url(#gicon_l)"/>
+            <g transform="translate(100,100) rotate(-45)">
+              <ellipse cx="0" cy="-34" rx="14" ry="32" fill="white"/>
+              <ellipse cx="-36" cy="8" rx="34" ry="11" fill="white"/>
+              <ellipse cx="36" cy="8" rx="34" ry="11" fill="white"/>
+              <ellipse cx="0" cy="34" rx="15" ry="9" fill="white"/>
+            </g>
+          </svg>
+          <div class="logo-cell-label" style="color:var(--muted)">Ícono — fondo claro</div>
+        </div>
+        <div class="logo-cell" style="background:white;border-left:1px solid var(--border)">
+          <div style="font-size:.85rem;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text);display:block;margin-bottom:6px">Ícono solo</strong>
+            Usar como favicon, avatar de app, ícono de notificación o en espacios muy reducidos. Mínimo 24×24px. El gradiente del ícono siempre va de violeta a coral — nunca se invierte ni se aplica en un solo color.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- PALETA -->
+  <div class="section" id="paleta">
+    <div class="section-header">
+      <div class="section-tag">02 · Paleta de color</div>
+      <div class="section-title">Colores oficiales</div>
+      <div class="section-desc">La paleta de Ermix combina violeta profundo con coral energético. Los cinco colores forman el sistema completo de identidad.</div>
+    </div>
+
+    <div class="swatch-grid">
+      <div class="swatch-item">
+        <div class="swatch-color" style="background:#1A0533"></div>
+        <div class="swatch-name">Violeta noche</div>
+        <div class="swatch-hex">#1A0533</div>
+        <div class="swatch-use">Fondos oscuros, header, login</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-color" style="background:#7C3AED"></div>
+        <div class="swatch-name">Violeta principal</div>
+        <div class="swatch-hex">#7C3AED</div>
+        <div class="swatch-use">Color primario, botones, links, badges</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-color" style="background:#A78BFA"></div>
+        <div class="swatch-name">Violeta claro</div>
+        <div class="swatch-hex">#A78BFA</div>
+        <div class="swatch-use">Textos secundarios, acentos suaves</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-color" style="background:#F43F5E"></div>
+        <div class="swatch-name">Coral Ermix</div>
+        <div class="swatch-hex">#F43F5E</div>
+        <div class="swatch-use">Acento principal, ícono, CTAs destacados</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-color" style="background:#FAF7FF;border:1px solid #E2D9F3"></div>
+        <div class="swatch-name">Fondo app</div>
+        <div class="swatch-hex">#FAF7FF</div>
+        <div class="swatch-use">Fondo general de la interfaz</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:white;border:1px solid var(--border);border-radius:16px;padding:24px">
+      <div class="card-label" style="margin-bottom:16px">Gradiente de marca</div>
+      <div style="height:56px;border-radius:12px;background:linear-gradient(135deg,#7C3AED,#F43F5E);margin-bottom:12px"></div>
+      <div style="font-size:.85rem;color:var(--muted)">
+        <code style="background:var(--bg);padding:4px 8px;border-radius:6px;font-size:.8rem">linear-gradient(135deg, #7C3AED, #F43F5E)</code>
+        · Usar en botones de acción, headers de sección y elementos de énfasis.
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- TIPOGRAFÍA -->
+  <div class="section" id="tipografia">
+    <div class="section-header">
+      <div class="section-tag">03 · Tipografía</div>
+      <div class="section-title">DM Sans</div>
+      <div class="section-desc">DM Sans es la tipografía principal de Ermix. Geométrica, moderna y muy legible en pantalla. Se usa en todos los elementos: títulos, cuerpo, UI y documentos.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-label">Escala tipográfica</div>
+      <div class="type-scale" style="margin-top:8px">
+        <div class="type-row">
+          <div class="type-meta"><strong>Display · 800</strong>48–72px · letter-spacing: -2px</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-2px;color:var(--text)">Ermix</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>H1 · 700</strong>32–40px · letter-spacing: -1px</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-1px;color:var(--text)">Tu cotización está lista</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>H2 · 600</strong>22–28px · letter-spacing: -0.5px</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:1.4rem;font-weight:600;letter-spacing:-.5px;color:var(--text)">Destino: São Paulo, Brasil</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Body · 400</strong>14–16px · line-height: 1.6</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:400;color:var(--text);line-height:1.6">Incluye vuelos, hotel y traslados. La cotización tiene validez de 48 horas. Podés compartirla directamente con tu cliente.</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Caption · 400</strong>11–12px · letter-spacing: 2px</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">TRAVEL PLATFORM · REF 96328699</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-label">Google Fonts — importar</div>
+        <code style="display:block;font-size:.78rem;background:var(--bg);padding:14px;border-radius:8px;margin-top:8px;line-height:1.8;color:var(--text)">@import url('https://fonts.googleapis.com<br>/css2?family=DM+Sans:wght@<br>300;400;500;600;700;800&display=swap');</code>
+      </div>
+      <div class="card">
+        <div class="card-label">CSS — familia de fuentes</div>
+        <code style="display:block;font-size:.78rem;background:var(--bg);padding:14px;border-radius:8px;margin-top:8px;line-height:1.8;color:var(--text)">font-family: 'DM Sans', system-ui,<br>-apple-system, sans-serif;</code>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:10px">Fallback: system-ui para render rápido mientras carga la fuente web.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- TONO -->
+  <div class="section" id="tono">
+    <div class="section-header">
+      <div class="section-tag">04 · Tono de comunicación</div>
+      <div class="section-title">Cómo habla Ermix</div>
+      <div class="section-desc">Ermix tutea al agente. El tono es cálido, cercano y humano — sin ser informal o desprolijo. Cada mensaje debe sentirse útil, no corporativo.</div>
+    </div>
+
+    <div class="grid grid-3" style="margin-bottom:24px">
+      <div class="card" style="border-top:3px solid var(--violet)">
+        <div class="card-label">Cercano</div>
+        <div style="font-size:.9rem;color:var(--text);margin-top:8px;line-height:1.6">Hablamos de tú, no de usted. El agente es el protagonista, Ermix es la herramienta que lo potencia.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--coral)">
+        <div class="card-label">Claro</div>
+        <div style="font-size:.9rem;color:var(--text);margin-top:8px;line-height:1.6">Sin jerga técnica innecesaria. Los mensajes van al punto. Si algo falló, lo decimos directo y ofrecemos la solución.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--violet-mid)">
+        <div class="card-label">Útil</div>
+        <div style="font-size:.9rem;color:var(--text);margin-top:8px;line-height:1.6">Cada mensaje le da al agente lo que necesita para avanzar. No llenamos pantallas con texto que no agrega valor.</div>
+      </div>
+    </div>
+
+    <div class="tone-examples">
+      <div class="tone-row">
+        <div class="tone-card correct">
+          <div class="tone-indicator ok"><div class="tone-dot ok"></div>Correcto</div>
+          <div class="tone-text">¡Listo! Ya podés compartir la cotización con tu cliente.</div>
+        </div>
+        <div class="tone-card wrong">
+          <div class="tone-indicator no"><div class="tone-dot no"></div>Evitar</div>
+          <div class="tone-text">La cotización ha sido generada exitosamente por el sistema.</div>
+        </div>
+      </div>
+      <div class="tone-row">
+        <div class="tone-card correct">
+          <div class="tone-indicator ok"><div class="tone-dot ok"></div>Correcto</div>
+          <div class="tone-text">Revisá estos 3 campos antes de guardar.</div>
+        </div>
+        <div class="tone-card wrong">
+          <div class="tone-indicator no"><div class="tone-dot no"></div>Evitar</div>
+          <div class="tone-text">Error: se detectaron 3 campos con valores inválidos o incompletos.</div>
+        </div>
+      </div>
+      <div class="tone-row">
+        <div class="tone-card correct">
+          <div class="tone-indicator ok"><div class="tone-dot ok"></div>Correcto</div>
+          <div class="tone-text">Tu cotización fue guardada. Podés editarla cuando quieras desde el historial.</div>
+        </div>
+        <div class="tone-card wrong">
+          <div class="tone-indicator no"><div class="tone-dot no"></div>Evitar</div>
+          <div class="tone-text">¡GUARDADO! 🎉🎉 Woohoo, tu cotización está en la nube bestie 🚀✨</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ICONOGRAFÍA -->
+  <div class="section" id="iconografia">
+    <div class="section-header">
+      <div class="section-tag">05 · Iconografía</div>
+      <div class="section-title">Lucide Icons — Outline</div>
+      <div class="section-desc">Ermix usa íconos de línea fina (stroke 1.5px). El set recomendado es Lucide Icons, compatible con la estética tech y moderna de la marca.</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:.8rem;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Sobre fondo claro</div>
+    <div class="icon-grid" style="margin-bottom:20px">
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Inicio</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Cotización</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Historial</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Clientes</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+        <span>Perfil</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>IA</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Buscar</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 6.18 2 2 0 014.99 4h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.09 11.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        <span>Contacto</span>
+      </div>
+      <div class="icon-item">
+        <!-- Avión Lucide correcto -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 1 16.5 2.5L13 6 4.8 4.2c-.5-.1-1 .1-1.3.5l-.5.8c-.3.4-.2.9.1 1.3L8 12l-2 2H4l-1 1 3 2 2 3 1-1v-2l2-2 5.4 4.9c.4.3.9.4 1.3.1l.8-.5c.4-.3.6-.8.3-1.3z"/></svg>
+        <span>Vuelo</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Fechas</span>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span>Favorito</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:.8rem;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Sobre fondo oscuro</div>
+    <div class="icon-grid" style="background:var(--violet-dark);border-radius:16px;padding:16px">
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Inicio</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Cotización</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Historial</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Clientes</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Dashboard</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Perfil</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span style="color:rgba(255,255,255,.4)">IA</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Buscar</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 6.18 2 2 0 014.99 4h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.09 11.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Contacto</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 1 16.5 2.5L13 6 4.8 4.2c-.5-.1-1 .1-1.3.5l-.5.8c-.3.4-.2.9.1 1.3L8 12l-2 2H4l-1 1 3 2 2 3 1-1v-2l2-2 5.4 4.9c.4.3.9.4 1.3.1l.8-.5c.4-.3.6-.8.3-1.3z"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Vuelo</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Fechas</span>
+      </div>
+      <div class="icon-item" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <span style="color:rgba(255,255,255,.4)">Favorito</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-label">Especificaciones técnicas</div>
+      <div class="grid grid-3" style="margin-top:12px;gap:20px">
+        <div>
+          <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:4px">Stroke width</div>
+          <div style="font-size:.82rem;color:var(--muted)">1.5px — nunca más delgado ni más grueso</div>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:4px">Tamaño base</div>
+          <div style="font-size:.82rem;color:var(--muted)">20×20px en UI · 16×16px en botones</div>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:4px">Color</div>
+          <div style="font-size:.82rem;color:var(--muted)">Siempre <code style="font-size:.78rem;background:var(--bg);padding:2px 6px;border-radius:4px">#7C3AED</code> salvo sobre fondo oscuro (white)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- REGLAS DE USO -->
+  <div class="section" id="reglas">
+    <div class="section-header">
+      <div class="section-tag">06 · Reglas de uso</div>
+      <div class="section-title">Qué hacer y qué evitar</div>
+      <div class="section-desc">Para mantener la coherencia visual de la marca en todos los puntos de contacto.</div>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rule-card do">
+        <div class="rule-title">✓ Hacer</div>
+        <ul class="rule-list">
+          <li>Usar el logo completo cuando hay espacio horizontal suficiente (mínimo 140px de ancho)</li>
+          <li>Respetar el espacio de protección: mínimo la altura de la "e" del wordmark en todos los lados</li>
+          <li>Usar el wordmark solo en fondos oscuros o muy claros — nunca sobre fotos sin overlay</li>
+          <li>Mantener el ícono siempre con gradiente violeta→coral — nunca en un solo color plano</li>
+          <li>Usar DM Sans en todos los materiales de marca, emails y documentos</li>
+          <li>Escribir "ermix" siempre en minúscula — nunca "Ermix" ni "ERMIX" como logo</li>
+        </ul>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-title">✗ Evitar</div>
+        <ul class="rule-list">
+          <li>Cambiar los colores del logo o del ícono por ningún motivo</li>
+          <li>Distorsionar, rotar o aplicar efectos al logo (sombras, bordes, blur)</li>
+          <li>Colocar el logo sobre fondos con bajo contraste sin overlay</li>
+          <li>Usar el gradiente de marca en texto corrido — solo en elementos grandes</li>
+          <li>Mezclar DM Sans con otras fuentes display en el mismo material</li>
+          <li>Usar colores fuera de la paleta oficial en la UI de Ermix</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Espacios mínimos -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-label">Espacio de protección del logo</div>
+      <div style="margin-top:16px">
+        <svg width="100%" viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" style="display:block">
+          <defs>
+            <linearGradient id="gp" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#6D28D9"/>
+              <stop offset="55%" stop-color="#7C3AED"/>
+              <stop offset="100%" stop-color="#F43F5E"/>
+            </linearGradient>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#A78BFA"/>
+            </marker>
+            <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#A78BFA"/>
+            </marker>
+          </defs>
+          <rect x="0" y="0" width="600" height="260" rx="12" fill="#FAF7FF"/>
+          <rect x="80" y="40" width="440" height="180" rx="6" fill="rgba(167,139,250,0.07)" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <rect x="175" y="95" width="70" height="70" rx="20" fill="url(#gp)"/>
+          <g transform="translate(210,130) rotate(-45)">
+            <ellipse cx="0" cy="-17" rx="6" ry="14" fill="white"/>
+            <ellipse cx="-16" cy="4" rx="13" ry="4.5" fill="white"/>
+            <ellipse cx="16" cy="4" rx="13" ry="4.5" fill="white"/>
+            <ellipse cx="0" cy="17" rx="6.5" ry="3.5" fill="white"/>
+          </g>
+          <text x="256" y="145" font-family="system-ui,sans-serif" font-weight="800" font-size="46" fill="url(#gp)" letter-spacing="-1">ermix</text>
+          <line x1="300" y1="89" x2="300" y2="47" stroke="#A78BFA" stroke-width="1.2" marker-start="url(#arr2)" marker-end="url(#arr)"/>
+          <text x="312" y="73" font-family="system-ui,sans-serif" font-size="11" fill="#7C3AED" font-weight="600">1× alto "e"</text>
+          <line x1="300" y1="171" x2="300" y2="213" stroke="#A78BFA" stroke-width="1.2" marker-start="url(#arr2)" marker-end="url(#arr)"/>
+          <text x="312" y="198" font-family="system-ui,sans-serif" font-size="11" fill="#7C3AED" font-weight="600">1× alto "e"</text>
+          <line x1="169" y1="130" x2="87" y2="130" stroke="#A78BFA" stroke-width="1.2" marker-start="url(#arr2)" marker-end="url(#arr)"/>
+          <text x="91" y="122" font-family="system-ui,sans-serif" font-size="11" fill="#7C3AED" font-weight="600">1×</text>
+          <line x1="451" y1="130" x2="513" y2="130" stroke="#A78BFA" stroke-width="1.2" marker-start="url(#arr2)" marker-end="url(#arr)"/>
+          <text x="455" y="122" font-family="system-ui,sans-serif" font-size="11" fill="#7C3AED" font-weight="600">1×</text>
+          <text x="300" y="248" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#A78BFA" letter-spacing="2" font-weight="600">ZONA DE PROTECCIÓN</text>
+        </svg>
+      </div>
+      <div style="font-size:.82rem;color:var(--muted);margin-top:10px">El espacio mínimo en los 4 lados equivale a la altura de la "e" del ícono. Ningún texto, imagen u otro elemento puede entrar en esa zona.</div>
+    </div>
+  </div>
+
+  <div style="padding-bottom:80px"></div>
+</div>
+
+<footer>
+  <p><strong>ermix</strong> · Brand Guidelines v1.0 · Marzo 2026</p>
+  <p style="margin-top:6px">ermix es un producto independiente — agnóstico a cualquier agencia o agente</p>
+</footer>
+
+</body>
+</html>
