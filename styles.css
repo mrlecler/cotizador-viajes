@@ -2059,6 +2059,42 @@ body{overflow-x:hidden}
   .hdr-btn{padding:5px 10px;font-size:.72rem}
   /* Reduce gap in header */
   #hdr-right{gap:5px}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     PREVIEW TOOLBAR — scroll horizontal en pantallas chicas
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .ptb-actions{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap!important}
+  .ptb-actions .btn{white-space:nowrap;flex-shrink:0}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     CLIENT MODAL — tabs scroll
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .cli-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap!important;padding-bottom:4px}
+  .cli-tab{flex-shrink:0;white-space:nowrap}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     REP BLOCKS (vuelos, hoteles…)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .rep{padding:14px 12px!important}
+  .rep-hd{padding:8px 10px!important;gap:8px!important}
+  .rep-ttl{font-size:.82rem!important}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     MARKUP CARD
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #markup-card .g3{grid-template-columns:1fr 1fr!important}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     PROVIDER CATALOG DROPDOWN
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #pcat-global-drop{left:12px!important;right:12px!important;min-width:unset!important;max-width:none!important;max-height:55vh!important}
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━
+     SHARE MODAL
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  #share-modal.modal-overlay{align-items:flex-end!important;padding:0!important}
+  #share-modal .modal{width:100%!important;max-width:100%!important;border-radius:var(--r) var(--r) 0 0!important;padding:24px 18px!important}
+  #share-url-inp{font-size:13px!important}
 }
 
 /* ══════════════════════════
