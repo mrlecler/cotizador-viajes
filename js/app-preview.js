@@ -195,6 +195,7 @@ function loadCfg(){
       });
     }
   }
+  _loadIntegrationFields();
 }
 
 // ═══════════════════════════════════════════
@@ -413,6 +414,98 @@ async function _publicApprove(quoteId,token){
     if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
   }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
 }
+
+// ═══════════════════════════════════════════
+// EMAIL VIA RESEND
+// ═══════════════════════════════════════════
+function saveCfgIntegrations(){
+  const key=(document.getElementById('cfg-resend-key')?.value||'').trim();
+  const dias=(document.getElementById('cfg-validez-dias')?.value||'').trim();
+  const from=(document.getElementById('cfg-from-email')?.value||'').trim();
+  if(key) localStorage.setItem('mp_resend_key',key);
+  else localStorage.removeItem('mp_resend_key');
+  if(dias) agCfg.validez_dias=parseInt(dias);
+  else delete agCfg.validez_dias;
+  if(from) agCfg.resend_from=from;
+  else delete agCfg.resend_from;
+  _saveAgCfg();
+  toast('Integraciones guardadas');
+}
+function _loadIntegrationFields(){
+  const rk=localStorage.getItem('mp_resend_key')||'';
+  const el=document.getElementById('cfg-resend-key');if(el)el.value=rk;
+  const vd=document.getElementById('cfg-validez-dias');if(vd)vd.value=agCfg.validez_dias||'';
+  const fr=document.getElementById('cfg-from-email');if(fr)fr.value=agCfg.resend_from||'';
+}
+async function _sendQuoteEmail(){
+  // Verificar que hay cotización y email del cliente
+  const d=qData||collectFormSafe();
+  const clientEmail=d?.cliente?.email;
+  if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
+  // Verificar Resend key
+  const resendKey=localStorage.getItem('mp_resend_key')||'';
+  if(!resendKey){toast('Configurá tu Resend API Key en Mi Perfil → Integraciones',false);return;}
+  // Generar link público (igual que _shareQuote)
+  let token=null;
+  if(editingQuoteId){
+    try{
+      const{data:row}=await sb.from('cotizaciones').select('datos').eq('id',editingQuoteId).single();
+      const rd=typeof row?.datos==='string'?JSON.parse(row.datos):(row?.datos||{});
+      if(rd.public_token) token=rd.public_token;
+      if(!token){
+        token=(typeof crypto.randomUUID==='function')?crypto.randomUUID():(Math.random().toString(36).slice(2)+Date.now().toString(36)).slice(0,32);
+        const{error}=await sb.from('cotizaciones').update({datos:{...rd,public_token:token}}).eq('id',editingQuoteId);
+        if(error){toast('Error al generar el link: '+error.message,false);return;}
+      }
+    }catch(e){toast('Error al preparar el link',false);return;}
+  }
+  const publicUrl=token?(window.location.origin+window.location.pathname+'?q='+token):'';
+  const destino=d?.viaje?.destino||'tu viaje';
+  const agNm=agCfg.nm||'Tu agente de viajes';
+  const agTel=agCfg.tel||'';
+  const agSoc=agCfg.soc||'';
+  const fromAddr=agCfg.resend_from||'ermix <onboarding@resend.dev>';
+  const subject=`Tu cotización para ${destino} está lista`;
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#F5F0E8;margin:0;padding:20px}.wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(45,31,20,.08)}.hd{background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);padding:28px 32px;text-align:center}.hd h1{color:#fff;font-size:1.3rem;margin:0 0 6px;font-weight:700}.hd p{color:rgba(255,255,255,.85);font-size:.85rem;margin:0}.body{padding:28px 32px}.greeting{font-size:.95rem;color:#2D1F14;margin-bottom:16px}.msg{font-size:.88rem;color:#6B5E52;line-height:1.65;margin-bottom:24px}.cta{display:block;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:#fff;text-decoration:none;text-align:center;padding:14px 28px;border-radius:12px;font-weight:700;font-size:.95rem;margin-bottom:24px}.ft{border-top:1px solid #EDE8DF;padding:20px 32px;text-align:center;font-size:.75rem;color:#9B8C80}</style></head>
+  <body><div class="wrap">
+    <div class="hd"><h1>Tu cotización está lista</h1><p>${destino}</p></div>
+    <div class="body">
+      <p class="greeting">Hola${d?.cliente?.nombre?' '+d.cliente.nombre.split(' ')[0]:''}!</p>
+      <p class="msg">Te comparto tu cotización de viaje personalizada. Podés verla completa y aprobarla desde el siguiente link:</p>
+      ${publicUrl?`<a href="${publicUrl}" class="cta">Ver mi cotización</a>`:''}
+      <p class="msg" style="font-size:.8rem">Preparada por <strong>${agNm}</strong>${agTel?' · '+agTel:''}${agSoc?' · '+agSoc:''}</p>
+    </div>
+    <div class="ft">ermix · cotizador de viajes profesional<br>Este email fue enviado por ${agNm}</div>
+  </div></body></html>`;
+  // Llamar Resend API
+  const btn=document.querySelector('[onclick*="_sendQuoteEmail"]');
+  if(btn){btn.disabled=true;btn.textContent='Enviando...';}
+  try{
+    const res=await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+resendKey,'Content-Type':'application/json'},
+      body:JSON.stringify({from:fromAddr,to:clientEmail,subject,html,reply_to:agCfg.em||undefined})
+    });
+    const json=await res.json();
+    if(!res.ok){toast('Error al enviar: '+(json.message||json.name||res.status),false);}
+    else{
+      toast('Email enviado a '+clientEmail);
+      // Marcar como enviada automáticamente
+      if(editingQuoteId){
+        const dias=parseInt(agCfg?.validez_dias)||7;
+        const vence=new Date();vence.setDate(vence.getDate()+dias);
+        const fv=vence.toISOString().slice(0,10);
+        try{
+          const{data:row2}=await sb.from('cotizaciones').select('datos').eq('id',editingQuoteId).single();
+          const rd2=typeof row2?.datos==='string'?JSON.parse(row2.datos):(row2?.datos||{});
+          await sb.from('cotizaciones').update({estado:'enviada',datos:{...rd2,fecha_vencimiento:fv}}).eq('id',editingQuoteId);
+        }catch(e2){}
+      }
+    }
+  }catch(e){toast('No se pudo conectar con Resend: '+e.message,false);}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Enviar';}}
+}
+function collectFormSafe(){try{return collectForm();}catch(e){return qData||null;}}
 
 // ═══════════════════════════════════════════
 // EDIT FROM PREVIEW
