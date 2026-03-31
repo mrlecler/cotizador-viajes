@@ -9,11 +9,11 @@ function _extractAirlineIata(name,flightNum){
 }
 
 const PDF_THEMES={
-  1:{name:'Turquesa ermix', primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143',rgb2:'11,197,184'},
-  2:{name:'Azul marino',    primary:'#1E3A5F',secondary:'#2E5C8A',accent:'#4A90C4',grad:'linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)',text:'#ffffff',rgb:'30,58,95',  rgb2:'46,92,138'},
-  3:{name:'Negro y dorado', primary:'#1A1A1A',secondary:'#2D2D2D',accent:'#C9A84C',grad:'linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)',text:'#C9A84C',rgb:'26,26,26',rgb2:'45,45,45'},
-  4:{name:'Verde selva',    primary:'#1B4332',secondary:'#2D6A4F',accent:'#52B788',grad:'linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)',text:'#ffffff',rgb:'27,67,50',  rgb2:'45,106,79'},
-  5:{name:'Borgoña premium',primary:'#6B1A2A',secondary:'#8B2635',accent:'#C4445A',grad:'linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)',text:'#ffffff',rgb:'107,26,42',rgb2:'139,38,53'},
+  1:{name:'Cinematográfico',  layout:'cinematic',   primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143',rgb2:'11,197,184'},
+  2:{name:'Minimalista',      layout:'minimal',     primary:'#1E3A5F',secondary:'#2E5C8A',accent:'#4A90C4',grad:'linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)',text:'#ffffff',rgb:'30,58,95',  rgb2:'46,92,138'},
+  3:{name:'Negro y dorado',   layout:'bold',        primary:'#1A1A1A',secondary:'#2D2D2D',accent:'#C9A84C',grad:'linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)',text:'#C9A84C',rgb:'26,26,26',rgb2:'45,45,45'},
+  4:{name:'Verde selva',      layout:'magazine',    primary:'#1B4332',secondary:'#2D6A4F',accent:'#52B788',grad:'linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)',text:'#ffffff',rgb:'27,67,50',  rgb2:'45,106,79'},
+  5:{name:'Corporativo',      layout:'corporate',   primary:'#6B1A2A',secondary:'#8B2635',accent:'#C4445A',grad:'linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)',text:'#ffffff',rgb:'107,26,42',rgb2:'139,38,53'},
 };
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
@@ -37,6 +37,95 @@ function buildPdfWordmark(fontSize){
     <text x="0" y="${baseline}" font-family="'DM Sans',sans-serif" font-weight="900" font-size="${fontSize}" letter-spacing="-1" fill="white">ermi</text>
     <path transform="translate(${tx},${ty}) scale(${sc})" d="${X}" fill="url(#${gid})"/>
   </svg>`;
+}
+
+// ─── Layout CSS overrides por template ──────────────────────────────────────
+function _layoutCSS(layout,th){
+  if(layout==='minimal') return `
+    .qp-cover{min-height:auto!important;padding:80px 48px 40px!important;position:relative!important;background:#FFFFFF!important}
+    .qp-dark-hd{background:${th.primary}!important;padding:20px 28px!important;border-radius:10px!important;margin:28px 0 20px!important}
+    .qp-item-card{border:1px solid #E5E2DC!important}
+    #qwrap{background:#FAFAF8!important}
+  `;
+  if(layout==='bold') return `
+    .qp-cover{min-height:60vh!important}
+    .qp-dark-hd{background:${th.grad}!important;padding:24px 32px!important;border-radius:0!important;margin:0 -32px 24px!important;width:calc(100% + 64px)!important}
+    .qp-dark-hd-title{font-size:1.4rem!important;letter-spacing:1px!important}
+    .qp-item-card{border:2px solid rgba(${th.rgb},0.2)!important;border-radius:14px!important}
+  `;
+  if(layout==='magazine') return `
+    .qp-cover{min-height:auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;padding:0!important;position:relative!important}
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(${th.rgb},0.08),rgba(${th.rgb},0.03))!important;color:${th.primary}!important;border-left:4px solid ${th.primary}!important;border-radius:0!important;padding:18px 24px!important;margin:24px 0 20px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
+  `;
+  if(layout==='corporate') return `
+    .qp-cover{min-height:auto!important;padding:60px 48px 36px!important;position:relative!important;background:linear-gradient(160deg,${th.primary} 0%,${th.secondary} 100%)!important}
+    .qp-dark-hd{background:#F8F6F2!important;color:#2D1F14!important;border:1px solid #E5E2DC!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:#2D1F14!important}
+    .qp-item-card{border-radius:8px!important}
+    #qwrap{font-size:13px!important}
+  `;
+  return ''; // cinematic = default, no overrides
+}
+
+// ─── Cover builder por layout ──────────────────────────────────────────────
+function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWordmarkFn){
+  const cl=d.cliente||{},vi=d.viaje||{};
+  const dests=[...new Set([vi.destino,vi.pais,...(d.hoteles||[]).map(h=>h.ciudad).filter(Boolean)].filter(Boolean))];
+  const destChips=dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('');
+  const clientBlock=cl.nombre
+    ?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`
+    :`<div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`;
+  const paxLine=`<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
+    ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+    ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
+  </div>`;
+
+  // Minimal: white cover, no photo
+  if(layout==='minimal'){
+    return `<div class="qp-cover">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:36px;max-width:120px">`:''}<div>${ag.nm?`<div style="font-size:13px;font-weight:700;color:#2D1F14">${ag.nm}</div>`:''}<div style="font-size:10px;color:#9B8C80">${ag.ag||''}</div></div></div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:#9B8C80;border:1px solid #E5E2DC;border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      ${dests.length?`<div style="display:flex;gap:8px;margin-bottom:16px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.1);border:1px solid rgba(${th.rgb},0.3);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${th.primary}">${dest}</span>`).join('')}</div>`:''}
+      ${cl.nombre?`<div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#9B8C80;margin-bottom:8px">COTIZACIÓN PARA</div><div style="font-size:42px;font-weight:900;letter-spacing:-2px;color:#2D1F14;line-height:1;margin-bottom:20px">${cl.nombre}</div>`:`<div style="font-size:42px;font-weight:900;letter-spacing:-2px;color:#2D1F14;line-height:1;margin-bottom:20px">${vi.destino||'Propuesta de viaje'}</div>`}
+      <div style="display:flex;align-items:center;gap:20px;color:#6B5E52;font-size:12px">${cl.pasajeros||''}${vi.salida&&vi.regreso?` · ${fd(vi.salida)} → ${fd(vi.regreso)}`:''}${vi.noches?` · ${vi.noches} noches`:''}</div>
+      ${totalAmt?`<div style="margin-top:24px;padding:20px 0;border-top:2px solid ${th.primary}"><div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#9B8C80;text-transform:uppercase;margin-bottom:4px">Total estimado</div><div style="font-size:28px;font-weight:900;color:${th.primary};letter-spacing:-1px">${totalAmt}</div></div>`:''}
+    </div>`;
+  }
+
+  // Corporate: colored header, no photo, formal
+  if(layout==='corporate'){
+    return `<div class="qp-cover">
+      <div style="position:relative;z-index:2">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px">
+          <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:32px;max-width:100px;filter:brightness(10)">`:buildPdfWordmarkFn(20)}<div>${ag.nm?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9)">${ag.nm}</div>`:''}<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag||''}</div></div></div>
+          ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+        </div>
+        ${cl.nombre?`<div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px">PROPUESTA COMERCIAL PARA</div><div style="font-size:36px;font-weight:800;color:white;line-height:1.1;margin-bottom:16px">${cl.nombre}</div>`:`<div style="font-size:36px;font-weight:800;color:white;line-height:1.1;margin-bottom:16px">${vi.destino||'Propuesta de viaje'}</div>`}
+        <div style="color:rgba(255,255,255,.6);font-size:11px">${cl.pasajeros||''}${vi.salida&&vi.regreso?` · ${fd(vi.salida)} — ${fd(vi.regreso)}`:''}${vi.noches?` · ${vi.noches} noches`:''}</div>
+        ${totalAmt?`<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.5);text-transform:uppercase">Inversión estimada</div><div style="font-size:22px;font-weight:800;color:white;margin-top:2px">${totalAmt}</div></div><div style="text-align:right;font-size:9px;color:rgba(255,255,255,.4)">${today}</div></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // Magazine: split layout
+  if(layout==='magazine'){
+    return `<div class="qp-cover">
+      <div style="min-height:420px;position:relative;overflow:hidden;${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:${th.grad}`}"><div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.1),rgba(0,0,0,.35))"></div></div>
+      <div style="padding:40px 36px;display:flex;flex-direction:column;justify-content:center;background:#FAFAF8">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:100px">`:''}<div><div style="font-size:11px;font-weight:700;color:${th.primary}">${ag.nm||''}</div><div style="font-size:9px;color:#9B8C80">${ag.ag||''}</div></div></div>
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${th.primary};margin-bottom:8px">VIAJE DE</div><div style="font-size:32px;font-weight:900;letter-spacing:-1.5px;color:#2D1F14;line-height:1.05;margin-bottom:12px">${cl.nombre}</div>`:`<div style="font-size:32px;font-weight:900;letter-spacing:-1.5px;color:#2D1F14;line-height:1.05;margin-bottom:12px">${vi.destino||'Propuesta'}</div>`}
+        <div style="font-size:11px;color:#6B5E52;line-height:1.6">${vi.destino?vi.destino+(vi.pais?', '+vi.pais:''):''}${vi.salida?'<br>'+fd(vi.salida)+(vi.regreso?' — '+fd(vi.regreso):''):''}${vi.noches?'<br>'+vi.noches+' noches':''}</div>
+        ${totalAmt?`<div style="margin-top:auto;padding-top:20px"><div style="font-size:9px;font-weight:700;letter-spacing:2px;color:${th.primary};text-transform:uppercase;margin-bottom:3px">Total</div><div style="font-size:26px;font-weight:900;color:#2D1F14;letter-spacing:-1px">${totalAmt}</div></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // Default: cinematic + bold use the same full-bleed cover (color palette differs via th)
+  return null; // signals: use original cover code in buildQuoteHTML
 }
 
 // ─── Generador HTML del documento de cotización ───────────────────────────────
@@ -91,11 +180,17 @@ function buildQuoteHTML(d){
   const totalAmt=pr.total>0?fmtMoney(pr.total,pr.moneda2):pr.por_persona>0?fmtMoney(pr.por_persona,pr.moneda)+' /pax':'';
 
   // ════════════════════════════════════════════════
-  // PAGE 1: PORTADA
+  // PAGE 1: PORTADA (por layout)
   // ════════════════════════════════════════════════
+  const _layout=th.layout||'cinematic';
+  const _altCover=_buildCoverByLayout(_layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWordmark);
+  const _layoutStyle=_layoutCSS(_layout,th);
   const dests=[...new Set([vi.destino,vi.pais,...(d.hoteles||[]).map(h=>h.ciudad).filter(Boolean)].filter(Boolean))];
-  let H=`<div id="qwrap">
-  <div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
+  let H=`<div id="qwrap">${_layoutStyle?`<style>${_layoutStyle}</style>`:''}`;
+  if(_altCover){
+    H+=_altCover;
+  } else {
+  H+=`<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
     <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none"></div>
     <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none"></div>
     <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
@@ -121,6 +216,7 @@ function buildQuoteHTML(d){
     </div>
     ${window._unsplashCredit?(()=>{const _uc=window._unsplashCredit;const _pb=_uc.link||'https://unsplash.com';const _pu=_pb+(_pb.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';return`<div style="position:absolute;bottom:92px;left:12px;z-index:3;font-size:7px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.32);padding:2px 7px;border-radius:6px;backdrop-filter:blur(4px)">Foto de <a href="https://unsplash.com/@${_uc.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">${_uc.name}</a> en <a href="${_pu}" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">Unsplash</a></div>`})():''}
   </div>`;
+  } // end else (cinematic/bold cover)
 
   // ════════════════════════════════════════════════
   // PAGE 2: ITINERARIO DÍA A DÍA

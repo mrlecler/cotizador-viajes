@@ -57,7 +57,7 @@ async function renderHistory(){
     return;
   }
   const shown=visible.slice(0,_histPageSize);
-  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida',revision:'Revisión'};
   // Calcular cuántas versiones tiene cada base ref_id (para mostrar indicador en V1)
   const _vBase=r=>(r.ref_id||'').replace(/-V\d+$/,'');
   const _vN=r=>{const m=(r.ref_id||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;};
@@ -536,7 +536,7 @@ async function loadClientQuotes(clienteId, clienteNombre){
   const {data}=await sb.from('cotizaciones').select('*').order('creado_en',{ascending:false});
   const matches=(data||[]).filter(r=>r.cliente_id===clienteId || (r.datos?.cliente?.nombre||'').toLowerCase()===clienteNombre.toLowerCase());
   if(!matches.length){el.innerHTML='<div style="color:var(--g3);font-size:.82rem;padding:12px 0">Sin cotizaciones</div>';return;}
-  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida'};
+  const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida',revision:'Revisión'};
   el.innerHTML=`<table class="tbl" style="width:100%"><thead><tr><th>Ref</th><th>Destino</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>${matches.map(r=>`<tr style="cursor:pointer" onclick="document.getElementById('modal-box').style.maxWidth='500px';closeModal();loadFromHistory('${r.ref_id}','${r.id}')">
     <td style="font-family:'DM Mono',monospace;font-size:.75rem">${r.ref_id||'---'}</td>
     <td>${r.destino||'---'}</td>
