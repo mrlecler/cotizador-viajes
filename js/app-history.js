@@ -80,6 +80,15 @@ async function renderHistory(){
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();openStatusModal('${r.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Estado</button>` : '';
     const delBtn = (canE && (!r.estado || r.estado==='borrador'))
       ? `<button class="btn btn-del btn-xs" onclick="event.stopPropagation();deleteQuote('${r.id}')" title="Eliminar borrador"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : '';
+    const rsvBtn = (canE && (r.estado==='aprobado'||r.estado==='confirmada'))
+      ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();openReservaDrawer('${r.id}')" style="color:#22c55e;border-color:rgba(34,197,94,0.3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg> Seguimiento</button>` : '';
+    // Indicadores visuales de reserva
+    const rsv=r.datos?._reserva||{};
+    const _hoy=new Date().toISOString().slice(0,10);
+    const rsvIndicators=[];
+    if(rsv.fecha_limite_pago&&rsv.fecha_limite_pago<_hoy) rsvIndicators.push('<span style="color:#ef4444;font-size:.68rem;font-weight:600"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Pago vencido</span>');
+    if(rsv.vouchers_ok) rsvIndicators.push('<span style="color:#22c55e;font-size:.68rem;font-weight:600"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><polyline points="20 6 9 17 4 12"/></svg>Vouchers</span>');
+    const rsvLine=rsvIndicators.length?'<div style="display:flex;gap:8px;margin-top:2px">'+rsvIndicators.join('')+'</div>':'';
     return `
     <div class="hist-item${vn>1?' hist-item-ver':''}" onclick="loadFromHistory('${r.ref_id}','${r.id}')" style="${vn>1?'border-left:3px solid rgba(27,158,143,0.35);margin-left:12px;':''}">
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
@@ -91,8 +100,9 @@ async function renderHistory(){
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <span class="status-badge st-${r.estado||'borrador'}">${stLbl[r.estado]||r.estado}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
-          ${editBtn}${dupBtn}${statusBtn}${delBtn}
+          ${editBtn}${dupBtn}${statusBtn}${rsvBtn}${delBtn}
         </div>
+        ${rsvLine}
       </div>
     </div>`;
   }).join('')+`
@@ -268,7 +278,16 @@ async function applyStatus(s){
     upd.datos={...dCurrent,fecha_vencimiento:fv};
   }
   await sb.from('cotizaciones').update(upd).eq('id',_statusTargetId);
-  toast('Estado actualizado a: '+s);
+  // Post-aprobación: popup para registrar comisión como ingreso
+  if((s==='aprobado'||s==='confirmada')&&typeof _showIngresoPostApproval==='function'){
+    const d=typeof q?.datos==='string'?JSON.parse(q.datos):(q?.datos||{});
+    const cli=d.cliente?.nombre||'';
+    const dest=d.viaje?.destino||'';
+    const com=d.total_comision||d.markup_comision||0;
+    _showIngresoPostApproval(_statusTargetId,cli,dest,com);
+  } else {
+    toast('Estado actualizado a: '+s);
+  }
   renderHistory();
 }
 
@@ -490,7 +509,8 @@ async function uploadClientDoc(clienteId){
   const path=`${clienteId}/${tipo}_${Date.now()}.${ext}`;
   const {error}=await sb.storage.from('documentos-clientes').upload(path,f);
   if(error){toast('Error al subir: '+error.message,false);return;}
-  await sb.from('documentos_cliente').insert({cliente_id:clienteId,tipo,nombre:f.name,storage_path:path});
+  const {error:dbErr}=await sb.from('documentos_cliente').insert({cliente_id:clienteId,agente_id:window._agenteId,tipo,nombre:f.name,storage_path:path});
+  if(dbErr){toast('Error al guardar: '+dbErr.message,false);return;}
   toast('Documento subido');
   loadClientDocs(clienteId);
   inp.value='';
@@ -666,6 +686,103 @@ async function deleteGroup(id){
   if(!confirm('Eliminar este grupo?'))return;
   await sb.from('grupos_viaje').delete().eq('id',id);
   toast('Grupo eliminado');renderGroups();
+}
+
+// ═══════════════════════════════════════════
+// SEGUIMIENTO DE RESERVAS (drawer lateral)
+// ═══════════════════════════════════════════
+let _drawerQuotId=null;
+
+function openDrawer(){
+  document.getElementById('drawer-overlay')?.classList.add('open');
+  document.getElementById('drawer-reserva')?.classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer-overlay')?.classList.remove('open');
+  document.getElementById('drawer-reserva')?.classList.remove('open');
+  _drawerQuotId=null;
+}
+
+async function openReservaDrawer(quotId){
+  _drawerQuotId=quotId;
+  const body=document.getElementById('drawer-reserva-body');
+  body.innerHTML='<div style="text-align:center;padding:30px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  openDrawer();
+  try{
+    const{data}=await sb.from('cotizaciones').select('*').eq('id',quotId).single();
+    if(!data){body.innerHTML='<p style="color:var(--g3)">No se encontró la cotización.</p>';return;}
+    const r=data.datos?._reserva||{};
+    const cli=data.datos?.cliente?.nombre||'';
+    const dest=data.destino||data.datos?.viaje?.destino||'';
+    const hoy=new Date().toISOString().slice(0,10);
+    const limiteVencido=r.fecha_limite_pago&&r.fecha_limite_pago<hoy;
+    body.innerHTML=`
+      <div style="margin-bottom:16px;padding:12px;background:var(--g1);border-radius:var(--r2)">
+        <div style="font-size:.8rem;font-weight:700;color:var(--text)">${cli}</div>
+        <div style="font-size:.72rem;color:var(--g4)">${dest} · ${data.ref_id||''}</div>
+      </div>
+      <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="rsv-nro" value="${r.nro_reserva||''}" placeholder="ABC-12345"></div>
+      <div class="fg"><label class="lbl">Proveedor principal</label><input class="finput" id="rsv-prov" value="${r.proveedor_ppal||''}" placeholder="Aerolineas Argentinas"></div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Monto cobrado (USD)</label><input class="finput" type="number" id="rsv-cobrado" value="${r.monto_cobrado||''}" placeholder="0"></div>
+        <div class="fg"><label class="lbl">Monto pagado (USD)</label><input class="finput" type="number" id="rsv-pagado" value="${r.monto_pagado||''}" placeholder="0"></div>
+      </div>
+      <div class="fg">
+        <label class="lbl" style="${limiteVencido?'color:#ef4444':''}">
+          ${limiteVencido?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>':''}Fecha limite de pago
+        </label>
+        <input class="finput" type="date" id="rsv-limite" value="${r.fecha_limite_pago||''}" style="${limiteVencido?'border-color:#ef4444;color:#ef4444':''}">
+      </div>
+      <div class="fg" style="display:flex;align-items:center;gap:10px;padding:10px 0">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text)">
+          <input type="checkbox" id="rsv-vouchers" ${r.vouchers_ok?'checked':''} style="accent-color:var(--primary);width:18px;height:18px">
+          Vouchers recibidos
+          ${r.vouchers_ok?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
+        </label>
+      </div>
+      <div class="fg"><label class="lbl">Notas de reserva</label><textarea class="finput" id="rsv-notas" rows="3" placeholder="Notas internas sobre la reserva..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
+    `;
+  }catch(e){body.innerHTML='<p style="color:var(--g3)">Error al cargar datos.</p>';console.error('[openReservaDrawer]',e);}
+}
+
+async function saveReserva(){
+  if(!_drawerQuotId) return;
+  const reserva={
+    nro_reserva:(document.getElementById('rsv-nro')?.value||'').trim(),
+    proveedor_ppal:(document.getElementById('rsv-prov')?.value||'').trim(),
+    monto_cobrado:parseFloat(document.getElementById('rsv-cobrado')?.value)||null,
+    monto_pagado:parseFloat(document.getElementById('rsv-pagado')?.value)||null,
+    fecha_limite_pago:document.getElementById('rsv-limite')?.value||null,
+    vouchers_ok:document.getElementById('rsv-vouchers')?.checked||false,
+    notas_reserva:(document.getElementById('rsv-notas')?.value||'').trim()
+  };
+  try{
+    const{data:row}=await sb.from('cotizaciones').select('datos').eq('id',_drawerQuotId).single();
+    const d=typeof row?.datos==='string'?JSON.parse(row.datos):(row?.datos||{});
+    d._reserva=reserva;
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_drawerQuotId);
+    if(error){toast('Error al guardar: '+error.message,false);return;}
+    toast('Seguimiento guardado');
+    closeDrawer();
+    renderHistory();
+  }catch(e){toast('Error al guardar',false);console.error('[saveReserva]',e);}
+}
+
+// ═══════════════════════════════════════════
+// FILTRO RÁPIDO HISTORIAL (Todas / Activas)
+// ═══════════════════════════════════════════
+let _histQuickFilter='';
+
+function _setHistQuickFilter(btn){
+  _histQuickFilter=btn.dataset.hqf||'';
+  document.querySelectorAll('.hist-quick-filter').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(_histQuickFilter==='activas'){
+    document.getElementById('hist-filter').value='aprobado';
+  } else {
+    document.getElementById('hist-filter').value='';
+  }
+  renderHistory();
 }
 
 // ═══════════════════════════════════════════

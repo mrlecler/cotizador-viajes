@@ -9,11 +9,16 @@ function _extractAirlineIata(name,flightNum){
 }
 
 const PDF_THEMES={
-  1:{name:'Cinematográfico',  layout:'cinematic',   primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143',rgb2:'11,197,184'},
-  2:{name:'Minimalista',      layout:'minimal',     primary:'#1E3A5F',secondary:'#2E5C8A',accent:'#4A90C4',grad:'linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)',text:'#ffffff',rgb:'30,58,95',  rgb2:'46,92,138'},
-  3:{name:'Negro y dorado',   layout:'bold',        primary:'#1A1A1A',secondary:'#2D2D2D',accent:'#C9A84C',grad:'linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)',text:'#C9A84C',rgb:'26,26,26',rgb2:'45,45,45'},
-  4:{name:'Verde selva',      layout:'magazine',    primary:'#1B4332',secondary:'#2D6A4F',accent:'#52B788',grad:'linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)',text:'#ffffff',rgb:'27,67,50',  rgb2:'45,106,79'},
-  5:{name:'Corporativo',      layout:'corporate',   primary:'#6B1A2A',secondary:'#8B2635',accent:'#C4445A',grad:'linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)',text:'#ffffff',rgb:'107,26,42',rgb2:'139,38,53'},
+  1:{name:'Turquesa ermix',      layout:'cinematic',primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143', rgb2:'11,197,184'},
+  2:{name:'Inmersión Glaciar',   layout:'glaciar',  primary:'#2979B0',secondary:'#1E3A5F',accent:'#7EC8E3',grad:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',text:'#ffffff',rgb:'126,200,227',rgb2:'41,121,176'},
+  3:{name:'Ámbar Imperial',      layout:'ambar',    primary:'#C9860A',secondary:'#7C4A00',accent:'#E8C77D',grad:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',text:'#E8C77D',rgb:'232,199,125',rgb2:'201,134,10'},
+  4:{name:'Noir Cinema',         layout:'noir',     primary:'#7B2FBE',secondary:'#9B59B6',accent:'#D7BDE2',grad:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',text:'#ffffff',rgb:'123,47,190', rgb2:'155,89,182'},
+  5:{name:'Postal Mediterránea', layout:'postal',   primary:'#C84B31',secondary:'#E8826A',accent:'#F5A623',grad:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',text:'#ffffff',rgb:'200,75,49',  rgb2:'232,130,106'},
+  6:{name:'Magia Encantada',     layout:'magia',    primary:'#1A2E8A',secondary:'#0F1B5C',accent:'#FFD700',grad:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',text:'#FFD700',rgb:'255,215,0',  rgb2:'26,46,138'},
+  7:{name:'Epic Adventure',      layout:'epic',     primary:'#FF4500',secondary:'#CC3700',accent:'#FF6B35',grad:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',text:'#FF4500',rgb:'255,69,0',   rgb2:'204,55,0'},
+  8:{name:'Rosa Botánica',       layout:'rosa',     primary:'#C4426A',secondary:'#8B1A4A',accent:'#F7C5D8',grad:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',text:'#ffffff',rgb:'196,66,106', rgb2:'139,26,74'},
+  9:{name:'Aqua Profundo',       layout:'aqua',     primary:'#00D4E8',secondary:'#0A1F5C',accent:'#00E5FF',grad:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',text:'#ffffff',rgb:'0,229,255',  rgb2:'10,31,92'},
+ 10:{name:'Rojo Flamante',       layout:'rojo',     primary:'#B22222',secondary:'#8B0000',accent:'#FF6B6B',grad:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',text:'#ffffff',rgb:'255,107,107',rgb2:'178,34,34'},
 };
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
@@ -53,7 +58,7 @@ function _layoutCSS(layout,th){
     .qp-dark-hd-title{font-size:1.4rem!important;letter-spacing:1px!important}
     .qp-item-card{border:2px solid rgba(${th.rgb},0.2)!important;border-radius:14px!important}
   `;
-  if(layout==='magazine') return `
+  if(layout==='magazine'||layout==='postal') return `
     .qp-cover{min-height:auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;padding:0!important;position:relative!important}
     .qp-dark-hd{background:linear-gradient(135deg,rgba(${th.rgb},0.08),rgba(${th.rgb},0.03))!important;color:${th.primary}!important;border-left:4px solid ${th.primary}!important;border-radius:0!important;padding:18px 24px!important;margin:24px 0 20px!important}
     .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
@@ -64,6 +69,40 @@ function _layoutCSS(layout,th){
     .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:#2D1F14!important}
     .qp-item-card{border-radius:8px!important}
     #qwrap{font-size:13px!important}
+  `;
+  if(layout==='glaciar') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(${th.rgb},0.1),rgba(${th.rgb},0.04))!important;border-left:3px solid ${th.primary}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
+    .qp-item-card{border-color:rgba(${th.rgb},0.18)!important}
+  `;
+  if(layout==='ambar') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(232,199,125,0.1),rgba(232,199,125,0.04))!important;border-left:3px solid ${th.accent}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
+    #qwrap{background:#FDFBF7!important}
+  `;
+  if(layout==='magia') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(15,27,92,0.08),rgba(26,46,138,0.04))!important;border-left:3px solid ${th.secondary}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title{color:${th.secondary}!important}
+    .qp-dark-hd-sub{color:rgba(15,27,92,0.6)!important}
+  `;
+  if(layout==='epic') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(255,69,0,0.1),rgba(255,69,0,0.04))!important;border-left:3px solid ${th.accent}!important;border-radius:0!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.accent}!important}
+    .qp-item-card{border-color:rgba(255,69,0,0.15)!important;border-radius:8px!important}
+  `;
+  if(layout==='rosa') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(${th.rgb},0.08),rgba(${th.rgb},0.03))!important;border-left:3px solid ${th.primary}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
+    #qwrap{background:#FFF8FA!important}
+  `;
+  if(layout==='aqua') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,229,255,0.04))!important;border-left:3px solid ${th.primary}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
+    .qp-item-card{border-color:rgba(0,229,255,0.15)!important}
+  `;
+  if(layout==='rojo'||layout==='noir') return `
+    .qp-dark-hd{background:linear-gradient(135deg,rgba(${th.rgb},0.1),rgba(${th.rgb},0.04))!important;border-left:3px solid ${th.primary}!important;border-radius:8px!important;padding:16px 22px!important;margin:24px 0 16px!important}
+    .qp-dark-hd-meta,.qp-dark-hd-title,.qp-dark-hd-sub{color:${th.primary}!important}
   `;
   return ''; // cinematic = default, no overrides
 }
@@ -111,8 +150,8 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
     </div>`;
   }
 
-  // Magazine: split layout
-  if(layout==='magazine'){
+  // Magazine / Postal Mediterránea: split layout
+  if(layout==='magazine'||layout==='postal'){
     return `<div class="qp-cover">
       <div style="min-height:420px;position:relative;overflow:hidden;${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:${th.grad}`}"><div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.1),rgba(0,0,0,.35))"></div></div>
       <div style="padding:40px 36px;display:flex;flex-direction:column;justify-content:center;background:#FAFAF8">
@@ -124,7 +163,155 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
     </div>`;
   }
 
-  // Default: cinematic + bold use the same full-bleed cover (color palette differs via th)
+  // ── Glaciar: full-bleed photo + glassmorphism card ──
+  if(layout==='glaciar'){
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#0D1F3A 0%,#1E3A5F 60%,#0A2A4A 100%)`};position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:90px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(126,200,227,.7);border:1px solid rgba(126,200,227,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(126,200,227,0.18);border:1px solid rgba(126,200,227,0.38);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7EC8E3">${dest}</span>`).join('')}</div>`:''}
+        ${clientBlock}
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+          <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.8">${cl.pasajeros||''}${vi.salida&&vi.regreso?`<br>${fd(vi.salida)} → ${fd(vi.regreso)}`:''}${vi.noches?`<br>${vi.noches} noches`:''}</div>
+          ${totalAmt?`<div style="text-align:right"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(126,200,227,.6);margin-bottom:2px">TOTAL</div><div style="font-size:22px;font-weight:900;letter-spacing:-1px;color:white">${totalAmt}</div></div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Ámbar Imperial: photo top + dark amber panel bottom ──
+  if(layout==='ambar'){
+    return `<div class="qp-cover" style="display:grid;grid-template-rows:55% 45%;padding:0;min-height:500px;overflow:hidden">
+      <div style="position:relative;overflow:hidden;${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(135deg,#1A0A00 0%,#5C3300 60%,#7C4A00 100%)`}">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,10,0,0.1) 0%,rgba(26,10,0,0.65) 100%);pointer-events:none"></div>
+        <div style="position:absolute;top:0;left:0;right:0;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+          <div style="display:flex;align-items:center;gap:12px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:26px;filter:brightness(10)">`:buildPdfWordmarkFn(20)}</div>
+          ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(232,199,125,.65);border:1px solid rgba(232,199,125,.28);border-radius:20px;padding:3px 10px">${d.refId}</div>`:''}
+        </div>
+        ${dests.length?`<div style="position:absolute;bottom:14px;left:28px;display:flex;gap:7px;flex-wrap:wrap;z-index:2">${dests.map(dest=>`<span style="background:rgba(232,199,125,0.18);border:1px solid rgba(232,199,125,0.4);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#E8C77D">${dest}</span>`).join('')}</div>`:''}
+      </div>
+      <div style="background:linear-gradient(135deg,#120600 0%,#1A0A00 50%,#2D1400 100%);padding:26px 32px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,199,125,0.5),transparent)"></div>
+        <div style="position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(ellipse,rgba(232,199,125,0.07) 0%,transparent 65%);pointer-events:none"></div>
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(232,199,125,0.45);margin-bottom:6px">PROPUESTA PARA</div><div style="font-size:34px;font-weight:900;letter-spacing:-1.5px;color:#E8C77D;line-height:1.05;margin-bottom:10px">${cl.nombre}</div>`:`<div style="font-size:34px;font-weight:900;letter-spacing:-1.5px;color:#E8C77D;line-height:1.05;margin-bottom:10px">${vi.destino||'Tu próximo viaje'}</div>`}
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div style="font-size:11px;color:rgba(232,199,125,.5);line-height:1.6">${cl.pasajeros||''}${vi.salida&&vi.regreso?` · ${fd(vi.salida)} — ${fd(vi.regreso)}`:''}${vi.noches?` · ${vi.noches} noches`:''}</div>
+          ${totalAmt?`<div style="font-size:24px;font-weight:900;letter-spacing:-1px;color:#E8C77D">${totalAmt}</div>`:''}
+        </div>
+        ${ag.nm?`<div style="margin-top:8px;font-size:9px;color:rgba(232,199,125,.3);font-weight:700;letter-spacing:1px;text-transform:uppercase">${ag.nm}${ag.ag?' · '+ag.ag:''}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // ── Magia Encantada: Disney deep blue + gold stars ──
+  if(layout==='magia'){
+    const stars=Array.from({length:28},(_,i)=>{const x=Math.round((i*47+13)%98),y=Math.round((i*71+29)%85),s=i%3+1;return `<div style="position:absolute;left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:#FFD700;border-radius:50%;opacity:${0.25+s*0.12}"></div>`;}).join('');
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#050F3A 0%,#0F1B5C 45%,#0A0D2E 100%)`};position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,15,58,0.2) 0%,rgba(15,27,92,0.5) 50%,rgba(10,13,46,0.88) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none"></div>
+      ${stars}
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,215,0,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,215,0,.8)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,215,0,.6);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.35);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFD700">${dest}</span>`).join('')}</div>`:''}
+        ${clientBlock}
+        ${paxLine}
+        ${totalAmt?`<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,215,0,0.2);display:flex;justify-content:space-between;align-items:center"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.5)">INVERSIÓN TOTAL</div><div style="font-size:22px;font-weight:900;color:#FFD700;letter-spacing:-1px">${totalAmt}</div></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // ── Epic Adventure: cinematic dark + bold orange glow ──
+  if(layout==='epic'){
+    return `<div class="qp-cover" style="background:linear-gradient(160deg,#080808 0%,#0A0A0A 50%,#0F0300 100%);position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,69,0,0.26) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none"></div>
+      ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none"></div>`:''}
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10) sepia(1) saturate(3) hue-rotate(-20deg)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,69,0,.3);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,69,0,.9)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,69,0,.6);border:1px solid rgba(255,69,0,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,69,0,0.15);border:1px solid rgba(255,69,0,0.32);border-radius:4px;padding:3px 12px;font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#FF4500">${dest}</span>`).join('')}</div>`:''}
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px">PROPUESTA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          ${cl.pasajeros?`<div style="font-size:12px;font-weight:600;color:rgba(255,69,0,.85)">${cl.pasajeros}</div>`:''}
+          ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+          ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.4)">${vi.noches} noches</div>`:''}
+          ${totalAmt?`<div style="margin-left:auto;font-size:22px;font-weight:900;color:#FF4500;letter-spacing:-1px">${totalAmt}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Rosa Botánica: photo with rose glassmorphism card ──
+  if(layout==='rosa'){
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#5C0A2A 0%,#8B1A4A 45%,#C4426A 100%)`};position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(247,197,216,.25);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(247,197,216,.9)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(247,197,216,.7);border:1px solid rgba(247,197,216,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(247,197,216,0.15);border:1px solid rgba(247,197,216,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#F7C5D8">${dest}</span>`).join('')}</div>`:''}
+        ${clientBlock}
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+          <div style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.8">${cl.pasajeros||''}${vi.salida&&vi.regreso?`<br>${fd(vi.salida)} → ${fd(vi.regreso)}`:''}${vi.noches?`<br>${vi.noches} noches`:''}</div>
+          ${totalAmt?`<div style="text-align:right"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(247,197,216,.6);margin-bottom:2px">TOTAL</div><div style="font-size:22px;font-weight:900;letter-spacing:-1px;color:white">${totalAmt}</div></div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Aqua Profundo: deep navy + electric cyan glow ──
+  if(layout==='aqua'){
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#020817 0%,#050E2D 50%,#020817 100%)`};position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,8,23,0.1) 0%,rgba(5,14,45,0.5) 55%,rgba(5,14,45,0.88) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(0,229,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(0,229,255,.8)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(0,229,255,.6);border:1px solid rgba(0,229,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#00E5FF">${dest}</span>`).join('')}</div>`:''}
+        ${clientBlock}
+        ${paxLine}
+        ${totalAmt?`<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,229,255,0.15);display:flex;justify-content:space-between;align-items:center"><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,229,255,.5)">INVERSIÓN TOTAL</div><div style="font-size:22px;font-weight:900;color:white;letter-spacing:-1px">${totalAmt}</div></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  // ── Rojo Flamante: crimson full-bleed cover ──
+  if(layout==='rojo'){
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#4A0000 0%,#8B0000 45%,#600000 100%)`};position:relative;min-height:520px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,245,235,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,245,235,.9)">${ag.nm}</div>`:''}</div>
+        ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,245,235,.65);border:1px solid rgba(255,245,235,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+        ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,245,235,0.12);border:1px solid rgba(255,245,235,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFF5EB">${dest}</span>`).join('')}</div>`:''}
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,245,235,.4);margin-bottom:8px">COTIZACIÓN PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${vi.destino||'Tu próximo viaje'}</div>`}
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:20px;background:#FF6B6B;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,245,235,.8)">${cl.pasajeros}</span></div>`:''}
+          ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,245,235,.45);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+          ${vi.noches?`<div style="font-size:11px;color:rgba(255,245,235,.45)">${vi.noches} noches</div>`:''}
+          ${totalAmt?`<div style="margin-left:auto;font-size:22px;font-weight:900;color:#FFF5EB;letter-spacing:-1px">${totalAmt}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Default: cinematic + noir + bold use full-bleed cover (color palette differs via th)
   return null; // signals: use original cover code in buildQuoteHTML
 }
 
