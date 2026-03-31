@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.24.0';
+const APP_VERSION = '0.25.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -964,6 +964,31 @@ async function loadDashboardMetrics(){
       leg('leg-borrador','Borradores',borr);leg('leg-enviada','Enviadas',env);
       leg('leg-confirmada','Confirmadas',conf);leg('leg-cancelada','Canceladas',canc);
     }
+
+    // Ingresos del mes
+    try{
+      const hoy=new Date();
+      const inicioMes=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-01`;
+      const{data:ing}=await sb.from('ingresos')
+        .select('monto').eq('agente_id',window._agenteId)
+        .eq('estado','cobrado').gte('fecha_cobro',inicioMes);
+      const totalMes=(ing||[]).reduce((s,r)=>s+(+r.monto||0),0);
+      set('met-ingresos-mes',totalMes>0?'$'+totalMes.toLocaleString('es-AR'):'—');
+      const meta=typeof agCfg!=='undefined'&&agCfg?agCfg.meta_mensual||0:0;
+      const pct=meta>0?Math.min(100,(totalMes/meta)*100):0;
+      const barEl=document.getElementById('met-ingresos-bar');
+      if(barEl) barEl.style.width=pct+'%';
+    }catch(e2){console.warn('[ingresos-mes]',e2);}
+
+    // Reservas activas
+    try{
+      const{count:rsvCount}=await sb.from('cotizaciones')
+        .select('id',{count:'exact',head:true})
+        .eq('agente_id',window._agenteId)
+        .in('estado',['aprobado','confirmada']);
+      set('met-reservas-act',rsvCount!=null?String(rsvCount):'—');
+    }catch(e3){console.warn('[reservas-act]',e3);}
+
   }catch(e){
     console.error('loadDashboardMetrics error:',e);
     if(typeof _captureError==='function') _captureError('DASHBOARD',e);

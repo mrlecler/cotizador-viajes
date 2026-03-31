@@ -484,6 +484,17 @@
       <div class="dm-card-sub">en tu base de datos</div>
       <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-clients-bar" style="width:0%;background:#8b5cf6"></div></div>
     </div>
+    <div class="dm-card" onclick="switchTab('ingresos')" style="cursor:pointer">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Ingresos del mes</div>
+      <div class="dm-card-val grad" id="met-ingresos-mes">—</div>
+      <div class="dm-card-sub">USD cobrados este mes</div>
+      <div class="dm-card-bar"><div class="dm-card-bar-fill" id="met-ingresos-bar" style="width:0%;background:var(--primary)"></div></div>
+    </div>
+    <div class="dm-card" onclick="switchTab('history')" style="cursor:pointer">
+      <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Reservas activas</div>
+      <div class="dm-card-val" id="met-reservas-act" style="color:#22c55e">—</div>
+      <div class="dm-card-sub">viajes confirmados</div>
+    </div>
   </div>
   <!-- Commissions + status dist -->
   <div class="dm-wide" style="margin-bottom:20px">
