@@ -4,11 +4,32 @@ function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||''; }
 // Último crédito de foto Unsplash (para atribución)
 window._unsplashCredit=null;
 
+// Fotos curadas de viaje — usadas como fallback cuando no hay API key
+const _COVER_FALLBACKS=[
+  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
+];
+function _useCoverFallback(){
+  coverUrl=_COVER_FALLBACKS[Math.floor(Math.random()*_COVER_FALLBACKS.length)];
+  window._unsplashCredit=null;
+  updCovers();
+}
 function autoCover(){
   const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');
   const key=_unsplashKey();
   if(!key){
-    toast('Configurá tu Unsplash API Key en Mi Perfil',false);
+    // Admin: indicar dónde configurar. Agente/agencia: usar fotos curadas silenciosamente.
+    if(typeof currentRol!=='undefined'&&currentRol==='admin'){
+      toast('Configurá la Unsplash API Key en Admin → Integraciones',false);
+      return;
+    }
+    _useCoverFallback();
     return;
   }
   const q=encodeURIComponent(dest+' travel landscape');
@@ -35,20 +56,7 @@ function autoCover(){
     })
     .catch(e=>{
       console.warn('Unsplash API:',e.message);
-      // Fallback: fotos curadas sin API
-      const fallbacks=[
-        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
-      ];
-      coverUrl=fallbacks[Math.floor(Math.random()*fallbacks.length)];
-      window._unsplashCredit=null;
-      updCovers();
+      _useCoverFallback();
     });
 }
 
@@ -480,7 +488,14 @@ async function _sendQuoteEmail(){
   if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
   // Verificar Resend key
   const resendKey=localStorage.getItem('mp_resend_key')||'';
-  if(!resendKey){toast('Configurá tu Resend API Key en Mi Perfil → Integraciones',false);return;}
+  if(!resendKey){
+    if(typeof currentRol!=='undefined'&&currentRol==='admin'){
+      toast('Configurá la Resend API Key en Admin → Integraciones',false);
+    } else {
+      toast('El envío de emails no está activado. Contactá al administrador.',false);
+    }
+    return;
+  }
   // Generar link público (igual que _shareQuote)
   let token=null;
   if(editingQuoteId){
