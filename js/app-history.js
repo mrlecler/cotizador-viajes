@@ -506,7 +506,7 @@ async function uploadClientDoc(clienteId){
   const tipo=document.getElementById('mc-doc-tipo-upload')?.value||'otro';
   const f=inp.files[0]; if(!f)return;
   const ext=f.name.split('.').pop();
-  const path=`${clienteId}/${tipo}_${Date.now()}.${ext}`;
+  const path=`${window._agenteId}/${clienteId}_${tipo}_${Date.now()}.${ext}`;
   const {error}=await sb.storage.from('documentos-clientes').upload(path,f);
   if(error){toast('Error al subir: '+error.message,false);return;}
   const {error:dbErr}=await sb.from('documentos_cliente').insert({cliente_id:clienteId,agente_id:window._agenteId,tipo,nombre:f.name,storage_path:path});

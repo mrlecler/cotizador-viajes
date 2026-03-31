@@ -1,6 +1,6 @@
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;window._unsplashCredit=null;updCovers();};r.readAsDataURL(f);}
 // Unsplash — key en localStorage, NUNCA en el repo
-function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||''; }
+function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||(typeof agCfg!=='undefined'?agCfg._unsplash_key:'')||''; }
 // Último crédito de foto Unsplash (para atribución)
 window._unsplashCredit=null;
 
@@ -120,6 +120,10 @@ function saveApiKeys(){
   const from=(document.getElementById('ak-resend-from')?.value||'').trim();
   if(from) agCfg.resend_from=from;
   else delete agCfg.resend_from;
+  // Persistir keys en agCfg para sobrevivir deploys (localStorage secundario)
+  if(unsplash) agCfg._unsplash_key=unsplash; else delete agCfg._unsplash_key;
+  if(ia) agCfg._ia_key=ia; else delete agCfg._ia_key;
+  if(resend) agCfg._resend_key=resend; else delete agCfg._resend_key;
   _saveAgCfg();
   toast('API Keys guardadas');
 }
@@ -491,7 +495,7 @@ async function _sendQuoteEmail(){
   const clientEmail=d?.cliente?.email;
   if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
   // Verificar Resend key
-  const resendKey=localStorage.getItem('mp_resend_key')||'';
+  const resendKey=localStorage.getItem('mp_resend_key')||(typeof agCfg!=='undefined'?agCfg._resend_key:'')||'';
   if(!resendKey){
     if(typeof currentRol!=='undefined'&&currentRol==='admin'){
       toast('Configurá la Resend API Key en Admin → Integraciones',false);

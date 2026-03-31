@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.0';
+const APP_VERSION = '0.25.1';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -502,6 +502,10 @@ async function showApp(user){
     localStorage.removeItem(_oldKey);
   }
   _loadAgCfg(); // cargar config per-user
+  // Restaurar API keys desde agCfg (sobreviven deploys)
+  if(agCfg._unsplash_key&&!localStorage.getItem('mp_unsplash_key')) localStorage.setItem('mp_unsplash_key',agCfg._unsplash_key);
+  if(agCfg._ia_key){if(!localStorage.getItem('mp_ia_key'))localStorage.setItem('mp_ia_key',agCfg._ia_key);if(!localStorage.getItem('mp_key'))localStorage.setItem('mp_key',agCfg._ia_key);}
+  if(agCfg._resend_key&&!localStorage.getItem('mp_resend_key')) localStorage.setItem('mp_resend_key',agCfg._resend_key);
   editingQuoteId = null;
   formDraft = null;
   // Mostrar app, sidebar y bottom nav

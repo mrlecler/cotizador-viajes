@@ -140,7 +140,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
     return `<div class="qp-cover">
       <div style="position:relative;z-index:2">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px">
-          <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:32px;max-width:100px;filter:brightness(10)">`:buildPdfWordmarkFn(20)}<div>${ag.nm?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9)">${ag.nm}</div>`:''}<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag||''}</div></div></div>
+          <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:32px;max-width:100px">`:buildPdfWordmarkFn(20)}<div>${ag.nm?`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.9)">${ag.nm}</div>`:''}<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag||''}</div></div></div>
           ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
         </div>
         ${cl.nombre?`<div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px">PROPUESTA COMERCIAL PARA</div><div style="font-size:36px;font-weight:800;color:white;line-height:1.1;margin-bottom:16px">${cl.nombre}</div>`:`<div style="font-size:36px;font-weight:800;color:white;line-height:1.1;margin-bottom:16px">${vi.destino||'Propuesta de viaje'}</div>`}
@@ -169,7 +169,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none"></div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none"></div>
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:90px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:90px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(126,200,227,.7);border:1px solid rgba(126,200,227,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2">
@@ -189,7 +189,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:relative;overflow:hidden;${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(135deg,#1A0A00 0%,#5C3300 60%,#7C4A00 100%)`}">
         <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,10,0,0.1) 0%,rgba(26,10,0,0.65) 100%);pointer-events:none"></div>
         <div style="position:absolute;top:0;left:0;right:0;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-          <div style="display:flex;align-items:center;gap:12px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:26px;filter:brightness(10)">`:buildPdfWordmarkFn(20)}</div>
+          <div style="display:flex;align-items:center;gap:12px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:26px">`:buildPdfWordmarkFn(20)}</div>
           ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(232,199,125,.65);border:1px solid rgba(232,199,125,.28);border-radius:20px;padding:3px 10px">${d.refId}</div>`:''}
         </div>
         ${dests.length?`<div style="position:absolute;bottom:14px;left:28px;display:flex;gap:7px;flex-wrap:wrap;z-index:2">${dests.map(dest=>`<span style="background:rgba(232,199,125,0.18);border:1px solid rgba(232,199,125,0.4);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#E8C77D">${dest}</span>`).join('')}</div>`:''}
@@ -215,7 +215,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none"></div>
       ${stars}
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,215,0,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,215,0,.8)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,215,0,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,215,0,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,215,0,.6);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
@@ -234,7 +234,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none"></div>
       ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none"></div>`:''}
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10) sepia(1) saturate(3) hue-rotate(-20deg)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,69,0,.3);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,69,0,.9)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,69,0,.3);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,69,0,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,69,0,.6);border:1px solid rgba(255,69,0,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
@@ -256,7 +256,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none"></div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none"></div>
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(247,197,216,.25);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(247,197,216,.9)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(247,197,216,.25);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(247,197,216,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(247,197,216,.7);border:1px solid rgba(247,197,216,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2">
@@ -277,7 +277,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none"></div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none"></div>
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(0,229,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(0,229,255,.8)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(0,229,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(0,229,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(0,229,255,.6);border:1px solid rgba(0,229,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
@@ -295,7 +295,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
       <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none"></div>
       <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none"></div>
       <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
-        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;filter:brightness(10)">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,245,235,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,245,235,.9)">${ag.nm}</div>`:''}</div>
+        <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,245,235,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,245,235,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,245,235,.65);border:1px solid rgba(255,245,235,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">

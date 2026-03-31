@@ -190,7 +190,12 @@ async function saveIngreso(){
     } else {
       row.agente_id=window._agenteId;
       const{error}=await sb.from('ingresos').insert(row);
-      if(error){toast('Error: '+error.message,false);return;}
+      if(error){
+        if(error.message?.includes('schema cache')||error.message?.includes('Could not find'))
+          toast('La tabla de ingresos no está configurada aún. Contactá al administrador.',false);
+        else toast('Error: '+error.message,false);
+        return;
+      }
       toast('Ingreso registrado');
     }
     closeModal();

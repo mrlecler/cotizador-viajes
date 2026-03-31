@@ -1164,6 +1164,8 @@ input:focus,textarea:focus,select:focus{
   position:relative;overflow:hidden;
   break-after:page
 }
+/* En pantalla la portada se muestra a 520px para que el contenido sea visible sin scrollear */
+#qscreen .qp-cover{height:520px!important;min-height:0!important}
 
 /* Standard page — continuous flow, no forced page breaks */
 .qp-page{
