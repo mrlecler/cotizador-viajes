@@ -509,7 +509,8 @@ async function uploadClientDoc(clienteId){
   const path=`${clienteId}/${tipo}_${Date.now()}.${ext}`;
   const {error}=await sb.storage.from('documentos-clientes').upload(path,f);
   if(error){toast('Error al subir: '+error.message,false);return;}
-  await sb.from('documentos_cliente').insert({cliente_id:clienteId,tipo,nombre:f.name,storage_path:path});
+  const {error:dbErr}=await sb.from('documentos_cliente').insert({cliente_id:clienteId,agente_id:window._agenteId,tipo,nombre:f.name,storage_path:path});
+  if(dbErr){toast('Error al guardar: '+dbErr.message,false);return;}
   toast('Documento subido');
   loadClientDocs(clienteId);
   inp.value='';
