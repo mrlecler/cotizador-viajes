@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.23.1';
+const APP_VERSION = '0.24.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -930,6 +930,27 @@ async function loadDashboardMetrics(){
     }
     setBar('met-clients-bar',Math.min(100,totalClients/50*100));
 
+    // Revision notifications — cotizaciones donde el cliente pidió cambios
+    const revQuotes=quotes.filter(q=>q.estado==='revision');
+    const revEl=document.getElementById('dash-revision-alert');
+    if(revQuotes.length>0){
+      const revHtml=revQuotes.map(q=>{
+        const nm=q.datos?.cliente?.nombre||'Cliente';
+        const dest=q.destino||q.datos?.viaje?.destino||'';
+        const lastReq=Array.isArray(q.datos?._mod_requests)&&q.datos._mod_requests.length?q.datos._mod_requests[q.datos._mod_requests.length-1]:null;
+        const msg=lastReq?lastReq.msg:'';
+        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="width:8px;height:8px;border-radius:50%;background:#FF6B35;flex-shrink:0;margin-top:6px"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text)">${nm} — ${dest}</div>
+            ${msg?`<div style="font-size:.78rem;color:var(--g4);margin-top:3px;line-height:1.4">"${msg.length>120?msg.slice(0,120)+'...':msg}"</div>`:''}
+            <div style="margin-top:6px"><button class="btn btn-pri btn-xs" onclick="editQuoteFromHistory('${q.id}')">Revisar cotización</button></div>
+          </div>
+        </div>`;
+      }).join('');
+      if(revEl){revEl.style.display='';revEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="font-size:.8rem;font-weight:700;color:#FF6B35">${revQuotes.length} cotización${revQuotes.length>1?'es':''} con modificaciones solicitadas</span></div>${revHtml}`;}
+    } else if(revEl){revEl.style.display='none';}
+
     // Quick action counts
     set('qac-hist',total||'0');
     set('qac-clients',totalClients||'0');
@@ -988,6 +1009,15 @@ async function _loadAdminDashboard(){
       </div>`).join('');
     }
   }catch(e){console.error('[_loadAdminDashboard]',e);}
+  // Tickets de soporte abiertos — alerta en dashboard admin
+  try{
+    const{data:tickets}=await sb.from('tickets_soporte').select('id,asunto,prioridad,estado,creado_en,agente_id').in('estado',['abierto','en_progreso']).order('creado_en',{ascending:false}).limit(10);
+    const alertEl=document.getElementById('adm-tickets-alert');
+    if(alertEl&&tickets&&tickets.length>0){
+      alertEl.style.display='';
+      alertEl.querySelector('.card-body').innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span style="font-size:.8rem;font-weight:700;color:#FF6B35">${tickets.length} ticket${tickets.length>1?'s':''} de soporte pendiente${tickets.length>1?'s':''}</span></div>`+tickets.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="switchTab('support')"><div style="width:6px;height:6px;border-radius:50%;background:${t.prioridad==='alta'?'#ef4444':t.prioridad==='normal'?'#f59e0b':'var(--g3)'};flex-shrink:0"></div><span style="font-size:.82rem;font-weight:600;color:var(--text);flex:1">${t.asunto||'Sin asunto'}</span><span style="font-size:.7rem;color:var(--g4)">${new Date(t.creado_en).toLocaleDateString('es-AR',{day:'2-digit',month:'short'})}</span></div>`).join('');
+    } else if(alertEl){alertEl.style.display='none';}
+  }catch(e){/* tickets_soporte may not exist yet */}
 }
 
 // ═══════════════════════════════════════════
