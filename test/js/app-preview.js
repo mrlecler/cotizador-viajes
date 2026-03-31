@@ -1,14 +1,35 @@
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;window._unsplashCredit=null;updCovers();};r.readAsDataURL(f);}
 // Unsplash — key en localStorage, NUNCA en el repo
-function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||''; }
+function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||(typeof agCfg!=='undefined'?agCfg._unsplash_key:'')||''; }
 // Último crédito de foto Unsplash (para atribución)
 window._unsplashCredit=null;
 
+// Fotos curadas de viaje — usadas como fallback cuando no hay API key
+const _COVER_FALLBACKS=[
+  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=600&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
+];
+function _useCoverFallback(){
+  coverUrl=_COVER_FALLBACKS[Math.floor(Math.random()*_COVER_FALLBACKS.length)];
+  window._unsplashCredit=null;
+  updCovers();
+}
 function autoCover(){
   const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');
   const key=_unsplashKey();
   if(!key){
-    toast('Configurá tu Unsplash API Key en Mi Perfil',false);
+    // Admin: indicar dónde configurar. Agente/agencia: usar fotos curadas silenciosamente.
+    if(typeof currentRol!=='undefined'&&currentRol==='admin'){
+      toast('Configurá la Unsplash API Key en Admin → Integraciones',false);
+      return;
+    }
+    _useCoverFallback();
     return;
   }
   const q=encodeURIComponent(dest+' travel landscape');
@@ -35,20 +56,7 @@ function autoCover(){
     })
     .catch(e=>{
       console.warn('Unsplash API:',e.message);
-      // Fallback: fotos curadas sin API
-      const fallbacks=[
-        'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=600&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=1200&h=600&fit=crop&q=80'
-      ];
-      coverUrl=fallbacks[Math.floor(Math.random()*fallbacks.length)];
-      window._unsplashCredit=null;
-      updCovers();
+      _useCoverFallback();
     });
 }
 
@@ -112,6 +120,10 @@ function saveApiKeys(){
   const from=(document.getElementById('ak-resend-from')?.value||'').trim();
   if(from) agCfg.resend_from=from;
   else delete agCfg.resend_from;
+  // Persistir keys en agCfg para sobrevivir deploys (localStorage secundario)
+  if(unsplash) agCfg._unsplash_key=unsplash; else delete agCfg._unsplash_key;
+  if(ia) agCfg._ia_key=ia; else delete agCfg._ia_key;
+  if(resend) agCfg._resend_key=resend; else delete agCfg._resend_key;
   _saveAgCfg();
   toast('API Keys guardadas');
 }
@@ -130,6 +142,8 @@ async function saveCfg(){
   agCfg.nm=gv('cfg-nm');agCfg.em=gv('cfg-em');agCfg.tel=gv('cfg-tel');agCfg.soc=gv('cfg-soc');agCfg.pais_cod=rawPais||'AR';
   const _vd=(document.getElementById('cfg-validez-dias')?.value||'').trim();
   if(_vd) agCfg.validez_dias=parseInt(_vd); else delete agCfg.validez_dias;
+  const _mm=(document.getElementById('cfg-meta-mensual')?.value||'').trim();
+  if(_mm) agCfg.meta_mensual=parseFloat(_mm); else delete agCfg.meta_mensual;
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
@@ -214,14 +228,18 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PDF THEME SELECTOR
 // ═══════════════════════════════════════════
-const _PDF_THEME_NAMES={1:'Cinematográfico',2:'Minimalista',3:'Negro y dorado',4:'Revista de viajes',5:'Corporativo'};
+const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Inmersión Glaciar',3:'Ámbar Imperial',4:'Noir Cinema',5:'Postal Mediterránea',6:'Magia Encantada',7:'Epic Adventure',8:'Rosa Botánica',9:'Aqua Profundo',10:'Rojo Flamante'};
 function selectPdfTheme(n){
   n=parseInt(n)||1;
   const inp=document.getElementById('cfg-pdf-theme');
   if(inp)inp.value=n;
-  document.querySelectorAll('.pdf-sw').forEach(b=>b.classList.toggle('pdf-sw-on',parseInt(b.dataset.t)===n));
   const lbl=document.getElementById('pdf-theme-lbl');
   if(lbl)lbl.textContent=_PDF_THEME_NAMES[n]||'';
+  // Sync dropdown + color dot
+  const sel=document.getElementById('pdf-theme-sel');
+  if(sel)sel.value=n;
+  const dot=document.getElementById('tb-theme-dot');
+  if(dot&&typeof PDF_THEMES!=='undefined'&&PDF_THEMES[n])dot.style.background=PDF_THEMES[n].grad;
   agCfg.pdf_theme=n;
   if(qData)renderPreview(qData);
 }
@@ -467,8 +485,9 @@ async function _publicRequestMod(quoteId,token){
 // EMAIL VIA RESEND
 // ═══════════════════════════════════════════
 function _loadIntegrationFields(){
-  // Solo carga validez_dias (en tab-config) — resend/unsplash/ia son admin-only
+  // Solo carga validez_dias y meta_mensual (en tab-config) — resend/unsplash/ia son admin-only
   const vd=document.getElementById('cfg-validez-dias');if(vd)vd.value=agCfg.validez_dias||'';
+  const mm=document.getElementById('cfg-meta-mensual');if(mm)mm.value=agCfg.meta_mensual||'';
 }
 async function _sendQuoteEmail(){
   // Verificar que hay cotización y email del cliente
@@ -476,8 +495,15 @@ async function _sendQuoteEmail(){
   const clientEmail=d?.cliente?.email;
   if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
   // Verificar Resend key
-  const resendKey=localStorage.getItem('mp_resend_key')||'';
-  if(!resendKey){toast('Configurá tu Resend API Key en Mi Perfil → Integraciones',false);return;}
+  const resendKey=localStorage.getItem('mp_resend_key')||(typeof agCfg!=='undefined'?agCfg._resend_key:'')||'';
+  if(!resendKey){
+    if(typeof currentRol!=='undefined'&&currentRol==='admin'){
+      toast('Configurá la Resend API Key en Admin → Integraciones',false);
+    } else {
+      toast('El envío de emails no está activado. Contactá al administrador.',false);
+    }
+    return;
+  }
   // Generar link público (igual que _shareQuote)
   let token=null;
   if(editingQuoteId){
