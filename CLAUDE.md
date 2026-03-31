@@ -7,7 +7,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
 - Deploy: GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`
-- Versión actual: `0.23.1` — cache-bust `?v=32` en index.html
+- Versión actual: `0.25.0` — cache-bust `?v=33` en index.html
 
 ## Archivos principales
 
