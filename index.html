@@ -949,12 +949,20 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
         </div>
         <div class="ptb-sep"></div>
         <div class="ptb-group">
-          <span class="ptb-label">Tema</span>
-          <button type="button" class="pdf-sw tb-sw" data-t="1" onclick="selectPdfTheme(1)" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)" title="Turquesa ermix"></button>
-          <button type="button" class="pdf-sw tb-sw" data-t="2" onclick="selectPdfTheme(2)" style="background:linear-gradient(135deg,#1E3A5F,#2E5C8A,#4A90C4)" title="Azul marino"></button>
-          <button type="button" class="pdf-sw tb-sw" data-t="3" onclick="selectPdfTheme(3)" style="background:linear-gradient(135deg,#1A1A1A,#2D2D2D 60%,#C9A84C)" title="Negro y dorado"></button>
-          <button type="button" class="pdf-sw tb-sw" data-t="4" onclick="selectPdfTheme(4)" style="background:linear-gradient(135deg,#1B4332,#2D6A4F,#52B788)" title="Verde selva"></button>
-          <button type="button" class="pdf-sw tb-sw" data-t="5" onclick="selectPdfTheme(5)" style="background:linear-gradient(135deg,#6B1A2A,#8B2635,#C4445A)" title="Borgona premium"></button>
+          <span class="ptb-label">Diseño PDF</span>
+          <span id="tb-theme-dot" style="width:16px;height:16px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);border:1.5px solid var(--border2)"></span>
+          <select id="pdf-theme-sel" class="ptb-select" onchange="selectPdfTheme(+this.value)">
+            <option value="1">T1 · Turquesa ermix</option>
+            <option value="2">T2 · Inmersión Glaciar</option>
+            <option value="3">T3 · Ámbar Imperial</option>
+            <option value="4">T4 · Noir Cinema</option>
+            <option value="5">T5 · Postal Mediterránea</option>
+            <option value="6">T6 · Magia Encantada</option>
+            <option value="7">T7 · Epic Adventure</option>
+            <option value="8">T8 · Rosa Botánica</option>
+            <option value="9">T9 · Aqua Profundo</option>
+            <option value="10">T10 · Rojo Flamante</option>
+          </select>
         </div>
         <div style="flex:1"></div>
         <!-- Acciones principales -->

@@ -1133,6 +1133,26 @@ input:focus,textarea:focus,select:focus{
 /* Swatches en toolbar — algo más pequeños */
 .tb-sw{width:22px;height:22px;border-width:2px}
 .tb-sw.pdf-sw-on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--text)!important}
+/* Selector de diseño PDF en toolbar */
+.ptb-select{
+  -webkit-appearance:none;appearance:none;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:5px 26px 5px 10px;
+  font-size:12px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:var(--text);
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239B8C80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 7px center;
+  background-size:12px;
+  min-width:168px;
+  transition:border-color .15s;
+}
+.ptb-select:focus{outline:none;border-color:var(--primary)}
+.ptb-select:hover{border-color:var(--border2)}
 
 /* ══════════════════════════
    PDF FERRARO — NUEVAS PÁGINAS

@@ -224,14 +224,18 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PDF THEME SELECTOR
 // ═══════════════════════════════════════════
-const _PDF_THEME_NAMES={1:'Cinematográfico',2:'Minimalista',3:'Negro y dorado',4:'Revista de viajes',5:'Corporativo'};
+const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Inmersión Glaciar',3:'Ámbar Imperial',4:'Noir Cinema',5:'Postal Mediterránea',6:'Magia Encantada',7:'Epic Adventure',8:'Rosa Botánica',9:'Aqua Profundo',10:'Rojo Flamante'};
 function selectPdfTheme(n){
   n=parseInt(n)||1;
   const inp=document.getElementById('cfg-pdf-theme');
   if(inp)inp.value=n;
-  document.querySelectorAll('.pdf-sw').forEach(b=>b.classList.toggle('pdf-sw-on',parseInt(b.dataset.t)===n));
   const lbl=document.getElementById('pdf-theme-lbl');
   if(lbl)lbl.textContent=_PDF_THEME_NAMES[n]||'';
+  // Sync dropdown + color dot
+  const sel=document.getElementById('pdf-theme-sel');
+  if(sel)sel.value=n;
+  const dot=document.getElementById('tb-theme-dot');
+  if(dot&&typeof PDF_THEMES!=='undefined'&&PDF_THEMES[n])dot.style.background=PDF_THEMES[n].grad;
   agCfg.pdf_theme=n;
   if(qData)renderPreview(qData);
 }
