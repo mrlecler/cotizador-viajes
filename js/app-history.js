@@ -278,7 +278,16 @@ async function applyStatus(s){
     upd.datos={...dCurrent,fecha_vencimiento:fv};
   }
   await sb.from('cotizaciones').update(upd).eq('id',_statusTargetId);
-  toast('Estado actualizado a: '+s);
+  // Post-aprobación: popup para registrar comisión como ingreso
+  if((s==='aprobado'||s==='confirmada')&&typeof _showIngresoPostApproval==='function'){
+    const d=typeof q?.datos==='string'?JSON.parse(q.datos):(q?.datos||{});
+    const cli=d.cliente?.nombre||'';
+    const dest=d.viaje?.destino||'';
+    const com=d.total_comision||d.markup_comision||0;
+    _showIngresoPostApproval(_statusTargetId,cli,dest,com);
+  } else {
+    toast('Estado actualizado a: '+s);
+  }
   renderHistory();
 }
 

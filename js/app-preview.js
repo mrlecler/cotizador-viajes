@@ -130,6 +130,8 @@ async function saveCfg(){
   agCfg.nm=gv('cfg-nm');agCfg.em=gv('cfg-em');agCfg.tel=gv('cfg-tel');agCfg.soc=gv('cfg-soc');agCfg.pais_cod=rawPais||'AR';
   const _vd=(document.getElementById('cfg-validez-dias')?.value||'').trim();
   if(_vd) agCfg.validez_dias=parseInt(_vd); else delete agCfg.validez_dias;
+  const _mm=(document.getElementById('cfg-meta-mensual')?.value||'').trim();
+  if(_mm) agCfg.meta_mensual=parseFloat(_mm); else delete agCfg.meta_mensual;
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
@@ -467,8 +469,9 @@ async function _publicRequestMod(quoteId,token){
 // EMAIL VIA RESEND
 // ═══════════════════════════════════════════
 function _loadIntegrationFields(){
-  // Solo carga validez_dias (en tab-config) — resend/unsplash/ia son admin-only
+  // Solo carga validez_dias y meta_mensual (en tab-config) — resend/unsplash/ia son admin-only
   const vd=document.getElementById('cfg-validez-dias');if(vd)vd.value=agCfg.validez_dias||'';
+  const mm=document.getElementById('cfg-meta-mensual');if(mm)mm.value=agCfg.meta_mensual||'';
 }
 async function _sendQuoteEmail(){
   // Verificar que hay cotización y email del cliente

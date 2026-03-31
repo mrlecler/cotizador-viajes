@@ -1085,7 +1085,7 @@ async function _loadAgenciaDashboard(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14,ingresos:15};
 function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
@@ -1124,6 +1124,7 @@ function switchTab(id){
   if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
   if(id==='support'){if(typeof renderSupportTickets==='function')renderSupportTickets();}
   if(id==='promosvig'){if(typeof _loadPromosVigAgente==='function')_loadPromosVigAgente();}
+  if(id==='ingresos'){if(typeof renderIngresos==='function')renderIngresos();}
   if(id==='adminconfig'){if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
