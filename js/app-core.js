@@ -1197,6 +1197,18 @@ function restoreDraft(d){
     const tks=document.getElementById('tickets-cont'); if(tks){ tks.innerHTML=''; }
     d.tickets.forEach(t=>addTicket(t));
   }
+  if(d.autos?.length){
+    const au_el=document.getElementById('autos-cont'); if(au_el){ au_el.innerHTML=''; if(typeof auc!=='undefined') auc=0; }
+    d.autos.forEach(a=>{if(typeof addAuto==='function') addAuto(a);});
+  }
+  if(d.cruceros?.length){
+    const cr_el=document.getElementById('cruceros-cont'); if(cr_el){ cr_el.innerHTML=''; if(typeof crc!=='undefined') crc=0; }
+    d.cruceros.forEach(c=>{if(typeof addCrucero==='function') addCrucero(c);});
+  }
+  // Markup
+  set('p-markup', d.markup_pct);
+  set('p-base-cost', d.markup_base);
+  if(typeof _calcMarkup==='function') setTimeout(_calcMarkup,50);
   // Itinerario día a día
   if(d.itinerario?.length&&typeof _itiRestore==='function'){
     setTimeout(()=>_itiRestore(d.itinerario),50);
