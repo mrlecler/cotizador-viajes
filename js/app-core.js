@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.24.0';
+const APP_VERSION = '0.25.0';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -964,6 +964,31 @@ async function loadDashboardMetrics(){
       leg('leg-borrador','Borradores',borr);leg('leg-enviada','Enviadas',env);
       leg('leg-confirmada','Confirmadas',conf);leg('leg-cancelada','Canceladas',canc);
     }
+
+    // Ingresos del mes
+    try{
+      const hoy=new Date();
+      const inicioMes=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-01`;
+      const{data:ing}=await sb.from('ingresos')
+        .select('monto').eq('agente_id',window._agenteId)
+        .eq('estado','cobrado').gte('fecha_cobro',inicioMes);
+      const totalMes=(ing||[]).reduce((s,r)=>s+(+r.monto||0),0);
+      set('met-ingresos-mes',totalMes>0?'$'+totalMes.toLocaleString('es-AR'):'—');
+      const meta=typeof agCfg!=='undefined'&&agCfg?agCfg.meta_mensual||0:0;
+      const pct=meta>0?Math.min(100,(totalMes/meta)*100):0;
+      const barEl=document.getElementById('met-ingresos-bar');
+      if(barEl) barEl.style.width=pct+'%';
+    }catch(e2){console.warn('[ingresos-mes]',e2);}
+
+    // Reservas activas
+    try{
+      const{count:rsvCount}=await sb.from('cotizaciones')
+        .select('id',{count:'exact',head:true})
+        .eq('agente_id',window._agenteId)
+        .in('estado',['aprobado','confirmada']);
+      set('met-reservas-act',rsvCount!=null?String(rsvCount):'—');
+    }catch(e3){console.warn('[reservas-act]',e3);}
+
   }catch(e){
     console.error('loadDashboardMetrics error:',e);
     if(typeof _captureError==='function') _captureError('DASHBOARD',e);
@@ -1085,7 +1110,7 @@ async function _loadAgenciaDashboard(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14};
+const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14,ingresos:15};
 function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
@@ -1124,6 +1149,7 @@ function switchTab(id){
   if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
   if(id==='support'){if(typeof renderSupportTickets==='function')renderSupportTickets();}
   if(id==='promosvig'){if(typeof _loadPromosVigAgente==='function')_loadPromosVigAgente();}
+  if(id==='ingresos'){if(typeof renderIngresos==='function')renderIngresos();}
   if(id==='adminconfig'){if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='dashboard') renderDashboard();
   if(id==='inicio'){loadDashboardMetrics();if(typeof renderHomePromos==='function')renderHomePromos();}
@@ -1197,6 +1223,18 @@ function restoreDraft(d){
     const tks=document.getElementById('tickets-cont'); if(tks){ tks.innerHTML=''; }
     d.tickets.forEach(t=>addTicket(t));
   }
+  if(d.autos?.length){
+    const au_el=document.getElementById('autos-cont'); if(au_el){ au_el.innerHTML=''; if(typeof auc!=='undefined') auc=0; }
+    d.autos.forEach(a=>{if(typeof addAuto==='function') addAuto(a);});
+  }
+  if(d.cruceros?.length){
+    const cr_el=document.getElementById('cruceros-cont'); if(cr_el){ cr_el.innerHTML=''; if(typeof crc!=='undefined') crc=0; }
+    d.cruceros.forEach(c=>{if(typeof addCrucero==='function') addCrucero(c);});
+  }
+  // Markup
+  set('p-markup', d.markup_pct);
+  set('p-base-cost', d.markup_base);
+  if(typeof _calcMarkup==='function') setTimeout(_calcMarkup,50);
   // Itinerario día a día
   if(d.itinerario?.length&&typeof _itiRestore==='function'){
     setTimeout(()=>_itiRestore(d.itinerario),50);
