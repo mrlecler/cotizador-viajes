@@ -214,7 +214,7 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PDF THEME SELECTOR
 // ═══════════════════════════════════════════
-const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Azul marino',3:'Negro y dorado',4:'Verde selva',5:'Borgoña premium'};
+const _PDF_THEME_NAMES={1:'Cinematográfico',2:'Minimalista',3:'Negro y dorado',4:'Revista de viajes',5:'Corporativo'};
 function selectPdfTheme(n){
   n=parseInt(n)||1;
   const inp=document.getElementById('cfg-pdf-theme');
@@ -390,20 +390,48 @@ async function _initPublicView(){
 }
 function _buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl){
   if(typeof buildQuoteHTML!=='function'){setTimeout(()=>_buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl),200);return;}
-  // Restaurar cover/logo/agent desde datos JSONB (guardados al momento de compartir)
   coverUrl=d._cover_url||fallbackCoverUrl||null;
   logoUrl=d._logo_url||null;
   if(d._unsplash_credit) window._unsplashCredit=d._unsplash_credit;
   if(d._agent&&typeof agCfg!=='undefined') Object.assign(agCfg,d._agent);
   const html=buildQuoteHTML(d);
-  const approved=estado==='aprobado';
-  const approveBar=approved
-    ?`<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:600;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Cotización aprobada</div>`
-    :`<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,18,15,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(27,158,143,0.2);padding:16px 20px;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
-      <p style="color:rgba(240,237,230,0.7);font-size:.82rem;margin:0">¿Todo listo? Aprobá esta cotización</p>
-      <button onclick="_publicApprove('${quoteId}','${token}')" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;border:none;border-radius:10px;padding:10px 24px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Aprobar cotización</button>
+  const agNm=d._agent?.nm||'tu agente';
+  let bottomBar='';
+  if(estado==='aprobado'){
+    bottomBar=`<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:600;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Cotización aprobada</div>`;
+  } else if(estado==='revision'){
+    bottomBar=`<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,107,53,0.95);color:white;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:600;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif">Modificaciones solicitadas — ${agNm} ya fue notificado</div>`;
+  } else {
+    bottomBar=`<div id="pub-bar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(13,18,15,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(27,158,143,0.2);padding:16px 20px;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif">
+      <div id="pub-bar-actions" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
+        <p style="color:rgba(240,237,230,0.7);font-size:.82rem;margin:0;flex-basis:100%;text-align:center">¿Todo listo? Aprobá esta cotización</p>
+        <button onclick="_publicApprove('${quoteId}','${token}')" style="background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:white;border:none;border-radius:10px;padding:10px 24px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit">Aprobar cotización</button>
+        <button onclick="_showModForm()" style="background:transparent;color:rgba(240,237,230,0.7);border:1px solid rgba(240,237,230,0.2);border-radius:10px;padding:10px 20px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit">Solicitar modificaciones</button>
+      </div>
+      <div id="pub-bar-mod" style="display:none">
+        <p style="color:rgba(240,237,230,0.85);font-size:.85rem;font-weight:600;margin:0 0 10px">¿Qué cambios necesitás?</p>
+        <textarea id="pub-mod-msg" rows="3" placeholder="Describí los cambios que necesitás en la cotización..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#F0EDE6;padding:10px 14px;font-size:.85rem;font-family:inherit;resize:vertical"></textarea>
+        <div style="display:flex;gap:10px;margin-top:10px;justify-content:flex-end">
+          <button onclick="_hideModForm()" style="background:transparent;color:rgba(240,237,230,0.5);border:none;padding:8px 16px;font-size:.82rem;cursor:pointer;font-family:inherit">Cancelar</button>
+          <button onclick="_publicRequestMod('${quoteId}','${token}')" style="background:#FF6B35;color:white;border:none;border-radius:10px;padding:10px 20px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit">Enviar solicitud</button>
+        </div>
+      </div>
     </div>`;
-  document.body.innerHTML=`<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding-bottom:80px">${html}</div>${approveBar}`;
+  }
+  document.body.innerHTML=`<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding-bottom:80px">${html}</div>${bottomBar}`;
+}
+function _showModForm(){
+  const a=document.getElementById('pub-bar-actions');
+  const m=document.getElementById('pub-bar-mod');
+  if(a)a.style.display='none';
+  if(m)m.style.display='block';
+  document.getElementById('pub-mod-msg')?.focus();
+}
+function _hideModForm(){
+  const a=document.getElementById('pub-bar-actions');
+  const m=document.getElementById('pub-bar-mod');
+  if(a)a.style.display='flex';
+  if(m)m.style.display='none';
 }
 async function _publicApprove(quoteId,token){
   const btn=document.querySelector('[onclick*="_publicApprove"]');
@@ -411,9 +439,28 @@ async function _publicApprove(quoteId,token){
   try{
     const{error}=await sb.from('cotizaciones').update({estado:'aprobado'}).filter('datos->>public_token','eq',token);
     if(error){alert('No se pudo aprobar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
-    const bar=btn?.closest('[style*="position:fixed"]');
-    if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
+    const bar=document.getElementById('pub-bar');
+    if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
   }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
+}
+async function _publicRequestMod(quoteId,token){
+  const msg=(document.getElementById('pub-mod-msg')?.value||'').trim();
+  if(!msg){alert('Escribí qué cambios necesitás.');return;}
+  const btn=document.querySelector('[onclick*="_publicRequestMod"]');
+  if(btn){btn.disabled=true;btn.textContent='Enviando...';}
+  try{
+    // Leer datos actuales para mergear la solicitud
+    const{data:row}=await sb.from('cotizaciones').select('datos').filter('datos->>public_token','eq',token).maybeSingle();
+    if(!row){alert('Error: cotización no encontrada.');return;}
+    const rd=typeof row.datos==='string'?JSON.parse(row.datos):(row.datos||{});
+    const reqs=Array.isArray(rd._mod_requests)?rd._mod_requests:[];
+    reqs.push({msg,ts:new Date().toISOString()});
+    rd._mod_requests=reqs;
+    const{error}=await sb.from('cotizaciones').update({estado:'revision',datos:rd}).filter('datos->>public_token','eq',token);
+    if(error){alert('No se pudo enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}return;}
+    const bar=document.getElementById('pub-bar');
+    if(bar){bar.style.background='rgba(255,107,53,0.95)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;padding:4px 0">Solicitud enviada — tu agente ya fue notificado</p>';}
+  }catch(e){alert('Error al enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}}
 }
 
 // ═══════════════════════════════════════════

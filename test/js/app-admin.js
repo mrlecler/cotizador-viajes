@@ -1209,6 +1209,8 @@ async function _submitTicket(){
   document.getElementById('tk-desc').value='';
   document.getElementById('tk-prioridad').value='normal';
   _loadTickets();
+  // Notificar admin por email (si hay Resend key configurada globalmente)
+  _notifyAdminNewTicket(asunto,desc,prio);
 }
 
 function _openTicket(id){
@@ -1274,6 +1276,26 @@ async function _updateTicketStatus(id){
   toast('Estado actualizado');
   closeModal();
   _loadTickets();
+}
+
+// Notificar al admin por email cuando se crea un ticket de soporte
+async function _notifyAdminNewTicket(asunto,desc,prio){
+  try{
+    const resendKey=localStorage.getItem('mp_resend_key')||'';
+    if(!resendKey) return; // Sin Resend key no se puede enviar
+    // Buscar email del admin
+    const{data:admins}=await sb.from('agentes').select('email').eq('rol','admin').limit(1);
+    const adminEmail=admins?.[0]?.email;
+    if(!adminEmail) return;
+    const fromAddr=agCfg?.resend_from||'ermix <onboarding@resend.dev>';
+    const agNm=agCfg?.nm||'Un usuario';
+    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#F5F0E8;margin:0;padding:20px}.wrap{max-width:520px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(45,31,20,.08)}.hd{background:linear-gradient(135deg,#FF6B35,#E85A25);padding:22px 28px}.hd h1{color:#fff;font-size:1.1rem;margin:0;font-weight:700}.body{padding:24px 28px}.lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9B8C80;margin-bottom:4px}.val{font-size:.88rem;color:#2D1F14;margin-bottom:16px}.ft{border-top:1px solid #EDE8DF;padding:16px 28px;text-align:center;font-size:.72rem;color:#9B8C80}</style></head><body><div class="wrap"><div class="hd"><h1>Nuevo ticket de soporte</h1></div><div class="body"><div class="lbl">Asunto</div><div class="val"><strong>${asunto}</strong></div><div class="lbl">Prioridad</div><div class="val">${prio}</div>${desc?`<div class="lbl">Descripción</div><div class="val">${desc}</div>`:''}<div class="lbl">Enviado por</div><div class="val">${agNm}</div></div><div class="ft">ermix · soporte</div></div></body></html>`;
+    await fetch('https://api.resend.com/emails',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+resendKey,'Content-Type':'application/json'},
+      body:JSON.stringify({from:fromAddr,to:adminEmail,subject:'[ermix] Nuevo ticket: '+asunto,html})
+    });
+  }catch(e){console.warn('[_notifyAdminNewTicket]',e);}
 }
 
 // ═══════════════════════════════════════════

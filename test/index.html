@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=32">
+<link rel="stylesheet" href="styles.css?v=33">
 </head>
 <body>
 
@@ -319,6 +319,10 @@
       <h2 id="inicio-saludo-admin">Hola.</h2>
       <p>Panel de control global de ermix.</p>
     </div>
+    <!-- Alerta tickets soporte -->
+    <div id="adm-tickets-alert" class="card" style="display:none;margin-bottom:20px;border-left:3px solid #FF6B35">
+      <div class="card-body" style="padding:16px 20px"></div>
+    </div>
     <div class="dm-grid">
       <div class="dm-card">
         <div class="dm-card-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg>Agencias</div>
@@ -417,6 +421,10 @@
 
   <!-- Agente dashboard -->
   <div id="inicio-agent">
+  <!-- Revision alerts -->
+  <div id="dash-revision-alert" class="card" style="display:none;margin-bottom:20px;border-left:3px solid #FF6B35">
+    <div class="card-body" style="padding:16px 20px"></div>
+  </div>
   <!-- Quick actions -->
   <div class="quick-actions">
     <div class="qa-card qa-card-pri" onclick="switchTab('form')">
@@ -1387,14 +1395,14 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=32"></script>
-<script src="js/app-core.js?v=32"></script>
-<script src="js/app-form.js?v=32"></script>
-<script src="js/app-ia.js?v=32"></script>
-<script src="js/app-preview.js?v=32"></script>
-<script src="js/app-history.js?v=32"></script>
-<script src="js/app-admin.js?v=32"></script>
-<script src="js/app-quote.js?v=32"></script>
-<script src="js/app-promos.js?v=32"></script>
+<script src="js/config.js?v=33"></script>
+<script src="js/app-core.js?v=33"></script>
+<script src="js/app-form.js?v=33"></script>
+<script src="js/app-ia.js?v=33"></script>
+<script src="js/app-preview.js?v=33"></script>
+<script src="js/app-history.js?v=33"></script>
+<script src="js/app-admin.js?v=33"></script>
+<script src="js/app-quote.js?v=33"></script>
+<script src="js/app-promos.js?v=33"></script>
 </body>
 </html>
