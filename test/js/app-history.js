@@ -29,7 +29,9 @@ async function _loadAgentNames(){
 
 async function renderHistory(){
   const el=document.getElementById('hist-list');
+  if(!el) return;
   el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  try{
   if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   const rows=await dbLoadQuotes();
   // Auto-expirar cotizaciones enviadas/pendientes con fecha_vencimiento pasada
@@ -127,6 +129,7 @@ async function renderHistory(){
       <span>por página</span>
     </div>
   </div>`;
+  }catch(e){console.error('[renderHistory]',e);el.innerHTML='<div style="padding:20px;text-align:center;color:var(--g3);font-size:.82rem">No se pudo cargar el historial. Reintentá en un momento.</div>';}
 }
 function _setHistPageSize(n){_histPageSize=parseInt(n);renderHistory();}
 
@@ -312,6 +315,10 @@ async function applyStatus(s){
 // CLIENTES
 // ═══════════════════════════════════════════
 async function renderClients(){
+  const elCli=document.getElementById('cli-list');
+  if(!elCli) return;
+  elCli.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span> Cargando...</div>';
+  try{
   if(currentRol==='admin'||currentRol==='agencia') await _loadAgentNames();
   await loadClients();
   const q=(document.getElementById('cli-filter')?.value||'').toLowerCase().trim();
@@ -355,6 +362,7 @@ async function renderClients(){
       <span>por página</span>
     </div>
   </div>`;
+  }catch(e){console.error('[renderClients]',e);elCli.innerHTML='<div style="padding:20px;text-align:center;color:var(--g3);font-size:.82rem">No se pudo cargar los clientes. Reintentá en un momento.</div>';}
 }
 function _setCliPageSize(n){_cliPageSize=parseInt(n);renderClients();}
 
@@ -910,7 +918,7 @@ async function saveReserva(){
     toast('Seguimiento guardado');
     closeDrawer();
     renderHistory();
-    if(document.getElementById('tab-seguimiento')?.classList.contains('on')) renderSeguimiento();
+    if(document.getElementById('crm-sub-seguimiento')?.classList.contains('on')) renderSeguimiento();
   }catch(e){toast('Error al guardar',false);console.error('[saveReserva]',e);}
 }
 
