@@ -165,14 +165,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Glaciar: full-bleed photo + glassmorphism card ──
   if(layout==='glaciar'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#0D1F3A 0%,#1E3A5F 60%,#0A2A4A 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#0D1F3A 0%,#1E3A5F 60%,#0A2A4A 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:90px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(126,200,227,.7);border:1px solid rgba(126,200,227,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;margin:0 28px 28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(126,200,227,0.18);border:1px solid rgba(126,200,227,0.38);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7EC8E3">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
@@ -209,16 +210,17 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Magia Encantada: Disney deep blue + gold stars ──
   if(layout==='magia'){
-    const stars=Array.from({length:28},(_,i)=>{const x=Math.round((i*47+13)%98),y=Math.round((i*71+29)%85),s=i%3+1;return `<div style="position:absolute;left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:#FFD700;border-radius:50%;opacity:${0.25+s*0.12}"></div>`;}).join('');
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#050F3A 0%,#0F1B5C 45%,#0A0D2E 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,15,58,0.2) 0%,rgba(15,27,92,0.5) 50%,rgba(10,13,46,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none"></div>
+    const stars=Array.from({length:28},(_,i)=>{const x=Math.round((i*47+13)%98),y=Math.round((i*71+29)%85),s=i%3+1;return `<div style="position:absolute;left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:#FFD700;border-radius:50%;opacity:${0.25+s*0.12};z-index:1"></div>`;}).join('');
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#050F3A 0%,#0F1B5C 45%,#0A0D2E 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,15,58,0.2) 0%,rgba(15,27,92,0.5) 50%,rgba(10,13,46,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
       ${stars}
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,215,0,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,215,0,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,215,0,.6);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.35);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFD700">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         ${paxLine}
@@ -229,15 +231,16 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Epic Adventure: cinematic dark + bold orange glow ──
   if(layout==='epic'){
-    return `<div class="qp-cover" style="background:linear-gradient(160deg,#080808 0%,#0A0A0A 50%,#0F0300 100%);position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,69,0,0.26) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none"></div>
-      ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none"></div>`:''}
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="background:linear-gradient(160deg,#080808 0%,#0A0A0A 50%,#0F0300 100%);position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,69,0,0.26) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none;z-index:0"></div>
+      ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none;z-index:0"></div>`:''}
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,69,0,.3);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,69,0,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,69,0,.6);border:1px solid rgba(255,69,0,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,69,0,0.15);border:1px solid rgba(255,69,0,0.32);border-radius:4px;padding:3px 12px;font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#FF4500">${dest}</span>`).join('')}</div>`:''}
         ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px">PROPUESTA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
         <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
@@ -252,14 +255,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Rosa Botánica: photo with rose glassmorphism card ──
   if(layout==='rosa'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#5C0A2A 0%,#8B1A4A 45%,#C4426A 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#5C0A2A 0%,#8B1A4A 45%,#C4426A 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(247,197,216,.25);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(247,197,216,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(247,197,216,.7);border:1px solid rgba(247,197,216,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;margin:0 28px 28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(247,197,216,0.15);border:1px solid rgba(247,197,216,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#F7C5D8">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
@@ -272,15 +276,16 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Aqua Profundo: deep navy + electric cyan glow ──
   if(layout==='aqua'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#020817 0%,#050E2D 50%,#020817 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,8,23,0.1) 0%,rgba(5,14,45,0.5) 55%,rgba(5,14,45,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#020817 0%,#050E2D 50%,#020817 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,8,23,0.1) 0%,rgba(5,14,45,0.5) 55%,rgba(5,14,45,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(0,229,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(0,229,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(0,229,255,.6);border:1px solid rgba(0,229,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#00E5FF">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         ${paxLine}
@@ -291,14 +296,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Rojo Flamante: crimson full-bleed cover ──
   if(layout==='rojo'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#4A0000 0%,#8B0000 45%,#600000 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#4A0000 0%,#8B0000 45%,#600000 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,245,235,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,245,235,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,245,235,.65);border:1px solid rgba(255,245,235,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,245,235,0.12);border:1px solid rgba(255,245,235,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFF5EB">${dest}</span>`).join('')}</div>`:''}
         ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,245,235,.4);margin-bottom:8px">COTIZACIÓN PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${vi.destino||'Tu próximo viaje'}</div>`}
         <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
