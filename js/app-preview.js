@@ -241,6 +241,7 @@ function selectPdfTheme(n){
   const dot=document.getElementById('tb-theme-dot');
   if(dot&&typeof PDF_THEMES!=='undefined'&&PDF_THEMES[n])dot.style.background=PDF_THEMES[n].grad;
   agCfg.pdf_theme=n;
+  if(typeof _saveAgCfg==='function') _saveAgCfg();
   if(qData)renderPreview(qData);
 }
 
@@ -394,7 +395,7 @@ async function _initPublicView(){
   // Reemplazar toda la UI por spinner
   document.body.innerHTML='<div id="pub-loading" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;gap:16px"><div style="width:40px;height:40px;border:3px solid rgba(27,158,143,0.3);border-top-color:#1B9E8F;border-radius:50%;animation:spin .8s linear infinite"></div><p style="font-size:.9rem;color:rgba(240,237,230,0.6)">Cargando cotización...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
   try{
-    const{data,error}=await sb.from('cotizaciones').select('datos,estado,id,cover_url').filter('datos->>public_token','eq',token).maybeSingle();
+    const{data,error}=await sb.from('cotizaciones').select('*').filter('datos->>public_token','eq',token).maybeSingle();
     if(error||!data){
       document.body.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;text-align:center;padding:24px"><div><p style="font-size:1.1rem;font-weight:600;margin-bottom:8px">Cotización no encontrada</p><p style="font-size:.85rem;color:rgba(240,237,230,0.5)">El link puede haber expirado o no ser válido.</p></div></div>`;
       return true;
