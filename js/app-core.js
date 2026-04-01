@@ -1082,6 +1082,7 @@ async function loadDashboardMetrics(){
 // CONFIRM FROM DASH (aprobadas alert)
 // ═══════════════════════════════════════════
 async function _confirmFromDash(id){
+  if(!id||id==='null'||id==='undefined'){toast('ID de cotización inválido',false);return;}
   if(!confirm('¿Confirmar esta reserva?')) return;
   const {error}=await sb.from('cotizaciones').update({estado:'confirmada'}).eq('id',id);
   if(error){toast('Error: '+error.message,false);return;}

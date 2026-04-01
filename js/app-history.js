@@ -267,10 +267,10 @@ async function deleteQuote(id){
   toast('Cotización eliminada');renderHistory();
 }
 let _statusTargetId=null;
-function openStatusModal(id){ _statusTargetId=id; const m=document.getElementById('modal-status'); m.style.display='flex'; }
+function openStatusModal(id){ if(!id||id==='null'||id==='undefined'){console.warn('[openStatusModal] id inválido:',id);return;} _statusTargetId=id; const m=document.getElementById('modal-status'); m.style.display='flex'; }
 function closeStatusModal(){ document.getElementById('modal-status').style.display='none'; _statusTargetId=null; }
 async function applyStatus(s){
-  if(!_statusTargetId) return;
+  if(!_statusTargetId||_statusTargetId==='null'||_statusTargetId==='undefined') return;
   const {data:q}=await sb.from('cotizaciones').select('agente_id,datos').eq('id',_statusTargetId).maybeSingle();
   if(q&&!_canEdit(q)){toast('No podés cambiar el estado de cotizaciones de otro agente',false);closeStatusModal();return;}
   closeStatusModal();
