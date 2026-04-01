@@ -296,6 +296,7 @@ async function applyStatus(s){
     toast('Estado actualizado a: '+s);
   }
   renderHistory();
+  if(typeof loadDashboardMetrics==='function') loadDashboardMetrics();
 }
 
 // ═══════════════════════════════════════════
@@ -769,6 +770,22 @@ async function saveReserva(){
     d._reserva=reserva;
     const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_drawerQuotId);
     if(error){toast('Error al guardar: '+error.message,false);return;}
+    // Auto-upsert a ingresos cuando hay monto cobrado
+    if(reserva.monto_cobrado>0&&window._agenteId){
+      try{
+        const destino=d.viaje?.destino||d.destino||'';
+        const cliente=d.cliente?.nombre||'';
+        const concepto=(cliente?cliente+' — ':'')+destino||'Comisión';
+        const hoy=new Date().toISOString().slice(0,10);
+        // Verificar si ya existe un ingreso para esta cotización
+        const{data:existing}=await sb.from('ingresos').select('id').eq('quot_id',_drawerQuotId).eq('agente_id',window._agenteId).maybeSingle();
+        if(existing){
+          await sb.from('ingresos').update({monto:reserva.monto_cobrado,concepto,notas:reserva.notas_reserva||''}).eq('id',existing.id);
+        } else {
+          await sb.from('ingresos').insert({agente_id:window._agenteId,quot_id:_drawerQuotId,concepto,monto:reserva.monto_cobrado,moneda:'USD',fecha_cobro:hoy,estado:'pendiente',notas:reserva.notas_reserva||''});
+        }
+      }catch(ingErr){console.warn('[saveReserva] ingresos upsert:',ingErr);}
+    }
     toast('Seguimiento guardado');
     closeDrawer();
     renderHistory();

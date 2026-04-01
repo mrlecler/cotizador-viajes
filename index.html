@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=42">
+<link rel="stylesheet" href="styles.css?v=43">
 </head>
 <body>
 
@@ -427,6 +427,10 @@
 
   <!-- Agente dashboard -->
   <div id="inicio-agent">
+  <!-- Aprobadas alert -->
+  <div id="dash-aprobadas-alert" class="card" style="display:none;margin-bottom:12px;border-left:3px solid #22c55e">
+    <div class="card-body" style="padding:16px 20px"></div>
+  </div>
   <!-- Revision alerts -->
   <div id="dash-revision-alert" class="card" style="display:none;margin-bottom:20px;border-left:3px solid #FF6B35">
     <div class="card-body" style="padding:16px 20px"></div>
@@ -1220,6 +1224,49 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
       <button class="btn btn-cta" onclick="saveApiKeys()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar integraciones</button>
     </div>
   </div>
+
+  <!-- Notificaciones y Sonidos -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-hd">
+      <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <div><div class="card-ttl">Notificaciones y sonidos</div><div class="card-sub">Configurar alertas sonoras del sistema — aplica globalmente</div></div>
+    </div>
+    <div class="card-body">
+      <div class="g2" style="gap:20px">
+        <div class="fg">
+          <label class="lbl">Sonido — aprobación de cotización</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select class="finput" id="adm-snd-aprobado" style="flex:1">
+              <option value="chime">Chime (recomendado)</option>
+              <option value="bell">Campana</option>
+              <option value="success">Melodía de éxito</option>
+              <option value="coins">Monedas</option>
+              <option value="marimba">Marimba</option>
+              <option value="none">Ninguno</option>
+            </select>
+            <button class="btn btn-out btn-sm" onclick="_previewAdminSound('aprobado')" title="Probar sonido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+          </div>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Se reproduce cuando un agente recibe una cotización aprobada</div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Sonido — ticket de soporte nuevo</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select class="finput" id="adm-snd-soporte" style="flex:1">
+              <option value="alert">Alerta doble</option>
+              <option value="ping">Ping</option>
+              <option value="notification">Notificación</option>
+              <option value="buzz">Buzz</option>
+              <option value="none">Ninguno</option>
+            </select>
+            <button class="btn btn-out btn-sm" onclick="_previewAdminSound('soporte')" title="Probar sonido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+          </div>
+          <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Se reproduce cuando llega un nuevo ticket de soporte (admin)</div>
+        </div>
+      </div>
+      <button class="btn btn-cta" style="margin-top:16px" onclick="saveAdminSounds()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar sonidos</button>
+      <span id="adm-snd-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700">Guardado</span>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ AGENCY ═══ -->
@@ -1401,6 +1448,21 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
             <input class="finput" type="number" id="cfg-meta-mensual" placeholder="5000" min="0" inputmode="numeric" style="max-width:160px">
             <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Tu objetivo de ingresos mensuales</div>
           </div>
+          <div class="fg">
+            <label class="lbl" for="cfg-sound-aprobado">Sonido — aprobación de cotización</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="finput" id="cfg-sound-aprobado" style="flex:1;max-width:260px">
+                <option value="chime">Chime (recomendado)</option>
+                <option value="bell">Campana</option>
+                <option value="success">Melodía de éxito</option>
+                <option value="coins">Monedas</option>
+                <option value="marimba">Marimba</option>
+                <option value="none">Ninguno</option>
+              </select>
+              <button class="btn btn-out btn-sm" onclick="_playSound('aprobado',document.getElementById('cfg-sound-aprobado').value)" title="Probar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+            </div>
+            <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Sonido cuando el pasajero aprueba tu cotización</div>
+          </div>
         </div>
       <button class="btn btn-cta" onclick="saveCfg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar perfil</button>
       <span id="cfg-ok" style="display:none;margin-left:12px;font-size:.8rem;color:var(--green);font-weight:700"></span>
@@ -1478,15 +1540,15 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=42"></script>
-<script src="js/app-core.js?v=42"></script>
-<script src="js/app-form.js?v=42"></script>
-<script src="js/app-ia.js?v=42"></script>
-<script src="js/app-preview.js?v=42"></script>
-<script src="js/app-history.js?v=42"></script>
-<script src="js/app-admin.js?v=42"></script>
-<script src="js/app-quote.js?v=42"></script>
-<script src="js/app-promos.js?v=42"></script>
-<script src="js/app-ingresos.js?v=42"></script>
+<script src="js/config.js?v=43"></script>
+<script src="js/app-core.js?v=43"></script>
+<script src="js/app-form.js?v=43"></script>
+<script src="js/app-ia.js?v=43"></script>
+<script src="js/app-preview.js?v=43"></script>
+<script src="js/app-history.js?v=43"></script>
+<script src="js/app-admin.js?v=43"></script>
+<script src="js/app-quote.js?v=43"></script>
+<script src="js/app-promos.js?v=43"></script>
+<script src="js/app-ingresos.js?v=43"></script>
 </body>
 </html>
