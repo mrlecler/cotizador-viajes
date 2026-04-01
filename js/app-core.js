@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.13';
+const APP_VERSION = '0.25.14';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -22,6 +22,7 @@ function _saveAgCfg(){localStorage.setItem(_cfgKey(),JSON.stringify(agCfg));}
 let qData=null, currentUser=null, isAdmin=false, currentRol='agente';
 let vc=0,hc=0,tc=0,ec=0;
 let allClients=[], allQuotes=[];
+let _crmActiveTab='history'; // CRM panel active sub-tab
 
 // ── Sound system (Web Audio API) ─────────────────────
 const _SOUNDS={
@@ -634,6 +635,13 @@ async function showApp(user){
       logoUrl = data.logo_url || null;
       agCfg.logo_url = logoUrl;
       if(typeof updateLogoPreview==='function') updateLogoPreview();
+      // Preferir nombre de agencia desde tabla agencias (evita datos desactualizados en agentes.agencia)
+      if(data.agencia_id){
+        try{
+          const{data:ag}=await sb.from('agencias').select('nombre').eq('id',data.agencia_id).maybeSingle();
+          if(ag?.nombre) agCfg.ag=ag.nombre;
+        }catch(e){console.warn('[showApp] agencias fetch:',e.message);}
+      }
       _saveAgCfg();
       loadCfg();
       // Actualizar avatar del sidebar y saludo con nombre real
@@ -1205,12 +1213,26 @@ async function _loadAgenciaDashboard(){
 // ═══════════════════════════════════════════
 // TABS
 // ═══════════════════════════════════════════
-const tabMap={inicio:0,form:1,ia:2,preview:3,history:4,promos:5,clients:6,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14,ingresos:15};
+const tabMap={inicio:0,form:1,ia:2,preview:3,crm:4,promos:5,providers:7,dashboard:8,admin:9,config:10,agency:11,support:12,adminconfig:13,promosvig:14,ingresos:15};
+// CRM sub-tab switcher
+function _setCrmTab(t){
+  _crmActiveTab=t||'history';
+  document.querySelectorAll('.crm-tab').forEach(b=>b.classList.toggle('on',b.dataset.crm===_crmActiveTab));
+  document.querySelectorAll('.crm-sub').forEach(p=>p.classList.toggle('on',p.id==='crm-sub-'+_crmActiveTab));
+  if(_crmActiveTab==='history') renderHistory();
+  if(_crmActiveTab==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
+  if(_crmActiveTab==='seguimiento'){if(typeof renderSeguimiento==='function')renderSeguimiento();}
+}
 function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
     toast('Solo los agentes pueden crear cotizaciones.',false);
     return;
+  }
+  // CRM aliases — history/clients/seguimiento redirect to crm panel
+  if(id==='history'||id==='clients'||id==='seguimiento'){
+    _crmActiveTab=id;
+    id='crm';
   }
   // Guardar borrador al salir del formulario
   const activePanel=document.querySelector('.panel.on');
@@ -1236,10 +1258,8 @@ function switchTab(id){
   if(id==='form'){
     if(formDraft) restoreDraft(formDraft);
   }
-  if(id==='history') renderHistory();
-  if(id==='seguimiento'){if(typeof renderSeguimiento==='function')renderSeguimiento();}
+  if(id==='crm') _setCrmTab(_crmActiveTab||'history');
   if(id==='promos') renderPromos();
-  if(id==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='agency'){renderAgency();if(typeof _loadAgencyFields==='function')_loadAgencyFields();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
   if(id==='providers'){if(typeof renderProviders==='function')renderProviders();}
