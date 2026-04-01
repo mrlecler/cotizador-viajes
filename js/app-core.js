@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.6';
+const APP_VERSION = '0.25.7';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -945,16 +945,16 @@ async function loadDashboardMetrics(){
         const dest=q.destino||q.datos?.viaje?.destino||'';
         const lastReq=Array.isArray(q.datos?._mod_requests)&&q.datos._mod_requests.length?q.datos._mod_requests[q.datos._mod_requests.length-1]:null;
         const msg=lastReq?lastReq.msg:'';
-        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
-          <div style="width:8px;height:8px;border-radius:50%;background:#FF6B35;flex-shrink:0;margin-top:6px"></div>
+        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+          <div style="width:8px;height:8px;border-radius:50%;background:#FF6B35;flex-shrink:0;margin-top:5px"></div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:.85rem;font-weight:700;color:var(--text)">${nm} — ${dest}</div>
-            ${msg?`<div style="font-size:.78rem;color:var(--g4);margin-top:3px;line-height:1.4">"${msg.length>120?msg.slice(0,120)+'...':msg}"</div>`:''}
-            <div style="margin-top:6px"><button class="btn btn-pri btn-xs" onclick="editQuoteFromHistory('${q.id}')">Revisar cotización</button></div>
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px">${nm} — ${dest}</div>
+            ${msg?`<div style="font-size:.78rem;color:var(--g4);margin-bottom:8px;line-height:1.5">"${msg.length>120?msg.slice(0,120)+'...':msg}"</div>`:''}
+            <div><button class="btn btn-pri btn-xs" onclick="editFromHistory('${q.ref_id||''}','${q.id}')">Revisar cotización</button></div>
           </div>
         </div>`;
       }).join('');
-      if(revEl){revEl.style.display='';revEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="font-size:.8rem;font-weight:700;color:#FF6B35">${revQuotes.length} cotización${revQuotes.length>1?'es':''} con modificaciones solicitadas</span></div>${revHtml}`;}
+      if(revEl){revEl.style.display='';revEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,107,53,0.2)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="font-size:.8rem;font-weight:700;color:#FF6B35">${revQuotes.length} cotización${revQuotes.length>1?'es':''} con modificaciones solicitadas</span></div>${revHtml}`;}
     } else if(revEl){revEl.style.display='none';}
 
     // Quick action counts
