@@ -849,7 +849,7 @@ function _renderReservaBody(data){
       </div>
       <div id="rsv-docs-list"><div style="text-align:center;padding:12px;color:var(--g3);font-size:.78rem"><span class="spin spin-tq"></span></div></div>
     </div>
-  \`;
+  `;
   // Cargar documentos del viaje de forma asincrónica
   loadViajeDoc(data.id||_drawerQuotId);
 }
