@@ -230,7 +230,7 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PDF THEME SELECTOR
 // ═══════════════════════════════════════════
-const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Inmersión Glaciar',3:'Ámbar Imperial',4:'Noir Cinema',5:'Postal Mediterránea',6:'Magia Encantada',7:'Epic Adventure',8:'Rosa Botánica',9:'Aqua Profundo',10:'Rojo Flamante'};
+const _PDF_THEME_NAMES={1:'Turquesa',2:'Azul Glaciar',3:'Ámbar Dorado',4:'Negro Violeta',5:'Rojo Coral',6:'Azul Marino',7:'Negro Naranja',8:'Rosa Fucsia',9:'Cyan Profundo',10:'Rojo Carmín'};
 function selectPdfTheme(n){
   n=parseInt(n)||1;
   const inp=document.getElementById('cfg-pdf-theme');

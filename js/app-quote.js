@@ -9,16 +9,16 @@ function _extractAirlineIata(name,flightNum){
 }
 
 const PDF_THEMES={
-  1:{name:'Turquesa ermix',      layout:'cinematic',primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143', rgb2:'11,197,184'},
-  2:{name:'Inmersión Glaciar',   layout:'glaciar',  primary:'#2979B0',secondary:'#1E3A5F',accent:'#7EC8E3',grad:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',text:'#ffffff',rgb:'126,200,227',rgb2:'41,121,176'},
-  3:{name:'Ámbar Imperial',      layout:'ambar',    primary:'#C9860A',secondary:'#7C4A00',accent:'#E8C77D',grad:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',text:'#E8C77D',rgb:'232,199,125',rgb2:'201,134,10'},
-  4:{name:'Noir Cinema',         layout:'noir',     primary:'#7B2FBE',secondary:'#9B59B6',accent:'#D7BDE2',grad:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',text:'#ffffff',rgb:'123,47,190', rgb2:'155,89,182'},
-  5:{name:'Postal Mediterránea', layout:'postal',   primary:'#C84B31',secondary:'#E8826A',accent:'#F5A623',grad:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',text:'#ffffff',rgb:'200,75,49',  rgb2:'232,130,106'},
-  6:{name:'Magia Encantada',     layout:'magia',    primary:'#1A2E8A',secondary:'#0F1B5C',accent:'#FFD700',grad:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',text:'#FFD700',rgb:'255,215,0',  rgb2:'26,46,138'},
-  7:{name:'Epic Adventure',      layout:'epic',     primary:'#FF4500',secondary:'#CC3700',accent:'#FF6B35',grad:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',text:'#FF4500',rgb:'255,69,0',   rgb2:'204,55,0'},
-  8:{name:'Rosa Botánica',       layout:'rosa',     primary:'#C4426A',secondary:'#8B1A4A',accent:'#F7C5D8',grad:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',text:'#ffffff',rgb:'196,66,106', rgb2:'139,26,74'},
-  9:{name:'Aqua Profundo',       layout:'aqua',     primary:'#00D4E8',secondary:'#0A1F5C',accent:'#00E5FF',grad:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',text:'#ffffff',rgb:'0,229,255',  rgb2:'10,31,92'},
- 10:{name:'Rojo Flamante',       layout:'rojo',     primary:'#B22222',secondary:'#8B0000',accent:'#FF6B6B',grad:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',text:'#ffffff',rgb:'255,107,107',rgb2:'178,34,34'},
+  1:{name:'Turquesa',      layout:'cinematic',primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143', rgb2:'11,197,184'},
+  2:{name:'Azul Glaciar',  layout:'glaciar',  primary:'#2979B0',secondary:'#1E3A5F',accent:'#7EC8E3',grad:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',text:'#ffffff',rgb:'126,200,227',rgb2:'41,121,176'},
+  3:{name:'Ámbar Dorado',  layout:'ambar',    primary:'#C9860A',secondary:'#7C4A00',accent:'#E8C77D',grad:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',text:'#E8C77D',rgb:'232,199,125',rgb2:'201,134,10'},
+  4:{name:'Negro Violeta', layout:'noir',     primary:'#7B2FBE',secondary:'#9B59B6',accent:'#D7BDE2',grad:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',text:'#ffffff',rgb:'123,47,190', rgb2:'155,89,182'},
+  5:{name:'Rojo Coral',    layout:'postal',   primary:'#C84B31',secondary:'#E8826A',accent:'#F5A623',grad:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',text:'#ffffff',rgb:'200,75,49',  rgb2:'232,130,106'},
+  6:{name:'Azul Marino',   layout:'magia',    primary:'#1A2E8A',secondary:'#0F1B5C',accent:'#FFD700',grad:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',text:'#FFD700',rgb:'255,215,0',  rgb2:'26,46,138'},
+  7:{name:'Negro Naranja', layout:'epic',     primary:'#FF4500',secondary:'#CC3700',accent:'#FF6B35',grad:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',text:'#FF4500',rgb:'255,69,0',   rgb2:'204,55,0'},
+  8:{name:'Rosa Fucsia',   layout:'rosa',     primary:'#C4426A',secondary:'#8B1A4A',accent:'#F7C5D8',grad:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',text:'#ffffff',rgb:'196,66,106', rgb2:'139,26,74'},
+  9:{name:'Cyan Profundo', layout:'aqua',     primary:'#00D4E8',secondary:'#0A1F5C',accent:'#00E5FF',grad:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',text:'#ffffff',rgb:'0,229,255',  rgb2:'10,31,92'},
+ 10:{name:'Rojo Carmín',   layout:'rojo',     primary:'#B22222',secondary:'#8B0000',accent:'#FF6B6B',grad:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',text:'#ffffff',rgb:'255,107,107',rgb2:'178,34,34'},
 };
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
