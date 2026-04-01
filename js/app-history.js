@@ -277,7 +277,8 @@ async function applyStatus(s){
     const dCurrent=typeof q?.datos==='string'?JSON.parse(q.datos):(q?.datos||{});
     upd.datos={...dCurrent,fecha_vencimiento:fv};
   }
-  await sb.from('cotizaciones').update(upd).eq('id',_statusTargetId);
+  const {error:stErr}=await sb.from('cotizaciones').update(upd).eq('id',_statusTargetId);
+  if(stErr){toast('Error al cambiar estado: '+stErr.message,false);if(typeof _captureError==='function')_captureError('applyStatus',stErr);return;}
   // Post-aprobación: popup para registrar comisión como ingreso
   if((s==='aprobado'||s==='confirmada')&&typeof _showIngresoPostApproval==='function'){
     const d=typeof q?.datos==='string'?JSON.parse(q.datos):(q?.datos||{});
