@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.8';
+const APP_VERSION = '0.25.9';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -805,12 +805,15 @@ async function dbSaveQuote(d, supabaseId){
 }
 
 async function dbLoadQuotes(){
-  // RLS filtra por rol (agente=propias, agencia=misma agencia, admin=todo)
-  // created_at NO existe — usar creado_en
-  const {data,error} = await sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
+  // RLS filtra por rol. Para agente: filtrar explícitamente por agente_id (belt+suspenders)
+  let q=sb.from('cotizaciones').select('*').order('creado_en',{ascending:false}).limit(200);
+  if(currentRol==='agente'&&window._agenteId) q=q.eq('agente_id',window._agenteId);
+  const {data,error}=await q;
   if(error){
     console.warn('dbLoadQuotes error:', error);
-    const {data:d2,error:e2} = await sb.from('cotizaciones').select('*').limit(200);
+    let q2=sb.from('cotizaciones').select('*').limit(200);
+    if(currentRol==='agente'&&window._agenteId) q2=q2.eq('agente_id',window._agenteId);
+    const {data:d2,error:e2}=await q2;
     if(e2){ console.error('dbLoadQuotes fallback error:',e2); return []; }
     return (d2||[]).sort((a,b)=>new Date(b.creado_en||b.updated_at||0)-new Date(a.creado_en||a.updated_at||0));
   }
@@ -818,8 +821,10 @@ async function dbLoadQuotes(){
 }
 
 async function dbLoadClients(){
-  // RLS filtra por rol
-  const {data} = await sb.from('clientes').select('*').order('nombre');
+  // RLS filtra por rol. Para agente: filtrar explícitamente por agente_id
+  let q=sb.from('clientes').select('*').order('nombre');
+  if(currentRol==='agente'&&window._agenteId) q=q.eq('agente_id',window._agenteId);
+  const {data}=await q;
   return data||[];
 }
 
@@ -881,13 +886,20 @@ async function loadDashboardMetrics(){
     if(_dashPeriod==='month'){since=new Date(now.getFullYear(),now.getMonth(),1).toISOString();}
     else if(_dashPeriod==='year'){since=new Date(now.getFullYear(),0,1).toISOString();}
 
-    // Quotes — RLS filtra por rol; NO usar created_at (no existe)
-    const {data:allQ,error:allErr}=await sb.from('cotizaciones')
-      .select('id,ref_id,agente_id,destino,estado,datos,creado_en,updated_at');
+    // Quotes — filtrar explícitamente por agente_id para agente (belt+suspenders sobre RLS)
+    let qQuery=sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos,creado_en,updated_at');
+    if(currentRol==='agente'&&window._agenteId) qQuery=qQuery.eq('agente_id',window._agenteId);
+    const {data:allQ,error:allErr}=await qQuery;
     let quotes=allQ||[];
     if(allErr){
-      const {data:q2}=await sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos');
-      quotes=q2||[];
+      let q2=sb.from('cotizaciones').select('id,ref_id,agente_id,destino,estado,datos');
+      if(currentRol==='agente'&&window._agenteId) q2=q2.eq('agente_id',window._agenteId);
+      const {data:qf}=await q2;
+      quotes=qf||[];
+    }
+    // Segunda línea de defensa: filtro JS (misma lógica que renderHistory)
+    if(currentRol==='agente'&&window._agenteId){
+      quotes=quotes.filter(q=>!q.agente_id||q.agente_id===window._agenteId);
     }
 
     // Filtrar por fecha en JS
@@ -899,8 +911,10 @@ async function loadDashboardMetrics(){
       });
     }
 
-    // Clients count — RLS filtra por rol
-    const {data:cliData}=await sb.from('clientes').select('id');
+    // Clients count — filtrar por agente_id para agente
+    let cQuery=sb.from('clientes').select('id');
+    if(currentRol==='agente'&&window._agenteId) cQuery=cQuery.eq('agente_id',window._agenteId);
+    const {data:cliData}=await cQuery;
     const totalClients=(cliData||[]).length;
 
     // Calculations
