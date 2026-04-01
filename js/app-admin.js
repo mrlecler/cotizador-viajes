@@ -1110,6 +1110,7 @@ async function _loadAgencyFields(){
 // SOPORTE / TICKETS
 // ═══════════════════════════════════════════
 let _ticketsData=[];
+let _ticketsRealtimeSub=null;
 
 async function renderSupportTickets(){
   const isAdm=currentRol==='admin';
@@ -1124,6 +1125,18 @@ async function renderSupportTickets(){
   if(listTitle) listTitle.textContent=isAdm?'Todos los tickets':'Mis tickets';
   // Load tickets
   await _loadTickets();
+  // Realtime subscription para admin — nuevos tickets en tiempo real
+  if(isAdm&&!_ticketsRealtimeSub){
+    try{
+      _ticketsRealtimeSub=sb.channel('tickets-realtime')
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'tickets_soporte'},(_payload)=>{
+          _loadTickets();
+          _playSound('soporte');
+          toast('Nuevo ticket de soporte recibido');
+        })
+        .subscribe();
+    }catch(e){console.warn('[tickets-realtime]',e);}
+  }
 }
 
 async function _loadTickets(){

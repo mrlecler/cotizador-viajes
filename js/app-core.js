@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.9';
+const APP_VERSION = '0.25.10';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -22,6 +22,39 @@ function _saveAgCfg(){localStorage.setItem(_cfgKey(),JSON.stringify(agCfg));}
 let qData=null, currentUser=null, isAdmin=false, currentRol='agente';
 let vc=0,hc=0,tc=0,ec=0;
 let allClients=[], allQuotes=[];
+
+// ── Sound system (Web Audio API) ─────────────────────
+const _SOUNDS={
+  aprobado:{
+    chime:(ac)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';g.gain.setValueAtTime(0,ac.currentTime);g.gain.linearRampToValueAtTime(0.35,ac.currentTime+0.02);o.frequency.setValueAtTime(880,ac.currentTime);o.frequency.setValueAtTime(1100,ac.currentTime+0.12);o.frequency.setValueAtTime(1320,ac.currentTime+0.24);g.gain.linearRampToValueAtTime(0,ac.currentTime+0.5);o.start(ac.currentTime);o.stop(ac.currentTime+0.55);},
+    bell:(ac)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';o.frequency.value=1046;g.gain.setValueAtTime(0.4,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+1.2);o.start(ac.currentTime);o.stop(ac.currentTime+1.25);},
+    success:(ac)=>{[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,ac.currentTime+i*0.11);g.gain.linearRampToValueAtTime(0.28,ac.currentTime+i*0.11+0.04);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*0.11+0.2);o.start(ac.currentTime+i*0.11);o.stop(ac.currentTime+i*0.11+0.25);});},
+    coins:(ac)=>{for(let i=0;i<5;i++){const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';o.frequency.value=1200+Math.random()*400;const t=ac.currentTime+i*0.08;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.22,t+0.01);g.gain.linearRampToValueAtTime(0,t+0.12);o.start(t);o.stop(t+0.15);}},
+    marimba:(ac)=>{[523,659,784].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';o.frequency.value=f;const t=ac.currentTime+i*0.15;g.gain.setValueAtTime(0.35,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.5);o.start(t);o.stop(t+0.55);});},
+    none:null
+  },
+  soporte:{
+    alert:(ac)=>{[660,550].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='square';o.frequency.value=f;g.gain.setValueAtTime(0.18,ac.currentTime+i*0.18);g.gain.linearRampToValueAtTime(0,ac.currentTime+i*0.18+0.15);o.start(ac.currentTime+i*0.18);o.stop(ac.currentTime+i*0.18+0.18);});},
+    ping:(ac)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';o.frequency.value=1480;g.gain.setValueAtTime(0.3,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.6);o.start(ac.currentTime);o.stop(ac.currentTime+0.65);},
+    notification:(ac)=>{[880,1100].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sine';o.frequency.value=f;const t=ac.currentTime+i*0.14;g.gain.setValueAtTime(0.28,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.35);o.start(t);o.stop(t+0.38);});},
+    buzz:(ac)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type='sawtooth';o.frequency.value=220;g.gain.setValueAtTime(0.2,ac.currentTime);g.gain.linearRampToValueAtTime(0,ac.currentTime+0.25);o.start(ac.currentTime);o.stop(ac.currentTime+0.28);},
+    none:null
+  }
+};
+let _audioCtx=null;
+function _playSound(category,soundId){
+  try{
+    // Prioridad: parámetro > preferencia del agente > config del sistema (admin) > default
+    const sysDefault=localStorage.getItem('mp_sys_snd_'+category)||'chime';
+    const id=soundId||agCfg['sound_'+category]||agCfg['adm_snd_'+category]||sysDefault;
+    if(id==='none') return;
+    const fn=_SOUNDS[category]?.[id];
+    if(!fn) return;
+    if(!_audioCtx||_audioCtx.state==='closed') _audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(_audioCtx.state==='suspended') _audioCtx.resume().then(()=>fn(_audioCtx));
+    else fn(_audioCtx);
+  }catch(e){console.warn('[sound]',e);}
+}
 
 // ── Error log global (debug) ──────────────────────────
 window._appLog = window._appLog || [];
@@ -971,6 +1004,36 @@ async function loadDashboardMetrics(){
       if(revEl){revEl.style.display='';revEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,107,53,0.2)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span style="font-size:.8rem;font-weight:700;color:#FF6B35">${revQuotes.length} cotización${revQuotes.length>1?'es':''} con modificaciones solicitadas</span></div>${revHtml}`;}
     } else if(revEl){revEl.style.display='none';}
 
+    // Aprobadas alert — cotizaciones aprobadas por el pasajero que el agente no confirmó aún
+    const aprQuotes=quotes.filter(q=>q.estado==='aprobado');
+    const aprEl=document.getElementById('dash-aprobadas-alert');
+    if(aprQuotes.length>0){
+      // Sound: solo 1 vez por sesión por quote
+      aprQuotes.forEach(q=>{
+        const skey='_snd_apr_'+q.id;
+        if(!sessionStorage.getItem(skey)){
+          sessionStorage.setItem(skey,'1');
+          _playSound('aprobado');
+        }
+      });
+      const aprHtml=aprQuotes.map(q=>{
+        const nm=q.datos?.cliente?.nombre||'Pasajero';
+        const dest=q.destino||q.datos?.viaje?.destino||'';
+        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;margin-top:5px"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px">${nm} — ${dest}</div>
+            <div style="font-size:.78rem;color:var(--g4);margin-bottom:8px">El pasajero aprobó la cotización. Confirmala para iniciar el seguimiento.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-pri btn-xs" onclick="editFromHistory('${q.ref_id||''}','${q.id}')">Ver cotización</button>
+              <button class="btn btn-cta btn-xs" onclick="_confirmFromDash('${q.id}')">Confirmar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      if(aprEl){aprEl.style.display='';aprEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(34,197,94,0.2)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span style="font-size:.8rem;font-weight:700;color:#22c55e">${aprQuotes.length} cotización${aprQuotes.length>1?'es aprobadas':' aprobada'} — esperando confirmación</span></div>${aprHtml}`;}
+    } else if(aprEl){aprEl.style.display='none';}
+
     // Quick action counts
     set('qac-hist',total||'0');
     set('qac-clients',totalClients||'0');
@@ -1013,6 +1076,17 @@ async function loadDashboardMetrics(){
     console.error('loadDashboardMetrics error:',e);
     if(typeof _captureError==='function') _captureError('DASHBOARD',e);
   }
+}
+
+// ═══════════════════════════════════════════
+// CONFIRM FROM DASH (aprobadas alert)
+// ═══════════════════════════════════════════
+async function _confirmFromDash(id){
+  if(!confirm('¿Confirmar esta reserva?')) return;
+  const {error}=await sb.from('cotizaciones').update({estado:'confirmada'}).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  toast('Reserva confirmada');
+  loadDashboardMetrics();
 }
 
 // ═══════════════════════════════════════════

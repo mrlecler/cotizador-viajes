@@ -132,6 +132,34 @@ function _loadApiKeyFields(){
   const el2=document.getElementById('ak-ia');if(el2)el2.value=localStorage.getItem('mp_ia_key')||'';
   const el3=document.getElementById('ak-resend');if(el3)el3.value=localStorage.getItem('mp_resend_key')||'';
   const el4=document.getElementById('ak-resend-from');if(el4)el4.value=agCfg.resend_from||'';
+  // Cargar sonidos admin guardados
+  const sndApr=document.getElementById('adm-snd-aprobado');
+  if(sndApr&&agCfg.adm_snd_aprobado) sndApr.value=agCfg.adm_snd_aprobado;
+  const sndSop=document.getElementById('adm-snd-soporte');
+  if(sndSop&&agCfg.adm_snd_soporte) sndSop.value=agCfg.adm_snd_soporte;
+}
+
+// ═══════════════════════════════════════════
+// ADMIN SOUNDS
+// ═══════════════════════════════════════════
+function saveAdminSounds(){
+  const apr=(document.getElementById('adm-snd-aprobado')?.value||'chime');
+  const sop=(document.getElementById('adm-snd-soporte')?.value||'alert');
+  agCfg.adm_snd_aprobado=apr;
+  agCfg.adm_snd_soporte=sop;
+  // Los sonidos del admin también se propagan como defaults del sistema
+  // (agentes que no tienen preferencia propia usarán el valor del admin)
+  localStorage.setItem('mp_sys_snd_aprobado',apr);
+  localStorage.setItem('mp_sys_snd_soporte',sop);
+  _saveAgCfg();
+  const ok=document.getElementById('adm-snd-ok');
+  if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2000);}
+  toast('Sonidos guardados');
+}
+function _previewAdminSound(category){
+  const sel=document.getElementById(category==='aprobado'?'adm-snd-aprobado':'adm-snd-soporte');
+  const soundId=sel?.value||'chime';
+  if(typeof _playSound==='function') _playSound(category,soundId);
 }
 
 // ═══════════════════════════════════════════
@@ -144,6 +172,8 @@ async function saveCfg(){
   if(_vd) agCfg.validez_dias=parseInt(_vd); else delete agCfg.validez_dias;
   const _mm=(document.getElementById('cfg-meta-mensual')?.value||'').trim();
   if(_mm) agCfg.meta_mensual=parseFloat(_mm); else delete agCfg.meta_mensual;
+  const _sndApr=(document.getElementById('cfg-sound-aprobado')?.value||'').trim();
+  if(_sndApr) agCfg.sound_aprobado=_sndApr; else delete agCfg.sound_aprobado;
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
@@ -195,6 +225,9 @@ function loadCfg(){
     updateLogoPreview(); // muestra inicial (avatar con letra)
   }
   if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
+  // Sound preference
+  const sndEl=document.getElementById('cfg-sound-aprobado');
+  if(sndEl&&agCfg.sound_aprobado) sndEl.value=agCfg.sound_aprobado;
   // Profile card: adapt per role
   const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
   const ttl=document.getElementById('cfg-card-title');
