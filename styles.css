@@ -1259,10 +1259,11 @@ input:focus,textarea:focus,select:focus{
     /* CRÍTICO: overflow:hidden corta el contenido en los bordes de página */
     overflow:visible!important
   }
-  /* Sidebar, bottom nav, toolbars, drawer — ocultar */
+  /* Sidebar, bottom nav, toolbars, drawer, toast — ocultar */
   #sidebar,.sb,[class*="sidebar"],#bottom-nav,#bottom-nav.active,
   #form-sticky-bar,#prev-toolbar,#hdr,.modal-overlay,
-  #drawer-reserva,#drawer-overlay,.drawer{display:none!important}
+  #drawer-reserva,#drawer-overlay,.drawer,
+  #toast,#modal-status{display:none!important}
   /* Cover: overflow visible para que position:absolute children no se corten */
   .qp-cover{overflow:visible!important}
   #ui,#main-content,.cnt{margin-left:0!important}
@@ -2315,5 +2316,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
   #bottom-nav,#bottom-nav.active,
   #form-sticky-bar,#prev-toolbar,#hdr,
   #sidebar,.sb,
-  #drawer-reserva,#drawer-overlay,.drawer{display:none!important}
+  #drawer-reserva,#drawer-overlay,.drawer,
+  #toast,#modal-status{display:none!important}
 }
