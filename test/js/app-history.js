@@ -1176,8 +1176,7 @@ async function renderSeguimiento(){
               ${r.fecha_limite_pago?`<div style="font-size:.68rem;color:${limiteVencido?'#ef4444':'var(--g4)'};margin-top:4px">Vence ${fmtDate(r.fecha_limite_pago)}</div>`:''}
             </div>
           </div>
-          ${r.nro_reserva?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;color:var(--g4)">Nro. reserva: <span style="font-weight:700;color:var(--text);font-family:'DM Mono',monospace">${r.nro_reserva}</span></div>`:''}
-          ${pagos.length>0?`<div style="margin-top:${r.nro_reserva?'4px':'8px'};font-size:.7rem;color:var(--g4)">${pagos.length} pago${pagos.length>1?'s':''} registrado${pagos.length>1?'s':''} · ${fmtAmt(totalPagado)} cobrado</div>`:''}
+          ${pagos.length>0?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.7rem;color:var(--g4)">${pagos.length} pago${pagos.length>1?'s':''} registrado${pagos.length>1?'s':''} · ${fmtAmt(totalPagado)} cobrado</div>`:''}
         </div>
       </div>`;
     }).join('');
@@ -1277,10 +1276,12 @@ async function _renderSeguimientoDetail(quotId){
     // Pagos rows
     const pagoRows=pagos.length?pagos.map((p,i)=>{
       const svc=p.servicio_id?servicios.find(sv=>sv.id===p.servicio_id):null;
+      const _fpLbl={tarjeta_credito:'TC',tarjeta_debito:'TD',transferencia:'Transf',efectivo:'Efect'};
       return `<div class="seg-pago-row">
         <div class="seg-pago-fecha">${fmtDate(p.fecha)||'--'}</div>
         <div class="seg-pago-monto">${fmtAmt(p.monto)}</div>
         <div class="seg-pago-svc">${svc?svc.proveedor:'General'}</div>
+        ${p.forma_pago?`<span style="font-size:.65rem;padding:1px 6px;border-radius:6px;background:rgba(45,31,20,0.06);color:var(--g4);font-weight:600;flex-shrink:0">${_fpLbl[p.forma_pago]||p.forma_pago}</span>`:''}
         <div class="seg-pago-desc">${p.descripcion||''}</div>
         <button class="btn btn-del btn-xs" onclick="_deletePagoV2(${i})" title="Eliminar"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>`;
@@ -1369,6 +1370,9 @@ async function _renderSeguimientoDetail(quotId){
               <div style="flex:1;min-width:120px"><label class="lbl">Aplicar a</label>
                 <select class="fsel" id="seg-pago-svc" style="width:100%"><option value="">Pago general</option>${svcOpts}</select>
               </div>
+              <div style="min-width:110px"><label class="lbl">Forma de pago</label>
+                <select class="fsel" id="seg-pago-forma" style="width:100%"><option value="">--</option><option value="tarjeta_credito">Tarjeta de credito</option><option value="tarjeta_debito">Tarjeta de debito</option><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option></select>
+              </div>
               <div style="flex:1;min-width:100px"><label class="lbl">Descripcion</label><input class="finput" id="seg-pago-desc" placeholder="Sena inicial..." style="width:100%"></div>
               <button class="btn btn-cta btn-sm" onclick="_addPagoV2()" style="flex-shrink:0;align-self:flex-end;margin-bottom:1px">+ Pago</button>
             </div>
@@ -1381,10 +1385,7 @@ async function _renderSeguimientoDetail(quotId){
       <div class="seg-section">
         <div class="seg-section-hd"><span class="seg-section-ttl">Info de reserva</span></div>
         <div class="seg-section-body">
-          <div class="g2">
-            <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="seg-rsv-nro" value="${r.nro_reserva||data.ref_id||''}" placeholder="${data.ref_id||'ABC-12345'}"></div>
-            <div class="fg"><label class="lbl">Vencimiento pago</label><input class="finput" type="date" id="seg-rsv-limite" value="${r.fecha_limite_pago||''}"></div>
-          </div>
+          <div class="fg"><label class="lbl">Vencimiento pago</label><input class="finput" type="date" id="seg-rsv-limite" value="${r.fecha_limite_pago||''}"></div>
           <div class="fg"><label class="lbl">Notas internas</label><textarea class="finput" id="seg-rsv-notas" rows="2" placeholder="Notas del agente..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
         </div>
       </div>
@@ -1495,10 +1496,11 @@ async function _addPagoV2(){
   if(!monto||monto<=0){toast('Ingresa un monto valido',false);return;}
   const fecha=document.getElementById('seg-pago-fecha')?.value||new Date().toISOString().slice(0,10);
   const servicioId=document.getElementById('seg-pago-svc')?.value||null;
+  const formaPago=document.getElementById('seg-pago-forma')?.value||'';
   const desc=document.getElementById('seg-pago-desc')?.value?.trim()||'';
   const d=_segDetailData.datos||{};
   if(!Array.isArray(d._pagos)) d._pagos=[];
-  d._pagos.push({fecha,monto,descripcion:desc,servicio_id:servicioId||null,creado_en:new Date().toISOString()});
+  d._pagos.push({fecha,monto,descripcion:desc,servicio_id:servicioId||null,forma_pago:formaPago||null,creado_en:new Date().toISOString()});
   try{
     const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
     if(error){toast('Error: '+error.message,false);return;}
@@ -1526,7 +1528,7 @@ async function _saveSeguimientoV2(){
   if(!_segDetailQuotId||!_segDetailData) return;
   const d=_segDetailData.datos||{};
   d._reserva={
-    nro_reserva:document.getElementById('seg-rsv-nro')?.value?.trim()||'',
+    nro_reserva:d._reserva?.nro_reserva||'', // mantener valor existente
     fecha_limite_pago:document.getElementById('seg-rsv-limite')?.value||null,
     notas_reserva:document.getElementById('seg-rsv-notas')?.value?.trim()||''
   };
