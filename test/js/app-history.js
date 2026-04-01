@@ -1051,7 +1051,7 @@ async function renderSeguimiento(){
           <div style="height:100%;width:${pct}%;background:${saldo===0?'#22c55e':'var(--primary)'};border-radius:2px"></div>
         </div>`:'';
 
-      return `<div class="card" style="margin-bottom:10px;cursor:pointer" onclick="openReservaDrawer('${q.id}')">
+      return `<div class="card" style="margin-bottom:10px;cursor:pointer" onclick="openSeguimientoDetail('${q.id}')">
         <div class="card-body" style="padding:14px 16px">
           <div style="display:flex;align-items:flex-start;gap:12px">
             <div style="flex:1;min-width:0">
@@ -1082,6 +1082,356 @@ async function renderSeguimiento(){
     el.innerHTML='<div style="padding:20px;color:var(--red);font-size:.82rem">Error al cargar seguimientos.</div>';
     console.error('[renderSeguimiento]',e);
   }
+}
+
+// ═══════════════════════════════════════════
+// SEGUIMIENTO v2 — Panel completo con servicios/proveedores
+// ═══════════════════════════════════════════
+let _segDetailQuotId=null;
+let _segDetailData=null; // cache de cotización mientras el detalle está abierto
+
+function openSeguimientoDetail(quotId){
+  _segDetailQuotId=quotId;
+  document.querySelector('.crm-tabs').style.display='none';
+  document.querySelectorAll('.crm-sub').forEach(p=>p.classList.remove('on'));
+  document.getElementById('crm-sub-detail').classList.add('on');
+  _renderSeguimientoDetail(quotId);
+}
+
+function closeSeguimientoDetail(){
+  _segDetailQuotId=null;
+  _segDetailData=null;
+  document.getElementById('crm-sub-detail').classList.remove('on');
+  document.querySelector('.crm-tabs').style.display='';
+  _setCrmTab('seguimiento');
+}
+
+async function _renderSeguimientoDetail(quotId){
+  const container=document.getElementById('seg-detail-content');
+  container.innerHTML='<div style="text-align:center;padding:60px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  try{
+    const{data,error}=await sb.from('cotizaciones').select('*').eq('id',quotId).single();
+    if(error||!data){container.innerHTML='<div style="padding:20px;color:var(--g3)">No se encontro la cotizacion.</div>';return;}
+    _segDetailData=data;
+    const d=data.datos||{};
+    const r=d._reserva||{};
+    const servicios=Array.isArray(d._servicios)?d._servicios:[];
+    const pagos=Array.isArray(d._pagos)?d._pagos:[];
+    const cli=d.cliente||{};
+    const dest=data.destino||d.viaje?.destino||'Sin destino';
+    const precioTotal=Number(d.precio_total||d.total_precio||data.precio_total||0);
+    const totalPagado=pagos.reduce((s,p)=>s+(+p.monto||0),0);
+    const totalServicios=servicios.reduce((s,sv)=>s+(+sv.monto||0),0);
+    const saldo=precioTotal>0?Math.max(0,precioTotal-totalPagado):null;
+    const pct=precioTotal>0?Math.min(100,(totalPagado/precioTotal)*100):null;
+    const hoy=new Date().toISOString().slice(0,10);
+    const isConf=data.estado==='confirmada';
+    const fmtAmt=n=>n>0?'$'+Number(n).toLocaleString('es-AR'):'--';
+    const fmtDate=s=>s?new Date(s+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'}):null;
+
+    // Cargar proveedores y pasajeros en paralelo
+    const [proveedores, pasajeros] = await Promise.all([
+      (typeof _loadProveedoresForSelect==='function')?_loadProveedoresForSelect():[],
+      (typeof _loadGrupoPasajeros==='function'&&data.cliente_id)?_loadGrupoPasajeros(data.cliente_id):[]
+    ]);
+
+    // Select options de proveedores
+    const provOpts=proveedores.map(p=>`<option value="${p.id}" data-nombre="${(p.nombre||'').replace(/"/g,'&quot;')}">${p.nombre}</option>`).join('');
+
+    // Select options de servicios para pagos
+    const svcOpts=servicios.map(sv=>`<option value="${sv.id}">${sv.proveedor} (${fmtAmt(sv.monto)})</option>`).join('');
+
+    // Pasajeros section
+    const titularRow=`<div class="seg-pax-row">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div style="flex:1"><div class="seg-pax-name">${cli.nombre||'Sin nombre'}</div><div class="seg-pax-doc">${cli.celular||''} ${cli.email?'· '+cli.email:''}</div></div>
+      <span class="seg-pax-badge" style="background:rgba(27,158,143,0.12);color:var(--primary)">TITULAR</span>
+    </div>`;
+    const paxRows=pasajeros.filter(p=>p.id!==data.cliente_id).map(p=>{
+      const edad=p.fecha_nac?Math.floor((Date.now()-new Date(p.fecha_nac+'T12:00:00'))/31557600000)+' anios':'';
+      return `<div class="seg-pax-row">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div style="flex:1"><div class="seg-pax-name">${p.nombre||'--'}</div><div class="seg-pax-doc">${p.doc_tipo?p.doc_tipo+': ':''}${p.documento||''} ${edad?'· '+edad:''}</div></div>
+      </div>`;
+    }).join('');
+
+    // Servicios rows
+    const svcRows=servicios.length?servicios.map((sv,i)=>{
+      const stCol=sv.estado==='confirmado'?'#22c55e':sv.estado==='cancelado'?'#ef4444':'#FF6B35';
+      const stLbl=sv.estado==='confirmado'?'Confirmado':sv.estado==='cancelado'?'Cancelado':'Pendiente';
+      return `<div class="seg-svc-row">
+        <div style="flex:1;min-width:0">
+          <div class="seg-svc-prov">${sv.proveedor||'--'}</div>
+          <div style="font-size:.72rem;color:var(--g4);margin-top:2px">${sv.detalle||''}</div>
+        </div>
+        <div class="seg-svc-conf">${sv.nro_confirmacion||'--'}</div>
+        <span style="font-size:.68rem;padding:2px 8px;border-radius:8px;background:${stCol}18;color:${stCol};font-weight:700">${stLbl}</span>
+        <div class="seg-svc-monto">${fmtAmt(sv.monto)}</div>
+        <button class="btn btn-del btn-xs" onclick="_deleteServicio(${i})" title="Eliminar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      </div>`;
+    }).join(''):'<div style="padding:14px 0;text-align:center;color:var(--g3);font-size:.8rem">Sin servicios cargados</div>';
+
+    // Pagos rows
+    const pagoRows=pagos.length?pagos.map((p,i)=>{
+      const svc=p.servicio_id?servicios.find(sv=>sv.id===p.servicio_id):null;
+      return `<div class="seg-pago-row">
+        <div class="seg-pago-fecha">${fmtDate(p.fecha)||'--'}</div>
+        <div class="seg-pago-monto">${fmtAmt(p.monto)}</div>
+        <div class="seg-pago-svc">${svc?svc.proveedor:'General'}</div>
+        <div class="seg-pago-desc">${p.descripcion||''}</div>
+        <button class="btn btn-del btn-xs" onclick="_deletePagoV2(${i})" title="Eliminar"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>`;
+    }).join(''):'<div style="padding:14px 0;text-align:center;color:var(--g3);font-size:.8rem">Sin pagos registrados</div>';
+
+    // Progress bar
+    const progressHtml=precioTotal>0?`
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <span style="font-size:.72rem;color:var(--g4)">Progreso de cobro</span>
+        <span style="font-size:.82rem;font-weight:800;color:${saldo===0?'#22c55e':'var(--text)'}">${fmtAmt(totalPagado)} / ${fmtAmt(precioTotal)}</span>
+      </div>
+      <div class="seg-progress"><div class="seg-progress-fill" style="width:${pct}%;background:${saldo===0?'#22c55e':'var(--primary)'}"></div></div>
+      ${saldo>0?`<div style="font-size:.72rem;color:#FF6B35;font-weight:600;text-align:right">Saldo pendiente: ${fmtAmt(saldo)}</div>`:'<div style="font-size:.72rem;color:#22c55e;font-weight:600;text-align:right">Cobro completo</div>'}
+    `:'<div style="font-size:.78rem;color:var(--g4);margin:8px 0">Precio total no cargado en la cotizacion.</div>';
+
+    container.innerHTML=`
+      <!-- Header -->
+      <div class="seg-hdr">
+        <div class="seg-hdr-top">
+          <button class="btn btn-out btn-xs" onclick="closeSeguimientoDetail()" style="flex-shrink:0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
+          </button>
+          <span class="seg-hdr-ref">${data.ref_id||'--'}</span>
+          <span class="seg-hdr-badge" style="background:${isConf?'rgba(34,197,94,.12)':'rgba(27,158,143,.12)'};color:${isConf?'#22c55e':'var(--primary)'}">${isConf?'Confirmada':'Aprobada'}</span>
+        </div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--text)">${cli.nombre||'Sin nombre'} <span style="font-weight:400;color:var(--g4)">· ${dest}</span></div>
+        <div style="font-size:.72rem;color:var(--g4);margin-top:2px">${data.fecha_sal?'Salida '+fmtDate(data.fecha_sal):''} ${data.pasajeros?'· '+data.pasajeros:''}</div>
+      </div>
+
+      <!-- Pasajeros -->
+      <div class="seg-section">
+        <div class="seg-section-hd">
+          <span class="seg-section-ttl">Pasajeros del viaje</span>
+          <span style="font-size:.72rem;color:var(--g4)">${pasajeros.length+1} pasajero${pasajeros.length>0?'s':''}</span>
+        </div>
+        <div class="seg-section-body">
+          ${titularRow}
+          ${paxRows||'<div style="font-size:.78rem;color:var(--g4);padding:8px 0">Sin grupo familiar cargado. <span style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="closeSeguimientoDetail();_setCrmTab(\'clients\')">Ir a Clientes</span> para crear un grupo.</div>'}
+        </div>
+      </div>
+
+      <!-- Servicios contratados -->
+      <div class="seg-section">
+        <div class="seg-section-hd">
+          <span class="seg-section-ttl">Servicios contratados</span>
+          ${totalServicios>0?`<span style="font-size:.78rem;font-weight:700;color:var(--text)">Total: ${fmtAmt(totalServicios)}</span>`:''}
+        </div>
+        <div class="seg-section-body">
+          <!-- Formulario agregar servicio -->
+          <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <div class="seg-add-form">
+              <div style="flex:2;min-width:140px">
+                <label class="lbl">Proveedor</label>
+                <select class="fsel" id="seg-svc-prov" style="width:100%" onchange="_segSvcProvChange()">
+                  <option value="">Seleccionar...</option>
+                  ${provOpts}
+                  <option value="__otro__">Otro (manual)</option>
+                </select>
+                <input class="finput" id="seg-svc-prov-manual" placeholder="Nombre del proveedor" style="display:none;margin-top:4px;width:100%">
+              </div>
+              <div style="flex:1;min-width:100px"><label class="lbl">Nro confirmacion</label><input class="finput" id="seg-svc-conf" placeholder="DIS-784521" style="width:100%"></div>
+              <div style="flex:2;min-width:120px"><label class="lbl">Detalle</label><input class="finput" id="seg-svc-det" placeholder="Tickets 4 dias..." style="width:100%"></div>
+              <div style="flex:0.7;min-width:80px"><label class="lbl">Monto USD</label><input class="finput" id="seg-svc-monto" type="number" min="0" step="any" placeholder="0" inputmode="decimal" style="width:100%"></div>
+              <div style="flex:0.7;min-width:90px"><label class="lbl">Estado</label>
+                <select class="fsel" id="seg-svc-estado" style="width:100%"><option value="pendiente">Pendiente</option><option value="confirmado">Confirmado</option><option value="cancelado">Cancelado</option></select>
+              </div>
+              <button class="btn btn-cta btn-sm" onclick="_addServicio()" style="flex-shrink:0;align-self:flex-end;margin-bottom:1px">+ Agregar</button>
+            </div>
+          </div>
+          ${svcRows}
+        </div>
+      </div>
+
+      <!-- Pagos del cliente -->
+      <div class="seg-section">
+        <div class="seg-section-hd">
+          <span class="seg-section-ttl">Pagos del cliente</span>
+        </div>
+        <div class="seg-section-body">
+          ${progressHtml}
+          <!-- Formulario registrar pago -->
+          <div style="margin:12px 0;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+            <div class="seg-add-form">
+              <div style="min-width:90px"><label class="lbl">Monto USD</label><input class="finput" id="seg-pago-monto" type="number" min="1" step="any" placeholder="0" inputmode="decimal" style="width:100%"></div>
+              <div style="min-width:120px"><label class="lbl">Fecha</label><input class="finput" id="seg-pago-fecha" type="date" value="${hoy}" style="width:100%"></div>
+              <div style="flex:1;min-width:120px"><label class="lbl">Aplicar a</label>
+                <select class="fsel" id="seg-pago-svc" style="width:100%"><option value="">Pago general</option>${svcOpts}</select>
+              </div>
+              <div style="flex:1;min-width:100px"><label class="lbl">Descripcion</label><input class="finput" id="seg-pago-desc" placeholder="Sena inicial..." style="width:100%"></div>
+              <button class="btn btn-cta btn-sm" onclick="_addPagoV2()" style="flex-shrink:0;align-self:flex-end;margin-bottom:1px">+ Pago</button>
+            </div>
+          </div>
+          ${pagoRows}
+        </div>
+      </div>
+
+      <!-- Info de reserva -->
+      <div class="seg-section">
+        <div class="seg-section-hd"><span class="seg-section-ttl">Info de reserva</span></div>
+        <div class="seg-section-body">
+          <div class="g2">
+            <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="seg-rsv-nro" value="${r.nro_reserva||data.ref_id||''}" placeholder="${data.ref_id||'ABC-12345'}"></div>
+            <div class="fg"><label class="lbl">Vencimiento pago</label><input class="finput" type="date" id="seg-rsv-limite" value="${r.fecha_limite_pago||''}"></div>
+          </div>
+          <div class="fg"><label class="lbl">Notas internas</label><textarea class="finput" id="seg-rsv-notas" rows="2" placeholder="Notas del agente..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
+        </div>
+      </div>
+
+      <!-- Documentos del viaje -->
+      <div class="seg-section">
+        <div class="seg-section-hd">
+          <span class="seg-section-ttl">Documentos del viaje</span>
+          <label style="cursor:pointer">
+            <input type="file" id="rsv-doc-file" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif" onchange="uploadViajeDoc()">
+            <span class="btn btn-out btn-xs" onclick="document.getElementById('rsv-doc-file').click()" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Subir
+            </span>
+          </label>
+        </div>
+        <div class="seg-section-body">
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <select class="finput" id="rsv-doc-tipo" style="flex:1;font-size:.78rem">
+              <option value="voucher">Voucher</option><option value="hotel">Conf. hotel</option><option value="aerolinea">Conf. aerolinea</option>
+              <option value="disney">Voucher Disney/Universal</option><option value="seguro">Seguro de viaje</option>
+              <option value="traslado">Conf. traslado</option><option value="otro">Otro</option>
+            </select>
+          </div>
+          <div id="rsv-docs-list"><div style="text-align:center;padding:12px;color:var(--g3);font-size:.78rem"><span class="spin spin-tq"></span></div></div>
+        </div>
+      </div>
+
+      <!-- Guardar -->
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-bottom:24px">
+        <button class="btn btn-out" onclick="closeSeguimientoDetail()">Cancelar</button>
+        <button class="btn btn-cta" onclick="_saveSeguimientoV2()">Guardar seguimiento</button>
+      </div>
+    `;
+
+    // Cargar documentos asincronicamente
+    // Reusar _drawerQuotId para mantener compat con uploadViajeDoc
+    _drawerQuotId=quotId;
+    loadViajeDoc(quotId);
+  }catch(e){
+    console.error('[_renderSeguimientoDetail]',e);
+    container.innerHTML='<div style="padding:20px;color:var(--g3)">Error al cargar el seguimiento. <button class="btn btn-out btn-xs" onclick="closeSeguimientoDetail()">Volver</button></div>';
+  }
+}
+
+// Toggle proveedor manual
+function _segSvcProvChange(){
+  const sel=document.getElementById('seg-svc-prov');
+  const manual=document.getElementById('seg-svc-prov-manual');
+  if(sel.value==='__otro__'){manual.style.display='';manual.focus();}
+  else{manual.style.display='none';manual.value='';}
+}
+
+// Agregar servicio
+async function _addServicio(){
+  if(!_segDetailQuotId||!_segDetailData) return;
+  const sel=document.getElementById('seg-svc-prov');
+  const manual=document.getElementById('seg-svc-prov-manual');
+  let provNombre='', provId=null;
+  if(sel.value==='__otro__'){
+    provNombre=manual.value.trim();
+  } else if(sel.value){
+    provNombre=sel.options[sel.selectedIndex]?.dataset?.nombre||sel.options[sel.selectedIndex]?.text||'';
+    provId=sel.value;
+  }
+  if(!provNombre){toast('Selecciona un proveedor',false);return;}
+  const conf=document.getElementById('seg-svc-conf')?.value?.trim()||'';
+  const det=document.getElementById('seg-svc-det')?.value?.trim()||'';
+  const monto=parseFloat(document.getElementById('seg-svc-monto')?.value)||0;
+  const estado=document.getElementById('seg-svc-estado')?.value||'pendiente';
+
+  const d=_segDetailData.datos||{};
+  if(!Array.isArray(d._servicios)) d._servicios=[];
+  d._servicios.push({
+    id:'svc_'+Date.now(),
+    proveedor:provNombre,
+    proveedor_id:provId,
+    nro_confirmacion:conf,
+    detalle:det,
+    monto:monto,
+    estado:estado
+  });
+  try{
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
+    if(error){toast('Error: '+error.message,false);return;}
+    toast('Servicio agregado');
+    _renderSeguimientoDetail(_segDetailQuotId);
+  }catch(e){toast('Error al guardar',false);console.error('[_addServicio]',e);}
+}
+
+// Eliminar servicio
+async function _deleteServicio(idx){
+  if(!_segDetailQuotId||!_segDetailData) return;
+  if(!confirm('Eliminar este servicio?')) return;
+  const d=_segDetailData.datos||{};
+  if(!Array.isArray(d._servicios)||!d._servicios[idx]) return;
+  d._servicios.splice(idx,1);
+  try{
+    await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
+    toast('Servicio eliminado');
+    _renderSeguimientoDetail(_segDetailQuotId);
+  }catch(e){toast('Error',false);console.error('[_deleteServicio]',e);}
+}
+
+// Agregar pago v2 (con servicio_id)
+async function _addPagoV2(){
+  if(!_segDetailQuotId||!_segDetailData) return;
+  const monto=parseFloat(document.getElementById('seg-pago-monto')?.value);
+  if(!monto||monto<=0){toast('Ingresa un monto valido',false);return;}
+  const fecha=document.getElementById('seg-pago-fecha')?.value||new Date().toISOString().slice(0,10);
+  const servicioId=document.getElementById('seg-pago-svc')?.value||null;
+  const desc=document.getElementById('seg-pago-desc')?.value?.trim()||'';
+  const d=_segDetailData.datos||{};
+  if(!Array.isArray(d._pagos)) d._pagos=[];
+  d._pagos.push({fecha,monto,descripcion:desc,servicio_id:servicioId||null,creado_en:new Date().toISOString()});
+  try{
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
+    if(error){toast('Error: '+error.message,false);return;}
+    toast('Pago registrado');
+    _renderSeguimientoDetail(_segDetailQuotId);
+  }catch(e){toast('Error al guardar',false);console.error('[_addPagoV2]',e);}
+}
+
+// Eliminar pago v2
+async function _deletePagoV2(idx){
+  if(!_segDetailQuotId||!_segDetailData) return;
+  if(!confirm('Eliminar este pago?')) return;
+  const d=_segDetailData.datos||{};
+  if(!Array.isArray(d._pagos)||!d._pagos[idx]) return;
+  d._pagos.splice(idx,1);
+  try{
+    await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
+    toast('Pago eliminado');
+    _renderSeguimientoDetail(_segDetailQuotId);
+  }catch(e){toast('Error',false);console.error('[_deletePagoV2]',e);}
+}
+
+// Guardar info de reserva v2
+async function _saveSeguimientoV2(){
+  if(!_segDetailQuotId||!_segDetailData) return;
+  const d=_segDetailData.datos||{};
+  d._reserva={
+    nro_reserva:document.getElementById('seg-rsv-nro')?.value?.trim()||'',
+    fecha_limite_pago:document.getElementById('seg-rsv-limite')?.value||null,
+    notas_reserva:document.getElementById('seg-rsv-notas')?.value?.trim()||''
+  };
+  try{
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
+    if(error){toast('Error: '+error.message,false);return;}
+    toast('Seguimiento guardado');
+  }catch(e){toast('Error al guardar',false);console.error('[_saveSeguimientoV2]',e);}
 }
 
 // ═══════════════════════════════════════════
