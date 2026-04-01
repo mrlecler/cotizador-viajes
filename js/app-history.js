@@ -910,6 +910,7 @@ async function saveReserva(){
     toast('Seguimiento guardado');
     closeDrawer();
     renderHistory();
+    if(document.getElementById('tab-seguimiento')?.classList.contains('on')) renderSeguimiento();
   }catch(e){toast('Error al guardar',false);console.error('[saveReserva]',e);}
 }
 
@@ -999,6 +1000,80 @@ async function deleteViajeDoc(docId,path){
   await sb.from('documentos_cliente').delete().eq('id',docId);
   toast('Documento eliminado');
   if(_drawerQuotId) loadViajeDoc(_drawerQuotId);
+}
+
+// ═══════════════════════════════════════════
+// SEGUIMIENTO — sección propia
+// ═══════════════════════════════════════════
+async function renderSeguimiento(){
+  const el=document.getElementById('seg-list');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--g3)"><span class="spin spin-tq"></span></div>';
+  try{
+    const{data:quotes,error}=await sb.from('cotizaciones')
+      .select('*')
+      .eq('agente_id',window._agenteId)
+      .in('estado',['aprobado','confirmada'])
+      .order('creado_en',{ascending:false});
+    if(error){el.innerHTML='<div style="padding:20px;color:var(--red);font-size:.82rem">Error: '+error.message+'</div>';return;}
+    if(!quotes||!quotes.length){
+      el.innerHTML='<div style="text-align:center;padding:60px 24px"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--g2)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg><div style="font-size:.9rem;font-weight:700;color:var(--g3)">Sin reservas activas</div><div style="font-size:.78rem;color:var(--g3);margin-top:6px">Las cotizaciones aprobadas y confirmadas aparecerán acá</div></div>';
+      return;
+    }
+    const hoy=new Date().toISOString().slice(0,10);
+    const fmtAmt=n=>n>0?'$'+Number(n).toLocaleString('es-AR'):'—';
+    const fmtDate=s=>s?new Date(s+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'}):null;
+
+    el.innerHTML=quotes.map(q=>{
+      const d=q.datos||{};
+      const r=d._reserva||{};
+      const pagos=Array.isArray(d._pagos)?d._pagos:[];
+      const cli=d.cliente?.nombre||'Sin nombre';
+      const dest=q.destino||d.viaje?.destino||'Sin destino';
+      const precioTotal=Number(d.precio_total||d.total_precio||q.precio_total||0);
+      const totalPagado=pagos.reduce((s,p)=>s+(+p.monto||0),0);
+      const saldo=precioTotal>0?Math.max(0,precioTotal-totalPagado):null;
+      const pct=precioTotal>0?Math.min(100,(totalPagado/precioTotal)*100):null;
+      const limiteVencido=r.fecha_limite_pago&&r.fecha_limite_pago<hoy;
+      const isConf=q.estado==='confirmada';
+
+      // Barra de progreso mini
+      const barra=pct!==null?`
+        <div style="height:4px;background:var(--g2);border-radius:2px;margin-top:6px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${saldo===0?'#22c55e':'var(--primary)'};border-radius:2px"></div>
+        </div>`:'';
+
+      return `<div class="card" style="margin-bottom:10px;cursor:pointer" onclick="openReservaDrawer('${q.id}')">
+        <div class="card-body" style="padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                <span style="font-size:.85rem;font-weight:700;color:var(--text)">${cli}</span>
+                <span style="font-size:.68rem;padding:2px 8px;border-radius:10px;background:${isConf?'rgba(34,197,94,.12)':'rgba(27,158,143,.12)'};color:${isConf?'#22c55e':'var(--primary)'};font-weight:700">${isConf?'Confirmada':'Aprobada'}</span>
+                ${limiteVencido?'<span style="font-size:.68rem;padding:2px 8px;border-radius:10px;background:rgba(239,68,68,.1);color:#ef4444;font-weight:700">Pago vencido</span>':''}
+              </div>
+              <div style="font-size:.78rem;color:var(--g4)">${dest}</div>
+              <div style="font-size:.68rem;color:var(--g3);margin-top:2px;font-family:'DM Mono',monospace">${q.ref_id||''}${q.fecha_sal?' · salida '+fmtDate(q.fecha_sal):''}</div>
+              ${barra}
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              ${precioTotal>0?`
+                <div style="font-size:.72rem;color:var(--g3)">Total</div>
+                <div style="font-size:.88rem;font-weight:800;color:var(--text)">${fmtAmt(precioTotal)}</div>
+                ${pagos.length>0?`<div style="font-size:.7rem;margin-top:4px;color:${saldo===0?'#22c55e':'#FF6B35'};font-weight:700">${saldo===0?'Completado':'Saldo '+fmtAmt(saldo)}</div>`:''}
+              `:`<div style="font-size:.72rem;color:var(--g3)">Sin precio</div>`}
+              ${r.fecha_limite_pago?`<div style="font-size:.68rem;color:${limiteVencido?'#ef4444':'var(--g4)'};margin-top:4px">Vence ${fmtDate(r.fecha_limite_pago)}</div>`:''}
+            </div>
+          </div>
+          ${r.nro_reserva?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;color:var(--g4)">Nro. reserva: <span style="font-weight:700;color:var(--text);font-family:'DM Mono',monospace">${r.nro_reserva}</span></div>`:''}
+          ${pagos.length>0?`<div style="margin-top:${r.nro_reserva?'4px':'8px'};font-size:.7rem;color:var(--g4)">${pagos.length} pago${pagos.length>1?'s':''} registrado${pagos.length>1?'s':''} · ${fmtAmt(totalPagado)} cobrado</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    el.innerHTML='<div style="padding:20px;color:var(--red);font-size:.82rem">Error al cargar seguimientos.</div>';
+    console.error('[renderSeguimiento]',e);
+  }
 }
 
 // ═══════════════════════════════════════════

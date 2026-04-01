@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.12';
+const APP_VERSION = '0.25.13';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -1237,6 +1237,7 @@ function switchTab(id){
     if(formDraft) restoreDraft(formDraft);
   }
   if(id==='history') renderHistory();
+  if(id==='seguimiento'){if(typeof renderSeguimiento==='function')renderSeguimiento();}
   if(id==='promos') renderPromos();
   if(id==='clients'){renderClients();if(typeof renderGroups==='function')renderGroups();}
   if(id==='admin'){renderAdmin();if(typeof _loadApiKeyFields==='function')_loadApiKeyFields();}
