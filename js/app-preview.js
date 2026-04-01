@@ -80,9 +80,9 @@ function removeCover(){
   updCovers();
 }
 
-function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;localStorage.setItem('mp_logo',logoUrl);_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
-function removeLogo(){logoUrl=null;agCfg.logo_url=null;localStorage.removeItem('mp_logo');_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
-function _logoUrlInput(url){url=(url||'').trim();if(!url){return;}logoUrl=url;agCfg.logo_url=url;localStorage.setItem('mp_logo',url);_saveAgCfg();updateLogoPreview();}
+function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
+function removeLogo(){logoUrl=null;agCfg.logo_url=null;_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
+function _logoUrlInput(url){url=(url||'').trim();if(!url){return;}logoUrl=url;agCfg.logo_url=url;_saveAgCfg();updateLogoPreview();}
 function updateLogoPreview(){
   const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
   if(!w) return; // element may not exist yet
@@ -148,10 +148,11 @@ async function saveCfg(){
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
   const rawLogoUrl=(document.getElementById('cfg-logo-url')?.value||'').trim();
-  if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;localStorage.setItem('mp_logo',rawLogoUrl);}
+  if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;}
   // Update in Supabase — sin pdf_theme (se maneja solo en preview via localStorage)
   if(currentUser&&window._agenteId){
-    const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod};
+    // soc no existe en tabla agentes — no incluir en UPDATE
+    const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',pais_cod:agCfg.pais_cod};
     if(agCfg.logo_url) upd.logo_url=agCfg.logo_url;
     const {error}=await sb.from('agentes').update(upd).eq('id',window._agenteId);
     if(error){
@@ -198,11 +199,12 @@ function loadCfg(){
   const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
   const ttl=document.getElementById('cfg-card-title');
   if(currentRol==='admin'){
-    // Admin: only name, email, tel + password
+    // Admin: only name, email, tel + password — sin logo personal ni campos de agente
     const hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
     hide('cfg-ag-wrap');
     hide('cfg-pais-wrap');
     hide('cfg-soc-wrap');
+    hide('cfg-logo-wrap');
     if(ttl) ttl.textContent='Mi perfil de administrador';
   } else if(currentRol==='agencia'){
     // Agencia: hide entire profile card (managed in Mi Agencia), only password
@@ -457,7 +459,7 @@ async function _publicApprove(quoteId,token){
   if(btn){btn.disabled=true;btn.textContent='Aprobando...';}
   try{
     const{error}=await sb.from('cotizaciones').update({estado:'aprobado'}).filter('datos->>public_token','eq',token);
-    if(error){alert('No se pudo aprobar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
+    if(error){alert('No se pudo aprobar: '+(error.message||error.code||'error desconocido'));if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
     const bar=document.getElementById('pub-bar');
     if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
   }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
@@ -476,7 +478,7 @@ async function _publicRequestMod(quoteId,token){
     reqs.push({msg,ts:new Date().toISOString()});
     rd._mod_requests=reqs;
     const{error}=await sb.from('cotizaciones').update({estado:'revision',datos:rd}).filter('datos->>public_token','eq',token);
-    if(error){alert('No se pudo enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}return;}
+    if(error){alert('No se pudo enviar: '+(error.message||error.code||'error desconocido'));if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}return;}
     const bar=document.getElementById('pub-bar');
     if(bar){bar.style.background='rgba(255,107,53,0.95)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;padding:4px 0">Solicitud enviada — tu agente ya fue notificado</p>';}
   }catch(e){alert('Error al enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}}
