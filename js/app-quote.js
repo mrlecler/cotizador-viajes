@@ -173,7 +173,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(126,200,227,.7);border:1px solid rgba(126,200,227,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="flex:1"></div>
-      <div style="position:relative;margin:0 28px 28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
+      <div class="qp-glass-card" style="position:relative;margin:0 28px 28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(126,200,227,0.18);border:1px solid rgba(126,200,227,0.38);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7EC8E3">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
@@ -263,7 +263,7 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(247,197,216,.7);border:1px solid rgba(247,197,216,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
       <div style="flex:1"></div>
-      <div style="position:relative;margin:0 28px 28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
+      <div class="qp-glass-card" style="position:relative;margin:0 28px 28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(247,197,216,0.15);border:1px solid rgba(247,197,216,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#F7C5D8">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">

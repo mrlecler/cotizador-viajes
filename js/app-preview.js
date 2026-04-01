@@ -412,7 +412,7 @@ function _buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl){
   coverUrl=d._cover_url||fallbackCoverUrl||null;
   logoUrl=d._logo_url||null;
   if(d._unsplash_credit) window._unsplashCredit=d._unsplash_credit;
-  if(d._agent&&typeof agCfg!=='undefined') Object.assign(agCfg,d._agent);
+  if(d._agent&&typeof agCfg!=='undefined'){Object.assign(agCfg,d._agent);if(d._agent.pdf_theme)agCfg.pdf_theme=d._agent.pdf_theme;}
   const html=buildQuoteHTML(d);
   const agNm=d._agent?.nm||'tu agente';
   let bottomBar='';
