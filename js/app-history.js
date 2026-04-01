@@ -1176,8 +1176,7 @@ async function renderSeguimiento(){
               ${r.fecha_limite_pago?`<div style="font-size:.68rem;color:${limiteVencido?'#ef4444':'var(--g4)'};margin-top:4px">Vence ${fmtDate(r.fecha_limite_pago)}</div>`:''}
             </div>
           </div>
-          ${r.nro_reserva?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;color:var(--g4)">Nro. reserva: <span style="font-weight:700;color:var(--text);font-family:'DM Mono',monospace">${r.nro_reserva}</span></div>`:''}
-          ${pagos.length>0?`<div style="margin-top:${r.nro_reserva?'4px':'8px'};font-size:.7rem;color:var(--g4)">${pagos.length} pago${pagos.length>1?'s':''} registrado${pagos.length>1?'s':''} · ${fmtAmt(totalPagado)} cobrado</div>`:''}
+          ${pagos.length>0?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.7rem;color:var(--g4)">${pagos.length} pago${pagos.length>1?'s':''} registrado${pagos.length>1?'s':''} · ${fmtAmt(totalPagado)} cobrado</div>`:''}
         </div>
       </div>`;
     }).join('');
@@ -1381,10 +1380,7 @@ async function _renderSeguimientoDetail(quotId){
       <div class="seg-section">
         <div class="seg-section-hd"><span class="seg-section-ttl">Info de reserva</span></div>
         <div class="seg-section-body">
-          <div class="g2">
-            <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="seg-rsv-nro" value="${r.nro_reserva||data.ref_id||''}" placeholder="${data.ref_id||'ABC-12345'}"></div>
-            <div class="fg"><label class="lbl">Vencimiento pago</label><input class="finput" type="date" id="seg-rsv-limite" value="${r.fecha_limite_pago||''}"></div>
-          </div>
+          <div class="fg"><label class="lbl">Vencimiento pago</label><input class="finput" type="date" id="seg-rsv-limite" value="${r.fecha_limite_pago||''}"></div>
           <div class="fg"><label class="lbl">Notas internas</label><textarea class="finput" id="seg-rsv-notas" rows="2" placeholder="Notas del agente..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
         </div>
       </div>
@@ -1526,7 +1522,7 @@ async function _saveSeguimientoV2(){
   if(!_segDetailQuotId||!_segDetailData) return;
   const d=_segDetailData.datos||{};
   d._reserva={
-    nro_reserva:document.getElementById('seg-rsv-nro')?.value?.trim()||'',
+    nro_reserva:d._reserva?.nro_reserva||'', // mantener valor existente
     fecha_limite_pago:document.getElementById('seg-rsv-limite')?.value||null,
     notas_reserva:document.getElementById('seg-rsv-notas')?.value?.trim()||''
   };
