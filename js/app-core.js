@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.14';
+const APP_VERSION = '0.25.15';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -1393,6 +1393,40 @@ function tglChk(el){el.classList.toggle('on');const inp=el.querySelector('input'
 // ═══════════════════════════════════════════
 // CLIENT SEARCH
 // ═══════════════════════════════════════════
+// Proveedores para select en seguimiento
+let _proveedoresCache=null;
+async function _loadProveedoresForSelect(){
+  if(_proveedoresCache) return _proveedoresCache;
+  try{
+    let q=sb.from('proveedores').select('id,nombre,tipo,tipos').order('nombre');
+    if(currentRol==='agente'&&window._agenteId){
+      // Agente ve sus proveedores + los de su agencia
+      if(window._agenciaId) q=q.or(`agente_id.eq.${window._agenteId},agencia_id.eq.${window._agenciaId}`);
+      else q=q.eq('agente_id',window._agenteId);
+    }
+    const{data}=await q;
+    _proveedoresCache=data||[];
+  }catch(e){console.warn('[_loadProveedoresForSelect]',e);_proveedoresCache=[];}
+  return _proveedoresCache;
+}
+// Grupo de viaje de un cliente — pasajeros
+async function _loadGrupoPasajeros(clienteId){
+  if(!clienteId) return [];
+  try{
+    // Buscar grupos donde este cliente es miembro
+    const{data:memberships}=await sb.from('grupo_miembros').select('grupo_id').eq('cliente_id',clienteId);
+    if(!memberships||!memberships.length) return [];
+    const grupoIds=[...new Set(memberships.map(m=>m.grupo_id))];
+    // Traer todos los miembros de esos grupos con datos del cliente
+    const{data:allMembers}=await sb.from('grupo_miembros').select('cliente_id').in('grupo_id',grupoIds);
+    if(!allMembers||!allMembers.length) return [];
+    const clienteIds=[...new Set(allMembers.map(m=>m.cliente_id))];
+    // Traer datos de cada cliente
+    const{data:clientes}=await sb.from('clientes').select('id,nombre,documento,doc_tipo,fecha_nac,nacionalidad,celular,email,pasaporte_vto,alergias,notas').in('id',clienteIds);
+    return clientes||[];
+  }catch(e){console.warn('[_loadGrupoPasajeros]',e);return [];}
+}
+
 async function loadClients(){
   allClients = await dbLoadClients();
 }
