@@ -129,6 +129,9 @@ async function loadFromHistory(refId, id){
   qData=data.datos;
   editingQuoteId=id;
   if(data.cover_url) coverUrl=data.cover_url;
+  // Restaurar template del agente — primero desde la cotización, si no desde agCfg
+  const savedTheme=data.datos?._agent?.pdf_theme;
+  if(savedTheme&&typeof selectPdfTheme==='function') selectPdfTheme(savedTheme);
   renderPreview(qData);switchTab('preview');
 }
 
@@ -141,6 +144,9 @@ async function editFromHistory(refId, id){
   editingQuoteId = id;
   const d = data.datos;
   if(data.cover_url) coverUrl=data.cover_url;
+  // Restaurar template guardado en la cotización
+  const savedTheme=d?._agent?.pdf_theme;
+  if(savedTheme&&typeof selectPdfTheme==='function') selectPdfTheme(savedTheme);
   // Restore into form via restoreDraft
   formDraft = d;
   switchTab('form');
