@@ -80,9 +80,9 @@ function removeCover(){
   updCovers();
 }
 
-function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;localStorage.setItem('mp_logo',logoUrl);_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
-function removeLogo(){logoUrl=null;agCfg.logo_url=null;localStorage.removeItem('mp_logo');_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
-function _logoUrlInput(url){url=(url||'').trim();if(!url){return;}logoUrl=url;agCfg.logo_url=url;localStorage.setItem('mp_logo',url);_saveAgCfg();updateLogoPreview();}
+function uploadLogo(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{logoUrl=e.target.result;agCfg.logo_url=logoUrl;_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';};r.readAsDataURL(f);}
+function removeLogo(){logoUrl=null;agCfg.logo_url=null;_saveAgCfg();updateLogoPreview();const uf=document.getElementById('cfg-logo-url');if(uf)uf.value='';}
+function _logoUrlInput(url){url=(url||'').trim();if(!url){return;}logoUrl=url;agCfg.logo_url=url;_saveAgCfg();updateLogoPreview();}
 function updateLogoPreview(){
   const w=document.getElementById('logo-wrap'),b=document.getElementById('btn-rmlogo');
   if(!w) return; // element may not exist yet
@@ -132,6 +132,34 @@ function _loadApiKeyFields(){
   const el2=document.getElementById('ak-ia');if(el2)el2.value=localStorage.getItem('mp_ia_key')||'';
   const el3=document.getElementById('ak-resend');if(el3)el3.value=localStorage.getItem('mp_resend_key')||'';
   const el4=document.getElementById('ak-resend-from');if(el4)el4.value=agCfg.resend_from||'';
+  // Cargar sonidos admin guardados
+  const sndApr=document.getElementById('adm-snd-aprobado');
+  if(sndApr&&agCfg.adm_snd_aprobado) sndApr.value=agCfg.adm_snd_aprobado;
+  const sndSop=document.getElementById('adm-snd-soporte');
+  if(sndSop&&agCfg.adm_snd_soporte) sndSop.value=agCfg.adm_snd_soporte;
+}
+
+// ═══════════════════════════════════════════
+// ADMIN SOUNDS
+// ═══════════════════════════════════════════
+function saveAdminSounds(){
+  const apr=(document.getElementById('adm-snd-aprobado')?.value||'chime');
+  const sop=(document.getElementById('adm-snd-soporte')?.value||'alert');
+  agCfg.adm_snd_aprobado=apr;
+  agCfg.adm_snd_soporte=sop;
+  // Los sonidos del admin también se propagan como defaults del sistema
+  // (agentes que no tienen preferencia propia usarán el valor del admin)
+  localStorage.setItem('mp_sys_snd_aprobado',apr);
+  localStorage.setItem('mp_sys_snd_soporte',sop);
+  _saveAgCfg();
+  const ok=document.getElementById('adm-snd-ok');
+  if(ok){ok.style.display='inline';setTimeout(()=>ok.style.display='none',2000);}
+  toast('Sonidos guardados');
+}
+function _previewAdminSound(category){
+  const sel=document.getElementById(category==='aprobado'?'adm-snd-aprobado':'adm-snd-soporte');
+  const soundId=sel?.value||'chime';
+  if(typeof _playSound==='function') _playSound(category,soundId);
 }
 
 // ═══════════════════════════════════════════
@@ -144,14 +172,17 @@ async function saveCfg(){
   if(_vd) agCfg.validez_dias=parseInt(_vd); else delete agCfg.validez_dias;
   const _mm=(document.getElementById('cfg-meta-mensual')?.value||'').trim();
   if(_mm) agCfg.meta_mensual=parseFloat(_mm); else delete agCfg.meta_mensual;
+  const _sndApr=(document.getElementById('cfg-sound-aprobado')?.value||'').trim();
+  if(_sndApr) agCfg.sound_aprobado=_sndApr; else delete agCfg.sound_aprobado;
   _saveAgCfg();
   window._agentePaisCod=agCfg.pais_cod;
   // Logo URL desde campo (si cambió)
   const rawLogoUrl=(document.getElementById('cfg-logo-url')?.value||'').trim();
-  if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;localStorage.setItem('mp_logo',rawLogoUrl);}
+  if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;}
   // Update in Supabase — sin pdf_theme (se maneja solo en preview via localStorage)
   if(currentUser&&window._agenteId){
-    const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',soc:agCfg.soc||'',pais_cod:agCfg.pais_cod};
+    // soc no existe en tabla agentes — no incluir en UPDATE
+    const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',pais_cod:agCfg.pais_cod};
     if(agCfg.logo_url) upd.logo_url=agCfg.logo_url;
     const {error}=await sb.from('agentes').update(upd).eq('id',window._agenteId);
     if(error){
@@ -194,15 +225,19 @@ function loadCfg(){
     updateLogoPreview(); // muestra inicial (avatar con letra)
   }
   if(agCfg.pdf_theme!=null) selectPdfTheme(agCfg.pdf_theme);
+  // Sound preference
+  const sndEl=document.getElementById('cfg-sound-aprobado');
+  if(sndEl&&agCfg.sound_aprobado) sndEl.value=agCfg.sound_aprobado;
   // Profile card: adapt per role
   const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
   const ttl=document.getElementById('cfg-card-title');
   if(currentRol==='admin'){
-    // Admin: only name, email, tel + password
+    // Admin: only name, email, tel + password — sin logo personal ni campos de agente
     const hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
     hide('cfg-ag-wrap');
     hide('cfg-pais-wrap');
     hide('cfg-soc-wrap');
+    hide('cfg-logo-wrap');
     if(ttl) ttl.textContent='Mi perfil de administrador';
   } else if(currentRol==='agencia'){
     // Agencia: hide entire profile card (managed in Mi Agencia), only password
@@ -228,7 +263,7 @@ function loadCfg(){
 // ═══════════════════════════════════════════
 // PDF THEME SELECTOR
 // ═══════════════════════════════════════════
-const _PDF_THEME_NAMES={1:'Turquesa ermix',2:'Inmersión Glaciar',3:'Ámbar Imperial',4:'Noir Cinema',5:'Postal Mediterránea',6:'Magia Encantada',7:'Epic Adventure',8:'Rosa Botánica',9:'Aqua Profundo',10:'Rojo Flamante'};
+const _PDF_THEME_NAMES={1:'Turquesa',2:'Azul Glaciar',3:'Ámbar Dorado',4:'Negro Violeta',5:'Rojo Coral',6:'Azul Marino',7:'Negro Naranja',8:'Rosa Fucsia',9:'Cyan Profundo',10:'Rojo Carmín'};
 function selectPdfTheme(n){
   n=parseInt(n)||1;
   const inp=document.getElementById('cfg-pdf-theme');
@@ -241,6 +276,7 @@ function selectPdfTheme(n){
   const dot=document.getElementById('tb-theme-dot');
   if(dot&&typeof PDF_THEMES!=='undefined'&&PDF_THEMES[n])dot.style.background=PDF_THEMES[n].grad;
   agCfg.pdf_theme=n;
+  if(typeof _saveAgCfg==='function') _saveAgCfg();
   if(qData)renderPreview(qData);
 }
 
@@ -394,7 +430,7 @@ async function _initPublicView(){
   // Reemplazar toda la UI por spinner
   document.body.innerHTML='<div id="pub-loading" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;gap:16px"><div style="width:40px;height:40px;border:3px solid rgba(27,158,143,0.3);border-top-color:#1B9E8F;border-radius:50%;animation:spin .8s linear infinite"></div><p style="font-size:.9rem;color:rgba(240,237,230,0.6)">Cargando cotización...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
   try{
-    const{data,error}=await sb.from('cotizaciones').select('datos,estado,id,cover_url').filter('datos->>public_token','eq',token).maybeSingle();
+    const{data,error}=await sb.from('cotizaciones').select('*').filter('datos->>public_token','eq',token).maybeSingle();
     if(error||!data){
       document.body.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D120F;color:#F0EDE6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;text-align:center;padding:24px"><div><p style="font-size:1.1rem;font-weight:600;margin-bottom:8px">Cotización no encontrada</p><p style="font-size:.85rem;color:rgba(240,237,230,0.5)">El link puede haber expirado o no ser válido.</p></div></div>`;
       return true;
@@ -411,7 +447,7 @@ function _buildPublicWall(d,estado,quoteId,token,fallbackCoverUrl){
   coverUrl=d._cover_url||fallbackCoverUrl||null;
   logoUrl=d._logo_url||null;
   if(d._unsplash_credit) window._unsplashCredit=d._unsplash_credit;
-  if(d._agent&&typeof agCfg!=='undefined') Object.assign(agCfg,d._agent);
+  if(d._agent&&typeof agCfg!=='undefined'){Object.assign(agCfg,d._agent);if(d._agent.pdf_theme)agCfg.pdf_theme=d._agent.pdf_theme;}
   const html=buildQuoteHTML(d);
   const agNm=d._agent?.nm||'tu agente';
   let bottomBar='';
@@ -456,7 +492,7 @@ async function _publicApprove(quoteId,token){
   if(btn){btn.disabled=true;btn.textContent='Aprobando...';}
   try{
     const{error}=await sb.from('cotizaciones').update({estado:'aprobado'}).filter('datos->>public_token','eq',token);
-    if(error){alert('No se pudo aprobar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
+    if(error){alert('No se pudo aprobar: '+(error.message||error.code||'error desconocido'));if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
     const bar=document.getElementById('pub-bar');
     if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
   }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
@@ -475,7 +511,7 @@ async function _publicRequestMod(quoteId,token){
     reqs.push({msg,ts:new Date().toISOString()});
     rd._mod_requests=reqs;
     const{error}=await sb.from('cotizaciones').update({estado:'revision',datos:rd}).filter('datos->>public_token','eq',token);
-    if(error){alert('No se pudo enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}return;}
+    if(error){alert('No se pudo enviar: '+(error.message||error.code||'error desconocido'));if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}return;}
     const bar=document.getElementById('pub-bar');
     if(bar){bar.style.background='rgba(255,107,53,0.95)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif;padding:4px 0">Solicitud enviada — tu agente ya fue notificado</p>';}
   }catch(e){alert('Error al enviar. Intentá de nuevo.');if(btn){btn.disabled=false;btn.textContent='Enviar solicitud';}}

@@ -9,16 +9,16 @@ function _extractAirlineIata(name,flightNum){
 }
 
 const PDF_THEMES={
-  1:{name:'Turquesa ermix',      layout:'cinematic',primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143', rgb2:'11,197,184'},
-  2:{name:'Inmersión Glaciar',   layout:'glaciar',  primary:'#2979B0',secondary:'#1E3A5F',accent:'#7EC8E3',grad:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',text:'#ffffff',rgb:'126,200,227',rgb2:'41,121,176'},
-  3:{name:'Ámbar Imperial',      layout:'ambar',    primary:'#C9860A',secondary:'#7C4A00',accent:'#E8C77D',grad:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',text:'#E8C77D',rgb:'232,199,125',rgb2:'201,134,10'},
-  4:{name:'Noir Cinema',         layout:'noir',     primary:'#7B2FBE',secondary:'#9B59B6',accent:'#D7BDE2',grad:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',text:'#ffffff',rgb:'123,47,190', rgb2:'155,89,182'},
-  5:{name:'Postal Mediterránea', layout:'postal',   primary:'#C84B31',secondary:'#E8826A',accent:'#F5A623',grad:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',text:'#ffffff',rgb:'200,75,49',  rgb2:'232,130,106'},
-  6:{name:'Magia Encantada',     layout:'magia',    primary:'#1A2E8A',secondary:'#0F1B5C',accent:'#FFD700',grad:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',text:'#FFD700',rgb:'255,215,0',  rgb2:'26,46,138'},
-  7:{name:'Epic Adventure',      layout:'epic',     primary:'#FF4500',secondary:'#CC3700',accent:'#FF6B35',grad:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',text:'#FF4500',rgb:'255,69,0',   rgb2:'204,55,0'},
-  8:{name:'Rosa Botánica',       layout:'rosa',     primary:'#C4426A',secondary:'#8B1A4A',accent:'#F7C5D8',grad:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',text:'#ffffff',rgb:'196,66,106', rgb2:'139,26,74'},
-  9:{name:'Aqua Profundo',       layout:'aqua',     primary:'#00D4E8',secondary:'#0A1F5C',accent:'#00E5FF',grad:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',text:'#ffffff',rgb:'0,229,255',  rgb2:'10,31,92'},
- 10:{name:'Rojo Flamante',       layout:'rojo',     primary:'#B22222',secondary:'#8B0000',accent:'#FF6B6B',grad:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',text:'#ffffff',rgb:'255,107,107',rgb2:'178,34,34'},
+  1:{name:'Turquesa',      layout:'cinematic',primary:'#1B9E8F',secondary:'#0BC5B8',accent:'#06B6D4',grad:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',text:'#ffffff',rgb:'27,158,143', rgb2:'11,197,184'},
+  2:{name:'Azul Glaciar',  layout:'glaciar',  primary:'#2979B0',secondary:'#1E3A5F',accent:'#7EC8E3',grad:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',text:'#ffffff',rgb:'126,200,227',rgb2:'41,121,176'},
+  3:{name:'Ámbar Dorado',  layout:'ambar',    primary:'#C9860A',secondary:'#7C4A00',accent:'#E8C77D',grad:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',text:'#E8C77D',rgb:'232,199,125',rgb2:'201,134,10'},
+  4:{name:'Negro Violeta', layout:'noir',     primary:'#7B2FBE',secondary:'#9B59B6',accent:'#D7BDE2',grad:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',text:'#ffffff',rgb:'123,47,190', rgb2:'155,89,182'},
+  5:{name:'Rojo Coral',    layout:'postal',   primary:'#C84B31',secondary:'#E8826A',accent:'#F5A623',grad:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',text:'#ffffff',rgb:'200,75,49',  rgb2:'232,130,106'},
+  6:{name:'Azul Marino',   layout:'magia',    primary:'#1A2E8A',secondary:'#0F1B5C',accent:'#FFD700',grad:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',text:'#FFD700',rgb:'255,215,0',  rgb2:'26,46,138'},
+  7:{name:'Negro Naranja', layout:'epic',     primary:'#FF4500',secondary:'#CC3700',accent:'#FF6B35',grad:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',text:'#FF4500',rgb:'255,69,0',   rgb2:'204,55,0'},
+  8:{name:'Rosa Fucsia',   layout:'rosa',     primary:'#C4426A',secondary:'#8B1A4A',accent:'#F7C5D8',grad:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',text:'#ffffff',rgb:'196,66,106', rgb2:'139,26,74'},
+  9:{name:'Cyan Profundo', layout:'aqua',     primary:'#00D4E8',secondary:'#0A1F5C',accent:'#00E5FF',grad:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',text:'#ffffff',rgb:'0,229,255',  rgb2:'10,31,92'},
+ 10:{name:'Rojo Carmín',   layout:'rojo',     primary:'#B22222',secondary:'#8B0000',accent:'#FF6B6B',grad:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',text:'#ffffff',rgb:'255,107,107',rgb2:'178,34,34'},
 };
 // ─── Wordmark dinámico — DM Sans 900 + X custom path ─────────────────────────
 function buildPdfWordmark(fontSize){
@@ -165,14 +165,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Glaciar: full-bleed photo + glassmorphism card ──
   if(layout==='glaciar'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#0D1F3A 0%,#1E3A5F 60%,#0A2A4A 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#0D1F3A 0%,#1E3A5F 60%,#0A2A4A 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,14,45,0.15) 0%,rgba(5,14,45,0.55) 55%,rgba(5,14,45,0.85) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(126,200,227,0.1) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px;max-width:90px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(126,200,227,.7);border:1px solid rgba(126,200,227,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+      <div style="flex:1"></div>
+      <div class="qp-glass-card" style="position:relative;margin:0 28px 28px;background:rgba(255,255,255,0.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(126,200,227,0.18);border:1px solid rgba(126,200,227,0.38);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7EC8E3">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
@@ -209,16 +210,17 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Magia Encantada: Disney deep blue + gold stars ──
   if(layout==='magia'){
-    const stars=Array.from({length:28},(_,i)=>{const x=Math.round((i*47+13)%98),y=Math.round((i*71+29)%85),s=i%3+1;return `<div style="position:absolute;left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:#FFD700;border-radius:50%;opacity:${0.25+s*0.12}"></div>`;}).join('');
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#050F3A 0%,#0F1B5C 45%,#0A0D2E 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,15,58,0.2) 0%,rgba(15,27,92,0.5) 50%,rgba(10,13,46,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none"></div>
+    const stars=Array.from({length:28},(_,i)=>{const x=Math.round((i*47+13)%98),y=Math.round((i*71+29)%85),s=i%3+1;return `<div style="position:absolute;left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:#FFD700;border-radius:50%;opacity:${0.25+s*0.12};z-index:1"></div>`;}).join('');
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#050F3A 0%,#0F1B5C 45%,#0A0D2E 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,15,58,0.2) 0%,rgba(15,27,92,0.5) 50%,rgba(10,13,46,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(255,215,0,0.16) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
       ${stars}
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,215,0,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,215,0,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,215,0,.6);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.35);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFD700">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         ${paxLine}
@@ -229,15 +231,16 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Epic Adventure: cinematic dark + bold orange glow ──
   if(layout==='epic'){
-    return `<div class="qp-cover" style="background:linear-gradient(160deg,#080808 0%,#0A0A0A 50%,#0F0300 100%);position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,69,0,0.26) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none"></div>
-      ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none"></div>`:''}
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="background:linear-gradient(160deg,#080808 0%,#0A0A0A 50%,#0F0300 100%);position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 115%,rgba(255,69,0,0.26) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;top:-30%;right:-10%;width:70%;height:70%;background:radial-gradient(ellipse,rgba(255,69,0,0.06) 0%,transparent 65%);pointer-events:none;z-index:0"></div>
+      ${coverUrl?`<div style="position:absolute;inset:0;opacity:0.12;background:url('${coverUrl}') center/cover no-repeat;pointer-events:none;z-index:0"></div>`:''}
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,69,0,.3);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,69,0,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,69,0,.6);border:1px solid rgba(255,69,0,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,69,0,0.15);border:1px solid rgba(255,69,0,0.32);border-radius:4px;padding:3px 12px;font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#FF4500">${dest}</span>`).join('')}</div>`:''}
         ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px">PROPUESTA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-3px;color:white;line-height:1;margin-bottom:16px;text-shadow:0 0 40px rgba(255,69,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
         <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
@@ -252,14 +255,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Rosa Botánica: photo with rose glassmorphism card ──
   if(layout==='rosa'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#5C0A2A 0%,#8B1A4A 45%,#C4426A 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#5C0A2A 0%,#8B1A4A 45%,#C4426A 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,10,42,0.1) 0%,rgba(139,26,74,0.45) 50%,rgba(139,26,74,0.82) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(247,197,216,0.18) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(247,197,216,.25);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(247,197,216,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(247,197,216,.7);border:1px solid rgba(247,197,216,.25);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:28px;left:28px;right:28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2">
+      <div style="flex:1"></div>
+      <div class="qp-glass-card" style="position:relative;margin:0 28px 28px;background:rgba(139,26,74,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(247,197,216,0.18);border-radius:16px;padding:26px 30px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(247,197,216,0.15);border:1px solid rgba(247,197,216,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#F7C5D8">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
@@ -272,15 +276,16 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Aqua Profundo: deep navy + electric cyan glow ──
   if(layout==='aqua'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#020817 0%,#050E2D 50%,#020817 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,8,23,0.1) 0%,rgba(5,14,45,0.5) 55%,rgba(5,14,45,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#020817 0%,#050E2D 50%,#020817 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(2,8,23,0.1) 0%,rgba(5,14,45,0.5) 55%,rgba(5,14,45,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 110%,rgba(0,229,255,0.2) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 78% 18%,rgba(0,229,255,0.07) 0%,transparent 55%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(0,229,255,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(0,229,255,.8)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(0,229,255,.6);border:1px solid rgba(0,229,255,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#00E5FF">${dest}</span>`).join('')}</div>`:''}
         ${clientBlock}
         ${paxLine}
@@ -291,14 +296,15 @@ function _buildCoverByLayout(layout,th,ag,d,coverUrl,totalAmt,today,buildPdfWord
 
   // ── Rojo Flamante: crimson full-bleed cover ──
   if(layout==='rojo'){
-    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#4A0000 0%,#8B0000 45%,#600000 100%)`};position:relative;min-height:520px;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none"></div>
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none"></div>
-      <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+    return `<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:`background:linear-gradient(160deg,#4A0000 0%,#8B0000 45%,#600000 100%)`};position:relative;min-height:520px;display:flex;flex-direction:column">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(74,0,0,0.15) 0%,rgba(139,0,0,0.55) 55%,rgba(96,0,0,0.88) 100%);pointer-events:none;z-index:0"></div>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 105%,rgba(255,107,107,0.16) 0%,transparent 60%);pointer-events:none;z-index:0"></div>
+      <div style="position:relative;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2;flex-shrink:0">
         <div style="display:flex;align-items:center;gap:14px">${ag.logo_url?`<img src="${ag.logo_url}" style="max-height:28px">`:buildPdfWordmarkFn(22)}${ag.nm?`<div style="width:1px;height:16px;background:rgba(255,245,235,.2);margin:0 4px"></div><div style="font-size:10px;font-weight:700;color:rgba(255,245,235,.9)">${ag.nm}</div>`:''}</div>
         ${d.refId?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,245,235,.65);border:1px solid rgba(255,245,235,.2);border-radius:20px;padding:4px 12px">${d.refId}</div>`:''}
       </div>
-      <div style="position:absolute;bottom:0;left:0;right:0;padding:36px;z-index:2">
+      <div style="flex:1"></div>
+      <div style="position:relative;padding:36px;z-index:2;flex-shrink:0">
         ${dests.length?`<div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap">${dests.map(dest=>`<span style="background:rgba(255,245,235,0.12);border:1px solid rgba(255,245,235,0.28);border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FFF5EB">${dest}</span>`).join('')}</div>`:''}
         ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,245,235,.4);margin-bottom:8px">COTIZACIÓN PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${cl.nombre}</div>`:`<div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:#FFF5EB;line-height:1;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,.4)">${vi.destino||'Tu próximo viaje'}</div>`}
         <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
@@ -377,31 +383,33 @@ function buildQuoteHTML(d){
   if(_altCover){
     H+=_altCover;
   } else {
-  H+=`<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
-    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none"></div>
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none"></div>
-    <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+  H+=`<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'};display:flex;flex-direction:column">
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none;z-index:0"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none;z-index:0"></div>
+    <div style="position:relative;z-index:2;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       <div style="display:flex;align-items:center;gap:14px">
         ${buildPdfWordmark(24)}
         ${ag.nm?`<div style="width:1px;height:20px;background:rgba(255,255,255,.18)"></div><div style="line-height:1.3"><div style="font-size:11px;font-weight:700;color:white;letter-spacing:.3px">${ag.nm}</div>${ag.ag?`<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag}</div>`:''}</div>`:''}
       </div>
       ${d.refId?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.5px">${d.refId}</div>`:''}
     </div>
-    <div style="position:absolute;top:50%;left:36px;right:36px;transform:translateY(-55%);z-index:2">
-      ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
-      ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
-      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-        ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
-        ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
-        ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
+    <div style="position:relative;z-index:2;flex:1;display:flex;align-items:center;padding:0 36px">
+      <div>
+        ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
+          ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+          ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
+        </div>
       </div>
     </div>
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;background:${th.grad};padding:16px 36px;display:flex;align-items:center;gap:0">
+    <div style="position:relative;z-index:2;background:${th.grad};padding:16px 36px;display:flex;align-items:center;gap:0;flex-shrink:0">
       ${totalAmt?`<div style="flex:0 0 auto;padding-right:24px;border-right:1px solid rgba(255,255,255,.25)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">PRECIO REFERENCIA</div><div style="font-size:18px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div></div>`:''}
       ${vi.descripcion?`<div style="flex:1;padding:0 ${totalAmt?'24':'0'}px${ag.nm?';border-right:1px solid rgba(255,255,255,.25)':''}"><div style="font-size:9px;color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${vi.descripcion.trim().substring(0,200)}</div></div>`:`<div style="flex:1"></div>`}
       ${ag.nm?`<div style="flex:0 0 auto;padding-left:24px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">AGENTE</div><div style="font-size:12px;font-weight:700;color:white">${ag.nm}</div><div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px">${today}</div></div>`:''}
     </div>
-    ${window._unsplashCredit?(()=>{const _uc=window._unsplashCredit;const _pb=_uc.link||'https://unsplash.com';const _pu=_pb+(_pb.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';return`<div style="position:absolute;bottom:92px;left:12px;z-index:3;font-size:7px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.32);padding:2px 7px;border-radius:6px;backdrop-filter:blur(4px)">Foto de <a href="https://unsplash.com/@${_uc.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">${_uc.name}</a> en <a href="${_pu}" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">Unsplash</a></div>`})():''}
+    ${window._unsplashCredit?(()=>{const _uc=window._unsplashCredit;const _pb=_uc.link||'https://unsplash.com';const _pu=_pb+(_pb.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';return`<div style="position:absolute;bottom:92px;left:12px;z-index:3;font-size:7px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.32);padding:2px 7px;border-radius:6px">Foto de <a href="https://unsplash.com/@${_uc.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">${_uc.name}</a> en <a href="${_pu}" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">Unsplash</a></div>`})():''}
   </div>`;
   } // end else (cinematic/bold cover)
 
