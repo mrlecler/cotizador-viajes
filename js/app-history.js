@@ -813,10 +813,37 @@ function _renderReservaBody(data){
           <input class="finput" type="date" id="rsv-limite" value="${r.fecha_limite_pago||''}" style="${limiteVencido?'border-color:#ef4444;color:#ef4444':''}">
         </div>
       </div>
-      <div class="fg"><label class="lbl">Vouchers / documentos del viaje</label><textarea class="finput" id="rsv-vouchers-notas" rows="2" placeholder="Voucher Disney recibido, Hotel confirmado, etc." style="resize:vertical">${r.vouchers_notas||''}</textarea></div>
       <div class="fg"><label class="lbl">Notas internas</label><textarea class="finput" id="rsv-notas" rows="2" placeholder="Notas del agente sobre esta reserva..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
     </div>
-  `;
+
+    <!-- Documentos del viaje (vouchers, confirmaciones, seguros) -->
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <label class="lbl" style="margin:0">Documentos del viaje</label>
+        <label style="cursor:pointer">
+          <input type="file" id="rsv-doc-file" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif" onchange="uploadViajeDoc()">
+          <span class="btn btn-out btn-xs" onclick="document.getElementById('rsv-doc-file').click()" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Subir
+          </span>
+        </label>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <select class="finput" id="rsv-doc-tipo" style="flex:1;font-size:.78rem">
+          <option value="voucher">Voucher</option>
+          <option value="hotel">Confirmación hotel</option>
+          <option value="aerolinea">Confirmación aerolínea</option>
+          <option value="disney">Voucher Disney / Universal</option>
+          <option value="seguro">Seguro de viaje</option>
+          <option value="traslado">Confirmación traslado</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div id="rsv-docs-list"><div style="text-align:center;padding:12px;color:var(--g3);font-size:.78rem"><span class="spin spin-tq"></span></div></div>
+    </div>
+  \`;
+  // Cargar documentos del viaje de forma asincrónica
+  loadViajeDoc(data.id||_drawerQuotId);
 }
 
 let _drawerQuotData=null; // cache cotizacion data mientras el drawer está abierto
@@ -872,7 +899,6 @@ async function saveReserva(){
   const reserva={
     nro_reserva:(document.getElementById('rsv-nro')?.value||'').trim(),
     fecha_limite_pago:document.getElementById('rsv-limite')?.value||null,
-    vouchers_notas:(document.getElementById('rsv-vouchers-notas')?.value||'').trim(),
     notas_reserva:(document.getElementById('rsv-notas')?.value||'').trim()
   };
   try{
@@ -885,6 +911,94 @@ async function saveReserva(){
     closeDrawer();
     renderHistory();
   }catch(e){toast('Error al guardar',false);console.error('[saveReserva]',e);}
+}
+
+// ═══════════════════════════════════════════
+// DOCUMENTOS DEL VIAJE (Seguimiento)
+// Usan documentos_cliente con quot_id para distinguirlos de docs personales
+// ═══════════════════════════════════════════
+async function uploadViajeDoc(){
+  const inp=document.getElementById('rsv-doc-file');
+  const tipo=document.getElementById('rsv-doc-tipo')?.value||'voucher';
+  const f=inp?.files?.[0]; if(!f||!_drawerQuotId) return;
+  const listEl=document.getElementById('rsv-docs-list');
+  if(listEl) listEl.innerHTML='<div style="text-align:center;padding:10px;color:var(--g3);font-size:.78rem"><span class="spin spin-tq"></span> Subiendo...</div>';
+  const ext=f.name.split('.').pop().toLowerCase();
+  const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path=`${window._agenteId}/viajes/${_drawerQuotId}/${tipo}_${Date.now()}_${safe}`;
+  try{
+    const{error:storErr}=await sb.storage.from('documentos-clientes').upload(path,f,{upsert:false});
+    if(storErr){toast('Error al subir: '+storErr.message,false);loadViajeDoc(_drawerQuotId);return;}
+    // Obtener cliente_id de la cotización para mantener relación
+    const{data:qt}=await sb.from('cotizaciones').select('cliente_id').eq('id',_drawerQuotId).maybeSingle();
+    const insRow={
+      agente_id:window._agenteId,
+      quot_id:_drawerQuotId,
+      cliente_id:qt?.cliente_id||null,
+      tipo,
+      nombre:f.name,
+      storage_path:path
+    };
+    const{error:dbErr}=await sb.from('documentos_cliente').insert(insRow);
+    if(dbErr){
+      // Si quot_id no existe todavía, intentar sin él
+      if(dbErr.code==='42703'||dbErr.message?.includes('quot_id')){
+        delete insRow.quot_id;
+        const{error:e2}=await sb.from('documentos_cliente').insert(insRow);
+        if(e2){toast('Error al guardar: '+e2.message,false);loadViajeDoc(_drawerQuotId);return;}
+        toast('Documento subido (ejecutá el SQL en Supabase para activar seguimiento completo)');
+      } else {
+        toast('Error al guardar: '+dbErr.message,false);loadViajeDoc(_drawerQuotId);return;
+      }
+    } else {
+      toast('Documento subido');
+    }
+    if(inp) inp.value='';
+    loadViajeDoc(_drawerQuotId);
+  }catch(e){toast('Error al subir',false);console.error('[uploadViajeDoc]',e);loadViajeDoc(_drawerQuotId);}
+}
+
+async function loadViajeDoc(quotId){
+  const el=document.getElementById('rsv-docs-list');if(!el||!quotId) return;
+  try{
+    const{data}=await sb.from('documentos_cliente')
+      .select('*').eq('quot_id',quotId).order('creado_en',{ascending:false});
+    if(!data?.length){
+      el.innerHTML='<div style="color:var(--g3);font-size:.78rem;padding:8px 0;text-align:center">Sin documentos subidos</div>';
+      return;
+    }
+    el.innerHTML=data.map(d=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.8rem;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.nombre||''}">${d.nombre||d.storage_path}</div>
+          <span style="font-size:.65rem;padding:1px 7px;border-radius:10px;background:rgba(27,158,143,.1);color:var(--primary);font-weight:600">${d.tipo||'doc'}</span>
+        </div>
+        <button onclick="downloadViajeDoc('${d.storage_path}')" style="background:none;border:none;cursor:pointer;color:var(--primary);padding:4px" title="Descargar / Ver">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button onclick="deleteViajeDoc('${d.id}','${d.storage_path}')" style="background:none;border:none;cursor:pointer;color:var(--red);padding:4px" title="Eliminar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`).join('');
+  }catch(e){
+    el.innerHTML='<div style="color:var(--g3);font-size:.78rem;padding:8px 0">Error al cargar documentos</div>';
+    console.warn('[loadViajeDoc]',e);
+  }
+}
+
+async function downloadViajeDoc(path){
+  const{data}=await sb.storage.from('documentos-clientes').createSignedUrl(path,3600);
+  if(data?.signedUrl) window.open(data.signedUrl,'_blank');
+  else toast('Error al generar link de descarga',false);
+}
+
+async function deleteViajeDoc(docId,path){
+  if(!confirm('¿Eliminar este documento?')) return;
+  await sb.storage.from('documentos-clientes').remove([path]);
+  await sb.from('documentos_cliente').delete().eq('id',docId);
+  toast('Documento eliminado');
+  if(_drawerQuotId) loadViajeDoc(_drawerQuotId);
 }
 
 // ═══════════════════════════════════════════
