@@ -1259,9 +1259,12 @@ input:focus,textarea:focus,select:focus{
     /* CRÍTICO: overflow:hidden corta el contenido en los bordes de página */
     overflow:visible!important
   }
-  /* Sidebar, bottom nav, toolbars — ocultar */
+  /* Sidebar, bottom nav, toolbars, drawer — ocultar */
   #sidebar,.sb,[class*="sidebar"],#bottom-nav,#bottom-nav.active,
-  #form-sticky-bar,#prev-toolbar,#hdr,.modal-overlay{display:none!important}
+  #form-sticky-bar,#prev-toolbar,#hdr,.modal-overlay,
+  #drawer-reserva,#drawer-overlay,.drawer{display:none!important}
+  /* Cover: overflow visible para que position:absolute children no se corten */
+  .qp-cover{overflow:visible!important}
   #ui,#main-content,.cnt{margin-left:0!important}
   body,#ui{padding:0!important;margin:0!important}
   /* Forzar que los backgrounds se impriman */
@@ -2311,5 +2314,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 @media print{
   #bottom-nav,#bottom-nav.active,
   #form-sticky-bar,#prev-toolbar,#hdr,
-  #sidebar,.sb{display:none!important}
+  #sidebar,.sb,
+  #drawer-reserva,#drawer-overlay,.drawer{display:none!important}
 }

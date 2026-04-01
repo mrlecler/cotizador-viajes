@@ -377,31 +377,33 @@ function buildQuoteHTML(d){
   if(_altCover){
     H+=_altCover;
   } else {
-  H+=`<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'}">
-    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none"></div>
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none"></div>
-    <div style="position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:2">
+  H+=`<div class="qp-cover" style="${coverUrl?`background:url('${coverUrl}') center/cover no-repeat`:'background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'};display:flex;flex-direction:column">
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(13,43,30,0.2) 0%,rgba(10,26,18,0.6) 55%,rgba(13,18,15,0.88) 100%);pointer-events:none;z-index:0"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 105%,rgba(${th.rgb},0.32) 0%,transparent 65%);pointer-events:none;z-index:0"></div>
+    <div style="position:relative;z-index:2;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       <div style="display:flex;align-items:center;gap:14px">
         ${buildPdfWordmark(24)}
         ${ag.nm?`<div style="width:1px;height:20px;background:rgba(255,255,255,.18)"></div><div style="line-height:1.3"><div style="font-size:11px;font-weight:700;color:white;letter-spacing:.3px">${ag.nm}</div>${ag.ag?`<div style="font-size:9px;color:rgba(255,255,255,.5)">${ag.ag}</div>`:''}</div>`:''}
       </div>
       ${d.refId?`<div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.5px">${d.refId}</div>`:''}
     </div>
-    <div style="position:absolute;top:50%;left:36px;right:36px;transform:translateY(-55%);z-index:2">
-      ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
-      ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
-      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-        ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
-        ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
-        ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
+    <div style="position:relative;z-index:2;flex:1;display:flex;align-items:center;padding:0 36px">
+      <div>
+        ${dests.length?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px">${dests.map(dest=>`<span style="background:rgba(${th.rgb},0.22);border:1px solid rgba(${th.rgb},0.45);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85)">${dest}</span>`).join('')}</div>`:''}
+        ${cl.nombre?`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px">COTIZACIÓN PERSONALIZADA PARA</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${cl.nombre}</div>`:`<div style="font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px">PROPUESTA DE VIAJE</div><div style="font-size:52px;font-weight:900;letter-spacing:-2px;color:white;line-height:1;margin-bottom:18px;text-shadow:0 2px 20px rgba(0,0,0,.35)">${vi.destino||'Tu próximo viaje'}</div>`}
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          ${cl.pasajeros?`<div style="display:flex;align-items:center;gap:8px"><div style="width:2px;height:24px;background:${th.primary};flex-shrink:0;border-radius:2px"></div><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">${cl.pasajeros}</span></div>`:''}
+          ${vi.salida&&vi.regreso?`<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace">${fd(vi.salida)} → ${fd(vi.regreso)}</div>`:''}
+          ${vi.noches?`<div style="font-size:11px;color:rgba(255,255,255,.5)">${vi.noches} noches</div>`:''}
+        </div>
       </div>
     </div>
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;background:${th.grad};padding:16px 36px;display:flex;align-items:center;gap:0">
+    <div style="position:relative;z-index:2;background:${th.grad};padding:16px 36px;display:flex;align-items:center;gap:0;flex-shrink:0">
       ${totalAmt?`<div style="flex:0 0 auto;padding-right:24px;border-right:1px solid rgba(255,255,255,.25)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">PRECIO REFERENCIA</div><div style="font-size:18px;font-weight:900;color:white;letter-spacing:-0.5px">${totalAmt}</div></div>`:''}
       ${vi.descripcion?`<div style="flex:1;padding:0 ${totalAmt?'24':'0'}px${ag.nm?';border-right:1px solid rgba(255,255,255,.25)':''}"><div style="font-size:9px;color:rgba(255,255,255,.75);line-height:1.55;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${vi.descripcion.trim().substring(0,200)}</div></div>`:`<div style="flex:1"></div>`}
       ${ag.nm?`<div style="flex:0 0 auto;padding-left:24px;text-align:right"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:3px">AGENTE</div><div style="font-size:12px;font-weight:700;color:white">${ag.nm}</div><div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px">${today}</div></div>`:''}
     </div>
-    ${window._unsplashCredit?(()=>{const _uc=window._unsplashCredit;const _pb=_uc.link||'https://unsplash.com';const _pu=_pb+(_pb.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';return`<div style="position:absolute;bottom:92px;left:12px;z-index:3;font-size:7px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.32);padding:2px 7px;border-radius:6px;backdrop-filter:blur(4px)">Foto de <a href="https://unsplash.com/@${_uc.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">${_uc.name}</a> en <a href="${_pu}" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">Unsplash</a></div>`})():''}
+    ${window._unsplashCredit?(()=>{const _uc=window._unsplashCredit;const _pb=_uc.link||'https://unsplash.com';const _pu=_pb+(_pb.includes('?')?'&':'?')+'utm_source=ermix&utm_medium=referral';return`<div style="position:absolute;bottom:92px;left:12px;z-index:3;font-size:7px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.32);padding:2px 7px;border-radius:6px">Foto de <a href="https://unsplash.com/@${_uc.username}?utm_source=ermix&utm_medium=referral" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">${_uc.name}</a> en <a href="${_pu}" target="_blank" style="color:rgba(255,255,255,.75);text-decoration:underline">Unsplash</a></div>`})():''}
   </div>`;
   } // end else (cinematic/bold cover)
 
