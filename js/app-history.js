@@ -1276,10 +1276,12 @@ async function _renderSeguimientoDetail(quotId){
     // Pagos rows
     const pagoRows=pagos.length?pagos.map((p,i)=>{
       const svc=p.servicio_id?servicios.find(sv=>sv.id===p.servicio_id):null;
+      const _fpLbl={tarjeta_credito:'TC',tarjeta_debito:'TD',transferencia:'Transf',efectivo:'Efect'};
       return `<div class="seg-pago-row">
         <div class="seg-pago-fecha">${fmtDate(p.fecha)||'--'}</div>
         <div class="seg-pago-monto">${fmtAmt(p.monto)}</div>
         <div class="seg-pago-svc">${svc?svc.proveedor:'General'}</div>
+        ${p.forma_pago?`<span style="font-size:.65rem;padding:1px 6px;border-radius:6px;background:rgba(45,31,20,0.06);color:var(--g4);font-weight:600;flex-shrink:0">${_fpLbl[p.forma_pago]||p.forma_pago}</span>`:''}
         <div class="seg-pago-desc">${p.descripcion||''}</div>
         <button class="btn btn-del btn-xs" onclick="_deletePagoV2(${i})" title="Eliminar"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>`;
@@ -1367,6 +1369,9 @@ async function _renderSeguimientoDetail(quotId){
               <div style="min-width:120px"><label class="lbl">Fecha</label><input class="finput" id="seg-pago-fecha" type="date" value="${hoy}" style="width:100%"></div>
               <div style="flex:1;min-width:120px"><label class="lbl">Aplicar a</label>
                 <select class="fsel" id="seg-pago-svc" style="width:100%"><option value="">Pago general</option>${svcOpts}</select>
+              </div>
+              <div style="min-width:110px"><label class="lbl">Forma de pago</label>
+                <select class="fsel" id="seg-pago-forma" style="width:100%"><option value="">--</option><option value="tarjeta_credito">Tarjeta de credito</option><option value="tarjeta_debito">Tarjeta de debito</option><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option></select>
               </div>
               <div style="flex:1;min-width:100px"><label class="lbl">Descripcion</label><input class="finput" id="seg-pago-desc" placeholder="Sena inicial..." style="width:100%"></div>
               <button class="btn btn-cta btn-sm" onclick="_addPagoV2()" style="flex-shrink:0;align-self:flex-end;margin-bottom:1px">+ Pago</button>
@@ -1491,10 +1496,11 @@ async function _addPagoV2(){
   if(!monto||monto<=0){toast('Ingresa un monto valido',false);return;}
   const fecha=document.getElementById('seg-pago-fecha')?.value||new Date().toISOString().slice(0,10);
   const servicioId=document.getElementById('seg-pago-svc')?.value||null;
+  const formaPago=document.getElementById('seg-pago-forma')?.value||'';
   const desc=document.getElementById('seg-pago-desc')?.value?.trim()||'';
   const d=_segDetailData.datos||{};
   if(!Array.isArray(d._pagos)) d._pagos=[];
-  d._pagos.push({fecha,monto,descripcion:desc,servicio_id:servicioId||null,creado_en:new Date().toISOString()});
+  d._pagos.push({fecha,monto,descripcion:desc,servicio_id:servicioId||null,forma_pago:formaPago||null,creado_en:new Date().toISOString()});
   try{
     const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_segDetailQuotId);
     if(error){toast('Error: '+error.message,false);return;}
