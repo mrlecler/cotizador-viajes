@@ -383,6 +383,14 @@ input:focus,textarea:focus,select:focus{
   line-height:1
 }
 #sidebar.open .sb-lbl{display:block}
+/* ── CRM group label ── */
+.sb-group-lbl{
+  display:none;
+  font-size:.55rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--g3);padding:14px 16px 4px;white-space:nowrap;line-height:1;
+  pointer-events:none;user-select:none
+}
+#sidebar.open .sb-group-lbl{display:block}
 /* Ocultar tooltip cuando está expandido (ya se ven los labels) */
 #sidebar.open .sb-item::after{display:none!important;opacity:0!important}
 /* Separador expandido */
