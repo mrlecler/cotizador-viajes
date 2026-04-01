@@ -376,9 +376,10 @@ function openClientModal(id){
     <div class="cli-tabs">
       <div class="cli-tab on" onclick="_cliTab(0,this)">Datos</div>
       <div class="cli-tab" onclick="_cliTab(1,this)">Viaje</div>
-      <div class="cli-tab" onclick="_cliTab(2,this)">Documentos</div>
-      <div class="cli-tab" onclick="_cliTab(3,this)">Cotizaciones</div>
-      <div class="cli-tab" onclick="_cliTab(4,this)">Grupos</div>
+      <div class="cli-tab" onclick="_cliTab(2,this)">Acompanantes</div>
+      <div class="cli-tab" onclick="_cliTab(3,this)">Documentos</div>
+      <div class="cli-tab" onclick="_cliTab(4,this)">Cotizaciones</div>
+      <div class="cli-tab" onclick="_cliTab(5,this)">Grupos</div>
     </div>
 
     <!-- Tab 0: Datos personales -->
@@ -433,7 +434,31 @@ function openClientModal(id){
       <div class="fg"><label class="lbl">Alergias / notas m&#233;dicas</label><textarea class="ftxt" id="mc-alergias" rows="3">${_v('alergias')}</textarea></div>
     </div>
 
-    <!-- Tab 2: Documentos -->
+    <!-- Tab 2: Acompanantes -->
+    <div class="cli-tab-panel">
+      <div style="margin-bottom:12px">
+        <div style="font-size:.78rem;color:var(--g4);margin-bottom:10px">Familiares o acompanantes que viajan con este cliente. Estos datos se usan en el seguimiento de reservas.</div>
+        ${readOnly?'':`<div style="padding:12px;background:var(--g1);border-radius:var(--r2);margin-bottom:12px">
+          <div class="g2">
+            <div class="fg"><label class="lbl">Nombre completo</label><input class="finput" id="mc-acomp-nm" placeholder="Maria Perez"></div>
+            <div class="fg"><label class="lbl">Documento / Pasaporte</label><input class="finput" id="mc-acomp-doc" placeholder="AR 123456789"></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="lbl">Fecha nacimiento</label><input class="finput" id="mc-acomp-nac" type="date"></div>
+            <div class="fg"><label class="lbl">Parentesco</label>
+              <select class="finput" id="mc-acomp-parentesco">
+                <option value="">--</option><option value="Conyuge">Conyuge</option><option value="Hijo/a">Hijo/a</option><option value="Padre/Madre">Padre/Madre</option><option value="Hermano/a">Hermano/a</option><option value="Amigo/a">Amigo/a</option><option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Notas medicas / observaciones</label><input class="finput" id="mc-acomp-notas" placeholder="Alergias, medicacion, silla de ruedas..."></div>
+          <button class="btn btn-pri btn-sm" onclick="_addAcompanante()" style="margin-top:8px">+ Agregar acompanante</button>
+        </div>`}
+      </div>
+      <div id="mc-acomp-list"></div>
+    </div>
+
+    <!-- Tab 3: Documentos -->
     <div class="cli-tab-panel">
       ${id?`<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
         <select class="finput" id="mc-doc-tipo-upload" style="width:auto;flex-shrink:0"><option value="pasaporte">Pasaporte</option><option value="visa">Visa</option><option value="voucher">Voucher</option><option value="seguro">Seguro</option><option value="confirmacion">Confirmaci&#243;n</option><option value="otro">Otro</option></select>
@@ -444,12 +469,12 @@ function openClientModal(id){
       :'<div style="color:var(--g3);font-size:.82rem;padding:12px 0">Guard&#225; el cliente primero para poder subir documentos.</div>'}
     </div>
 
-    <!-- Tab 3: Cotizaciones -->
+    <!-- Tab 4: Cotizaciones -->
     <div class="cli-tab-panel">
       ${id?'<div id="mc-quotes-list"><div style="color:var(--g3);font-size:.82rem;padding:12px 0">Cargando...</div></div>':'<div style="color:var(--g3);font-size:.82rem;padding:12px 0">Guard&#225; el cliente primero para ver cotizaciones.</div>'}
     </div>
 
-    <!-- Tab 4: Grupos -->
+    <!-- Tab 5: Grupos -->
     <div class="cli-tab-panel">
       ${id?'<div id="mc-groups-list"><div style="color:var(--g3);font-size:.82rem;padding:12px 0">Cargando...</div></div>':'<div style="color:var(--g3);font-size:.82rem;padding:12px 0">Guard&#225; el cliente primero para gestionar grupos.</div>'}
     </div>
@@ -470,6 +495,11 @@ function openClientModal(id){
     if(uploadBtn) uploadBtn.style.display='none';
   }
 
+  // Cargar acompanantes desde datos del cliente
+  _mcAcompanantes = Array.isArray(c.datos?._acompanantes) ? [...c.datos._acompanantes] : [];
+  _mcClientId = id || null;
+  _renderAcompanantes();
+
   // Load async tab data if editing existing client
   if(id){
     loadClientDocs(id);
@@ -483,6 +513,55 @@ function _cliTab(idx, el){
   document.querySelectorAll('.cli-tab-panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');
   document.querySelectorAll('.cli-tab-panel')[idx]?.classList.add('on');
+}
+
+// ── Acompanantes del cliente ──
+let _mcAcompanantes = [];
+let _mcClientId = null;
+
+function _renderAcompanantes(){
+  const el=document.getElementById('mc-acomp-list');
+  if(!el) return;
+  if(!_mcAcompanantes.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--g3);font-size:.8rem">Sin acompanantes cargados</div>';
+    return;
+  }
+  el.innerHTML=_mcAcompanantes.map((a,i)=>{
+    const edad=a.fecha_nac?Math.floor((Date.now()-new Date(a.fecha_nac+'T12:00:00'))/31557600000)+' anios':'';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:30px;height:30px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:.82rem;color:var(--text)">${a.nombre||'--'} ${a.parentesco?'<span style="font-size:.68rem;color:var(--primary);font-weight:700">('+a.parentesco+')</span>':''}</div>
+        <div style="font-size:.72rem;color:var(--g4);margin-top:1px">${a.documento||''} ${edad?'· '+edad:''} ${a.notas_medicas?'· '+a.notas_medicas:''}</div>
+      </div>
+      <button class="btn btn-del btn-xs" onclick="_deleteAcompanante(${i})" title="Quitar"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>`;
+  }).join('');
+}
+
+function _addAcompanante(){
+  const nm=document.getElementById('mc-acomp-nm')?.value?.trim();
+  if(!nm){toast('Nombre requerido',false);return;}
+  _mcAcompanantes.push({
+    nombre: nm,
+    documento: document.getElementById('mc-acomp-doc')?.value?.trim()||'',
+    fecha_nac: document.getElementById('mc-acomp-nac')?.value||'',
+    parentesco: document.getElementById('mc-acomp-parentesco')?.value||'',
+    notas_medicas: document.getElementById('mc-acomp-notas')?.value?.trim()||''
+  });
+  // Limpiar form
+  ['mc-acomp-nm','mc-acomp-doc','mc-acomp-notas'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('mc-acomp-nac').value='';
+  document.getElementById('mc-acomp-parentesco').value='';
+  _renderAcompanantes();
+  toast('Acompanante agregado');
+}
+
+function _deleteAcompanante(idx){
+  _mcAcompanantes.splice(idx,1);
+  _renderAcompanantes();
 }
 
 async function saveClient(id){
@@ -503,11 +582,35 @@ async function saveClient(id){
     const val=v(elId);
     if(val) row[col]=val;
   });
-  if(id){await sb.from('clientes').update(row).eq('id',id);}
-  else{
-    // Asignar agente_id al crear cliente nuevo
-    if(window._agenteId) row.agente_id = window._agenteId;
-    await sb.from('clientes').insert(row);
+  // Guardar acompanantes en JSONB datos
+  if(_mcAcompanantes.length>0||_mcClientId){
+    const existingDatos=allClients.find(x=>x.id===_mcClientId)?.datos||{};
+    row.datos={...existingDatos,_acompanantes:_mcAcompanantes};
+  }
+  try{
+    if(id){
+      const{error}=await sb.from('clientes').update(row).eq('id',id);
+      if(error) throw error;
+    } else{
+      if(window._agenteId) row.agente_id = window._agenteId;
+      const{error}=await sb.from('clientes').insert(row);
+      if(error) throw error;
+    }
+  }catch(e){
+    console.error('[saveClient]',e);
+    // Si falla por columna datos inexistente, reintentar sin datos
+    if(e.message?.includes('datos')||e.code==='42703'){
+      console.warn('[saveClient] columna datos no existe, guardando sin acompanantes');
+      delete row.datos;
+      if(id) await sb.from('clientes').update(row).eq('id',id);
+      else await sb.from('clientes').insert(row);
+      toast('Cliente guardado (ejecuta ALTER TABLE para habilitar acompanantes)',false);
+      const box=document.getElementById('modal-box');if(box)box.style.maxWidth='500px';
+      closeModal();renderClients();
+      return;
+    }
+    toast('Error al guardar: '+e.message,false);
+    return;
   }
   // Restore modal max-width
   const box=document.getElementById('modal-box');
@@ -1129,10 +1232,10 @@ async function _renderSeguimientoDetail(quotId){
     const fmtAmt=n=>n>0?'$'+Number(n).toLocaleString('es-AR'):'--';
     const fmtDate=s=>s?new Date(s+'T12:00:00').toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'2-digit'}):null;
 
-    // Cargar proveedores y pasajeros en paralelo
-    const [proveedores, pasajeros] = await Promise.all([
+    // Cargar proveedores y acompanantes en paralelo
+    const [proveedores, acompanantes] = await Promise.all([
       (typeof _loadProveedoresForSelect==='function')?_loadProveedoresForSelect():[],
-      (typeof _loadGrupoPasajeros==='function'&&data.cliente_id)?_loadGrupoPasajeros(data.cliente_id):[]
+      (typeof _loadAcompanantesCliente==='function'&&data.cliente_id)?_loadAcompanantesCliente(data.cliente_id):[]
     ]);
 
     // Select options de proveedores
@@ -1147,11 +1250,11 @@ async function _renderSeguimientoDetail(quotId){
       <div style="flex:1"><div class="seg-pax-name">${cli.nombre||'Sin nombre'}</div><div class="seg-pax-doc">${cli.celular||''} ${cli.email?'· '+cli.email:''}</div></div>
       <span class="seg-pax-badge" style="background:rgba(27,158,143,0.12);color:var(--primary)">TITULAR</span>
     </div>`;
-    const paxRows=pasajeros.filter(p=>p.id!==data.cliente_id).map(p=>{
-      const edad=p.fecha_nac?Math.floor((Date.now()-new Date(p.fecha_nac+'T12:00:00'))/31557600000)+' anios':'';
+    const paxRows=acompanantes.map(a=>{
+      const edad=a.fecha_nac?Math.floor((Date.now()-new Date(a.fecha_nac+'T12:00:00'))/31557600000)+' anios':'';
       return `<div class="seg-pax-row">
         <div style="width:28px;height:28px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--g3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-        <div style="flex:1"><div class="seg-pax-name">${p.nombre||'--'}</div><div class="seg-pax-doc">${p.doc_tipo?p.doc_tipo+': ':''}${p.documento||''} ${edad?'· '+edad:''}</div></div>
+        <div style="flex:1"><div class="seg-pax-name">${a.nombre||'--'} ${a.parentesco?'<span style="font-size:.68rem;color:var(--primary);font-weight:700">('+a.parentesco+')</span>':''}</div><div class="seg-pax-doc">${a.documento||''} ${edad?'· '+edad:''} ${a.notas_medicas?'· '+a.notas_medicas:''}</div></div>
       </div>`;
     }).join('');
 
@@ -1211,11 +1314,11 @@ async function _renderSeguimientoDetail(quotId){
       <div class="seg-section">
         <div class="seg-section-hd">
           <span class="seg-section-ttl">Pasajeros del viaje</span>
-          <span style="font-size:.72rem;color:var(--g4)">${pasajeros.length+1} pasajero${pasajeros.length>0?'s':''}</span>
+          <span style="font-size:.72rem;color:var(--g4)">${acompanantes.length+1} pasajero${acompanantes.length>0?'s':''}</span>
         </div>
         <div class="seg-section-body">
           ${titularRow}
-          ${paxRows||'<div style="font-size:.78rem;color:var(--g4);padding:8px 0">Sin grupo familiar cargado. <span style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="closeSeguimientoDetail();_setCrmTab(\'clients\')">Ir a Clientes</span> para crear un grupo.</div>'}
+          ${paxRows||'<div style="font-size:.78rem;color:var(--g4);padding:8px 0">Sin acompanantes cargados. <span style="color:var(--primary);cursor:pointer;text-decoration:underline" onclick="closeSeguimientoDetail();_setCrmTab(\'clients\')">Ir a Clientes</span> para cargarlos en la ficha del cliente.</div>'}
         </div>
       </div>
 
