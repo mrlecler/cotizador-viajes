@@ -84,11 +84,20 @@ async function renderHistory(){
       ? `<button class="btn btn-out btn-xs" onclick="event.stopPropagation();openReservaDrawer('${r.id}')" style="color:#22c55e;border-color:rgba(34,197,94,0.3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg> Seguimiento</button>` : '';
     // Indicadores visuales de reserva
     const rsv=r.datos?._reserva||{};
+    const _pagos=Array.isArray(r.datos?._pagos)?r.datos._pagos:[];
     const _hoy=new Date().toISOString().slice(0,10);
     const rsvIndicators=[];
-    if(rsv.fecha_limite_pago&&rsv.fecha_limite_pago<_hoy) rsvIndicators.push('<span style="color:#ef4444;font-size:.68rem;font-weight:600"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Pago vencido</span>');
-    if(rsv.vouchers_ok) rsvIndicators.push('<span style="color:#22c55e;font-size:.68rem;font-weight:600"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><polyline points="20 6 9 17 4 12"/></svg>Vouchers</span>');
-    const rsvLine=rsvIndicators.length?'<div style="display:flex;gap:8px;margin-top:2px">'+rsvIndicators.join('')+'</div>':'';
+    if(rsv.fecha_limite_pago&&rsv.fecha_limite_pago<_hoy) rsvIndicators.push('<span style="color:#ef4444;font-size:.68rem;font-weight:600">Pago vencido</span>');
+    if(_pagos.length>0){
+      const _pt=Number(r.datos?.precio_total||r.datos?.total_precio||0);
+      const _pp=_pagos.reduce((s,p)=>s+(+p.monto||0),0);
+      const _saldo=_pt>0?Math.max(0,_pt-_pp):null;
+      if(_saldo===0) rsvIndicators.push('<span style="color:#22c55e;font-size:.68rem;font-weight:600">Pagado completo</span>');
+      else if(_pt>0) rsvIndicators.push('<span style="color:var(--primary);font-size:.68rem;font-weight:600">$'+_pp.toLocaleString('es-AR')+' pagados</span>');
+      else rsvIndicators.push('<span style="color:var(--primary);font-size:.68rem;font-weight:600">'+_pagos.length+' pago'+(_pagos.length>1?'s':'')+' registrado'+(_pagos.length>1?'s':'')+'</span>');
+    }
+    if(rsv.vouchers_notas) rsvIndicators.push('<span style="color:#22c55e;font-size:.68rem;font-weight:600">Vouchers</span>');
+    const rsvLine=rsvIndicators.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">'+rsvIndicators.join('')+'</div>':'';
     return `
     <div class="hist-item${vn>1?' hist-item-ver':''}" onclick="loadFromHistory('${r.ref_id}','${r.id}')" style="${vn>1?'border-left:3px solid rgba(27,158,143,0.35);margin-left:12px;':''}">
       <div class="hist-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
@@ -719,49 +728,151 @@ async function openReservaDrawer(quotId){
   try{
     const{data}=await sb.from('cotizaciones').select('*').eq('id',quotId).single();
     if(!data){body.innerHTML='<p style="color:var(--g3)">No se encontró la cotización.</p>';return;}
-    const r=data.datos?._reserva||{};
-    const cli=data.datos?.cliente?.nombre||'';
-    const dest=data.destino||data.datos?.viaje?.destino||'';
-    const hoy=new Date().toISOString().slice(0,10);
-    const limiteVencido=r.fecha_limite_pago&&r.fecha_limite_pago<hoy;
-    body.innerHTML=`
-      <div style="margin-bottom:16px;padding:12px;background:var(--g1);border-radius:var(--r2)">
-        <div style="font-size:.8rem;font-weight:700;color:var(--text)">${cli}</div>
-        <div style="font-size:.72rem;color:var(--g4)">${dest} · ${data.ref_id||''}</div>
-      </div>
-      <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="rsv-nro" value="${r.nro_reserva||''}" placeholder="ABC-12345"></div>
-      <div class="fg"><label class="lbl">Proveedor principal</label><input class="finput" id="rsv-prov" value="${r.proveedor_ppal||''}" placeholder="Aerolineas Argentinas"></div>
-      <div class="g2">
-        <div class="fg"><label class="lbl">Monto cobrado (USD)</label><input class="finput" type="number" id="rsv-cobrado" value="${r.monto_cobrado||''}" placeholder="0"></div>
-        <div class="fg"><label class="lbl">Monto pagado (USD)</label><input class="finput" type="number" id="rsv-pagado" value="${r.monto_pagado||''}" placeholder="0"></div>
-      </div>
-      <div class="fg">
-        <label class="lbl" style="${limiteVencido?'color:#ef4444':''}">
-          ${limiteVencido?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>':''}Fecha limite de pago
-        </label>
-        <input class="finput" type="date" id="rsv-limite" value="${r.fecha_limite_pago||''}" style="${limiteVencido?'border-color:#ef4444;color:#ef4444':''}">
-      </div>
-      <div class="fg" style="display:flex;align-items:center;gap:10px;padding:10px 0">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text)">
-          <input type="checkbox" id="rsv-vouchers" ${r.vouchers_ok?'checked':''} style="accent-color:var(--primary);width:18px;height:18px">
-          Vouchers recibidos
-          ${r.vouchers_ok?'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
-        </label>
-      </div>
-      <div class="fg"><label class="lbl">Notas de reserva</label><textarea class="finput" id="rsv-notas" rows="3" placeholder="Notas internas sobre la reserva..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
-    `;
+    _renderReservaBody(data);
   }catch(e){body.innerHTML='<p style="color:var(--g3)">Error al cargar datos.</p>';console.error('[openReservaDrawer]',e);}
+}
+
+function _renderReservaBody(data){
+  const body=document.getElementById('drawer-reserva-body');
+  if(!body) return;
+  const r=data.datos?._reserva||{};
+  const pagos=Array.isArray(data.datos?._pagos)?data.datos._pagos:[];
+  const cli=data.datos?.cliente?.nombre||'Pasajero';
+  const dest=data.destino||data.datos?.viaje?.destino||'';
+  const hoy=new Date().toISOString().slice(0,10);
+  const limiteVencido=r.fecha_limite_pago&&r.fecha_limite_pago<hoy;
+
+  // Precio total del viaje (de la cotización)
+  const precioTotal=Number(data.datos?.precio_total||data.datos?.total_precio||data.precio_total||0);
+  const totalPagado=pagos.reduce((s,p)=>s+(+p.monto||0),0);
+  const saldo=Math.max(0,precioTotal-totalPagado);
+  const pct=precioTotal>0?Math.min(100,(totalPagado/precioTotal)*100):0;
+  const fmtAmt=n=>n>0?'$'+n.toLocaleString('es-AR'):'—';
+
+  // Barra de progreso de pagos
+  const progressBar=precioTotal>0?`
+    <div style="margin:16px 0;padding:14px;background:var(--g1);border-radius:var(--r2)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:.72rem;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:1px">Pagos del cliente</span>
+        <span style="font-size:.78rem;font-weight:700;color:${saldo===0?'#22c55e':'var(--text)'}">${fmtAmt(totalPagado)} de ${fmtAmt(precioTotal)}</span>
+      </div>
+      <div style="height:6px;background:var(--g2);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${saldo===0?'#22c55e':'var(--primary)'};border-radius:3px;transition:width .3s"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:.7rem;color:var(--g4)">Pagado: ${fmtAmt(totalPagado)}</span>
+        <span style="font-size:.7rem;color:${saldo>0?'#FF6B35':'#22c55e'};font-weight:700">${saldo>0?'Saldo: '+fmtAmt(saldo):'Completado'}</span>
+      </div>
+    </div>`
+  :`<div style="margin:16px 0;padding:12px;background:var(--g1);border-radius:var(--r2);font-size:.75rem;color:var(--g4)">El precio total no está cargado en la cotización. Editala para ver el seguimiento de saldo.</div>`;
+
+  // Lista de pagos
+  const pagoRows=pagos.length?pagos.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text)">$${Number(p.monto||0).toLocaleString('es-AR')} USD</div>
+        <div style="font-size:.72rem;color:var(--g4);margin-top:2px">${p.fecha||''} ${p.descripcion?'· '+p.descripcion:''}</div>
+      </div>
+      <button class="btn btn-del btn-xs" onclick="deletePago(${i})" title="Eliminar pago"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    </div>`).join('')
+  :'<div style="padding:14px 0;text-align:center;color:var(--g3);font-size:.8rem">Sin pagos registrados</div>';
+
+  body.innerHTML=`
+    <!-- Header -->
+    <div style="padding:12px 14px;background:var(--g1);border-radius:var(--r2);margin-bottom:16px">
+      <div style="font-size:.85rem;font-weight:700;color:var(--text)">${cli}</div>
+      <div style="font-size:.72rem;color:var(--g4);margin-top:2px">${dest} · <span style="font-family:'DM Mono',monospace">${data.ref_id||''}</span></div>
+    </div>
+
+    <!-- Progreso pagos -->
+    ${progressBar}
+
+    <!-- Agregar pago -->
+    <div style="margin-bottom:16px">
+      <label class="lbl" style="margin-bottom:8px;display:block">Registrar pago del cliente</label>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <input class="finput" type="number" id="rsv-pago-monto" placeholder="Monto USD" style="width:110px;flex-shrink:0" min="1" step="any" inputmode="decimal">
+        <input class="finput" type="date" id="rsv-pago-fecha" value="${hoy}" style="width:140px;flex-shrink:0">
+        <input class="finput" id="rsv-pago-desc" placeholder="Descripción (opcional)" style="flex:1;min-width:0">
+        <button class="btn btn-cta btn-sm" onclick="addPago()" title="Agregar pago" style="flex-shrink:0;white-space:nowrap">+ Agregar</button>
+      </div>
+    </div>
+
+    <!-- Lista de pagos -->
+    <div id="rsv-pagos-list" style="margin-bottom:20px;min-height:20px">
+      ${pagoRows}
+    </div>
+
+    <!-- Info de reserva -->
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <label class="lbl" style="margin-bottom:8px;display:block">Info de reserva</label>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Nro. de reserva</label><input class="finput" id="rsv-nro" value="${r.nro_reserva||''}" placeholder="ABC-12345"></div>
+        <div class="fg">
+          <label class="lbl" style="${limiteVencido?'color:#ef4444':''}">${limiteVencido?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>':''} Vencimiento pago</label>
+          <input class="finput" type="date" id="rsv-limite" value="${r.fecha_limite_pago||''}" style="${limiteVencido?'border-color:#ef4444;color:#ef4444':''}">
+        </div>
+      </div>
+      <div class="fg"><label class="lbl">Vouchers / documentos del viaje</label><textarea class="finput" id="rsv-vouchers-notas" rows="2" placeholder="Voucher Disney recibido, Hotel confirmado, etc." style="resize:vertical">${r.vouchers_notas||''}</textarea></div>
+      <div class="fg"><label class="lbl">Notas internas</label><textarea class="finput" id="rsv-notas" rows="2" placeholder="Notas del agente sobre esta reserva..." style="resize:vertical">${r.notas_reserva||''}</textarea></div>
+    </div>
+  `;
+}
+
+let _drawerQuotData=null; // cache cotizacion data mientras el drawer está abierto
+
+async function _loadDrawerData(){
+  if(!_drawerQuotId) return null;
+  const{data}=await sb.from('cotizaciones').select('*').eq('id',_drawerQuotId).single();
+  _drawerQuotData=data;
+  return data;
+}
+
+async function addPago(){
+  const monto=parseFloat(document.getElementById('rsv-pago-monto')?.value);
+  const fecha=document.getElementById('rsv-pago-fecha')?.value||new Date().toISOString().slice(0,10);
+  const desc=(document.getElementById('rsv-pago-desc')?.value||'').trim();
+  if(!monto||monto<=0){toast('Ingresá un monto válido',false);return;}
+  if(!_drawerQuotId) return;
+  try{
+    const{data:row}=await sb.from('cotizaciones').select('*').eq('id',_drawerQuotId).single();
+    const d=typeof row?.datos==='string'?JSON.parse(row.datos):(row?.datos||{});
+    if(!Array.isArray(d._pagos)) d._pagos=[];
+    d._pagos.push({fecha,monto,descripcion:desc,creado_en:new Date().toISOString()});
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_drawerQuotId);
+    if(error){toast('Error: '+error.message,false);return;}
+    // limpiar inputs
+    const mi=document.getElementById('rsv-pago-monto');if(mi) mi.value='';
+    const di=document.getElementById('rsv-pago-desc');if(di) di.value='';
+    // re-render drawer con datos frescos
+    _renderReservaBody({...row,datos:d});
+    toast('Pago registrado');
+    renderHistory();
+  }catch(e){toast('Error al agregar pago',false);console.error('[addPago]',e);}
+}
+
+async function deletePago(idx){
+  if(!_drawerQuotId) return;
+  if(!confirm('¿Eliminar este pago?')) return;
+  try{
+    const{data:row}=await sb.from('cotizaciones').select('*').eq('id',_drawerQuotId).single();
+    const d=typeof row?.datos==='string'?JSON.parse(row.datos):(row?.datos||{});
+    if(!Array.isArray(d._pagos)||d._pagos[idx]===undefined){toast('Pago no encontrado',false);return;}
+    d._pagos.splice(idx,1);
+    const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_drawerQuotId);
+    if(error){toast('Error: '+error.message,false);return;}
+    _renderReservaBody({...row,datos:d});
+    toast('Pago eliminado');
+    renderHistory();
+  }catch(e){toast('Error al eliminar pago',false);console.error('[deletePago]',e);}
 }
 
 async function saveReserva(){
   if(!_drawerQuotId) return;
   const reserva={
     nro_reserva:(document.getElementById('rsv-nro')?.value||'').trim(),
-    proveedor_ppal:(document.getElementById('rsv-prov')?.value||'').trim(),
-    monto_cobrado:parseFloat(document.getElementById('rsv-cobrado')?.value)||null,
-    monto_pagado:parseFloat(document.getElementById('rsv-pagado')?.value)||null,
     fecha_limite_pago:document.getElementById('rsv-limite')?.value||null,
-    vouchers_ok:document.getElementById('rsv-vouchers')?.checked||false,
+    vouchers_notas:(document.getElementById('rsv-vouchers-notas')?.value||'').trim(),
     notas_reserva:(document.getElementById('rsv-notas')?.value||'').trim()
   };
   try{
@@ -770,22 +881,6 @@ async function saveReserva(){
     d._reserva=reserva;
     const{error}=await sb.from('cotizaciones').update({datos:d}).eq('id',_drawerQuotId);
     if(error){toast('Error al guardar: '+error.message,false);return;}
-    // Auto-upsert a ingresos cuando hay monto cobrado
-    if(reserva.monto_cobrado>0&&window._agenteId){
-      try{
-        const destino=d.viaje?.destino||d.destino||'';
-        const cliente=d.cliente?.nombre||'';
-        const concepto=(cliente?cliente+' — ':'')+destino||'Comisión';
-        const hoy=new Date().toISOString().slice(0,10);
-        // Verificar si ya existe un ingreso para esta cotización
-        const{data:existing}=await sb.from('ingresos').select('id').eq('quot_id',_drawerQuotId).eq('agente_id',window._agenteId).maybeSingle();
-        if(existing){
-          await sb.from('ingresos').update({monto:reserva.monto_cobrado,concepto,notas:reserva.notas_reserva||''}).eq('id',existing.id);
-        } else {
-          await sb.from('ingresos').insert({agente_id:window._agenteId,quot_id:_drawerQuotId,concepto,monto:reserva.monto_cobrado,moneda:'USD',fecha_cobro:hoy,estado:'pendiente',notas:reserva.notas_reserva||''});
-        }
-      }catch(ingErr){console.warn('[saveReserva] ingresos upsert:',ingErr);}
-    }
     toast('Seguimiento guardado');
     closeDrawer();
     renderHistory();
