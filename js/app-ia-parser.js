@@ -79,9 +79,13 @@ JSON esperado:
 
     if(!resp.ok){
       const code=resp.status;
+      let errBody='';
+      try{const eb=await resp.json();errBody=eb.error?.message||JSON.stringify(eb);}catch(_){}
+      console.warn('[IAParser] HTTP',code,errBody);
       if(code===401){errEl.textContent='API Key de IA invalida.';errEl.style.display='';btn.innerHTML=origHTML;btn.disabled=false;return;}
       if(code===429){errEl.textContent='Limite de uso de IA alcanzado. Espera un momento.';errEl.style.display='';btn.innerHTML=origHTML;btn.disabled=false;return;}
-      throw new Error('HTTP '+code);
+      if(code===400){errEl.textContent='Error en la solicitud: '+(errBody||'verifica la API key');errEl.style.display='';btn.innerHTML=origHTML;btn.disabled=false;return;}
+      errEl.textContent='Error HTTP '+code+': '+(errBody||'Error del servidor');errEl.style.display='';btn.innerHTML=origHTML;btn.disabled=false;return;
     }
 
     const result=await resp.json();
@@ -103,7 +107,8 @@ JSON esperado:
 
   }catch(e){
     console.error('[IAParser]',e);
-    errEl.textContent='Error al conectar con la IA. Verifica tu conexion.';
+    const msg=e.message||'Error desconocido';
+    errEl.textContent='Error: '+msg;
     errEl.style.display='';
   }finally{
     btn.innerHTML=origHTML;
