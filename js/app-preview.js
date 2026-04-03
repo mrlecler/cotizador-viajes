@@ -1,6 +1,6 @@
 function uploadCover(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{coverUrl=e.target.result;window._unsplashCredit=null;updCovers();};r.readAsDataURL(f);}
 // Unsplash — key en localStorage, NUNCA en el repo
-function _unsplashKey(){ return localStorage.getItem('mp_unsplash_key')||(typeof agCfg!=='undefined'?agCfg._unsplash_key:'')||''; }
+function _unsplashKey(){ return (typeof agCfg!=='undefined'?agCfg._unsplash_key:'')||localStorage.getItem('mp_unsplash_key')||''; }
 // Último crédito de foto Unsplash (para atribución)
 window._unsplashCredit=null;
 
@@ -109,33 +109,41 @@ function updateHeader(){
 }
 
 // ═══════════════════════════════════════════
-// API KEYS (localStorage only — never sent to server)
+// API KEYS — Supabase es fuente de verdad, localStorage solo cache
 // ═══════════════════════════════════════════
-function saveApiKeys(){
+async function saveApiKeys(){
   const unsplash=(document.getElementById('ak-unsplash')?.value||'').trim();
-  if(unsplash) localStorage.setItem('mp_unsplash_key',unsplash);
-  else localStorage.removeItem('mp_unsplash_key');
   const ia=(document.getElementById('ak-ia')?.value||'').trim();
-  if(ia) localStorage.setItem('mp_ia_key',ia);
-  else localStorage.removeItem('mp_ia_key');
-  // Resend (envío de emails) — solo admin
   const resend=(document.getElementById('ak-resend')?.value||'').trim();
-  if(resend) localStorage.setItem('mp_resend_key',resend);
-  else localStorage.removeItem('mp_resend_key');
   const from=(document.getElementById('ak-resend-from')?.value||'').trim();
-  if(from) agCfg.resend_from=from;
-  else delete agCfg.resend_from;
-  // Persistir keys en agCfg para sobrevivir deploys (localStorage secundario)
+  // 1. Actualizar agCfg en memoria
   if(unsplash) agCfg._unsplash_key=unsplash; else delete agCfg._unsplash_key;
   if(ia) agCfg._ia_key=ia; else delete agCfg._ia_key;
   if(resend) agCfg._resend_key=resend; else delete agCfg._resend_key;
+  if(from) agCfg.resend_from=from; else delete agCfg.resend_from;
+  // 2. Persistir en Supabase — fuente de verdad
+  if(window._agenteId){
+    try{
+      const {error}=await sb.from('agentes').update({config:agCfg}).eq('id',window._agenteId);
+      if(error) throw error;
+    }catch(e){
+      toast('Error al guardar en Supabase: '+e.message,false);
+      return; // No actualizar localStorage si Supabase falla
+    }
+  }
+  // 3. Sincronizar localStorage como cache (solo después de Supabase exitoso)
+  if(unsplash) localStorage.setItem('mp_unsplash_key',unsplash); else localStorage.removeItem('mp_unsplash_key');
+  if(ia){localStorage.setItem('mp_ia_key',ia);localStorage.setItem('mp_key',ia);}
+  else{localStorage.removeItem('mp_ia_key');localStorage.removeItem('mp_key');}
+  if(resend) localStorage.setItem('mp_resend_key',resend); else localStorage.removeItem('mp_resend_key');
   _saveAgCfg();
   toast('API Keys guardadas');
 }
 function _loadApiKeyFields(){
-  const el1=document.getElementById('ak-unsplash');if(el1)el1.value=localStorage.getItem('mp_unsplash_key')||'';
-  const el2=document.getElementById('ak-ia');if(el2)el2.value=localStorage.getItem('mp_ia_key')||'';
-  const el3=document.getElementById('ak-resend');if(el3)el3.value=localStorage.getItem('mp_resend_key')||'';
+  // agCfg es fuente de verdad (cargado desde Supabase en showApp), localStorage como fallback
+  const el1=document.getElementById('ak-unsplash');if(el1)el1.value=agCfg._unsplash_key||localStorage.getItem('mp_unsplash_key')||'';
+  const el2=document.getElementById('ak-ia');if(el2)el2.value=agCfg._ia_key||localStorage.getItem('mp_ia_key')||'';
+  const el3=document.getElementById('ak-resend');if(el3)el3.value=agCfg._resend_key||localStorage.getItem('mp_resend_key')||'';
   const el4=document.getElementById('ak-resend-from');if(el4)el4.value=agCfg.resend_from||'';
   // Cargar sonidos admin guardados
   const sndApr=document.getElementById('adm-snd-aprobado');
@@ -663,7 +671,7 @@ async function _sendQuoteEmail(){
   const clientEmail=d?.cliente?.email;
   if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
   // Verificar Resend key
-  const resendKey=localStorage.getItem('mp_resend_key')||(typeof agCfg!=='undefined'?agCfg._resend_key:'')||'';
+  const resendKey=(typeof agCfg!=='undefined'?agCfg._resend_key:'')||localStorage.getItem('mp_resend_key')||'';
   if(!resendKey){
     if(typeof currentRol!=='undefined'&&currentRol==='admin'){
       toast('Configurá la Resend API Key en Admin → Integraciones',false);
