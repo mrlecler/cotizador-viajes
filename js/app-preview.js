@@ -21,6 +21,11 @@ function _useCoverFallback(){
   updCovers();
 }
 function autoCover(){
+  // Plan gate: fotos Unsplash son plan Profesional+
+  if(typeof _tienePlan==='function'&&!_tienePlan('fotos_unsplash')){
+    _useCoverFallback();
+    return;
+  }
   const dest=(document.getElementById('m-dest')?.value||qData?.viaje?.destino||'travel');
   const key=_unsplashKey();
   if(!key){
@@ -651,6 +656,8 @@ function _buildEmailHTML(d, tipo, agCfgRef, publicUrl){
 }
 
 async function _sendQuoteEmail(){
+  // Plan gate
+  if(typeof _tienePlan==='function'&&!_tienePlan('enviar_email')){_openUpgradeModal('profesional');return;}
   // Verificar que hay cotización y email del cliente
   const d=qData||collectFormSafe();
   const clientEmail=d?.cliente?.email;

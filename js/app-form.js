@@ -872,6 +872,7 @@ function _vNum(r){const m=(r||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;}
 function _vNextRef(r){return _vBaseRef(r)+'-V'+(_vNum(r)+1);}
 
 async function saveAsNewVersion(){
+  if(typeof _tienePlan==='function'&&!_tienePlan('nueva_version')){_openUpgradeModal('profesional');return;}
   if(!editingQuoteId){toast('Guardá primero la cotización para poder crear versiones',false);return;}
   const currRef=document.getElementById('m-ref')?.value||'';
   if(!currRef){toast('Sin referencia — guardá primero',false);return;}

@@ -1,7 +1,184 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.21';
+const APP_VERSION = '0.25.22';
+
+// ═══════════════════════════════════════════
+// PLANES
+// ═══════════════════════════════════════════
+const PLANES = {
+  explorador: {
+    nombre: 'Explorador',
+    precio: 9,
+    features: ['cotizar','historial_20','clientes_basico','proveedores','soporte']
+  },
+  profesional: {
+    nombre: 'Profesional',
+    precio: 12,
+    features: [
+      'cotizar','historial_ilimitado','clientes_basico','proveedores','soporte',
+      'enviar_email','fotos_unsplash','seguimiento','ingresos',
+      'crm_avanzado','nueva_version','ia_parser','promos'
+    ]
+  },
+  elite: {
+    nombre: 'Elite',
+    precio: 19,
+    features: [
+      'cotizar','historial_ilimitado','clientes_basico','proveedores','soporte',
+      'enviar_email','fotos_unsplash','seguimiento','ingresos',
+      'crm_avanzado','nueva_version','ia_parser','promos',
+      'prioridad','multi_agente'
+    ]
+  }
+};
+
+// Retorna true si el agente tiene acceso a la feature en su plan actual
+// Durante trial: acceso completo al plan explorador + features seleccionadas
+function _tienePlan(feature){
+  const plan   = window._planActual  || 'explorador';
+  const estado = window._planEstado  || 'trial';
+  const vence  = window._planVence   ? new Date(window._planVence) : null;
+  // Trial vencido — solo features del explorador, sin trial extras
+  const trialVencido = (estado === 'trial') && vence && (vence < new Date());
+  if(trialVencido){
+    return (PLANES.explorador.features || []).includes(feature);
+  }
+  // Trial activo — mismo acceso que profesional
+  if(estado === 'trial'){
+    return (PLANES.profesional.features || []).includes(feature);
+  }
+  // Plan activo
+  const features = PLANES[plan]?.features || PLANES.explorador.features;
+  return features.includes(feature);
+}
+
+// Bloquea un elemento/botón si el agente no tiene la feature
+// el: elemento DOM | feature: string | planRequerido: 'profesional'|'elite'
+function _bloquearFeature(el, feature, planRequerido){
+  if(!el) return;
+  if(_tienePlan(feature)) return; // tiene acceso — no hacer nada
+  // Bloquear
+  el.style.position = 'relative';
+  el.style.pointerEvents = 'none';
+  el.style.opacity = '0.5';
+  el.title = 'Disponible en plan ' + (PLANES[planRequerido]?.nombre || 'Profesional');
+  // Agregar badge lock si no tiene
+  if(!el.querySelector('._plan-lock')){
+    const lock = document.createElement('span');
+    lock.className = '_plan-lock';
+    lock.style.cssText = 'position:absolute;top:4px;right:4px;background:#FF6B35;color:white;border-radius:4px;font-size:.55rem;font-weight:700;letter-spacing:.05em;padding:2px 5px;pointer-events:auto;cursor:pointer';
+    lock.textContent = 'PRO';
+    lock.onclick = (e) => { e.stopPropagation(); _openUpgradeModal(planRequerido); };
+    el.appendChild(lock);
+  }
+}
+
+// Abre modal de upgrade
+function _openUpgradeModal(planRequerido){
+  const reqs = planRequerido || 'profesional';
+  const nm   = PLANES[reqs]?.nombre || 'Profesional';
+  const old  = document.getElementById('_upgrade-modal');
+  if(old) old.remove();
+  const m = document.createElement('div');
+  m.id = '_upgrade-modal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(45,31,20,.55);backdrop-filter:blur(8px)';
+  m.innerHTML = `
+    <div style="background:var(--surface);border-radius:20px;padding:32px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative">
+      <button onclick="document.getElementById('_upgrade-modal').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--g4);font-size:1.2rem;line-height:1">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,#FF6B35,#E85A25);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 24px rgba(255,107,53,.3)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div style="font-size:1.2rem;font-weight:800;color:var(--text);letter-spacing:-.02em">Funcion ${nm}</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-top:6px">Esta funcion requiere el plan ${nm} o superior</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+        ${Object.entries(PLANES).map(([key,p])=>`
+          <div style="border-radius:12px;padding:14px 10px;text-align:center;border:1.5px solid ${key===reqs?'var(--primary)':'var(--border)'};background:${key===reqs?'rgba(27,158,143,.06)':'var(--bg)'}">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${key===reqs?'var(--primary)':'var(--muted)'};">${p.nombre}</div>
+            <div style="font-size:1.3rem;font-weight:800;color:var(--text);margin-top:4px;letter-spacing:-.02em">$${p.precio}<span style="font-size:.65rem;font-weight:500;color:var(--muted)">/mo</span></div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="text-align:center;font-size:.8rem;color:var(--muted)">Contacta a tu administrador ermix para actualizar tu plan</div>
+    </div>`;
+  document.body.appendChild(m);
+  m.onclick = (e) => { if(e.target===m) m.remove(); };
+}
+
+// Banner de trial en el topbar
+function _initTrialBanner(){
+  const estado = window._planEstado || '';
+  const vence  = window._planVence  ? new Date(window._planVence) : null;
+  if(estado !== 'trial' || !vence) return;
+  const now      = new Date();
+  const diffMs   = vence - now;
+  const diffDias = Math.ceil(diffMs / (1000*60*60*24));
+  // Trial vencido — mostrar modal bloqueante
+  if(diffDias <= 0){
+    _showTrialVencidoModal();
+    return;
+  }
+  // Banner normal o urgente
+  const urgente = diffDias <= 3;
+  const old = document.getElementById('_trial-banner');
+  if(old) old.remove();
+  const bar = document.createElement('div');
+  bar.id = '_trial-banner';
+  bar.style.cssText = `
+    position:fixed;bottom:0;left:0;right:0;z-index:900;
+    padding:10px 20px;display:flex;align-items:center;justify-content:center;gap:12px;
+    font-size:.78rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;
+    background:${urgente?'linear-gradient(90deg,#C84B31,#E8826A)':'linear-gradient(90deg,var(--primary),var(--primary2))'};
+    color:white;box-shadow:0 -4px 16px ${urgente?'rgba(200,75,49,.3)':'rgba(27,158,143,.2)'};
+  `;
+  bar.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    ${urgente
+      ? `Tu prueba gratuita vence en <strong>&nbsp;${diffDias} dia${diffDias===1?'':'s'}</strong>&nbsp;— Actualiza tu plan para no perder el acceso`
+      : `Estas en prueba gratuita &mdash; ${diffDias} dia${diffDias===1?'':'s'} restantes`
+    }
+    <button onclick="document.getElementById('_trial-banner').remove()" style="background:rgba(255,255,255,.2);border:none;border-radius:6px;width:20px;height:20px;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;font-size:.8rem;padding:0;margin-left:6px">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  `;
+  document.body.appendChild(bar);
+}
+
+// Modal bloqueante cuando el trial venció
+function _showTrialVencidoModal(){
+  const old = document.getElementById('_trial-vencido-modal');
+  if(old) return;
+  const m = document.createElement('div');
+  m.id = '_trial-vencido-modal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(13,18,15,.92);backdrop-filter:blur(12px)';
+  m.innerHTML = `
+    <div style="background:var(--surface);border-radius:24px;padding:40px 36px;max-width:520px;width:92%;box-shadow:0 24px 80px rgba(0,0,0,.4);text-align:center">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,rgba(200,75,49,.15),rgba(232,130,106,.08));border:1.5px solid rgba(200,75,49,.25);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C84B31" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div style="font-size:1.4rem;font-weight:900;color:var(--text);letter-spacing:-.02em;margin-bottom:8px">Tu prueba gratuita vencio</div>
+      <div style="font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto">
+        Para seguir usando ermix, selecciona el plan que mejor se adapta a tu negocio. Sin contrato — cancelas cuando quieras.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">
+        ${Object.entries(PLANES).map(([key,p],i)=>`
+          <div style="border-radius:14px;padding:18px 12px;border:1.5px solid ${i===1?'var(--primary)':'var(--border)'};background:${i===1?'rgba(27,158,143,.07)':'var(--bg)'}">
+            ${i===1?'<div style="font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--primary);margin-bottom:8px">Recomendado</div>':'<div style="margin-bottom:20px"></div>'}
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${i===1?'var(--primary)':'var(--muted)'};">${p.nombre}</div>
+            <div style="font-size:1.5rem;font-weight:800;color:var(--text);margin-top:4px;letter-spacing:-.02em">$${p.precio}<span style="font-size:.65rem;font-weight:500;color:var(--muted)">/mo</span></div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="font-size:.8rem;color:var(--muted);margin-bottom:16px">Contacta a tu administrador ermix para activar tu plan</div>
+      <button onclick="doLogout()" style="background:none;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:.8rem;color:var(--muted);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Cerrar sesion</button>
+    </div>
+  `;
+  document.body.appendChild(m);
+}
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -631,6 +808,14 @@ async function showApp(user){
       if(data.agente_num) window._agenteNum = data.agente_num;
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.agencia_id) window._agenciaId = data.agencia_id;
+      // Independiente = agente sin agencia
+      window._esIndependiente = (currentRol === 'agente' && !data.agencia_id);
+      // Plan info
+      window._planActual  = data.plan         || 'explorador';
+      window._planEstado  = data.plan_estado  || 'trial';
+      window._planVence   = data.plan_vence   || null;
+      window._trialInicio = data.trial_inicio || null;
+      _initTrialBanner();
       // Siempre leer logo desde Supabase — fuente de verdad por usuario
       logoUrl = data.logo_url || null;
       agCfg.logo_url = logoUrl;
@@ -677,7 +862,9 @@ function _applyRolUI(){
   const badge=document.getElementById('hdr-role-badge');
   if(badge){
     const lbl={admin:'ADMIN',agencia:'AGENCIA',agente:''};
-    const txt=lbl[currentRol]||'';
+    let txt=lbl[currentRol]||'';
+    // INDIE badge: agente independiente (sin agencia)
+    if(!txt && currentRol==='agente' && window._esIndependiente) txt='INDIE';
     badge.textContent=txt;
     badge.style.display=txt?'':'none';
   }
@@ -1229,6 +1416,17 @@ function switchTab(id){
   // Admin y agencia son solo lectura — no pueden cotizar
   if(id==='form'&&(currentRol==='admin'||currentRol==='agencia')){
     toast('Solo los agentes pueden crear cotizaciones.',false);
+    return;
+  }
+  // Plan gates — bloquear tabs premium si no tiene plan
+  const _planGates={
+    'seguimiento':'seguimiento',
+    'ingresos':   'ingresos',
+    'promos':     'promos',
+    'promosvig':  'promos'
+  };
+  if(_planGates[id] && typeof _tienePlan==='function' && !_tienePlan(_planGates[id])){
+    _openUpgradeModal('profesional');
     return;
   }
   // CRM aliases — history/clients/seguimiento redirect to crm panel
