@@ -7,7 +7,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
 - Deploy: GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`
-- Versión actual: `0.25.0` — cache-bust `?v=33` en index.html
+- Versión actual: `0.25.19` — cache-bust `?v=54` en index.html
 
 ## Archivos principales
 
@@ -21,8 +21,10 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 | `js/app-quote.js` | Generación HTML cotización y PDF (`window.print()`) |
 | `js/app-admin.js` | Panel admin, activity log + error log, gestión de agentes/seguros, `renderAgency()` |
 | `js/app-preview.js` | Vista previa de cotización, perfil de usuario, cambio de contraseña, link público (`_initPublicView()`) |
-| `js/app-history.js` | Historial de cotizaciones, CRM clientes (`openClientModal()`), grupos de viaje |
-| `js/app-ia.js` | Integración con Claude API para generar descripciones |
+| `js/app-history.js` | CRM: historial, clientes, acompanantes, grupos de viaje, seguimiento v2 |
+| `js/app-ia.js` | Integración con Claude API para generar descripciones turísticas |
+| `js/app-ia-parser.js` | Parser IA: modal de texto libre → pre-carga campos del formulario |
+| `js/app-ingresos.js` | Ingresos del agente, balance mensual, meta, popup post-aprobación |
 | `js/app-promos.js` | Gestión de promos |
 | `data/airports.json` | 915 aeropuertos con IATA |
 | `data/cities.json` | Ciudades del mundo |
@@ -161,13 +163,13 @@ Usuario:     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 |---|---|---|
 | Inicio | `inicio` | agente / agencia / admin |
 | Cotizar | `form` | agente |
-| Historial | `history` | agente |
-| Clientes | `clients` | agente |
+| CRM | `crm` | agente |
 | Proveedores | `providers` | agente |
 | Promociones | `promos` | agente |
 | Promos vigentes | `promosvig` | agente |
+| Ingresos | `ingresos` | agente |
 | Mi Agencia | `agency` | agencia |
-| Gestión | `dashboard` | admin |
+| Gestión | `admin` | admin |
 | Soporte | `support` | agente / agencia / admin |
 | Config | `adminconfig` | admin |
 
@@ -179,7 +181,7 @@ Usuario:     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 
 **Bottom nav mobile (< 768px):**
 ```
-Inicio | Cotizar | Historial | Clientes | Mi Agencia (agencia) | Soporte | Perfil
+Inicio | Cotizar | CRM | Mi Agencia (agencia) | Admin (admin) | Soporte | Perfil
 ```
 Clase activa: `.bnav-item.on`. La class `.bn-lbl` es mobile-only.
 
@@ -295,9 +297,12 @@ NO usarla en `.dm-com-item-val`. Usar `.com-ok` que solo aplica `color:#22c55e`.
 ## Funcionalidad IA
 
 La API de Claude está en `https://api.anthropic.com/v1/messages`.
-- Modelo: `claude-sonnet-4-20250514`
-- La API key se guarda en Supabase por agente (campo en tabla `agentes`)
-- Uso actual: botón "✦ Generar descripción" inline en el formulario — rellena el campo descripción del viaje con info turística del destino seleccionado
+- API key en `localStorage('mp_ia_key')` — sincronizada desde `agCfg._ia_key` en `showApp()`
+- Headers obligatorios: `x-api-key`, `anthropic-version: 2023-06-01`, `anthropic-dangerous-direct-browser-access: true`
+
+**Usos actuales:**
+1. `app-ia.js` — Generar descripción turística (modelo: `claude-sonnet-4-20250514`)
+2. `app-ia-parser.js` — Parser texto libre → formulario (modelo: `claude-haiku-4-5-20251001`)
 
 ## Roles de usuario
 
@@ -331,13 +336,16 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 
 ## CRM Clientes
 
-- Modal con 5 tabs: Datos personales, Viaje, Documentos, Cotizaciones, Grupos
+- Modal con 6 tabs: Datos, Viaje, Acompanantes, Documentos, Cotizaciones, Grupos
 - `openClientModal()` en `app-history.js` genera modal tabulado con `_cliTab()` para switching
-- `saveClient()` construye row dinámico — solo envía campos con valor para evitar errores de columna
+- `saveClient()` construye row dinámico — solo envía campos con valor + `datos._acompanantes` en JSONB
 - Documentos: upload a Storage bucket `documentos-clientes`, tabla `documentos_cliente`
   - `uploadClientDoc()`, `loadClientDocs()`, `downloadClientDoc()`, `deleteClientDoc()`
 - Cotizaciones del cliente: `loadClientQuotes()` busca por `cliente_id` o match de nombre
 - Grupos del cliente: `loadClientGroups()`, `removeFromGroup()`
+- Acompanantes: `_addAcompanante()`, `_deleteAcompanante()`, `_renderAcompanantes()`
+  - Se guardan en `clientes.datos._acompanantes[]` (JSONB)
+  - Campos: nombre, documento, fecha_nac, parentesco, notas_medicas
 
 ## Grupos de Viaje
 
@@ -391,10 +399,17 @@ Admin (1)
   - **`created_at` NO EXISTE** — la columna de fecha es `creado_en`
   - `total_comision` NO existe como columna — vive dentro del JSONB `datos`
   - Columnas inciertas (pueden no existir): `cover_url`, `precio_total`, `moneda`, `notas_int` — `dbSaveQuote` tiene fallback
-  - `datos` JSONB embebe también: `_cover_url`, `_logo_url`, `_unsplash_credit`, `_agent` — para el link público
+  - `datos` JSONB embebe: `_cover_url`, `_logo_url`, `_unsplash_credit`, `_agent` (link público),
+    `_servicios[]` (servicios contratados por proveedor), `_pagos[]` (pagos del cliente con servicio_id y forma_pago),
+    `_reserva` (fecha_limite_pago, notas_reserva)
 - **`clientes`**: campos expandidos (documento, doc_tipo, fecha_nac, nacionalidad, visa_*, ff_*, etc.) — `saveClient` solo envía campos con valor
+  - `datos` JSONB (puede no existir): `_acompanantes[]` — familiares/acompanantes del cliente
+  - SQL pendiente: `ALTER TABLE clientes ADD COLUMN IF NOT EXISTS datos JSONB DEFAULT '{}'`
+- **`ingresos`**: `id`, `agente_id`, `quot_id`, `concepto`, `monto`, `moneda`, `fecha_cobro`, `estado`, `notas`, `created_at`
 - **`grupos_viaje`** + **`grupo_miembros`** — grupos de viaje con miembros
 - **`documentos_cliente`** — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
+  - `quot_id` (puede no existir): vincula documento a cotización específica en seguimiento
+  - SQL pendiente: `ALTER TABLE documentos_cliente ADD COLUMN IF NOT EXISTS quot_id UUID`
 
 ### Reglas de consulta
 - RLS habilitado en todas las tablas — NO hacer upsert en `agentes` desde cliente (403)
@@ -407,6 +422,60 @@ Admin (1)
 - Tema: `localStorage('theme')` — `'light'` | `'dark'`
 - Sidebar: `localStorage('sb-open')` — `'1'` | `''`
 - Rol: `localStorage('mp_rol')` — cache del rol del usuario
+
+## Módulo CRM
+
+- Tab `crm` en sidebar — unifica Historial, Clientes y Seguimiento en subtabs
+- `_setCrmTab(tab)` en `app-core.js` — switcher de subtabs
+- `switchTab('history')`, `switchTab('clients')`, `switchTab('seguimiento')` son aliases → redirigen a `crm`
+- Subtab `history`: historial con filtro rápido Todas | Activas
+- Subtab `clients`: lista de clientes + grupos de viaje
+- Subtab `seguimiento`: listado de reservas aprobadas/confirmadas
+- Subtab `detail` (oculto): panel completo de seguimiento de una reserva
+
+### Seguimiento v2 — panel completo
+
+Al hacer click en una reserva del listado, se abre `crm-sub-detail` que reemplaza el contenido CRM:
+- `openSeguimientoDetail(quotId)` — oculta subtabs, muestra panel detalle
+- `closeSeguimientoDetail()` — vuelve al listado
+
+**Secciones del panel:**
+1. **Pasajeros** — titular (de la cotización) + acompanantes (de `clientes.datos._acompanantes`)
+2. **Servicios contratados** — `datos._servicios[]`: proveedor (del catálogo o manual), nro_confirmacion, detalle, monto, estado
+3. **Pagos del cliente** — `datos._pagos[]`: monto, fecha, servicio_id (asocia a servicio), forma_pago, descripcion
+4. **Info de reserva** — `datos._reserva`: fecha_limite_pago, notas_reserva
+5. **Documentos del viaje** — reutiliza uploadViajeDoc/loadViajeDoc
+
+**Drawer legacy:** `openReservaDrawer()` todavía existe pero el botón Seguimiento del historial ya usa `openSeguimientoDetail()`.
+
+**Proveedores en seguimiento:** `_loadProveedoresForSelect()` en app-core.js cachea proveedores del agente para el select.
+
+## Módulo Ingresos
+
+- Tab `ingresos` en sidebar — rol `agente`
+- Archivo: `js/app-ingresos.js`
+- Tabla `ingresos`: `id`, `agente_id`, `quot_id`, `concepto`, `monto`,
+  `moneda`, `fecha_cobro`, `estado` (cobrado|pendiente), `notas`, `created_at`
+- RLS: `agente_id = auth.uid()`
+- Funciones: `loadIngresos()`, `renderIngresos()`, `openIngresoModal(quotId, preload)`,
+  `saveIngreso(id)`, `deleteIngreso(id)`
+- Vista toggle: Lista | Resumen (balance mensual)
+- Meta mensual: `agCfg.meta_mensual` editable en Mi Perfil → barra de progreso en dashboard
+- Dashboard: card `met-ingresos-mes` con barra de progreso vs meta,
+  card `met-reservas-act` con conteo de cotizaciones aprobadas
+- Popup post-aprobación: `_showIngresoPostApproval()` — toast con acción "+ Registrar comisión"
+
+## IA Parser (texto libre → formulario)
+
+- Archivo: `js/app-ia-parser.js`
+- Botón "Cargar con IA" en `#form-sticky-bar`
+- Funciones: `openIAParserModal()`, `runIAParser()`, `_applyIAParser(data)`
+- API key: `localStorage('mp_ia_key')` — la misma del sistema
+- Modelo: `claude-haiku-4-5-20251001`
+- Extrae: cliente, adultos, ninos, destino, fechas, vuelos, hoteles,
+  traslados, seguros, excursiones, autos, cruceros — pre-carga sin tocar Supabase
+- Mapeo de campos: v{id}-or/de/al/fs/hs/hl/fl/esc/pr, h{id}-nm/ciu/ci/co,
+  t{id}-tipo/or/de/fe, seg-nm/seg-dias/seg-precio, e{id}-nm/fe, au{id}-prov/cat/fr/fd, cr{id}-nav/barco/pe/fe/fd
 
 ## Workflow para cada cambio
 
