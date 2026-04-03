@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ermix · Crear cuenta gratis</title>
+<link rel="icon" type="image/png" sizes="32x32" href="ermix-brand-assets-v2/png/transparent/icon-gradient-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="ermix-brand-assets-v2/png/transparent/icon-gradient-16.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=57">
+<script src="js/config.js?v=57"></script>
+<style>
+/* Register — complementario al boarding pass de index.html */
+.reg-wrap{
+  min-height:100vh;
+  display:flex;
+  background:#0D120F;
+}
+.reg-photo{
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  min-height:0;
+}
+.reg-photo img{
+  width:100%;height:100%;object-fit:cover;
+  animation:loginPhotoZoom 30s ease-in-out infinite alternate;
+}
+.reg-photo-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(13,43,30,.85) 0%,rgba(10,26,18,.3) 40%,rgba(27,158,143,.08) 100%);
+}
+.reg-photo-content{
+  position:absolute;bottom:0;left:0;right:0;padding:48px;z-index:1;
+}
+.reg-photo h2{
+  font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;color:white;
+  line-height:1.08;letter-spacing:-.02em;margin:0 0 10px;
+}
+.reg-photo p{
+  font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6;
+  max-width:380px;font-weight:500;margin:0;
+}
+.reg-photo-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(27,158,143,.15);border:1px solid rgba(11,197,184,.2);
+  border-radius:20px;padding:5px 12px;margin-bottom:20px;
+  font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0BC5B8;
+}
+.reg-right{
+  width:520px;display:flex;align-items:center;justify-content:center;
+  padding:32px;flex-shrink:0;background:#0D120F;overflow-y:auto;
+}
+/* Card de selección de tipo */
+.reg-type-card{
+  width:100%;max-width:420px;
+}
+.reg-type-title{
+  font-size:1.25rem;font-weight:800;color:white;text-align:center;
+  margin-bottom:6px;letter-spacing:-.02em;
+}
+.reg-type-sub{
+  font-size:.78rem;color:rgba(255,255,255,.4);text-align:center;
+  margin-bottom:28px;line-height:1.5;
+}
+.reg-type-opts{
+  display:flex;flex-direction:column;gap:12px;margin-bottom:24px;
+}
+.reg-type-opt{
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:18px 20px;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:16px;
+}
+.reg-type-opt:hover{
+  background:rgba(27,158,143,.1);border-color:rgba(27,158,143,.35);
+}
+.reg-type-opt.selected{
+  background:rgba(27,158,143,.14);border-color:#1B9E8F;
+}
+.reg-type-ico{
+  width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.reg-type-ico.indie{background:linear-gradient(135deg,rgba(11,197,184,.2),rgba(6,182,212,.1));}
+.reg-type-ico.agencia{background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(232,90,37,.08));}
+.reg-type-nm{font-size:.9rem;font-weight:700;color:white;margin-bottom:3px;}
+.reg-type-desc{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.4;}
+.reg-type-arr{margin-left:auto;color:rgba(255,255,255,.2);flex-shrink:0;}
+.reg-type-opt.selected .reg-type-arr{color:#1B9E8F;}
+/* Ticket de formulario */
+.reg-ticket{
+  width:100%;max-width:420px;
+  background:white;border-radius:20px;overflow:hidden;
+  box-shadow:0 20px 80px rgba(0,0,0,.4);
+}
+.reg-tk-hd{
+  background:linear-gradient(135deg,#0D2B1E 0%,#0A1A12 100%);
+  padding:22px 28px 18px;position:relative;
+}
+.reg-tk-hd::after{
+  content:'';position:absolute;bottom:-12px;left:0;right:0;
+  height:24px;background:white;border-radius:50% 50% 0 0/100% 100% 0 0;
+}
+.reg-tk-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.reg-tk-back{
+  background:rgba(255,255,255,.08);border:none;border-radius:7px;
+  width:30px;height:30px;cursor:pointer;color:rgba(255,255,255,.6);
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+  flex-shrink:0;
+}
+.reg-tk-back:hover{background:rgba(255,255,255,.15);color:white;}
+.reg-tk-step{
+  font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.reg-tk-title{font-size:1rem;font-weight:800;color:white;margin-top:2px;}
+.reg-tk-badge{
+  display:inline-flex;align-items:center;gap:5px;margin-top:6px;
+  background:rgba(11,197,184,.12);border:1px solid rgba(11,197,184,.2);
+  border-radius:12px;padding:3px 10px;
+  font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#0BC5B8;
+}
+.reg-tk-badge.orange{
+  background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.2);color:#FF6B35;
+}
+.reg-tk-body{padding:24px 28px 28px;}
+.reg-field{margin-bottom:14px;}
+.reg-label{
+  display:block;font-size:.62rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(45,31,20,.5);margin-bottom:5px;
+}
+.reg-input{
+  width:100%;padding:12px 15px;border-radius:10px;font-size:.86rem;
+  font-family:'Plus Jakarta Sans',sans-serif;background:#F5F0E8;
+  border:1.5px solid rgba(45,31,20,.06);color:#2D1F14;outline:none;
+  transition:all .2s;box-sizing:border-box;
+}
+.reg-input::placeholder{color:rgba(45,31,20,.35);}
+.reg-input:focus{border-color:#1B9E8F;box-shadow:0 0 0 3px rgba(27,158,143,.1);}
+.reg-optional{
+  font-size:.6rem;font-weight:600;color:rgba(45,31,20,.3);
+  margin-left:5px;letter-spacing:.05em;text-transform:none;
+}
+.reg-cta{
+  display:block;width:100%;padding:14px;border:none;border-radius:10px;
+  font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;
+  font-family:'Plus Jakarta Sans',sans-serif;background:#FF6B35;color:white;
+  box-shadow:0 4px 16px rgba(255,107,53,.3);letter-spacing:.02em;
+}
+.reg-cta:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,53,.4);background:#E85A25;}
+.reg-cta:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.reg-status{
+  min-height:20px;margin-top:8px;text-align:center;font-size:.78rem;
+}
+.reg-status.error{color:#EF4444;}
+.reg-status.ok{color:#10B981;}
+.reg-hint{
+  font-size:.72rem;color:rgba(45,31,20,.45);margin-top:14px;text-align:center;
+  line-height:1.5;
+}
+.reg-hint a{color:#1B9E8F;text-decoration:none;font-weight:600;}
+.reg-hint a:hover{color:#0BC5B8;}
+/* Plan chips */
+.reg-plan-chips{
+  display:flex;gap:8px;margin-bottom:18px;
+}
+.reg-plan-chip{
+  flex:1;border-radius:10px;padding:10px 8px;text-align:center;
+  border:1.5px solid rgba(45,31,20,.08);background:#F5F0E8;cursor:default;
+}
+.reg-plan-chip .chip-nm{font-size:.7rem;font-weight:700;color:rgba(45,31,20,.6);}
+.reg-plan-chip .chip-price{font-size:.88rem;font-weight:800;color:#2D1F14;margin-top:2px;}
+.reg-plan-chip.trial{border-color:rgba(27,158,143,.25);background:rgba(27,158,143,.06);}
+.reg-plan-chip.trial .chip-nm{color:#1B9E8F;}
+.reg-plan-chip.trial .chip-price{color:#1B9E8F;}
+/* Success state */
+.reg-success{
+  width:100%;max-width:420px;text-align:center;padding:20px;
+}
+.reg-success-ico{
+  width:72px;height:72px;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;box-shadow:0 8px 32px rgba(27,158,143,.4);
+}
+.reg-success-title{
+  font-size:1.4rem;font-weight:900;color:white;margin-bottom:8px;letter-spacing:-.02em;
+}
+.reg-success-sub{
+  font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6;max-width:320px;margin:0 auto 28px;
+}
+.reg-success-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#FF6B35;color:white;text-decoration:none;
+  border-radius:10px;padding:13px 28px;font-weight:700;font-size:.88rem;
+  box-shadow:0 4px 16px rgba(255,107,53,.3);transition:all .2s;
+}
+.reg-success-cta:hover{background:#E85A25;transform:translateY(-2px);}
+/* Trial banner en ticket */
+.reg-trial-banner{
+  background:linear-gradient(135deg,rgba(27,158,143,.1),rgba(6,182,212,.06));
+  border:1px solid rgba(27,158,143,.2);border-radius:10px;padding:10px 14px;
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.reg-trial-banner svg{flex-shrink:0;}
+.reg-trial-txt{font-size:.75rem;color:rgba(45,31,20,.7);line-height:1.4;}
+.reg-trial-txt strong{color:#1B9E8F;}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.reg-spinner{
+  display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:6px;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .reg-wrap{flex-direction:column;}
+  .reg-photo{height:220px;flex:none;}
+  .reg-photo-content{padding:24px;}
+  .reg-photo h2{font-size:1.6rem;}
+  .reg-right{width:100%;padding:24px 16px;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div class="reg-wrap" id="reg-wrap">
+  <!-- LEFT: photo -->
+  <div class="reg-photo">
+    <img id="reg-bg" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80" alt="Viaje">
+    <div class="reg-photo-overlay"></div>
+    <div class="reg-photo-content">
+      <div id="reg-wm" style="margin-bottom:20px"></div>
+      <div class="reg-photo-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        7 dias gratis — sin tarjeta
+      </div>
+      <h2>Tu agencia de viajes.<br>En la palma de tu mano.</h2>
+      <p>Crea cotizaciones profesionales, gestiona clientes y crece tu negocio con ermix.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT: form area -->
+  <div class="reg-right" id="reg-right">
+
+    <!-- STATE 1: Tipo de cuenta -->
+    <div id="reg-s1" class="reg-type-card">
+      <div id="reg-s1-wm" style="text-align:center;margin-bottom:20px"></div>
+      <div class="reg-type-title">Crea tu cuenta gratis</div>
+      <div class="reg-type-sub">Selecciona como vas a usar ermix.<br>Podes cambiarlo despues.</div>
+
+      <div class="reg-type-opts">
+        <!-- Agente independiente -->
+        <div class="reg-type-opt" id="opt-indie" onclick="selectType('indie')">
+          <div class="reg-type-ico indie">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0BC5B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="reg-type-nm">Soy agente independiente</div>
+            <div class="reg-type-desc">Trabajo por mi cuenta, sin agencia formal</div>
+          </div>
+          <svg class="reg-type-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <!-- Agencia -->
+        <div class="reg-type-opt" id="opt-agencia" onclick="selectType('agencia')">
+          <div class="reg-type-ico agencia">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <div class="reg-type-nm">Tengo o manejo una agencia</div>
+            <div class="reg-type-desc">Gestiono un equipo de agentes de viaje</div>
+          </div>
+          <svg class="reg-type-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="reg-hint">
+        Ya tenes cuenta?
+        <a href="index.html">Iniciar sesion</a>
+      </div>
+    </div>
+
+    <!-- STATE 2A: Formulario agente independiente -->
+    <div id="reg-s2a" style="display:none;width:100%;max-width:420px">
+      <div class="reg-ticket">
+        <div class="reg-tk-hd">
+          <div class="reg-tk-top">
+            <button class="reg-tk-back" onclick="goBack()" title="Volver">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div>
+              <div class="reg-tk-step">Agente independiente</div>
+              <div class="reg-tk-title">Crear tu cuenta</div>
+            </div>
+          </div>
+          <div class="reg-tk-badge">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            7 dias de prueba gratis
+          </div>
+        </div>
+        <div class="reg-tk-body">
+          <div class="reg-trial-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="reg-trial-txt">Comenzas con <strong>7 dias gratis</strong> del plan Explorador. Sin tarjeta de credito.</div>
+          </div>
+
+          <div class="reg-field">
+            <label class="reg-label">Tu nombre completo</label>
+            <input class="reg-input" id="a-nombre" type="text" placeholder="Maria Lopez" autocomplete="name">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Email</label>
+            <input class="reg-input" id="a-email" type="email" placeholder="tu@email.com" autocomplete="email">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Contrasena <span style="font-size:.6rem;color:rgba(45,31,20,.3);text-transform:none;letter-spacing:0">(min. 6 caracteres)</span></label>
+            <input class="reg-input" id="a-pass" type="password" placeholder="Minimo 6 caracteres" autocomplete="new-password">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Nombre de tu marca <span class="reg-optional">opcional</span></label>
+            <input class="reg-input" id="a-marca" type="text" placeholder="Ej: Maria Travels">
+          </div>
+
+          <button class="reg-cta" id="a-btn" onclick="registerIndie()">Crear mi cuenta gratis</button>
+          <div class="reg-status" id="a-status"></div>
+
+          <div class="reg-hint">
+            Al registrarte aceptas los terminos de uso de ermix.<br>
+            Ya tenes cuenta? <a href="index.html">Iniciar sesion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE 2B: Formulario agencia -->
+    <div id="reg-s2b" style="display:none;width:100%;max-width:420px">
+      <div class="reg-ticket">
+        <div class="reg-tk-hd">
+          <div class="reg-tk-top">
+            <button class="reg-tk-back" onclick="goBack()" title="Volver">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div>
+              <div class="reg-tk-step">Agencia de viajes</div>
+              <div class="reg-tk-title">Crear tu agencia</div>
+            </div>
+          </div>
+          <div class="reg-tk-badge orange">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            7 dias de prueba gratis
+          </div>
+        </div>
+        <div class="reg-tk-body">
+          <div class="reg-trial-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B9E8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="reg-trial-txt">Comenzas con <strong>7 dias gratis</strong>. Podes invitar hasta 3 agentes.</div>
+          </div>
+
+          <div class="reg-field">
+            <label class="reg-label">Nombre de la agencia</label>
+            <input class="reg-input" id="b-agencia" type="text" placeholder="Ej: Viajes del Sur">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Tu nombre</label>
+            <input class="reg-input" id="b-nombre" type="text" placeholder="Tu nombre completo" autocomplete="name">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Email</label>
+            <input class="reg-input" id="b-email" type="email" placeholder="tu@agencia.com" autocomplete="email">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Contrasena <span style="font-size:.6rem;color:rgba(45,31,20,.3);text-transform:none;letter-spacing:0">(min. 6 caracteres)</span></label>
+            <input class="reg-input" id="b-pass" type="password" placeholder="Minimo 6 caracteres" autocomplete="new-password" onkeydown="if(event.key==='Enter')registerAgencia()">
+          </div>
+
+          <button class="reg-cta" id="b-btn" onclick="registerAgencia()">Crear mi agencia gratis</button>
+          <div class="reg-status" id="b-status"></div>
+
+          <div class="reg-hint">
+            Al registrarte aceptas los terminos de uso de ermix.<br>
+            Ya tenes cuenta? <a href="index.html">Iniciar sesion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="reg-success" style="display:none">
+      <div class="reg-success">
+        <div class="reg-success-ico">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="reg-success-title" id="success-title">Cuenta creada!</div>
+        <div class="reg-success-sub" id="success-sub">Revisa tu email para confirmar tu cuenta y luego podes iniciar sesion.</div>
+        <a class="reg-success-cta" href="index.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Ir al login
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Supabase init
+const sb = supabase.createClient(ERMIX_CONFIG.supabaseUrl, ERMIX_CONFIG.supabaseKey);
+
+// Build wordmark en el header izquierdo y en el state 1
+function _buildSimpleWordmark(el){
+  if(!el) return;
+  el.innerHTML=`<div style="display:inline-flex;align-items:center;gap:0">
+    <span style="font-family:'DM Sans',sans-serif;font-weight:900;font-size:20px;color:#F0EDE6;letter-spacing:-.5px">ermi</span>
+    <svg viewBox="0 0 36 36" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <defs><linearGradient id="xg-r" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+      <path d="M8 8 L8 18 L24.5 32 L28 32 L28 22 L11.5 8 Z M28 8 L28 18 L11.5 32 L8 32 L8 22 L24.5 8 Z" fill="url(#xg-r)"/>
+    </svg>
+  </div>`;
+}
+_buildSimpleWordmark(document.getElementById('reg-wm'));
+_buildSimpleWordmark(document.getElementById('reg-s1-wm'));
+
+// State management
+let _regType = null; // 'indie' | 'agencia'
+
+function selectType(type){
+  _regType = type;
+  // Hide state 1
+  document.getElementById('reg-s1').style.display = 'none';
+  // Show appropriate form
+  if(type === 'indie'){
+    document.getElementById('reg-s2a').style.display = '';
+    document.getElementById('a-nombre').focus();
+  } else {
+    document.getElementById('reg-s2b').style.display = '';
+    document.getElementById('b-agencia').focus();
+  }
+}
+
+function goBack(){
+  document.getElementById('reg-s2a').style.display = 'none';
+  document.getElementById('reg-s2b').style.display = 'none';
+  document.getElementById('reg-s1').style.display = '';
+  _regType = null;
+}
+
+function _setStatus(id, msg, isError){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = msg;
+  el.className = 'reg-status ' + (isError ? 'error' : 'ok');
+}
+
+function _setLoading(btnId, loading, defaultText){
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  if(loading){
+    btn.disabled = true;
+    btn.innerHTML = '<span class="reg-spinner"></span>Creando cuenta...';
+  } else {
+    btn.disabled = false;
+    btn.textContent = defaultText;
+  }
+}
+
+function _showSuccess(title, sub){
+  document.getElementById('reg-s2a').style.display = 'none';
+  document.getElementById('reg-s2b').style.display = 'none';
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-sub').textContent = sub;
+  document.getElementById('reg-success').style.display = '';
+}
+
+function _mapAuthError(msg){
+  if(!msg) return 'Error inesperado. Intenta de nuevo.';
+  if(msg.includes('already registered') || msg.includes('User already registered') || msg.includes('email address is already'))
+    return 'Este email ya tiene una cuenta. Podes iniciar sesion.';
+  if(msg.includes('Password should be at least') || msg.includes('password'))
+    return 'La contrasena debe tener al menos 6 caracteres.';
+  if(msg.includes('Invalid email') || msg.includes('invalid email'))
+    return 'El email ingresado no es valido.';
+  if(msg.includes('rate limit') || msg.includes('too many'))
+    return 'Demasiados intentos. Espera unos minutos.';
+  return msg;
+}
+
+// Path A — Agente independiente
+async function registerIndie(){
+  const nombre = document.getElementById('a-nombre').value.trim();
+  const email  = document.getElementById('a-email').value.trim();
+  const pass   = document.getElementById('a-pass').value;
+  const marca  = document.getElementById('a-marca').value.trim();
+
+  _setStatus('a-status','','');
+  if(!nombre){ _setStatus('a-status','Ingresa tu nombre.',true); return; }
+  if(!email)  { _setStatus('a-status','Ingresa tu email.',true); return; }
+  if(pass.length < 6){ _setStatus('a-status','La contrasena debe tener al menos 6 caracteres.',true); return; }
+
+  _setLoading('a-btn', true, 'Crear mi cuenta gratis');
+
+  try {
+    // 1. Supabase Auth signUp
+    const { data: authData, error: authErr } = await sb.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: nombre } }
+    });
+    if(authErr) throw authErr;
+
+    const uid = authData?.user?.id;
+    if(!uid) throw new Error('No se pudo obtener el ID de usuario.');
+
+    // 2. Insert en tabla agentes
+    const trialInicio = new Date().toISOString();
+    const planVence   = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+
+    const { error: agErr } = await sb.from('agentes').insert({
+      id:           uid,
+      email:        email,
+      nombre:       nombre,
+      agencia:      marca || nombre,  // nombre de marca o nombre propio
+      rol:          'agente',
+      activo:       true,
+      plan:         'explorador',
+      plan_estado:  'trial',
+      trial_inicio: trialInicio,
+      plan_vence:   planVence
+    });
+    if(agErr) console.warn('[register] agentes insert warning:', agErr.message);
+
+    _showSuccess(
+      'Cuenta creada!',
+      'Revisa tu email para confirmar tu cuenta. Despues podes iniciar sesion y comenzar tu prueba de 7 dias.'
+    );
+  } catch(e){
+    _setStatus('a-status', _mapAuthError(e.message), true);
+  } finally {
+    _setLoading('a-btn', false, 'Crear mi cuenta gratis');
+  }
+}
+
+// Path B — Agencia
+async function registerAgencia(){
+  const agencia = document.getElementById('b-agencia').value.trim();
+  const nombre  = document.getElementById('b-nombre').value.trim();
+  const email   = document.getElementById('b-email').value.trim();
+  const pass    = document.getElementById('b-pass').value;
+
+  _setStatus('b-status','','');
+  if(!agencia){ _setStatus('b-status','Ingresa el nombre de tu agencia.',true); return; }
+  if(!nombre) { _setStatus('b-status','Ingresa tu nombre.',true); return; }
+  if(!email)  { _setStatus('b-status','Ingresa tu email.',true); return; }
+  if(pass.length < 6){ _setStatus('b-status','La contrasena debe tener al menos 6 caracteres.',true); return; }
+
+  _setLoading('b-btn', true, 'Crear mi agencia gratis');
+
+  try {
+    // 1. Supabase Auth signUp
+    const { data: authData, error: authErr } = await sb.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: nombre } }
+    });
+    if(authErr) throw authErr;
+
+    const uid = authData?.user?.id;
+    if(!uid) throw new Error('No se pudo obtener el ID de usuario.');
+
+    // 2. Insert agencia
+    const trialInicio = new Date().toISOString();
+    const planVence   = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+
+    const { data: agData, error: agcErr } = await sb.from('agencias').insert({
+      nombre:    agencia,
+      email:     email,
+      activa:    true,
+      plan:      'explorador',
+      max_agentes: 3
+    }).select('id').maybeSingle();
+
+    if(agcErr) console.warn('[register] agencias insert warning:', agcErr.message);
+
+    const agenciaId = agData?.id || null;
+
+    // 3. Insert agente con rol agencia
+    const { error: agErr } = await sb.from('agentes').insert({
+      id:           uid,
+      email:        email,
+      nombre:       nombre,
+      agencia:      agencia,
+      rol:          'agencia',
+      activo:       true,
+      agencia_id:   agenciaId,
+      plan:         'explorador',
+      plan_estado:  'trial',
+      trial_inicio: trialInicio,
+      plan_vence:   planVence
+    });
+    if(agErr) console.warn('[register] agentes insert warning:', agErr.message);
+
+    _showSuccess(
+      'Agencia creada!',
+      'Revisa tu email para confirmar tu cuenta. Despues podes iniciar sesion, configurar tu agencia e invitar agentes.'
+    );
+  } catch(e){
+    _setStatus('b-status', _mapAuthError(e.message), true);
+  } finally {
+    _setLoading('b-btn', false, 'Crear mi agencia gratis');
+  }
+}
+
+// Apply stored theme on load
+(function(){
+  const th = localStorage.getItem('theme') || 'light';
+  document.body.setAttribute('data-theme', th);
+})();
+</script>
+</body>
+</html>

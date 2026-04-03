@@ -58,13 +58,29 @@ async function renderHistory(){
     el.innerHTML=`<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No hay resultados</p><small>Probá cambiando los filtros o el texto de búsqueda</small></div>`;
     return;
   }
-  const shown=visible.slice(0,_histPageSize);
+  // Plan gate: explorador ve solo las 20 más recientes
+  const _histLimit = (typeof _tienePlan==='function' && !_tienePlan('historial_ilimitado')) ? 20 : Infinity;
+  const limitedVisible = _histLimit < Infinity ? visible.slice(0, _histLimit) : visible;
+  if(_histLimit < Infinity && visible.length > _histLimit){
+    const locked = document.getElementById('hist-plan-notice');
+    if(!locked){
+      const notice = document.createElement('div');
+      notice.id = 'hist-plan-notice';
+      notice.style.cssText = 'background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--text)';
+      notice.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Mostrando las 20 cotizaciones mas recientes. <button onclick="_openUpgradeModal('profesional')" style="background:none;border:none;color:#FF6B35;font-weight:700;cursor:pointer;font-size:.78rem;padding:0">Ver plan Profesional →</button>`;
+      el.parentElement?.insertBefore(notice, el);
+    }
+  } else {
+    document.getElementById('hist-plan-notice')?.remove();
+  }
+  const shown=limitedVisible.slice(0,_histPageSize);
   const stLbl={borrador:'Borrador',enviada:'Enviada',pendiente:'Pendiente',confirmada:'Confirmada',aprobado:'Aprobada',cancelada:'Cancelada',vencida:'Vencida',revision:'Revisión'};
   // Calcular cuántas versiones tiene cada base ref_id (para mostrar indicador en V1)
   const _vBase=r=>(r.ref_id||'').replace(/-V\d+$/,'');
   const _vN=r=>{const m=(r.ref_id||'').match(/-V(\d+)$/);return m?parseInt(m[1]):1;};
   const baseCounts={};
-  visible.forEach(r=>{const b=_vBase(r);baseCounts[b]=(baseCounts[b]||0)+1;});
+  limitedVisible.forEach(r=>{const b=_vBase(r);baseCounts[b]=(baseCounts[b]||0)+1;});
 
   el.innerHTML=shown.map(r=>{
     const canE=_canEdit(r), canV=_canView(r);
@@ -509,6 +525,11 @@ function openClientModal(id){
 }
 
 function _cliTab(idx, el){
+  // Tabs 3,4,5 (Documentos, Cotizaciones, Grupos) son CRM avanzado
+  if(idx >= 3 && typeof _tienePlan==='function' && !_tienePlan('crm_avanzado')){
+    _openUpgradeModal('profesional');
+    return;
+  }
   document.querySelectorAll('.cli-tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.cli-tab-panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');

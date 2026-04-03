@@ -37,6 +37,8 @@ function saveKey(){const k=(document.getElementById('api-key')?.value||'').trim(
 // GENERAR DESCRIPCIÓN TURÍSTICA CON IA
 // ═══════════════════════════════════════════
 async function generarDescIA(){
+  // Plan gate
+  if(typeof _tienePlan==='function'&&!_tienePlan('ia_parser')){_openUpgradeModal('profesional');return;}
   const destEl=document.getElementById('m-dest');
   const descEl=document.getElementById('m-desc');
   const btn=document.getElementById('btn-ia-desc');
