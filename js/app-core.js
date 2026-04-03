@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.20';
+const APP_VERSION = '0.25.21';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -793,8 +793,10 @@ async function dbSaveQuote(d, supabaseId){
   const _cUrl=typeof coverUrl!=='undefined'?coverUrl:null;
   const _lUrl=(typeof logoUrl!=='undefined'?logoUrl:null)||(typeof agCfg!=='undefined'?agCfg.logo_url:null)||null;
   const _uCredit=(typeof window!=='undefined'&&window._unsplashCredit)||null;
-  const _agentInfo=(typeof agCfg!=='undefined'&&(agCfg.nm||agCfg.ag))?{nm:agCfg.nm||'',ag:agCfg.ag||'',logo_url:agCfg.logo_url||null,tel:agCfg.tel||'',soc:agCfg.soc||'',pdf_theme:agCfg.pdf_theme||1}:null;
+  const _agentInfo=(typeof agCfg!=='undefined'&&(agCfg.nm||agCfg.ag))?{nm:agCfg.nm||'',ag:agCfg.ag||'',logo_url:agCfg.logo_url||null,tel:agCfg.tel||'',soc:agCfg.soc||'',pdf_theme:agCfg.pdf_theme||1,resend_from:agCfg.resend_from||''}:null;
+  const _resendKey=localStorage.getItem('mp_resend_key')||(typeof agCfg!=='undefined'?agCfg._resend_key:'')||'';
   const _datosConMedia={...d,_cover_url:_cUrl,_logo_url:_lUrl,_unsplash_credit:_uCredit||undefined};
+  if(_resendKey) _datosConMedia._resend_key=_resendKey;
   if(!_cUrl) delete _datosConMedia._cover_url;
   if(!_lUrl) delete _datosConMedia._logo_url;
   if(!_uCredit) delete _datosConMedia._unsplash_credit;
