@@ -978,8 +978,10 @@ async function dbSaveQuote(d, supabaseId){
   if(!agId) throw new Error('agente_id no disponible — cerrá sesión y volvé a entrar');
   // Generate structured ref_id for NEW quotes: {pais_cod}-{agente_num_4d}-{seq_5d}
   if(!d.refId && !supabaseId){
-    const {count} = await sb.from('cotizaciones').select('id',{count:'exact',head:true}).eq('agente_id',agId||'');
-    const seq = (count||0) + 1;
+    // Incremento atómico via RPC — garantiza unicidad aunque se borren cotizaciones
+    const { data: seqData, error: seqError } = await sb.rpc('increment_cotizacion_seq', { agente_uuid: agId });
+    if(seqError) console.warn('[seq]', seqError);
+    const seq = seqData || 1;
     const pais = window._agentePaisCod || agCfg.pais_cod || 'AR';
     const num = window._agenteNum || 1;
     d.refId = `${pais}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
