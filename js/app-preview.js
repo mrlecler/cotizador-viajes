@@ -122,7 +122,23 @@ async function saveApiKeys(){
   if(resend) agCfg._resend_key=resend; else delete agCfg._resend_key;
   if(from) agCfg.resend_from=from; else delete agCfg.resend_from;
   // 2. Persistir en Supabase — fuente de verdad
-  if(window._agenteId){
+  // Si hay agencia, las API keys van en agencias.config (las hereda todo el equipo)
+  // Si es independiente (sin agencia), van en agentes.config
+  if(window._agenciaId){
+    try{
+      const keyCfg={
+        _unsplash_key: unsplash||null,
+        _ia_key:       ia||null,
+        _resend_key:   resend||null,
+        resend_from:   from||null
+      };
+      const {error}=await sb.from('agencias').update({config:keyCfg}).eq('id',window._agenciaId);
+      if(error) throw error;
+    }catch(e){
+      toast('Error al guardar en Supabase: '+e.message,false);
+      return;
+    }
+  } else if(window._agenteId){
     try{
       const {error}=await sb.from('agentes').update({config:agCfg}).eq('id',window._agenteId);
       if(error) throw error;
