@@ -16,7 +16,7 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
 .reg-wrap{
   height:100vh;height:100dvh;
   display:flex;
-  background:#0D120F;
+  background:#F5F0E8;
   overflow:hidden;
 }
 .reg-photo{
@@ -52,7 +52,7 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
 }
 .reg-right{
   width:500px;display:flex;align-items:center;justify-content:center;
-  padding:24px;flex-shrink:0;background:#0D120F;
+  padding:24px;flex-shrink:0;background:#F5F0E8;
   overflow-y:auto;height:100%;box-sizing:border-box;
 }
 /* Card de selección de tipo */
@@ -60,42 +60,45 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
   width:100%;max-width:420px;
 }
 .reg-type-title{
-  font-size:1.25rem;font-weight:800;color:white;text-align:center;
+  font-size:1.25rem;font-weight:800;color:#2D1F14;text-align:center;
   margin-bottom:6px;letter-spacing:-.02em;
 }
 .reg-type-sub{
-  font-size:.78rem;color:rgba(255,255,255,.4);text-align:center;
-  margin-bottom:28px;line-height:1.5;
+  font-size:.78rem;color:rgba(45,31,20,.5);text-align:center;
+  margin-bottom:24px;line-height:1.5;
 }
 .reg-type-opts{
-  display:flex;flex-direction:column;gap:12px;margin-bottom:24px;
+  display:flex;flex-direction:column;gap:10px;margin-bottom:20px;
 }
 .reg-type-opt{
-  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);
-  border-radius:14px;padding:18px 20px;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;gap:16px;
+  background:#FFFFFF;border:1.5px solid rgba(45,31,20,.08);
+  border-radius:14px;padding:16px 18px;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:14px;
+  box-shadow:0 2px 8px rgba(45,31,20,.05);
 }
 .reg-type-opt:hover{
-  background:rgba(27,158,143,.1);border-color:rgba(27,158,143,.35);
+  background:#fff;border-color:rgba(27,158,143,.4);
+  box-shadow:0 4px 16px rgba(27,158,143,.12);
 }
 .reg-type-opt.selected{
-  background:rgba(27,158,143,.14);border-color:#1B9E8F;
+  background:#fff;border-color:#1B9E8F;
+  box-shadow:0 4px 16px rgba(27,158,143,.15);
 }
 .reg-type-ico{
-  width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  width:42px;height:42px;border-radius:10px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
 }
-.reg-type-ico.indie{background:linear-gradient(135deg,rgba(11,197,184,.2),rgba(6,182,212,.1));}
-.reg-type-ico.agencia{background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(232,90,37,.08));}
-.reg-type-nm{font-size:.9rem;font-weight:700;color:white;margin-bottom:3px;}
-.reg-type-desc{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.4;}
-.reg-type-arr{margin-left:auto;color:rgba(255,255,255,.2);flex-shrink:0;}
-.reg-type-opt.selected .reg-type-arr{color:#1B9E8F;}
+.reg-type-ico.indie{background:linear-gradient(135deg,rgba(11,197,184,.15),rgba(6,182,212,.08));}
+.reg-type-ico.agencia{background:linear-gradient(135deg,rgba(255,107,53,.12),rgba(232,90,37,.06));}
+.reg-type-nm{font-size:.88rem;font-weight:700;color:#2D1F14;margin-bottom:2px;}
+.reg-type-desc{font-size:.72rem;color:rgba(45,31,20,.5);line-height:1.4;}
+.reg-type-arr{margin-left:auto;color:rgba(45,31,20,.2);flex-shrink:0;}
+.reg-type-opt:hover .reg-type-arr,.reg-type-opt.selected .reg-type-arr{color:#1B9E8F;}
 /* Ticket de formulario */
 .reg-ticket{
   width:100%;max-width:420px;
   background:white;border-radius:20px;overflow:hidden;
-  box-shadow:0 20px 80px rgba(0,0,0,.4);
+  box-shadow:0 8px 32px rgba(45,31,20,.12);
 }
 .reg-tk-hd{
   background:linear-gradient(135deg,#0D2B1E 0%,#0A1A12 100%);
@@ -187,10 +190,10 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
   margin:0 auto 20px;box-shadow:0 8px 32px rgba(27,158,143,.4);
 }
 .reg-success-title{
-  font-size:1.4rem;font-weight:900;color:white;margin-bottom:8px;letter-spacing:-.02em;
+  font-size:1.4rem;font-weight:900;color:#2D1F14;margin-bottom:8px;letter-spacing:-.02em;
 }
 .reg-success-sub{
-  font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6;max-width:320px;margin:0 auto 28px;
+  font-size:.85rem;color:rgba(45,31,20,.5);line-height:1.6;max-width:320px;margin:0 auto 28px;
 }
 .reg-success-cta{
   display:inline-flex;align-items:center;gap:8px;
@@ -220,11 +223,11 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
 /* Mobile */
 @media(max-width:768px){
   html,body{overflow:auto;}
-  .reg-wrap{flex-direction:column;height:auto;overflow:visible;}
+  .reg-wrap{flex-direction:column;height:auto;overflow:visible;background:#F5F0E8;}
   .reg-photo{height:200px;flex:none;}
   .reg-photo-content{padding:20px;}
   .reg-photo h2{font-size:1.4rem;}
-  .reg-right{width:100%;padding:20px 16px;align-items:flex-start;height:auto;overflow:visible;}
+  .reg-right{width:100%;padding:20px 16px;align-items:flex-start;height:auto;overflow:visible;background:#F5F0E8;}
 }
 </style>
 </head>
@@ -440,8 +443,8 @@ function buildWordmark(targetId, fontSize, textCol, xType){
 }
 // Esperar fuentes antes de renderizar (igual que _initWordmarks en app-core.js)
 function _initRegWordmarks(){
-  buildWordmark('reg-wm', 36, 'white', 'grad');
-  buildWordmark('reg-s1-wm', 28, 'white', 'grad');
+  buildWordmark('reg-wm', 36, 'white', 'grad');    // foto oscura → texto blanco
+  buildWordmark('reg-s1-wm', 28, '#2D1F14', 'grad'); // panel claro → texto oscuro
 }
 if(document.fonts){
   document.fonts.ready.then(_initRegWordmarks);
