@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.19';
+const APP_VERSION = '0.25.20';
 
 // ═══════════════════════════════════════════
 // SUPABASE — credenciales en js/config.js
@@ -1340,11 +1340,11 @@ function restoreDraft(d){
     d.tickets.forEach(t=>addTicket(t));
   }
   if(d.autos?.length){
-    const au_el=document.getElementById('autos-cont'); if(au_el){ au_el.innerHTML=''; if(typeof auc!=='undefined') auc=0; }
+    const au_el=document.getElementById('autos-cont'); if(au_el){ au_el.innerHTML=''; if(typeof ac_cnt!=='undefined') ac_cnt=0; }
     d.autos.forEach(a=>{if(typeof addAuto==='function') addAuto(a);});
   }
   if(d.cruceros?.length){
-    const cr_el=document.getElementById('cruceros-cont'); if(cr_el){ cr_el.innerHTML=''; if(typeof crc!=='undefined') crc=0; }
+    const cr_el=document.getElementById('cruceros-cont'); if(cr_el){ cr_el.innerHTML=''; if(typeof crc_cnt!=='undefined') crc_cnt=0; }
     d.cruceros.forEach(c=>{if(typeof addCrucero==='function') addCrucero(c);});
   }
   // Markup
