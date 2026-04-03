@@ -545,12 +545,18 @@ function _loadIntegrationFields(){
 // ═══════════════════════════════════════════
 // EMAIL TEMPLATES — 5 temas sincronizados con PDF
 // ═══════════════════════════════════════════
+// 10 temas sincronizados con PDF_THEMES de app-quote.js
 const EMAIL_THEMES={
-  1:{headerBg:'linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%)',btnBg:'linear-gradient(135deg,#1B9E8F,#0BC5B8)',accent:'#1B9E8F',cardBorder:'rgba(27,158,143,0.25)',cardBg:'#F0FAF9'},
-  2:{headerBg:'linear-gradient(135deg,#1565C0 0%,#0EA5E9 100%)',btnBg:'linear-gradient(135deg,#1565C0,#0EA5E9)',accent:'#1565C0',cardBorder:'rgba(21,101,192,0.25)',cardBg:'#EFF6FF'},
-  3:{headerBg:'linear-gradient(135deg,#1A1A1A 0%,#2D2D2D 100%)',btnBg:'linear-gradient(135deg,#D4A017,#E8C44A)',accent:'#D4A017',cardBorder:'rgba(212,160,23,0.3)',cardBg:'#FFFBF0'},
-  4:{headerBg:'linear-gradient(135deg,#1B5E20 0%,#43A047 100%)',btnBg:'linear-gradient(135deg,#1B5E20,#43A047)',accent:'#2E7D32',cardBorder:'rgba(46,125,50,0.25)',cardBg:'#F1F8F1'},
-  5:{headerBg:'linear-gradient(135deg,#6D1A36 0%,#9C2752 100%)',btnBg:'linear-gradient(135deg,#6D1A36,#9C2752)',accent:'#6D1A36',cardBorder:'rgba(109,26,54,0.25)',cardBg:'#FDF2F5'}
+  1: {name:'Turquesa',      headerBg:'linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4)',         btnBg:'linear-gradient(135deg,#1B9E8F,#0BC5B8)',  accent:'#1B9E8F',cardBorder:'rgba(27,158,143,0.25)',  cardBg:'#F0FAF9'},
+  2: {name:'Azul Glaciar',  headerBg:'linear-gradient(135deg,#1E3A5F,#2979B0,#7EC8E3)',         btnBg:'linear-gradient(135deg,#2979B0,#7EC8E3)',  accent:'#2979B0',cardBorder:'rgba(41,121,176,0.25)',  cardBg:'#EEF6FB'},
+  3: {name:'Ambar Dorado',  headerBg:'linear-gradient(135deg,#1A0A00,#7C4A00,#E8C77D)',         btnBg:'linear-gradient(135deg,#C9860A,#E8C77D)',  accent:'#C9860A',cardBorder:'rgba(201,134,10,0.3)',   cardBg:'#FFFBF0'},
+  4: {name:'Negro Violeta', headerBg:'linear-gradient(135deg,#0A0A0A,#1A0A2E,#7B2FBE)',         btnBg:'linear-gradient(135deg,#7B2FBE,#9B59B6)',  accent:'#7B2FBE',cardBorder:'rgba(123,47,190,0.25)',  cardBg:'#F5F0FA'},
+  5: {name:'Rojo Coral',    headerBg:'linear-gradient(135deg,#C84B31,#E8826A,#F5A623)',         btnBg:'linear-gradient(135deg,#C84B31,#E8826A)',  accent:'#C84B31',cardBorder:'rgba(200,75,49,0.25)',   cardBg:'#FFF5F2'},
+  6: {name:'Azul Marino',   headerBg:'linear-gradient(135deg,#0F1B5C,#1A2E8A,#FFD700)',         btnBg:'linear-gradient(135deg,#1A2E8A,#2940A0)',  accent:'#1A2E8A',cardBorder:'rgba(26,46,138,0.25)',   cardBg:'#F0F1FA'},
+  7: {name:'Negro Naranja', headerBg:'linear-gradient(135deg,#0A0A0A,#1C0500,#FF4500)',         btnBg:'linear-gradient(135deg,#FF4500,#FF6B35)',  accent:'#FF4500',cardBorder:'rgba(255,69,0,0.25)',    cardBg:'#FFF5F0'},
+  8: {name:'Rosa Fucsia',   headerBg:'linear-gradient(135deg,#8B1A4A,#C4426A,#F7C5D8)',         btnBg:'linear-gradient(135deg,#C4426A,#E06090)',  accent:'#C4426A',cardBorder:'rgba(196,66,106,0.25)',  cardBg:'#FDF2F5'},
+  9: {name:'Cyan Profundo', headerBg:'linear-gradient(135deg,#050E2D,#0A1F5C,#00E5FF)',         btnBg:'linear-gradient(135deg,#0A1F5C,#00D4E8)',  accent:'#00B8D4',cardBorder:'rgba(0,212,232,0.25)',   cardBg:'#EEF9FB'},
+  10:{name:'Rojo Carmin',   headerBg:'linear-gradient(135deg,#8B0000,#B22222,#FF6B6B)',         btnBg:'linear-gradient(135deg,#B22222,#D43B3B)',  accent:'#B22222',cardBorder:'rgba(178,34,34,0.25)',   cardBg:'#FDF2F2'}
 };
 
 function _buildEmailHTML(d, tipo, agCfgRef, publicUrl){
