@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════
 // IA PARSER — Cargar cotización desde texto libre
-// Lee API key de localStorage('mp_ia_key'), llama Claude, pre-carga campos del formulario
+// Lee API key desde agCfg (Supabase), con localStorage como fallback de sesión
 // ═══════════════════════════════════════════
 
 function openIAParserModal(){
@@ -23,7 +23,7 @@ function openIAParserModal(){
 }
 
 async function runIAParser(){
-  const key=localStorage.getItem('mp_ia_key')||localStorage.getItem('mp_key')||'';
+  const key=(typeof agCfg!=='undefined'?agCfg._ia_key:'')||localStorage.getItem('mp_ia_key')||localStorage.getItem('mp_key')||'';
   const errEl=document.getElementById('ia-parser-error');
   if(!key){
     errEl.textContent='La API Key de IA no esta configurada. Contacta al administrador.';

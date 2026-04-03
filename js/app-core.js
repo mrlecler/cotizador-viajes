@@ -713,10 +713,10 @@ async function showApp(user){
     localStorage.removeItem(_oldKey);
   }
   _loadAgCfg(); // cargar config per-user
-  // Restaurar API keys desde agCfg (sobreviven deploys)
-  if(agCfg._unsplash_key&&!localStorage.getItem('mp_unsplash_key')) localStorage.setItem('mp_unsplash_key',agCfg._unsplash_key);
-  if(agCfg._ia_key){if(!localStorage.getItem('mp_ia_key'))localStorage.setItem('mp_ia_key',agCfg._ia_key);if(!localStorage.getItem('mp_key'))localStorage.setItem('mp_key',agCfg._ia_key);}
-  if(agCfg._resend_key&&!localStorage.getItem('mp_resend_key')) localStorage.setItem('mp_resend_key',agCfg._resend_key);
+  // Sync inicial: cache agCfg → localStorage (Supabase sobrescribirá más abajo)
+  if(agCfg._unsplash_key) localStorage.setItem('mp_unsplash_key',agCfg._unsplash_key);
+  if(agCfg._ia_key){localStorage.setItem('mp_ia_key',agCfg._ia_key);localStorage.setItem('mp_key',agCfg._ia_key);}
+  if(agCfg._resend_key) localStorage.setItem('mp_resend_key',agCfg._resend_key);
   editingQuoteId = null;
   formDraft = null;
   // Mostrar app, sidebar y bottom nav
@@ -827,7 +827,16 @@ async function showApp(user){
           if(ag?.nombre) agCfg.ag=ag.nombre;
         }catch(e){console.warn('[showApp] agencias fetch:',e.message);}
       }
+      // Si el agente tiene config JSONB en Supabase, fusionarla en agCfg
+      if(data.config && typeof data.config==='object') Object.assign(agCfg, data.config);
       _saveAgCfg();
+      // Supabase es fuente de verdad — sobrescribir localStorage siempre (no "solo si vacío")
+      if(agCfg._unsplash_key) localStorage.setItem('mp_unsplash_key',agCfg._unsplash_key);
+      else localStorage.removeItem('mp_unsplash_key');
+      if(agCfg._ia_key){localStorage.setItem('mp_ia_key',agCfg._ia_key);localStorage.setItem('mp_key',agCfg._ia_key);}
+      else {localStorage.removeItem('mp_ia_key');localStorage.removeItem('mp_key');}
+      if(agCfg._resend_key) localStorage.setItem('mp_resend_key',agCfg._resend_key);
+      else localStorage.removeItem('mp_resend_key');
       loadCfg();
       // Actualizar avatar del sidebar y saludo con nombre real
       if(data.nombre){
@@ -981,7 +990,7 @@ async function dbSaveQuote(d, supabaseId){
   const _lUrl=(typeof logoUrl!=='undefined'?logoUrl:null)||(typeof agCfg!=='undefined'?agCfg.logo_url:null)||null;
   const _uCredit=(typeof window!=='undefined'&&window._unsplashCredit)||null;
   const _agentInfo=(typeof agCfg!=='undefined'&&(agCfg.nm||agCfg.ag))?{nm:agCfg.nm||'',ag:agCfg.ag||'',logo_url:agCfg.logo_url||null,tel:agCfg.tel||'',soc:agCfg.soc||'',pdf_theme:agCfg.pdf_theme||1,resend_from:agCfg.resend_from||''}:null;
-  const _resendKey=localStorage.getItem('mp_resend_key')||(typeof agCfg!=='undefined'?agCfg._resend_key:'')||'';
+  const _resendKey=(typeof agCfg!=='undefined'?agCfg._resend_key:'')||localStorage.getItem('mp_resend_key')||'';
   const _datosConMedia={...d,_cover_url:_cUrl,_logo_url:_lUrl,_unsplash_credit:_uCredit||undefined};
   if(_resendKey) _datosConMedia._resend_key=_resendKey;
   if(!_cUrl) delete _datosConMedia._cover_url;

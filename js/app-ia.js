@@ -1,8 +1,8 @@
 async function processAI(){
   const txt=document.getElementById('raw-text').value.trim();
   if(!txt){showIAErr('Pegá tu cotización primero.');return;}
-  // Compatibilidad: mp_ia_key (admin) tiene precedencia sobre mp_key (legacy)
-  const key=localStorage.getItem('mp_ia_key')||localStorage.getItem('mp_key')||'';
+  // agCfg es fuente de verdad (Supabase), localStorage es fallback de sesión
+  const key=(typeof agCfg!=='undefined'?agCfg._ia_key:'')||localStorage.getItem('mp_ia_key')||localStorage.getItem('mp_key')||'';
   if(!key){showIAErr('La API Key de Claude no está configurada. Contactá al administrador.');return;}
   const btn=document.getElementById('btn-ai');
   btn.disabled=true;btn.innerHTML='<span class="spin spin-tq"></span> Procesando...';
@@ -31,7 +31,7 @@ async function processAI(){
   finally{btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg> Procesar con IA';}
 }
 function showIAErr(m){const e=document.getElementById('ia-err');e.textContent=m;e.style.display='';}
-function saveKey(){const k=(document.getElementById('api-key')?.value||'').trim();if(k){localStorage.setItem('mp_ia_key',k);localStorage.setItem('mp_key',k);}toast('✓ API Key guardada');}
+function saveKey(){const k=(document.getElementById('api-key')?.value||'').trim();if(k){if(typeof agCfg!=='undefined'){agCfg._ia_key=k;if(typeof _saveAgCfg==='function')_saveAgCfg();}localStorage.setItem('mp_ia_key',k);localStorage.setItem('mp_key',k);}toast('✓ API Key guardada');}
 
 // ═══════════════════════════════════════════
 // GENERAR DESCRIPCIÓN TURÍSTICA CON IA
