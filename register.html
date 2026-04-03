@@ -11,11 +11,13 @@
 <link rel="stylesheet" href="styles.css?v=57">
 <script src="js/config.js?v=57"></script>
 <style>
+html,body{height:100%;overflow:hidden;margin:0;padding:0;}
 /* Register — complementario al boarding pass de index.html */
 .reg-wrap{
-  min-height:100vh;
+  height:100vh;height:100dvh;
   display:flex;
   background:#0D120F;
+  overflow:hidden;
 }
 .reg-photo{
   flex:1;
@@ -35,7 +37,7 @@
   position:absolute;bottom:0;left:0;right:0;padding:48px;z-index:1;
 }
 .reg-photo h2{
-  font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;color:white;
+  font-size:clamp(1.5rem,2.8vw,2.4rem);font-weight:900;color:white;
   line-height:1.08;letter-spacing:-.02em;margin:0 0 10px;
 }
 .reg-photo p{
@@ -45,12 +47,13 @@
 .reg-photo-badge{
   display:inline-flex;align-items:center;gap:6px;
   background:rgba(27,158,143,.15);border:1px solid rgba(11,197,184,.2);
-  border-radius:20px;padding:5px 12px;margin-bottom:20px;
+  border-radius:20px;padding:5px 12px;margin-bottom:16px;
   font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0BC5B8;
 }
 .reg-right{
-  width:520px;display:flex;align-items:center;justify-content:center;
-  padding:32px;flex-shrink:0;background:#0D120F;overflow-y:auto;
+  width:500px;display:flex;align-items:center;justify-content:center;
+  padding:24px;flex-shrink:0;background:#0D120F;
+  overflow-y:auto;height:100%;box-sizing:border-box;
 }
 /* Card de selección de tipo */
 .reg-type-card{
@@ -124,14 +127,14 @@
 .reg-tk-badge.orange{
   background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.2);color:#FF6B35;
 }
-.reg-tk-body{padding:24px 28px 28px;}
-.reg-field{margin-bottom:14px;}
+.reg-tk-body{padding:18px 24px 20px;}
+.reg-field{margin-bottom:10px;}
 .reg-label{
   display:block;font-size:.62rem;font-weight:700;letter-spacing:.18em;
   text-transform:uppercase;color:rgba(45,31,20,.5);margin-bottom:5px;
 }
 .reg-input{
-  width:100%;padding:12px 15px;border-radius:10px;font-size:.86rem;
+  width:100%;padding:10px 13px;border-radius:10px;font-size:.84rem;
   font-family:'Plus Jakarta Sans',sans-serif;background:#F5F0E8;
   border:1.5px solid rgba(45,31,20,.06);color:#2D1F14;outline:none;
   transition:all .2s;box-sizing:border-box;
@@ -143,7 +146,7 @@
   margin-left:5px;letter-spacing:.05em;text-transform:none;
 }
 .reg-cta{
-  display:block;width:100%;padding:14px;border:none;border-radius:10px;
+  display:block;width:100%;padding:12px;border:none;border-radius:10px;
   font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;
   font-family:'Plus Jakarta Sans',sans-serif;background:#FF6B35;color:white;
   box-shadow:0 4px 16px rgba(255,107,53,.3);letter-spacing:.02em;
@@ -156,8 +159,8 @@
 .reg-status.error{color:#EF4444;}
 .reg-status.ok{color:#10B981;}
 .reg-hint{
-  font-size:.72rem;color:rgba(45,31,20,.45);margin-top:14px;text-align:center;
-  line-height:1.5;
+  font-size:.72rem;color:rgba(45,31,20,.45);margin-top:10px;text-align:center;
+  line-height:1.4;
 }
 .reg-hint a{color:#1B9E8F;text-decoration:none;font-weight:600;}
 .reg-hint a:hover{color:#0BC5B8;}
@@ -199,8 +202,8 @@
 /* Trial banner en ticket */
 .reg-trial-banner{
   background:linear-gradient(135deg,rgba(27,158,143,.1),rgba(6,182,212,.06));
-  border:1px solid rgba(27,158,143,.2);border-radius:10px;padding:10px 14px;
-  margin-bottom:16px;display:flex;align-items:center;gap:10px;
+  border:1px solid rgba(27,158,143,.2);border-radius:10px;padding:8px 12px;
+  margin-bottom:10px;display:flex;align-items:center;gap:10px;
 }
 .reg-trial-banner svg{flex-shrink:0;}
 .reg-trial-txt{font-size:.75rem;color:rgba(45,31,20,.7);line-height:1.4;}
@@ -216,11 +219,12 @@
 
 /* Mobile */
 @media(max-width:768px){
-  .reg-wrap{flex-direction:column;}
-  .reg-photo{height:220px;flex:none;}
-  .reg-photo-content{padding:24px;}
-  .reg-photo h2{font-size:1.6rem;}
-  .reg-right{width:100%;padding:24px 16px;align-items:flex-start;}
+  html,body{overflow:auto;}
+  .reg-wrap{flex-direction:column;height:auto;overflow:visible;}
+  .reg-photo{height:200px;flex:none;}
+  .reg-photo-content{padding:20px;}
+  .reg-photo h2{font-size:1.4rem;}
+  .reg-right{width:100%;padding:20px 16px;align-items:flex-start;height:auto;overflow:visible;}
 }
 </style>
 </head>
@@ -409,19 +413,41 @@
 // Supabase init
 const sb = supabase.createClient(ERMIX_CONFIG.supabaseUrl, ERMIX_CONFIG.supabaseKey);
 
-// Build wordmark en el header izquierdo y en el state 1
-function _buildSimpleWordmark(el){
-  if(!el) return;
-  el.innerHTML=`<div style="display:inline-flex;align-items:center;gap:0">
-    <span style="font-family:'DM Sans',sans-serif;font-weight:900;font-size:20px;color:#F0EDE6;letter-spacing:-.5px">ermi</span>
-    <svg viewBox="0 0 36 36" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
-      <defs><linearGradient id="xg-r" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
-      <path d="M8 8 L8 18 L24.5 32 L28 32 L28 22 L11.5 8 Z M28 8 L28 18 L11.5 32 L8 32 L8 22 L24.5 8 Z" fill="url(#xg-r)"/>
-    </svg>
-  </div>`;
+// Wordmark real de ermix — idéntica a buildWordmark() de app-core.js
+function buildWordmark(targetId, fontSize, textCol, xType){
+  const X='M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z';
+  const G=['#1B9E8F','#0BC5B8','#06B6D4'];
+  const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font='900 '+fontSize+'px "DM Sans"';
+  const ermiW=ctx.measureText('ermi').width;
+  const capH=fontSize*0.725,sc=capH/48;
+  const baseline=fontSize*0.86,totalH=fontSize;
+  const xTop=baseline-capH,xLeft=ermiW-1;
+  const totalW=xLeft+48*sc+4;
+  const tx=xLeft-8*sc,ty=xTop-8*sc;
+  const gid='wm_'+Date.now();
+  const xFill=xType==='grad'?'url(#'+gid+')':(xType||'#1B9E8F');
+  const svgInner='<defs><linearGradient id="'+gid+'" x1="0%" y1="0%" x2="100%" y2="100%">'
+    +'<stop offset="0%" stop-color="'+G[0]+'"/>'
+    +'<stop offset="45%" stop-color="'+G[1]+'"/>'
+    +'<stop offset="100%" stop-color="'+G[2]+'"/>'
+    +'</linearGradient></defs>'
+    +'<text x="0" y="'+baseline+'" font-family="\'DM Sans\',sans-serif" font-weight="900" font-size="'+fontSize+'" letter-spacing="-1" fill="'+(textCol||'white')+'">ermi</text>'
+    +'<path transform="translate('+tx+','+ty+') scale('+sc+')" d="'+X+'" fill="'+xFill+'"/>';
+  const target=document.getElementById(targetId);
+  if(!target)return;
+  target.innerHTML='<svg viewBox="0 0 '+totalW+' '+totalH+'" width="'+totalW+'" height="'+totalH+'" xmlns="http://www.w3.org/2000/svg">'+svgInner+'</svg>';
 }
-_buildSimpleWordmark(document.getElementById('reg-wm'));
-_buildSimpleWordmark(document.getElementById('reg-s1-wm'));
+// Esperar fuentes antes de renderizar (igual que _initWordmarks en app-core.js)
+function _initRegWordmarks(){
+  buildWordmark('reg-wm', 36, 'white', 'grad');
+  buildWordmark('reg-s1-wm', 28, 'white', 'grad');
+}
+if(document.fonts){
+  document.fonts.ready.then(_initRegWordmarks);
+} else {
+  window.addEventListener('load', _initRegWordmarks);
+}
 
 // State management
 let _regType = null; // 'indie' | 'agencia'
