@@ -495,6 +495,23 @@ async function _publicApprove(quoteId,token){
     if(error){alert('No se pudo aprobar: '+(error.message||error.code||'error desconocido'));if(btn){btn.disabled=false;btn.textContent='Aprobar cotización';}return;}
     const bar=document.getElementById('pub-bar');
     if(bar){bar.style.background='linear-gradient(135deg,#1B9E8F,#0BC5B8)';bar.style.borderTop='none';bar.innerHTML='<p style="color:white;font-weight:600;font-size:.9rem;margin:0;text-align:center;font-family:\'Plus Jakarta Sans\',system-ui,sans-serif">Cotización aprobada</p>';}
+    // Email de confirmación al cliente
+    try{
+      const{data:qRow}=await sb.from('cotizaciones').select('datos').filter('datos->>public_token','eq',token).maybeSingle();
+      const rd=qRow?.datos||{};
+      const resendKey=rd._resend_key||'';
+      const clientEmail=rd?.cliente?.email||'';
+      if(resendKey&&clientEmail&&typeof _buildEmailHTML==='function'){
+        const agCfgTemp={nm:rd._agent?.nm||'',tel:rd._agent?.tel||'',soc:rd._agent?.soc||'',logo_url:rd._agent?.logo_url||'',pdf_theme:rd._agent?.pdf_theme||1,resend_from:rd._agent?.resend_from||'ermix <onboarding@resend.dev>'};
+        const confirmHtml=_buildEmailHTML(rd,'confirmacion',agCfgTemp);
+        const dest=rd?.viaje?.destino||'tu viaje';
+        await fetch('https://api.resend.com/emails',{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+resendKey,'Content-Type':'application/json'},
+          body:JSON.stringify({from:agCfgTemp.resend_from,to:clientEmail,subject:'Tu viaje a '+dest+' esta confirmado!',html:confirmHtml})
+        });
+      }
+    }catch(e){console.warn('[confirmacion-email]',e);}
   }catch(e){alert('Error al aprobar. Intentá de nuevo.');}
 }
 async function _publicRequestMod(quoteId,token){
@@ -525,6 +542,108 @@ function _loadIntegrationFields(){
   const vd=document.getElementById('cfg-validez-dias');if(vd)vd.value=agCfg.validez_dias||'';
   const mm=document.getElementById('cfg-meta-mensual');if(mm)mm.value=agCfg.meta_mensual||'';
 }
+// ═══════════════════════════════════════════
+// EMAIL TEMPLATES — 5 temas sincronizados con PDF
+// ═══════════════════════════════════════════
+const EMAIL_THEMES={
+  1:{headerBg:'linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%)',btnBg:'linear-gradient(135deg,#1B9E8F,#0BC5B8)',accent:'#1B9E8F',cardBorder:'rgba(27,158,143,0.25)',cardBg:'#F0FAF9'},
+  2:{headerBg:'linear-gradient(135deg,#1565C0 0%,#0EA5E9 100%)',btnBg:'linear-gradient(135deg,#1565C0,#0EA5E9)',accent:'#1565C0',cardBorder:'rgba(21,101,192,0.25)',cardBg:'#EFF6FF'},
+  3:{headerBg:'linear-gradient(135deg,#1A1A1A 0%,#2D2D2D 100%)',btnBg:'linear-gradient(135deg,#D4A017,#E8C44A)',accent:'#D4A017',cardBorder:'rgba(212,160,23,0.3)',cardBg:'#FFFBF0'},
+  4:{headerBg:'linear-gradient(135deg,#1B5E20 0%,#43A047 100%)',btnBg:'linear-gradient(135deg,#1B5E20,#43A047)',accent:'#2E7D32',cardBorder:'rgba(46,125,50,0.25)',cardBg:'#F1F8F1'},
+  5:{headerBg:'linear-gradient(135deg,#6D1A36 0%,#9C2752 100%)',btnBg:'linear-gradient(135deg,#6D1A36,#9C2752)',accent:'#6D1A36',cardBorder:'rgba(109,26,54,0.25)',cardBg:'#FDF2F5'}
+};
+
+function _buildEmailHTML(d, tipo, agCfgRef, publicUrl){
+  const cfg=agCfgRef||agCfg||{};
+  const t=EMAIL_THEMES[parseInt(cfg.pdf_theme||1)]||EMAIL_THEMES[1];
+  const primerNombre=(d?.cliente?.nombre||'').split(' ')[0];
+  const destino=d?.viaje?.destino||'tu viaje';
+  const fechaEnt=d?.viaje?.fecha_entrada||d?.viaje?.salida||'';
+  const fechaSal=d?.viaje?.fecha_salida||d?.viaje?.regreso||'';
+  const adultos=parseInt(d?.cliente?.adultos||1);
+  const ninos=parseInt(d?.cliente?.ninos||0);
+  const totalPax=adultos+ninos;
+  const precioTotal=d?.precio_total||d?.precios?.total||'';
+  const moneda=d?.moneda||d?.precios?.moneda||'USD';
+  const tieneVuelo=!!(d?.vuelos?.length||d?.vuelo?.aerolinea);
+  const tieneHotel=!!(d?.hoteles?.length||d?.hotel?.nombre);
+  const tieneTraslado=!!(d?.traslados?.length||d?.traslado?.tipo);
+  const tieneExcursion=!!(d?.excursiones?.length);
+  const tieneSeguro=!!(d?.seguros?.length||d?.seguro?.nombre);
+  const agNm=cfg.nm||'Tu agente de viajes';
+  const agTel=cfg.tel||'';
+  const agSoc=cfg.soc||'';
+  const logoUrl=cfg.logo_url||'';
+  // Formatear fechas
+  const fmtD=s=>{if(!s)return'';try{const dt=new Date(s.includes('-')?s+'T12:00:00':s);return dt.toLocaleDateString('es-AR',{day:'numeric',month:'short'});}catch(e){return s;}};
+  const fechasHtml=fechaEnt?`<div style="font-size:14px;color:#6B5E52;margin-top:6px">${fmtD(fechaEnt)}${fechaSal?' → '+fmtD(fechaSal):''}</div>`:'';
+  // Pasajeros
+  const paxHtml=`<div style="font-size:13px;color:#9B8C80;margin-top:4px">${adultos} adulto${adultos>1?'s':''}${ninos?' + '+ninos+' ni'+(ninos>1?'nos':'no'):''}</div>`;
+  // Servicios incluidos
+  const svcs=[];
+  if(tieneVuelo) svcs.push('Vuelos');
+  if(tieneHotel) svcs.push('Hotel');
+  if(tieneTraslado) svcs.push('Traslados');
+  if(tieneExcursion) svcs.push('Excursiones');
+  if(tieneSeguro) svcs.push('Asistencia al viajero');
+  const svcsHtml=svcs.length?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid ${t.cardBorder}">${svcs.map(s=>`<span style="display:inline-block;font-size:12px;color:${t.accent};font-weight:600;margin-right:12px;margin-bottom:4px">${s}</span>`).join('')}</div>`:'';
+  // Precio
+  const precioHtml=precioTotal?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid ${t.cardBorder};font-size:13px;color:#6B5E52">Total estimado<div style="font-size:22px;font-weight:800;color:${t.accent};letter-spacing:-0.5px;margin-top:2px">${moneda} ${Number(precioTotal).toLocaleString('es-AR')}</div></div>`:'';
+  // Logo
+  const logoHtml=logoUrl?`<img src="${logoUrl}" alt="" style="max-height:48px;max-width:160px;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto" />`:'';
+  // Título header
+  const headerTitle=tipo==='confirmacion'?'Viaje confirmado':'Tu cotizacion esta lista';
+
+  // Cuerpo según tipo
+  let bodyHtml='';
+  if(tipo==='confirmacion'){
+    bodyHtml=`
+      <p style="font-size:15px;color:#2D1F14;margin:0 0 16px;font-weight:600">Hola${primerNombre?' '+primerNombre:''}!</p>
+      <p style="font-size:14px;color:#6B5E52;line-height:1.65;margin:0 0 20px">Tu viaje a <strong>${destino}</strong> fue aprobado. Tu agente ya esta trabajando en la reserva.</p>
+      <div style="background:${t.cardBg};border:1px solid ${t.cardBorder};border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:20px;font-weight:800;color:${t.accent};letter-spacing:-0.3px">${destino}</div>
+        ${fechasHtml}${paxHtml}${svcsHtml}${precioHtml}
+      </div>
+      <div style="margin-bottom:20px">
+        <p style="font-size:13px;font-weight:700;color:#2D1F14;margin:0 0 8px">Proximos pasos:</p>
+        <div style="font-size:13px;color:#6B5E52;line-height:1.7">
+          1. Tu agente confirmara las reservas con los proveedores<br>
+          2. Recibiras los vouchers y documentos del viaje<br>
+          3. Ante cualquier duda, contacta a tu agente directamente
+        </div>
+      </div>`;
+  } else {
+    bodyHtml=`
+      <p style="font-size:15px;color:#2D1F14;margin:0 0 16px;font-weight:600">Hola${primerNombre?' '+primerNombre:''}!</p>
+      <p style="font-size:14px;color:#6B5E52;line-height:1.65;margin:0 0 20px">Te comparto tu cotizacion de viaje personalizada. Podes verla completa y aprobarla desde el boton de abajo.</p>
+      <div style="background:${t.cardBg};border:1px solid ${t.cardBorder};border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:20px;font-weight:800;color:${t.accent};letter-spacing:-0.3px">${destino}</div>
+        ${fechasHtml}${paxHtml}${svcsHtml}${precioHtml}
+      </div>
+      ${publicUrl?`<a href="${publicUrl}" style="display:block;background:${t.btnBg};color:#fff;text-decoration:none;text-align:center;padding:14px 28px;border-radius:12px;font-weight:700;font-size:15px;margin-bottom:20px;font-family:'Plus Jakarta Sans',Arial,sans-serif">Ver mi cotizacion completa</a>`:''}`;
+  }
+  // Firma
+  const firmaHtml=`<p style="font-size:13px;color:#9B8C80;margin:0">Preparada por <strong style="color:#2D1F14">${agNm}</strong>${agTel?' <span style="color:#9B8C80">'+agTel+'</span>':''}${agSoc?' <span style="color:#9B8C80">'+agSoc+'</span>':''}</p>`;
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;background:#F5F0E8;margin:0;padding:20px 10px;-webkit-text-size-adjust:100%">
+<div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(45,31,20,0.08)">
+  <div style="background:${t.headerBg};padding:28px 32px;text-align:center">
+    ${logoHtml}
+    <h1 style="color:#ffffff;font-size:20px;margin:0 0 6px;font-weight:700;font-family:'Plus Jakarta Sans',Arial,sans-serif">${headerTitle}</h1>
+    <p style="color:rgba(255,255,255,0.85);font-size:14px;margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif">${destino}</p>
+  </div>
+  <div style="padding:28px 32px">
+    ${bodyHtml}
+    ${firmaHtml}
+  </div>
+  <div style="border-top:1px solid #EDE8DF;padding:20px 32px;text-align:center">
+    <p style="font-size:12px;color:#9B8C80;margin:0;font-family:'Plus Jakarta Sans',Arial,sans-serif">ermix · cotizaciones de viaje profesionales</p>
+  </div>
+</div>
+</body></html>`;
+}
+
 async function _sendQuoteEmail(){
   // Verificar que hay cotización y email del cliente
   const d=qData||collectFormSafe();
@@ -556,22 +675,9 @@ async function _sendQuoteEmail(){
   }
   const publicUrl=token?(window.location.origin+window.location.pathname+'?q='+token):'';
   const destino=d?.viaje?.destino||'tu viaje';
-  const agNm=agCfg.nm||'Tu agente de viajes';
-  const agTel=agCfg.tel||'';
-  const agSoc=agCfg.soc||'';
   const fromAddr=agCfg.resend_from||'ermix <onboarding@resend.dev>';
   const subject=`Tu cotización para ${destino} está lista`;
-  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Plus Jakarta Sans',Arial,sans-serif;background:#F5F0E8;margin:0;padding:20px}.wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(45,31,20,.08)}.hd{background:linear-gradient(135deg,#1B9E8F,#0BC5B8,#06B6D4);padding:28px 32px;text-align:center}.hd h1{color:#fff;font-size:1.3rem;margin:0 0 6px;font-weight:700}.hd p{color:rgba(255,255,255,.85);font-size:.85rem;margin:0}.body{padding:28px 32px}.greeting{font-size:.95rem;color:#2D1F14;margin-bottom:16px}.msg{font-size:.88rem;color:#6B5E52;line-height:1.65;margin-bottom:24px}.cta{display:block;background:linear-gradient(135deg,#1B9E8F,#0BC5B8);color:#fff;text-decoration:none;text-align:center;padding:14px 28px;border-radius:12px;font-weight:700;font-size:.95rem;margin-bottom:24px}.ft{border-top:1px solid #EDE8DF;padding:20px 32px;text-align:center;font-size:.75rem;color:#9B8C80}</style></head>
-  <body><div class="wrap">
-    <div class="hd"><h1>Tu cotización está lista</h1><p>${destino}</p></div>
-    <div class="body">
-      <p class="greeting">Hola${d?.cliente?.nombre?' '+d.cliente.nombre.split(' ')[0]:''}!</p>
-      <p class="msg">Te comparto tu cotización de viaje personalizada. Podés verla completa y aprobarla desde el siguiente link:</p>
-      ${publicUrl?`<a href="${publicUrl}" class="cta">Ver mi cotización</a>`:''}
-      <p class="msg" style="font-size:.8rem">Preparada por <strong>${agNm}</strong>${agTel?' · '+agTel:''}${agSoc?' · '+agSoc:''}</p>
-    </div>
-    <div class="ft">ermix · cotizador de viajes profesional<br>Este email fue enviado por ${agNm}</div>
-  </div></body></html>`;
+  const html=_buildEmailHTML(d,'cotizacion',null,publicUrl);
   // Llamar Resend API
   const btn=document.querySelector('[onclick*="_sendQuoteEmail"]');
   if(btn){btn.disabled=true;btn.textContent='Enviando...';}
