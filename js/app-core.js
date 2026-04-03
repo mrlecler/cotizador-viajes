@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.22';
+const APP_VERSION = '0.25.23';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -820,15 +820,25 @@ async function showApp(user){
       logoUrl = data.logo_url || null;
       agCfg.logo_url = logoUrl;
       if(typeof updateLogoPreview==='function') updateLogoPreview();
-      // Preferir nombre de agencia desde tabla agencias (evita datos desactualizados en agentes.agencia)
+      // Cargar agencia: nombre + config con API keys globales
+      let _agenciaCfg={};
       if(data.agencia_id){
         try{
-          const{data:ag}=await sb.from('agencias').select('nombre').eq('id',data.agencia_id).maybeSingle();
+          const{data:ag}=await sb.from('agencias').select('*').eq('id',data.agencia_id).maybeSingle();
           if(ag?.nombre) agCfg.ag=ag.nombre;
+          if(ag?.config && typeof ag.config==='object') _agenciaCfg=ag.config;
+          console.log('[showApp] agencias.config:',_agenciaCfg);
         }catch(e){console.warn('[showApp] agencias fetch:',e.message);}
       }
-      // Si el agente tiene config JSONB en Supabase, fusionarla en agCfg
+      // Si el agente tiene config JSONB en Supabase, fusionarla en agCfg (fallback)
       if(data.config && typeof data.config==='object') Object.assign(agCfg, data.config);
+      // API keys: agencia es fuente de verdad (las hereda todo el equipo)
+      // Si la agencia tiene la key, sobrescribe la del agente
+      if(_agenciaCfg._resend_key)   agCfg._resend_key   = _agenciaCfg._resend_key;
+      if(_agenciaCfg._unsplash_key) agCfg._unsplash_key = _agenciaCfg._unsplash_key;
+      if(_agenciaCfg._ia_key)       agCfg._ia_key       = _agenciaCfg._ia_key;
+      if(_agenciaCfg.resend_from)   agCfg.resend_from   = _agenciaCfg.resend_from;
+      console.log('[showApp] agCfg keys → resend:',!!agCfg._resend_key,'ia:',!!agCfg._ia_key,'unsplash:',!!agCfg._unsplash_key);
       _saveAgCfg();
       // Supabase es fuente de verdad — sobrescribir localStorage siempre (no "solo si vacío")
       if(agCfg._unsplash_key) localStorage.setItem('mp_unsplash_key',agCfg._unsplash_key);
