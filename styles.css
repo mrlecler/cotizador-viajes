@@ -96,53 +96,53 @@ input:focus,textarea:focus,select:focus{
 .login-photo-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15)}
 .login-photo-dot.on{background:#0BC5B8;width:20px;border-radius:3px}
 /* Ticket wrap */
-.login-ticket-wrap{width:480px;display:flex;align-items:center;justify-content:center;padding:32px;flex-shrink:0;background:#0D120F}
+.login-ticket-wrap{width:480px;display:flex;align-items:center;justify-content:center;padding:20px 32px;flex-shrink:0;background:#0D120F;overflow-y:auto;height:100%;box-sizing:border-box}
 .login-ticket{width:100%;max-width:400px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.4)}
 /* Ticket header */
-.tk-hd{background:linear-gradient(135deg,#0D2B1E 0%,#0A1A12 100%);padding:28px 32px 22px;position:relative}
+.tk-hd{background:linear-gradient(135deg,#0D2B1E 0%,#0A1A12 100%);padding:18px 28px 12px;position:relative}
 .tk-hd::after{content:'';position:absolute;bottom:-12px;left:0;right:0;height:24px;background:white;border-radius:50% 50% 0 0 / 100% 100% 0 0}
-.tk-route{display:flex;align-items:center;gap:14px;margin-top:14px}
-.tk-iata{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:700;color:white;letter-spacing:.04em}
-.tk-iata-sub{font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+.tk-route{display:flex;align-items:center;gap:14px;margin-top:10px}
+.tk-iata{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:white;letter-spacing:.04em}
+.tk-iata-sub{font-size:.52rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
 .tk-route-line{flex:1;position:relative;height:1px;background:rgba(255,255,255,.12)}
 .tk-route-line::before{content:'';position:absolute;right:-2px;top:-3px;width:6px;height:6px;border-right:1.5px solid rgba(255,255,255,.35);border-top:1.5px solid rgba(255,255,255,.35);transform:rotate(45deg)}
 .tk-route-dot{position:absolute;left:50%;top:-4px;width:8px;height:8px;border-radius:50%;background:#0BC5B8;transform:translateX(-50%);box-shadow:0 0 10px rgba(11,197,184,.5)}
 /* Ticket body */
-.tk-body{padding:26px 32px 28px}
-.tk-subtitle{font-size:.58rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(45,31,20,.55);margin-bottom:18px;text-align:center}
-.tk-label{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(45,31,20,.55);margin-bottom:5px;display:block}
-.tk-input{width:100%;padding:13px 16px;border-radius:10px;font-size:.86rem;font-family:'Plus Jakarta Sans',sans-serif;background:#F5F0E8;border:1.5px solid rgba(45,31,20,.06);color:#2D1F14;outline:none;transition:all .2s}
+.tk-body{padding:18px 28px 16px}
+.tk-subtitle{font-size:.58rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:rgba(45,31,20,.55);margin-bottom:12px;text-align:center}
+.tk-label{font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(45,31,20,.55);margin-bottom:4px;display:block}
+.tk-input{width:100%;padding:11px 14px;border-radius:10px;font-size:.86rem;font-family:'Plus Jakarta Sans',sans-serif;background:#F5F0E8;border:1.5px solid rgba(45,31,20,.06);color:#2D1F14;outline:none;transition:all .2s}
 .tk-input::placeholder{color:rgba(45,31,20,.35)}
 .tk-input:focus{border-color:#1B9E8F;box-shadow:0 0 0 3px rgba(27,158,143,.1)}
 .tk-forgot{font-size:.72rem;color:rgba(27,158,143,1);text-decoration:none;transition:color .15s;font-weight:600;cursor:pointer}
 .tk-forgot:hover{color:#0BC5B8}
-.tk-cta{display:block;width:100%;padding:14px;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;background:#FF6B35;color:white;box-shadow:0 4px 16px rgba(255,107,53,.3);letter-spacing:.02em}
+.tk-cta{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;background:#FF6B35;color:white;box-shadow:0 4px 16px rgba(255,107,53,.3);letter-spacing:.02em}
 .tk-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,53,.4);background:#E85A25}
-.tk-divider{display:flex;align-items:center;gap:12px;margin:16px 0}
+.tk-divider{display:flex;align-items:center;gap:12px;margin:10px 0}
 .tk-divider::before,.tk-divider::after{content:'';flex:1;height:1px;background:rgba(45,31,20,.06)}
 .tk-divider span{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(45,31,20,.35)}
-.tk-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:white;border:1.5px solid rgba(45,31,20,.08);color:#2D1F14;transition:all .2s}
+.tk-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:10px;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;background:white;border:1.5px solid rgba(45,31,20,.08);color:#2D1F14;transition:all .2s}
 .tk-google:hover{background:#F5F0E8;border-color:rgba(45,31,20,.15)}
 /* Tear */
 .tk-tear{display:flex;align-items:center;padding:0 12px}
 .tk-tear-c{width:18px;height:18px;border-radius:50%;background:#0D120F;flex-shrink:0}
 .tk-tear-line{flex:1;border-top:2px dashed rgba(45,31,20,.07)}
 /* Footer */
-.tk-footer{padding:12px 32px 18px;display:flex;justify-content:space-between;align-items:center}
+.tk-footer{padding:8px 28px 10px;display:flex;justify-content:space-between;align-items:center}
 .tk-meta-label{font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(45,31,20,.45);letter-spacing:.15em;text-transform:uppercase}
-.tk-meta-value{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:700;color:#2D1F14;margin-top:1px}
-.tk-barcode{display:flex;gap:1.5px;height:26px;align-items:end}
+.tk-meta-value{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;color:#2D1F14;margin-top:1px}
+.tk-barcode{display:flex;gap:1.5px;height:22px;align-items:end}
 .tk-barcode span{width:1.5px;background:rgba(45,31,20,.22);border-radius:1px}
-/* Theme toggle */
-.tk-theme-toggle{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(45,31,20,.04)}
+/* Theme toggle + register link */
+.tk-theme-toggle{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(45,31,20,.04)}
 .tk-theme-toggle span{font-size:.62rem;color:rgba(45,31,20,.5);letter-spacing:.08em}
 .tk-theme-sw{width:36px;height:20px;border-radius:10px;background:rgba(45,31,20,.08);cursor:pointer;position:relative;transition:background .2s;border:none;padding:0}
 .tk-theme-sw::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .2s}
 [data-theme="dark"] .tk-theme-sw{background:#1B9E8F}
 [data-theme="dark"] .tk-theme-sw::after{transform:translateX(16px)}
-.tk-access{margin-top:14px;margin-bottom:8px;text-align:center;font-size:.6rem;color:rgba(45,31,20,.35);letter-spacing:.04em}
+.tk-access{margin-top:8px;margin-bottom:6px;text-align:center;font-size:.6rem;color:rgba(45,31,20,.35);letter-spacing:.04em}
 /* Login status */
-#login-status{font-size:.82rem;min-height:22px}
+#login-status{font-size:.82rem;min-height:16px}
 /* Dark mode overrides for ticket */
 [data-theme="dark"] .login-ticket{background:#141A16;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 [data-theme="dark"] .tk-hd::after{background:#141A16}
