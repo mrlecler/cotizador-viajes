@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.28';
+const APP_VERSION = '0.25.29';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -439,13 +439,13 @@ async function doLogin(){
     if(msg.includes('Email not confirmed')) msg='Confirmá tu email primero (revisá tu casilla)';
     setLoginStatus(msg,'var(--red)');
   }
-  btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Iniciar sesion';
+  btn.disabled=false;btn.textContent='Embarcar';
 }
 
 async function doLoginGoogle(){
   const {error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:'https://mrlecler.github.io/cotizador-viajes/'}
+    options:{redirectTo:window.location.origin+window.location.pathname}
   });
   if(error) setLoginStatus('No se pudo iniciar sesión con Google, intentá de nuevo','var(--red)');
 }
@@ -453,8 +453,9 @@ async function doLoginGoogle(){
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
   if(!email){setLoginStatus('Ingresa tu email primero','var(--amber)');return;}
+  setLoginStatus('Enviando enlace...','rgba(255,255,255,.5)');
   // Sin SMTP: intentar reset via Supabase (funciona si SMTP está configurado)
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname+'?reset=1'});
   if(error){
     // Si falla, mostrar instrucciones de contacto
     setLoginStatus('No se pudo enviar el email. Contacta al administrador de tu agencia para restablecer tu contrasena.','var(--amber)');
@@ -468,7 +469,12 @@ async function doLogout(){
   currentUser=null;window._agenteId=null;window._agenciaId=null;isAdmin=false;currentRol='agente';localStorage.removeItem('mp_admin');localStorage.removeItem('mp_rol');
   document.getElementById('ui').style.display='none';
   document.getElementById('login-wall').style.display='block';
+  // Ocultar sidebar y bottom-nav
+  const _sbOut=document.getElementById('sidebar');if(_sbOut)_sbOut.style.display='none';
   const _bnavOut=document.getElementById('bottom-nav');if(_bnavOut)_bnavOut.classList.remove('active');
+  // Cerrar drawer si estaba abierto
+  const _drw=document.getElementById('drawer-reserva');if(_drw)_drw.classList.remove('open');
+  const _drwOv=document.getElementById('drawer-overlay');if(_drwOv)_drwOv.classList.remove('open');
   document.getElementById('li-pass').value='';
   setLoginStatus('Sesión cerrada.','var(--muted)');
 }
@@ -946,7 +952,7 @@ function _toggleProfDD(e){
   if(!menu) return;
   const isOpen=menu.classList.toggle('open');
   if(isOpen){
-    setTimeout(()=>document.addEventListener('click',_closeProfDD,{once:true}),10);
+    setTimeout(()=>document.addEventListener('click',_closeProfDD,{once:true}),150);
   }
 }
 function _closeProfDD(){

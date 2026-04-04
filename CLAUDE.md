@@ -16,9 +16,13 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - HTML + CSS + JS vanilla
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
-- Deploy: GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`
-- Versión actual: `0.25.28` — cache-bust `?v=64` en index.html
-- Deploy principal: Vercel — `https://ermix.vercel.app` (también GitHub Pages)
+- Versión actual: `0.25.29` — cache-bust `?v=66` en index.html
+- Deploy: Vercel — `https://go.ermix.app` (URL principal)
+- GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/` (legacy, no usar)
+- Dominio: ermix.app (Cloudflare Registrar, comprado 04/04/2026)
+  - `go.ermix.app` → La aplicación
+  - `ermix.app` → Landing page (pendiente)
+  - `www.ermix.app` → Redirect a ermix.app
 
 ## Archivos principales
 
