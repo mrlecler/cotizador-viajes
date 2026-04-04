@@ -405,7 +405,7 @@ function addTicket(d){
     </div>
   </div>
   <div class="g3">
-    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="tk${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl">Fecha</label><input class="finput" type="date" id="tk${id}-fe" value="${typeof _toDateInput==='function'?_toDateInput(d.fecha):(d.fecha||'')}"></div>
     <div class="fg"><label class="lbl">Precio</label>
       <div class="money-wrap"><div class="money-cur"><select id="tk${id}-cur"><option>USD</option><option>ARS</option></select></div>
       <input class="money-inp" type="number" id="tk${id}-pr" placeholder="0" value="${d.precio||''}"></div>

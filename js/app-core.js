@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.31';
+const APP_VERSION = '0.25.32';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -1058,8 +1058,9 @@ async function dbSaveQuote(d, supabaseId){
       _captureError('dbSaveQuote:insert:dup-recovery', error);
       const {data:existing}=await sb.from('cotizaciones').select('id').eq('ref_id',String(d.refId)).maybeSingle();
       if(existing?.id){
-        const {ref_id:_rid, ...updateRow} = baseRow;
-        ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', existing.id));
+        // Usar safe row mínima para evitar fallo por columnas inexistentes
+        const safeUpd={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
+        ({error} = await sb.from('cotizaciones').update(safeUpd).eq('id', existing.id));
         // Restaurar editingQuoteId para que próximas operaciones funcionen
         if(!error) supabaseId = existing.id;
       }
