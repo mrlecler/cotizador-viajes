@@ -754,14 +754,16 @@ async function _sendQuoteEmail(){
   const fromAddr=agCfg.resend_from||'ermix <onboarding@resend.dev>';
   const subject=`Tu cotización para ${destino} está lista`;
   const html=_buildEmailHTML(d,'cotizacion',null,publicUrl);
-  // Llamar Resend API
+  // Llamar Resend vía proxy server-side (Vercel /api/send-email o Supabase Edge Function)
+  // Necesario porque Resend no permite llamadas directas desde el browser (CORS)
+  const _proxyUrl='/api/send-email';
   const btn=document.querySelector('[onclick*="_sendQuoteEmail"]');
   if(btn){btn.disabled=true;btn.textContent='Enviando...';}
   try{
-    const res=await fetch('https://api.resend.com/emails',{
+    const res=await fetch(_proxyUrl,{
       method:'POST',
-      headers:{'Authorization':'Bearer '+resendKey,'Content-Type':'application/json'},
-      body:JSON.stringify({from:fromAddr,to:clientEmail,subject,html,reply_to:agCfg.em||undefined})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({resend_key:resendKey,from:fromAddr,to:clientEmail,subject,html,reply_to:agCfg.em||undefined})
     });
     const json=await res.json();
     if(!res.ok){toast('Error al enviar: '+(json.message||json.name||res.status),false);}
