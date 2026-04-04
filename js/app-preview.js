@@ -122,29 +122,51 @@ async function saveApiKeys(){
   if(resend) agCfg._resend_key=resend; else delete agCfg._resend_key;
   if(from) agCfg.resend_from=from; else delete agCfg.resend_from;
   // 2. Persistir en Supabase — fuente de verdad
-  // Si hay agencia, las API keys van en agencias.config (las hereda todo el equipo)
-  // Si es independiente (sin agencia), van en agentes.config
+  // Las API keys van SIEMPRE en agencias.config para que todos los agentes las hereden
+  // Si el usuario tiene agencia_id → su agencia específica
+  // Si es admin sin agencia_id → broadcast a TODAS las agencias (keys globales)
+  // Si es agente independiente sin agencia → su propio agentes.config
+  const keyCfg={
+    _unsplash_key: unsplash||null,
+    _ia_key:       ia||null,
+    _resend_key:   resend||null,
+    resend_from:   from||null
+  };
   if(window._agenciaId){
+    // Tiene agencia → guardar en esa agencia
     try{
-      const keyCfg={
-        _unsplash_key: unsplash||null,
-        _ia_key:       ia||null,
-        _resend_key:   resend||null,
-        resend_from:   from||null
-      };
       const {error}=await sb.from('agencias').update({config:keyCfg}).eq('id',window._agenciaId);
       if(error) throw error;
     }catch(e){
-      toast('Error al guardar en Supabase: '+e.message,false);
+      toast('Error al guardar en agencia: '+e.message,false);
       return;
     }
+  } else if(typeof isAdmin!=='undefined'&&isAdmin){
+    // Admin global sin agencia → broadcast a TODAS las agencias
+    try{
+      const {data:allAg,error:fetchErr}=await sb.from('agencias').select('id');
+      if(fetchErr) throw fetchErr;
+      if(allAg?.length){
+        const results=await Promise.all(allAg.map(ag=>sb.from('agencias').update({config:keyCfg}).eq('id',ag.id)));
+        const firstErr=results.find(r=>r.error);
+        if(firstErr) throw firstErr.error;
+      }
+    }catch(e){
+      toast('Error al guardar en agencias: '+e.message,false);
+      return;
+    }
+    // También guardar en agentes.config propio como fallback
+    if(window._agenteId){
+      try{ await sb.from('agentes').update({config:agCfg}).eq('id',window._agenteId); }catch(_){}
+    }
   } else if(window._agenteId){
+    // Agente independiente sin agencia
     try{
       const {error}=await sb.from('agentes').update({config:agCfg}).eq('id',window._agenteId);
       if(error) throw error;
     }catch(e){
       toast('Error al guardar en Supabase: '+e.message,false);
-      return; // No actualizar localStorage si Supabase falla
+      return;
     }
   }
   // 3. Sincronizar localStorage como cache (solo después de Supabase exitoso)
