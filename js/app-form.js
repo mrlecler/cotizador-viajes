@@ -9,6 +9,11 @@ fetch('data/cities.json').then(r=>r.json()).then(d=>{citiesList=d;_initStaticCit
 // Mapa aerolínea→IATA y lista completa para autocomplete (carga asíncrona silenciosa)
 (async()=>{try{if(typeof sb!=='undefined'){const{data}=await sb.from('aerolineas').select('nombre,codigo_iata');if(data){window.aerolineasMap=Object.fromEntries(data.filter(a=>a.codigo_iata).map(a=>[a.nombre.toLowerCase(),a.codigo_iata.toUpperCase()]));window.aerolineasList=data.filter(a=>a.nombre).map(a=>({nombre:a.nombre,codigo_iata:(a.codigo_iata||'').toUpperCase()}));}}}catch(e){}})();
 
+// Convierte DD/MM/YYYY o YYYY-MM-DD a YYYY-MM-DD (para inputs type=date)
+// Las fechas se almacenan como DD/MM/YYYY en datos JSONB (via fd()), pero
+// los inputs type=date solo aceptan YYYY-MM-DD.
+function _toDateInput(s){if(!s)return'';if(s.includes('-'))return s;const[d,m,y]=s.split('/');return(y&&m&&d)?`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`:''}
+
 // ── Estilos compartidos del dropdown ──
 // Fondo siempre oscuro — en light-mode var(--ink2) se redefine como blanco y haría ilegible el texto
 const AC_DROP_CSS='position:absolute;z-index:9999;left:0;right:0;top:100%;background:#0D2420;border:1px solid rgba(27,158,143,0.3);border-radius:10px;box-shadow:0 8px 24px rgba(27,158,143,0.18);max-height:260px;overflow-y:auto;display:none;';
@@ -456,8 +461,8 @@ function addHotel(d){
     <div class="fg"><label class="lbl" for="h${id}-pai">País</label><input class="finput" type="text" id="h${id}-pai" placeholder="Estados Unidos" value="${d.pais||''}"></div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl" for="h${id}-ci">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${d.ci||''}"></div>
-    <div class="fg"><label class="lbl" for="h${id}-co">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${d.co||''}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-ci">Check-in</label><input class="finput" type="date" id="h${id}-ci" value="${_toDateInput(d.ci)}"></div>
+    <div class="fg"><label class="lbl" for="h${id}-co">Check-out</label><input class="finput" type="date" id="h${id}-co" value="${_toDateInput(d.co)}"></div>
     <div class="fg"><label class="lbl" for="h${id}-nc">Noches</label><input class="finput" type="number" inputmode="numeric" id="h${id}-nc" placeholder="7" value="${d.noches||''}"></div>
     <div class="fg"><label class="lbl" for="h${id}-pr">Precio base</label>
       <div class="money-wrap"><div class="money-cur"><select id="h${id}-cur"><option>USD</option><option>ARS</option></select></div><input class="money-inp" data-precio type="number" inputmode="decimal" id="h${id}-pr" placeholder="2717" value="${d.precio||''}" oninput="_onItemPriceChange(this)"></div>
@@ -564,7 +569,7 @@ function addTraslado(d){
     <div class="fg"><label class="lbl" for="t${id}-de">Destino</label><input class="finput" type="text" id="t${id}-de" placeholder="Disney All-Star Sports" value="${d.destino||''}"></div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl" for="t${id}-fe">Fecha</label><input class="finput" type="date" id="t${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="t${id}-fe">Fecha</label><input class="finput" type="date" id="t${id}-fe" value="${_toDateInput(d.fecha)}"></div>
     <div class="fg"><label class="lbl" for="t${id}-ho">Hora recogida</label><input class="finput" type="time" id="t${id}-ho" value="${d.hora||''}"></div>
     <div class="fg"><label class="lbl" for="t${id}-veh">Vehículo</label><select class="fsel" id="t${id}-veh"><option>Van privada</option><option>Auto privado</option><option>Minibús</option><option>Shuttle compartido</option></select></div>
     <div class="fg"><label class="lbl" for="t${id}-pr">Precio</label>
@@ -612,7 +617,7 @@ function addExcursion(d){
     </div>
   </div>
   <div class="g4">
-    <div class="fg"><label class="lbl" for="e${id}-fe">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${d.fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="e${id}-fe">Fecha</label><input class="finput" type="date" id="e${id}-fe" value="${_toDateInput(d.fecha)}"></div>
     <div class="fg"><label class="lbl" for="e${id}-ho">Hora</label><input class="finput" type="time" id="e${id}-ho" value="${d.hora||''}"></div>
     <div class="fg"><label class="lbl" for="e${id}-dur">Duración</label><input class="finput" type="text" id="e${id}-dur" placeholder="12-13 horas" value="${d.dur||''}"></div>
     <div class="fg"><label class="lbl" for="e${id}-pr">Precio total</label>
@@ -664,9 +669,9 @@ function addAuto(d){
   <div class="g2">
     <div class="fg"><label class="lbl" for="au${id}-or">Lugar de retiro</label><input class="finput" type="text" id="au${id}-or" placeholder="Aeropuerto MCO Terminal B" value="${d.retiro_lugar||''}"></div>
     <div class="fg"><label class="lbl" for="au${id}-de">Lugar de devolución</label><input class="finput" type="text" id="au${id}-de" placeholder="Mismo lugar" value="${d.devolucion_lugar||''}"></div>
-    <div class="fg"><label class="lbl" for="au${id}-fr">Fecha retiro</label><input class="finput" type="date" id="au${id}-fr" value="${d.retiro_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-fr">Fecha retiro</label><input class="finput" type="date" id="au${id}-fr" value="${_toDateInput(d.retiro_fecha)}"></div>
     <div class="fg"><label class="lbl" for="au${id}-hr">Hora retiro</label><input class="finput" type="time" id="au${id}-hr" value="${d.retiro_hora||''}"></div>
-    <div class="fg"><label class="lbl" for="au${id}-fd">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${d.devolucion_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="au${id}-fd">Fecha devolución</label><input class="finput" type="date" id="au${id}-fd" value="${_toDateInput(d.devolucion_fecha)}"></div>
     <div class="fg"><label class="lbl" for="au${id}-hd">Hora devolución</label><input class="finput" type="time" id="au${id}-hd" value="${d.devolucion_hora||''}"></div>
   </div>
   <div id="au${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
@@ -719,9 +724,9 @@ function addCrucero(d){
   <div class="g2">
     <div class="fg"><label class="lbl" for="cr${id}-pe">Puerto de embarque</label><input class="finput" type="text" id="cr${id}-pe" placeholder="Miami, FL" value="${d.embarque_puerto||''}"></div>
     <div class="fg"><label class="lbl" for="cr${id}-pd">Puerto de desembarque</label><input class="finput" type="text" id="cr${id}-pd" placeholder="Miami, FL" value="${d.desembarque_puerto||''}"></div>
-    <div class="fg"><label class="lbl" for="cr${id}-fe">Fecha embarque</label><input class="finput" type="date" id="cr${id}-fe" value="${d.embarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-fe">Fecha embarque</label><input class="finput" type="date" id="cr${id}-fe" value="${_toDateInput(d.embarque_fecha)}"></div>
     <div class="fg"><label class="lbl" for="cr${id}-he">Hora embarque</label><input class="finput" type="time" id="cr${id}-he" value="${d.embarque_hora||''}"></div>
-    <div class="fg"><label class="lbl" for="cr${id}-fd">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${d.desembarque_fecha||''}"></div>
+    <div class="fg"><label class="lbl" for="cr${id}-fd">Fecha desembarque</label><input class="finput" type="date" id="cr${id}-fd" value="${_toDateInput(d.desembarque_fecha)}"></div>
     <div class="fg"><label class="lbl" for="cr${id}-hd">Hora desembarque</label><input class="finput" type="time" id="cr${id}-hd" value="${d.desembarque_hora||''}"></div>
   </div>
   <div id="cr${id}-dur-info" style="font-size:11px;font-weight:700;color:var(--primary);text-align:right;padding:0 4px;margin-top:-6px;min-height:16px"></div>
