@@ -133,22 +133,12 @@ async function saveApiKeys(){
     resend_from:   from||null
   };
   console.log('[saveApiKeys] agenciaId:',window._agenciaId,'isAdmin:',typeof isAdmin!=='undefined'?isAdmin:'undef','agenteId:',window._agenteId);
-  if(window._agenciaId){
-    // Tiene agencia → guardar en esa agencia
-    try{
-      const {error}=await sb.from('agencias').update({config:keyCfg}).eq('id',window._agenciaId);
-      if(error) throw error;
-      console.log('[saveApiKeys] guardado en agencias id:',window._agenciaId);
-    }catch(e){
-      toast('Error al guardar en agencia: '+e.message,false);
-      return;
-    }
-  } else if(typeof isAdmin!=='undefined'&&isAdmin){
-    // Admin global sin agencia → broadcast a TODAS las agencias
+  if(typeof isAdmin!=='undefined'&&isAdmin){
+    // Admin → broadcast a TODAS las agencias (aunque tenga agencia_id propia, igual distribuye a todas)
     try{
       const {data:allAg,error:fetchErr}=await sb.from('agencias').select('id');
       if(fetchErr) throw fetchErr;
-      console.log('[saveApiKeys] broadcast a',allAg?.length,'agencias');
+      console.log('[saveApiKeys] admin broadcast a',allAg?.length,'agencias');
       if(allAg?.length){
         const results=await Promise.all(allAg.map(ag=>sb.from('agencias').update({config:keyCfg}).eq('id',ag.id)));
         const firstErr=results.find(r=>r.error);
@@ -158,9 +148,19 @@ async function saveApiKeys(){
       toast('Error al guardar en agencias: '+e.message,false);
       return;
     }
-    // También guardar en agentes.config propio como fallback
+    // También en agentes.config del admin como fallback
     if(window._agenteId){
       try{ await sb.from('agentes').update({config:agCfg}).eq('id',window._agenteId); }catch(_){}
+    }
+  } else if(window._agenciaId){
+    // Agencia (no admin) → solo su agencia
+    try{
+      const {error}=await sb.from('agencias').update({config:keyCfg}).eq('id',window._agenciaId);
+      if(error) throw error;
+      console.log('[saveApiKeys] guardado en agencias id:',window._agenciaId);
+    }catch(e){
+      toast('Error al guardar en agencia: '+e.message,false);
+      return;
     }
   } else if(window._agenteId){
     // Agente independiente sin agencia
