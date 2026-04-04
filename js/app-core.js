@@ -445,7 +445,7 @@ async function doLogin(){
 async function doLoginGoogle(){
   const {error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:'https://mrlecler.github.io/cotizador-viajes/'}
+    options:{redirectTo:window.location.origin+window.location.pathname}
   });
   if(error) setLoginStatus('No se pudo iniciar sesión con Google, intentá de nuevo','var(--red)');
 }
@@ -453,8 +453,9 @@ async function doLoginGoogle(){
 async function showForgot(){
   const email=document.getElementById('li-email').value.trim();
   if(!email){setLoginStatus('Ingresa tu email primero','var(--amber)');return;}
+  setLoginStatus('Enviando enlace...','rgba(255,255,255,.5)');
   // Sin SMTP: intentar reset via Supabase (funciona si SMTP está configurado)
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://mrlecler.github.io/cotizador-viajes/?reset=1'});
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname+'?reset=1'});
   if(error){
     // Si falla, mostrar instrucciones de contacto
     setLoginStatus('No se pudo enviar el email. Contacta al administrador de tu agencia para restablecer tu contrasena.','var(--amber)');
