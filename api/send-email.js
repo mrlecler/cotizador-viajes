@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
     if (!resend_key) return res.status(400).json({ error: 'resend_key requerida' })
     if (!to || !subject || !html) return res.status(400).json({ error: 'to, subject y html son requeridos' })
 
-    const payload = { from: from || 'ermix <onboarding@resend.dev>', to, subject, html }
+    const payload = { from: from || 'ermix <cotizaciones@ermix.app>', to, subject, html }
     if (reply_to) payload.reply_to = reply_to
 
     const response = await fetch('https://api.resend.com/emails', {
