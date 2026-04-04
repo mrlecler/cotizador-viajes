@@ -1013,7 +1013,9 @@ async function saveQuote(){
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
   btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Guardando...';}});
   try{
-    await dbSaveQuote(qData, editingQuoteId);
+    const _recoveredId = await dbSaveQuote(qData, editingQuoteId);
+    // dbSaveQuote retorna el id recuperado cuando hizo dup-recovery (editingQuoteId se había perdido)
+    if(_recoveredId && !editingQuoteId) editingQuoteId=_recoveredId;
     const wasEditing = !!editingQuoteId;
     _stopAutosave();
     // Para cotizaciones nuevas: buscar el ID insertado para quedarnos en modo edicion

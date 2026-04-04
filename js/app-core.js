@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.29';
+const APP_VERSION = '0.25.30';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -1052,6 +1052,18 @@ async function dbSaveQuote(d, supabaseId){
       const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
       ({error} = await sb.from('cotizaciones').insert(safeRow));
     }
+    // Si falla con clave duplicada (ref_id ya existe) — editingQuoteId se perdió de memoria
+    // Buscar la fila existente y hacer UPDATE en vez de fallar
+    if(error && (error.code==='23505'||error.message?.includes('duplicate key'))){
+      _captureError('dbSaveQuote:insert:dup-recovery', error);
+      const {data:existing}=await sb.from('cotizaciones').select('id').eq('ref_id',String(d.refId)).maybeSingle();
+      if(existing?.id){
+        const {ref_id:_rid, ...updateRow} = baseRow;
+        ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', existing.id));
+        // Restaurar editingQuoteId para que próximas operaciones funcionen
+        if(!error) supabaseId = existing.id;
+      }
+    }
   }
   if(error){
     console.error('dbSaveQuote error:', error);
@@ -1059,6 +1071,8 @@ async function dbSaveQuote(d, supabaseId){
     throw new Error(error.message||(error.details||JSON.stringify(error)));
   }
   await loadClients();
+  // Retornar id recuperado en caso de dup-recovery para que saveQuote actualice editingQuoteId
+  return supabaseId||null;
 }
 
 async function dbLoadQuotes(){
