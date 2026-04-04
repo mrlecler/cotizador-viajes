@@ -566,7 +566,7 @@ async function _publicApprove(quoteId,token){
       const resendKey=rd._resend_key||'';
       const clientEmail=rd?.cliente?.email||'';
       if(resendKey&&clientEmail&&typeof _buildEmailHTML==='function'){
-        const agCfgTemp={nm:rd._agent?.nm||'',tel:rd._agent?.tel||'',soc:rd._agent?.soc||'',logo_url:rd._agent?.logo_url||'',pdf_theme:rd._agent?.pdf_theme||1,resend_from:rd._agent?.resend_from||'ermix <onboarding@resend.dev>'};
+        const agCfgTemp={nm:rd._agent?.nm||'',tel:rd._agent?.tel||'',soc:rd._agent?.soc||'',logo_url:rd._agent?.logo_url||'',pdf_theme:rd._agent?.pdf_theme||1,resend_from:rd._agent?.resend_from||'ermix <cotizaciones@ermix.app>'};
         const confirmHtml=_buildEmailHTML(rd,'confirmacion',agCfgTemp);
         const dest=rd?.viaje?.destino||'tu viaje';
         await fetch('https://api.resend.com/emails',{
@@ -761,7 +761,7 @@ async function _sendQuoteEmail(){
   }
   const publicUrl=token?(window.location.origin+window.location.pathname+'?q='+token):'';
   const destino=d?.viaje?.destino||'tu viaje';
-  const fromAddr=agCfg.resend_from||'ermix <onboarding@resend.dev>';
+  const fromAddr=agCfg.resend_from||'ermix <cotizaciones@ermix.app>';
   const subject=`Tu cotización para ${destino} está lista`;
   const html=_buildEmailHTML(d,'cotizacion',null,publicUrl);
   // Llamar Resend vía proxy server-side (Vercel /api/send-email o Supabase Edge Function)

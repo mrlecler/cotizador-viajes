@@ -31,7 +31,7 @@ serve(async (req) => {
     }
 
     const body: Record<string, unknown> = {
-      from: from || 'ermix <onboarding@resend.dev>',
+      from: from || 'ermix <cotizaciones@ermix.app>',
       to,
       subject,
       html,
