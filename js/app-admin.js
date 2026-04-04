@@ -1,5 +1,6 @@
 let _adminUsersData=[];
 let _adminAgenciasMap={}; // id → nombre
+let _adminAgenciasCodeMap={}; // id → codigo
 
 async function renderAdmin(){
   if(currentRol!=='admin'&&currentRol!=='agencia') return;
@@ -54,11 +55,11 @@ async function renderAdminUsers(){
   const [{data:agents,error},{data:pendingInvs},{data:agencias}]=await Promise.all([
     sb.from('agentes').select('*').order('nombre'),
     sb.from('invitaciones').select('*').eq('tipo','invite').eq('usado',false).order('creado_en',{ascending:false}),
-    sb.from('agencias').select('id,nombre')
+    sb.from('agencias').select('id,nombre,codigo')
   ]);
   // Build agencias map
-  _adminAgenciasMap={};
-  (agencias||[]).forEach(a=>{_adminAgenciasMap[a.id]=a.nombre||'';});
+  _adminAgenciasMap={};_adminAgenciasCodeMap={};
+  (agencias||[]).forEach(a=>{_adminAgenciasMap[a.id]=a.nombre||'';_adminAgenciasCodeMap[a.id]=a.codigo||'';});
   if(error){el.innerHTML='<div style="color:var(--red);font-size:.82rem">Error: '+error.message+'</div>';return;}
   // Merge: pending invites que aún no tienen cuenta (no aparecen en agentes)
   const activeEmails=new Set((agents||[]).map(a=>a.email));
@@ -120,7 +121,7 @@ function _renderAdminUsersTable(){
     <tbody>${filtered.map(a=>`<tr>
       <td style="font-weight:600">${a.nombre||'\u2014'}</td>
       <td style="font-size:.82rem;color:var(--g4)">${a.email||'\u2014'}</td>
-      <td style="font-size:.78rem">${a.agencia_id&&_adminAgenciasMap[a.agencia_id]?_adminAgenciasMap[a.agencia_id]:'<span style="color:var(--g3)">\u2014</span>'}</td>
+      <td style="font-size:.78rem">${a.agencia_id&&_adminAgenciasMap[a.agencia_id]?_adminAgenciasMap[a.agencia_id]+(_adminAgenciasCodeMap[a.agencia_id]?' <span style="font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:8px;background:rgba(27,158,143,.1);color:var(--primary);letter-spacing:.5px">'+_adminAgenciasCodeMap[a.agencia_id]+'</span>':''):'<span style="color:var(--g3)">\u2014</span>'}</td>
       <td>${rolBadge(a.rol)}</td>
       <td>${statusBadge(a)}</td>
       <td>${planBadge(a)}</td>
@@ -132,6 +133,7 @@ function _renderAdminUsersTable(){
           ${a._pending?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.email}')">Nuevo enlace</button>`:''}
           ${a.activo?`<button class="btn btn-out btn-xs" onclick="generateResetLink('${a.id}')">Reset pass</button>`:''}
           ${a.activo&&!a._pending?`<button class="btn btn-out btn-xs" onclick="extendTrialModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.plan_estado||''}','${a.plan_vence||''}')">Extender</button>`:''}
+          ${a.agencia_id?`<button class="btn btn-out btn-xs" onclick="editCodigoModal('${a.agencia_id}','${(_adminAgenciasMap[a.agencia_id]||'').replace(/'/g,"\\'")}','${_adminAgenciasCodeMap[a.agencia_id]||''}')">Codigo</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
           ${a.id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
         </div>
@@ -429,6 +431,65 @@ async function deleteProv(id){deleteProvider(id);}
 // ═══════════════════════════════════════════
 // ADMIN EDIT MODALS
 // ═══════════════════════════════════════════
+function editCodigoModal(agenciaId,agNombre,codigoActual){
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-weight:700;font-size:1rem;margin-bottom:4px">Codigo de agencia</div>
+    <div style="font-size:.82rem;color:var(--g4);margin-bottom:16px">${agNombre||'Sin nombre'}</div>
+    <div class="fg">
+      <label class="lbl">Codigo actual</label>
+      <div style="font-size:.95rem;font-weight:700;letter-spacing:2px;color:var(--primary);margin-bottom:12px">${codigoActual||'(sin codigo)'}</div>
+    </div>
+    <div class="fg">
+      <label class="lbl">Nuevo codigo <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(3-4 letras)</span></label>
+      <input class="finput" type="text" id="_adm-cod" value="${codigoActual}" maxlength="4" style="text-transform:uppercase;max-width:140px;font-weight:700;letter-spacing:2px">
+      <div style="font-size:.68rem;color:var(--g4);margin-top:4px">Al cambiar, se actualizan los ref_id de todas las cotizaciones de esta agencia</div>
+      <div id="_adm-cod-err" style="font-size:.75rem;color:var(--red);margin-top:6px;display:none"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+      <button class="btn btn-out" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-cta" onclick="saveCodigoAdmin('${agenciaId}','${codigoActual}')">Guardar</button>
+    </div>`;openModal();
+}
+async function saveCodigoAdmin(agenciaId,oldCodigo){
+  const raw=(document.getElementById('_adm-cod')?.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
+  const errEl=document.getElementById('_adm-cod-err');
+  if(raw.length<3){if(errEl){errEl.textContent='Minimo 3 letras';errEl.style.display='';}return;}
+  if(raw===oldCodigo){closeModal();return;}
+  // 1. Actualizar código en agencias
+  const {error}=await sb.from('agencias').update({codigo:raw}).eq('id',agenciaId);
+  if(error){
+    if(error.code==='23505'){if(errEl){errEl.textContent='"'+raw+'" ya esta en uso por otra agencia';errEl.style.display='';}}
+    else{if(errEl){errEl.textContent='Error: '+error.message;errEl.style.display='';}}
+    return;
+  }
+  // 2. Migrar ref_ids de cotizaciones: obtener agentes de esta agencia
+  const {data:agentes}=await sb.from('agentes').select('id').eq('agencia_id',agenciaId);
+  if(agentes?.length){
+    const ids=agentes.map(a=>a.id);
+    const {data:quots}=await sb.from('cotizaciones').select('id,ref_id').in('agente_id',ids);
+    if(quots?.length){
+      // Actualizar ref_ids que empiezan con el código viejo
+      const updates=quots.filter(q=>q.ref_id&&oldCodigo&&q.ref_id.startsWith(oldCodigo+'-'))
+        .map(q=>({id:q.id,newRef:raw+q.ref_id.slice(oldCodigo.length)}));
+      for(const u of updates){
+        await sb.from('cotizaciones').update({ref_id:u.newRef}).eq('id',u.id);
+      }
+      // También actualizar las que empiezan con un código de país (legacy AR-, US-, etc.)
+      const legacyUpdates=quots.filter(q=>q.ref_id&&!oldCodigo&&q.ref_id.match(/^[A-Z]{2}-/))
+        .map(q=>({id:q.id,newRef:raw+q.ref_id.slice(2)}));
+      for(const u of legacyUpdates){
+        await sb.from('cotizaciones').update({ref_id:u.newRef}).eq('id',u.id);
+      }
+      const total=updates.length+legacyUpdates.length;
+      if(total>0) console.log('[saveCodigoAdmin] migrated',total,'ref_ids from',oldCodigo||'legacy','to',raw);
+    }
+  }
+  closeModal();
+  toast('Codigo actualizado a '+raw);
+  _adminAgenciasCodeMap[agenciaId]=raw;
+  renderAdminUsers();
+}
+
 function editAgentModal(id,nombre,email,rol){
   document.getElementById('modal-content').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:20px">Editar agente</div>
