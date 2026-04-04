@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.39';
+const APP_VERSION = '0.25.40';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -107,6 +107,43 @@ function _openUpgradeModal(planRequerido){
     </div>`;
   document.body.appendChild(m);
   m.onclick = (e) => { if(e.target===m) m.remove(); };
+}
+
+// Modal obligatorio: elegir código de agencia (primer login sin código)
+function _showCodigoModal(agenciaId, agNombre){
+  const old=document.getElementById('_codigo-modal');if(old)old.remove();
+  const m=document.createElement('div');m.id='_codigo-modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(45,31,20,0.6);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.innerHTML=`<div style="background:var(--surface);border-radius:var(--r);padding:32px 28px;max-width:400px;width:100%;box-shadow:var(--sh2)">
+    <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px">Elegir codigo de cotizaciones</div>
+    <div style="font-size:.82rem;color:var(--g4);margin-bottom:20px;line-height:1.5">
+      ${agNombre?'Para <strong>'+agNombre+'</strong>: e':'E'}legi un codigo de 3-4 letras que identifica todas tus cotizaciones.<br>
+      Ejemplo: si tu marca es "Maria Travels", podes usar <strong>MLT</strong>.<br>
+      Tus cotizaciones se numeran como <strong>MLT-0004-00001</strong>.
+    </div>
+    <div style="margin-bottom:16px">
+      <label class="lbl">Codigo</label>
+      <input class="finput" type="text" id="_cod-input" placeholder="MLT" maxlength="4" style="text-transform:uppercase;max-width:140px;font-weight:700;letter-spacing:2px;font-size:1.1rem" autofocus>
+      <div id="_cod-err" style="font-size:.75rem;color:var(--red);margin-top:6px;display:none"></div>
+    </div>
+    <button class="btn btn-cta" onclick="_saveCodigo('${agenciaId}')" style="width:100%">Guardar codigo</button>
+  </div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.getElementById('_cod-input')?.focus(),100);
+}
+async function _saveCodigo(agenciaId){
+  const raw=(document.getElementById('_cod-input')?.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
+  const errEl=document.getElementById('_cod-err');
+  if(raw.length<3){if(errEl){errEl.textContent='Minimo 3 letras';errEl.style.display='';}return;}
+  const {error}=await sb.from('agencias').update({codigo:raw}).eq('id',agenciaId);
+  if(error){
+    if(error.code==='23505'){if(errEl){errEl.textContent='"'+raw+'" ya esta en uso. Proba otro.';errEl.style.display='';}}
+    else{if(errEl){errEl.textContent='Error: '+error.message;errEl.style.display='';}}
+    return;
+  }
+  window._agenciaCodigo=raw;
+  document.getElementById('_codigo-modal')?.remove();
+  toast('Codigo '+raw+' guardado');
 }
 
 // Banner de trial en el topbar
@@ -850,6 +887,10 @@ async function showApp(user){
           if(ag?.codigo) window._agenciaCodigo=ag.codigo;
           if(ag?.config && typeof ag.config==='object') _agenciaCfg=ag.config;
           console.log('[showApp] agencias.config:',_agenciaCfg);
+          // Modal obligatorio si la agencia no tiene código
+          if(!ag?.codigo && (currentRol==='agencia'||currentRol==='agente')){
+            _showCodigoModal(data.agencia_id, ag?.nombre||'');
+          }
         }catch(e){console.warn('[showApp] agencias fetch:',e.message);}
       }
       // Si el agente tiene config JSONB en Supabase, fusionarla en agCfg (fallback)
