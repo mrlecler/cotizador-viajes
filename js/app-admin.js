@@ -1075,10 +1075,22 @@ async function saveAgencyData(){
   if(v('ag-email')) agData.email=v('ag-email');
   if(v('ag-tel')) agData.telefono=v('ag-tel');
   if(v('ag-dir')) agData.direccion=v('ag-dir');
+  // Código de agencia (3-4 letras uppercase, UNIQUE)
+  const rawCodigo=v('ag-codigo').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
+  if(rawCodigo){
+    if(rawCodigo.length<3){toast('El codigo de agencia debe tener al menos 3 letras',false);return;}
+    agData.codigo=rawCodigo;
+  }
   const agId=await _getAgencyId();
   if(!agId){toast('Error: no se encontro tu agencia',false);return;}
   const {error}=await sb.from('agencias').update(agData).eq('id',agId);
-  if(error){toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;}
+  if(error){
+    if(error.code==='23505'&&error.message?.includes('codigo')){
+      toast('Ese codigo ya esta en uso por otra agencia. Elegi otro.',false);return;
+    }
+    toast('Error al guardar: '+error.message,false);console.error('[saveAgencyData]',error);return;
+  }
+  if(rawCodigo) window._agenciaCodigo=rawCodigo;
   if(agData.nombre){
     agCfg.ag=agData.nombre;
     const prev=document.getElementById('ag-name-preview');
@@ -1094,13 +1106,15 @@ async function _loadAgencyFields(){
   try{
     const agId=await _getAgencyId();
     if(!agId)return;
-    const {data}=await sb.from('agencias').select('nombre,email,telefono,direccion').eq('id',agId).maybeSingle();
+    const {data}=await sb.from('agencias').select('*').eq('id',agId).maybeSingle();
     if(!data)return;
     const el=id=>document.getElementById(id);
     if(data.nombre && el('ag-nombre')) el('ag-nombre').value=data.nombre;
+    if(data.codigo && el('ag-codigo')) el('ag-codigo').value=data.codigo;
     if(data.email && el('ag-email')) el('ag-email').value=data.email;
     if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
     if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
+    if(data.codigo) window._agenciaCodigo=data.codigo;
     const prev=document.getElementById('ag-name-preview');
     if(prev&&data.nombre) prev.textContent=data.nombre;
   }catch(e){console.warn('[_loadAgencyFields]',e);}
