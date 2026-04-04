@@ -10,7 +10,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=65">
+<link rel="stylesheet" href="styles.css?v=66">
 </head>
 <body>
 
@@ -1469,6 +1469,21 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
         </div>
       </div>
         <div class="g2">
+          <div class="fg" id="cfg-pdf-theme-wrap"><label class="lbl" for="cfg-pdf-theme">Tema de color del PDF</label>
+            <select class="finput" id="cfg-pdf-theme" onchange="selectPdfTheme(+this.value)" style="max-width:220px">
+              <option value="1">Turquesa</option>
+              <option value="2">Azul Glaciar</option>
+              <option value="3">Ambar Dorado</option>
+              <option value="4">Negro Violeta</option>
+              <option value="5">Rojo Coral</option>
+              <option value="6">Azul Marino</option>
+              <option value="7">Negro Naranja</option>
+              <option value="8">Rosa Fucsia</option>
+              <option value="9">Cyan Profundo</option>
+              <option value="10">Rojo Carmin</option>
+            </select>
+            <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Color del encabezado en PDF y email</div>
+          </div>
           <div class="fg"><label class="lbl" for="cfg-validez-dias">Validez cotización <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g4)">(días)</span></label>
             <input class="finput" type="number" id="cfg-validez-dias" placeholder="7" min="1" max="90" inputmode="numeric" style="max-width:120px">
             <div style="font-size:.68rem;color:var(--g4);margin-top:3px">Días hasta que vence una cotización enviada</div>
@@ -1569,16 +1584,16 @@ Si alguna de las opciones te interesa, avisame y lo dejo reservado hoy mismo par
 
 
 <!-- JS Modules -->
-<script src="js/config.js?v=65"></script>
-<script src="js/app-core.js?v=65"></script>
-<script src="js/app-form.js?v=65"></script>
-<script src="js/app-ia.js?v=65"></script>
-<script src="js/app-preview.js?v=65"></script>
-<script src="js/app-history.js?v=65"></script>
-<script src="js/app-admin.js?v=65"></script>
-<script src="js/app-quote.js?v=65"></script>
-<script src="js/app-promos.js?v=65"></script>
-<script src="js/app-ia-parser.js?v=65"></script>
-<script src="js/app-ingresos.js?v=65"></script>
+<script src="js/config.js?v=66"></script>
+<script src="js/app-core.js?v=66"></script>
+<script src="js/app-form.js?v=66"></script>
+<script src="js/app-ia.js?v=66"></script>
+<script src="js/app-preview.js?v=66"></script>
+<script src="js/app-history.js?v=66"></script>
+<script src="js/app-admin.js?v=66"></script>
+<script src="js/app-quote.js?v=66"></script>
+<script src="js/app-promos.js?v=66"></script>
+<script src="js/app-ia-parser.js?v=66"></script>
+<script src="js/app-ingresos.js?v=66"></script>
 </body>
 </html>

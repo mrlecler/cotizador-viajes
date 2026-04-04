@@ -233,10 +233,11 @@ async function saveCfg(){
   // Logo URL desde campo (si cambió)
   const rawLogoUrl=(document.getElementById('cfg-logo-url')?.value||'').trim();
   if(rawLogoUrl){logoUrl=rawLogoUrl;agCfg.logo_url=rawLogoUrl;}
-  // Update in Supabase — sin pdf_theme (se maneja solo en preview via localStorage)
+  // Update in Supabase
   if(currentUser&&window._agenteId){
     // soc no existe en tabla agentes — no incluir en UPDATE
     const upd={nombre:agCfg.nm||'',telefono:agCfg.tel||'',pais_cod:agCfg.pais_cod};
+    if(agCfg.pdf_theme!=null) upd.pdf_theme=agCfg.pdf_theme;
     if(agCfg.logo_url) upd.logo_url=agCfg.logo_url;
     const {error}=await sb.from('agentes').update(upd).eq('id',window._agenteId);
     if(error){
@@ -282,27 +283,26 @@ function loadCfg(){
   // Sound preference
   const sndEl=document.getElementById('cfg-sound-aprobado');
   if(sndEl&&agCfg.sound_aprobado) sndEl.value=agCfg.sound_aprobado;
-  // Profile card: adapt per role
+  // Profile card: adapt per role — siempre resetear antes de aplicar overrides
   const cfgCard=document.getElementById('cfg-card-title')?.closest('.card');
   const ttl=document.getElementById('cfg-card-title');
+  const _show=id=>{const el=document.getElementById(id);if(el)el.style.display='';};
+  const _hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
+  // Resetear visibilidad completa de la card y sus campos antes de aplicar rol
+  if(cfgCard) cfgCard.style.display='';
+  ['cfg-ag-wrap','cfg-pais-wrap','cfg-soc-wrap','cfg-logo-wrap','cfg-pdf-theme-wrap'].forEach(_show);
   if(currentRol==='admin'){
-    // Admin: only name, email, tel + password — sin logo personal ni campos de agente
-    const hide=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
-    hide('cfg-ag-wrap');
-    hide('cfg-pais-wrap');
-    hide('cfg-soc-wrap');
-    hide('cfg-logo-wrap');
+    // Admin: solo nombre, email, tel + contraseña
+    _hide('cfg-ag-wrap');_hide('cfg-pais-wrap');_hide('cfg-soc-wrap');_hide('cfg-logo-wrap');_hide('cfg-pdf-theme-wrap');
     if(ttl) ttl.textContent='Mi perfil de administrador';
   } else if(currentRol==='agencia'){
-    // Agencia: mostrar perfil básico (nombre, email, tel), sin campos exclusivos de agente
+    // Agencia: nombre, email, tel, logo — sin campos exclusivos de agente
+    _hide('cfg-ag-wrap');_hide('cfg-pais-wrap');_hide('cfg-soc-wrap');_hide('cfg-pdf-theme-wrap');
     if(ttl) ttl.textContent='Mi perfil de agencia';
-    const hideAg=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
-    hideAg('cfg-ag-wrap');
-    hideAg('cfg-pais-wrap');
-    hideAg('cfg-soc-wrap');
   } else {
+    // Agente: todos los campos
     if(ttl) ttl.textContent='Mi perfil de agente';
-    // Load agencia name readonly from Supabase relation
+    // Agencia name (readonly) — cargar desde Supabase si tiene agencia
     if(window._agenciaId){
       sb.from('agencias').select('nombre').eq('id',window._agenciaId).maybeSingle().then(({data})=>{
         const el=document.getElementById('cfg-ag');
@@ -313,6 +313,12 @@ function loadCfg(){
           if(typeof _saveAgCfg==='function') _saveAgCfg();
         }
       });
+    } else {
+      // Agente independiente: campo agencia editable (su propia marca)
+      const agWrap=document.getElementById('cfg-ag-wrap');
+      const agInp=document.getElementById('cfg-ag');
+      if(agWrap) agWrap.style.display='';
+      if(agInp){agInp.removeAttribute('readonly');agInp.style.background='';agInp.style.cursor='';}
     }
   }
   _loadIntegrationFields();
@@ -328,7 +334,7 @@ function selectPdfTheme(n){
   if(inp)inp.value=n;
   const lbl=document.getElementById('pdf-theme-lbl');
   if(lbl)lbl.textContent=_PDF_THEME_NAMES[n]||'';
-  // Sync dropdown + color dot
+  // Sync preview toolbar dropdown + color dot
   const sel=document.getElementById('pdf-theme-sel');
   if(sel)sel.value=n;
   const dot=document.getElementById('tb-theme-dot');
