@@ -132,11 +132,13 @@ async function saveApiKeys(){
     _resend_key:   resend||null,
     resend_from:   from||null
   };
+  console.log('[saveApiKeys] agenciaId:',window._agenciaId,'isAdmin:',typeof isAdmin!=='undefined'?isAdmin:'undef','agenteId:',window._agenteId);
   if(window._agenciaId){
     // Tiene agencia → guardar en esa agencia
     try{
       const {error}=await sb.from('agencias').update({config:keyCfg}).eq('id',window._agenciaId);
       if(error) throw error;
+      console.log('[saveApiKeys] guardado en agencias id:',window._agenciaId);
     }catch(e){
       toast('Error al guardar en agencia: '+e.message,false);
       return;
@@ -146,10 +148,11 @@ async function saveApiKeys(){
     try{
       const {data:allAg,error:fetchErr}=await sb.from('agencias').select('id');
       if(fetchErr) throw fetchErr;
+      console.log('[saveApiKeys] broadcast a',allAg?.length,'agencias');
       if(allAg?.length){
         const results=await Promise.all(allAg.map(ag=>sb.from('agencias').update({config:keyCfg}).eq('id',ag.id)));
         const firstErr=results.find(r=>r.error);
-        if(firstErr) throw firstErr.error;
+        if(firstErr){console.error('[saveApiKeys] broadcast error:',firstErr.error);throw firstErr.error;}
       }
     }catch(e){
       toast('Error al guardar en agencias: '+e.message,false);
@@ -708,8 +711,22 @@ async function _sendQuoteEmail(){
   const d=qData||collectFormSafe();
   const clientEmail=d?.cliente?.email;
   if(!clientEmail){toast('El cliente no tiene email registrado',false);return;}
-  // Verificar Resend key
-  const resendKey=(typeof agCfg!=='undefined'?agCfg._resend_key:'')||localStorage.getItem('mp_resend_key')||'';
+  // Verificar Resend key — intentar múltiples fuentes
+  let resendKey=(typeof agCfg!=='undefined'?agCfg._resend_key:'')||localStorage.getItem('mp_resend_key')||'';
+  // Fallback: fetch en vivo desde agencias.config (por si showApp no lo cargó o la columna es nueva)
+  if(!resendKey && window._agenciaId){
+    try{
+      const{data:ag}=await sb.from('agencias').select('*').eq('id',window._agenciaId).maybeSingle();
+      console.log('[email] agencias row:', ag);
+      if(ag?.config?._resend_key){
+        resendKey=ag.config._resend_key;
+        if(typeof agCfg!=='undefined') agCfg._resend_key=resendKey;
+        localStorage.setItem('mp_resend_key',resendKey);
+        console.log('[email] resend key cargada desde agencias en vivo');
+      }
+    }catch(e){console.warn('[email] fetch agencias.config:',e.message);}
+  }
+  console.log('[email] resendKey final:',!!resendKey,'agenciaId:',window._agenciaId,'agCfg._resend_key:',!!agCfg?._resend_key);
   if(!resendKey){
     if(typeof currentRol!=='undefined'&&currentRol==='admin'){
       toast('Configurá la Resend API Key en Admin → Integraciones',false);
