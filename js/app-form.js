@@ -1089,7 +1089,8 @@ async function _autosaveTick(){
   try{
     const d=collectForm();
     qData=d;
-    await dbSaveQuote(d, editingQuoteId);
+    const _asRecoveredId=await dbSaveQuote(d, editingQuoteId);
+    if(_asRecoveredId&&!editingQuoteId) editingQuoteId=_asRecoveredId;
     // Si era nueva, guardar el ID para futuros autosaves
     if(!editingQuoteId&&d.refId){
       // Buscar la cotización recién creada para obtener su ID
