@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.35';
+const APP_VERSION = '0.25.36';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -1045,28 +1045,21 @@ async function dbSaveQuote(d, supabaseId){
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
-    // Pre-check: si ref_id ya existe para ESTE agente, convertir en UPDATE
-    // (Filtrar por agente_id permite que RLS autorice el SELECT)
-    if(d.refId){
-      const {data:dup}=await sb.from('cotizaciones').select('id').eq('ref_id',String(d.refId)).eq('agente_id',agId).maybeSingle();
-      if(dup?.id){
-        console.log('[dbSaveQuote] ref_id duplicado detectado, UPDATE id:',dup.id);
-        supabaseId=dup.id;
-      }
+    // INSERT primero — si falla con 23505 (dup), UPDATE por ref_id
+    const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
+    const row = {...baseRow, agente_id: agId||null};
+    ({error} = await sb.from('cotizaciones').insert(row));
+    // Fallback: columna inexistente → safe row
+    if(error && (error.code==='42703'||error.message?.includes('column'))){
+      ({error} = await sb.from('cotizaciones').insert(safeRow));
     }
-    if(supabaseId){
-      // UPDATE — la cotización ya existía, editingQuoteId se había perdido de memoria
+    // Si ref_id ya existe (23505) → UPDATE directo por ref_id (sin SELECT previo)
+    if(error && (error.code==='23505'||error.message?.includes('duplicate key'))){
+      console.log('[dbSaveQuote] 23505 → UPDATE por ref_id:',d.refId);
       const safeUpd={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
-      ({error} = await sb.from('cotizaciones').update(safeUpd).eq('id', supabaseId));
-    } else {
-      // INSERT — cotización realmente nueva
-      const row = {...baseRow, agente_id: agId||null};
-      ({error} = await sb.from('cotizaciones').insert(row));
-      if(error && (error.code==='42703'||error.message?.includes('column'))){
-        _captureError('dbSaveQuote:insert:fallback', error);
-        const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
-        ({error} = await sb.from('cotizaciones').insert(safeRow));
-      }
+      const {data:upd,error:updErr}=await sb.from('cotizaciones').update(safeUpd).eq('ref_id',String(d.refId)).select('id').maybeSingle();
+      error=updErr;
+      if(upd?.id) supabaseId=upd.id;
     }
   }
   if(error){
