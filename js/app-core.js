@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.36';
+const APP_VERSION = '0.25.37';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -563,7 +563,10 @@ async function acceptInvite(){
 
   // INSERT agentes row with id = auth.uid() (garantizado)
   if(data.user){
+    // Asignar agente_num atómico via RPC
+    const {data:nextNum}=await sb.rpc('next_agente_num');
     const agenteRow={id:data.user.id,email:em,rol:_inviteData.invite.rol||'agente',activo:true};
+    if(nextNum) agenteRow.agente_num=nextNum;
     if(nm) agenteRow.nombre=nm;
     if(_inviteData.invite.agencia_id) agenteRow.agencia_id=_inviteData.invite.agencia_id;
     await sb.from('agentes').insert(agenteRow);
@@ -685,7 +688,9 @@ async function _completeGoogleInvite(user){
   const {data:invite}=await sb.from('invitaciones').select('*').eq('token',token).maybeSingle();
   if(!invite||invite.usado)return;
   // INSERT agentes row with id = auth.uid()
+  const {data:nextNum2}=await sb.rpc('next_agente_num');
   const agenteRow={id:user.id,email:user.email,rol:invite.rol||'agente',activo:true};
+  if(nextNum2) agenteRow.agente_num=nextNum2;
   if(user.user_metadata?.full_name)agenteRow.nombre=user.user_metadata.full_name;
   if(invite.agencia_id)agenteRow.agencia_id=invite.agencia_id;
   await sb.from('agentes').insert(agenteRow);
@@ -811,7 +816,17 @@ async function showApp(user){
       if(data.logo_url!=null)  agCfg.logo_url  = data.logo_url;
       console.log('[showApp] pdf_theme from Supabase:', data.pdf_theme, '→ agCfg:', agCfg.pdf_theme);
       agCfg.em = user.email;
-      if(data.agente_num) window._agenteNum = data.agente_num;
+      if(data.agente_num){
+        window._agenteNum = data.agente_num;
+      } else {
+        // Agente sin número asignado — asignar atómicamente y guardar
+        const {data:autoNum}=await sb.rpc('next_agente_num');
+        if(autoNum){
+          window._agenteNum=autoNum;
+          await sb.from('agentes').update({agente_num:autoNum}).eq('id',user.id);
+          console.log('[showApp] agente_num auto-asignado:',autoNum);
+        }
+      }
       if(data.pais_cod) window._agentePaisCod = data.pais_cod;
       if(data.agencia_id) window._agenciaId = data.agencia_id;
       // Independiente = agente sin agencia
@@ -832,6 +847,7 @@ async function showApp(user){
         try{
           const{data:ag}=await sb.from('agencias').select('*').eq('id',data.agencia_id).maybeSingle();
           if(ag?.nombre) agCfg.ag=ag.nombre;
+          if(ag?.codigo) window._agenciaCodigo=ag.codigo;
           if(ag?.config && typeof ag.config==='object') _agenciaCfg=ag.config;
           console.log('[showApp] agencias.config:',_agenciaCfg);
         }catch(e){console.warn('[showApp] agencias fetch:',e.message);}
@@ -994,15 +1010,16 @@ async function dbSaveQuote(d, supabaseId){
   // agente_id viene de window._agenteId = user.id (garantizado en showApp)
   const agId = window._agenteId || null;
   if(!agId) throw new Error('agente_id no disponible — cerrá sesión y volvé a entrar');
-  // Generate structured ref_id for NEW quotes: {pais_cod}-{agente_num_4d}-{seq_5d}
+  // Generate structured ref_id for NEW quotes: {agencia_cod}-{agente_num_4d}-{seq_5d}
+  // Formato: PYR-0002-00011 (código agencia + nro agente global + secuencia)
   if(!d.refId && !supabaseId){
     // Incremento atómico via RPC — garantiza unicidad aunque se borren cotizaciones
     const { data: seqData, error: seqError } = await sb.rpc('increment_cotizacion_seq', { agente_uuid: agId });
     if(seqError) console.warn('[seq]', seqError);
     const seq = seqData || 1;
-    const pais = window._agentePaisCod || agCfg.pais_cod || 'AR';
+    const prefix = window._agenciaCodigo || window._agentePaisCod || agCfg.pais_cod || 'AR';
     const num = window._agenteNum || 1;
-    d.refId = `${pais}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
+    d.refId = `${prefix}-${String(num).padStart(4,'0')}-${String(seq).padStart(5,'0')}`;
   }
   // Embeber cover/logo en datos para que el link público pueda renderizarlos
   // (el link público solo tiene acceso a datos JSONB, no a columnas separadas)
