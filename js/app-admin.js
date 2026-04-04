@@ -1110,7 +1110,7 @@ async function _loadAgencyFields(){
     if(!data)return;
     const el=id=>document.getElementById(id);
     if(data.nombre && el('ag-nombre')) el('ag-nombre').value=data.nombre;
-    if(data.codigo && el('ag-codigo')) el('ag-codigo').value=data.codigo;
+    if(data.codigo && el('ag-codigo')){el('ag-codigo').value=data.codigo;el('ag-codigo').readOnly=true;el('ag-codigo').style.background='var(--g1)';el('ag-codigo').style.cursor='not-allowed';}
     if(data.email && el('ag-email')) el('ag-email').value=data.email;
     if(data.telefono && el('ag-tel')) el('ag-tel').value=data.telefono;
     if(data.direccion && el('ag-dir')) el('ag-dir').value=data.direccion;
