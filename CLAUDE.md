@@ -17,7 +17,8 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
 - Deploy: GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/`
-- Versión actual: `0.25.20` — cache-bust `?v=55` en index.html
+- Versión actual: `0.25.28` — cache-bust `?v=64` en index.html
+- Deploy principal: Vercel — `https://ermix.vercel.app` (también GitHub Pages)
 
 ## Archivos principales
 
@@ -314,6 +315,42 @@ La API de Claude está en `https://api.anthropic.com/v1/messages`.
 1. `app-ia.js` — Generar descripción turística (modelo: `claude-sonnet-4-20250514`)
 2. `app-ia-parser.js` — Parser texto libre → formulario (modelo: `claude-haiku-4-5-20251001`)
 
+## Sistema de API Keys — flujo completo
+
+**Fuentes de verdad (en orden de prioridad):**
+1. `agencias.config` — keys globales del equipo (admin las setea, todos las heredan)
+2. `agentes.config` — keys propias del agente (override personal)
+3. `localStorage` — cache de sesión, solo se escribe DESPUÉS de Supabase exitoso
+
+**En `showApp()` (app-core.js):**
+- Fetch `agencias.select('*')` para obtener `ag.config` → `_agenciaCfg`
+- `Object.assign(agCfg, data.config)` (config del agente)
+- Si `_agenciaCfg._resend_key` existe → sobreescribe el del agente
+- Logs: `[showApp] agencias.config: {...}` y `[showApp] agCfg keys → resend: true/false`
+
+**En `saveApiKeys()` (app-preview.js):**
+- Si `isAdmin` → broadcast a TODAS las agencias (`Promise.all` de updates)
+  - `isAdmin` se evalúa PRIMERO, antes de `window._agenciaId`
+- Si agencia (no admin) → solo su `agencias.config`
+- Si independiente → su `agentes.config`
+
+**CRÍTICO:** El admin tiene `agencia_id` propia pero igual hace broadcast a TODAS.
+Si solo se guarda en su agencia, los agentes de otras agencias no reciben las keys.
+
+## Envío de email — proxy Vercel
+
+**Problema:** Resend API no acepta llamadas directas desde browser (CORS).
+**Solución:** `api/send-email.js` — Vercel Serverless Function (CJS, `module.exports`).
+
+```
+browser → POST /api/send-email → Vercel server → api.resend.com/emails
+```
+
+- `_sendQuoteEmail()` en `app-preview.js` llama `/api/send-email` (URL relativa)
+- Payload: `{ resend_key, from, to, subject, html, reply_to }`
+- También existe `supabase/functions/send-email/index.ts` como alternativa Edge Function
+- **IMPORTANTE:** usar `module.exports` (CJS), NO `export default` (ESM) — sin package.json Vercel usa CJS
+
 ## Roles de usuario
 
 Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agente'`
@@ -400,8 +437,8 @@ Admin (1)
 ```
 
 ### Tablas principales
-- **`agentes`**: `id` (= auth.uid()), `email`, `nombre`, `rol` (admin/agencia/agente), `activo`, `agencia_id` → `agencias.id`
-- **`agencias`**: `id`, `nombre`, `email`, `telefono`, `direccion`, `logo_url`, `plan`, `max_agentes`, `activa`
+- **`agentes`**: `id` (= auth.uid()), `email`, `nombre`, `rol` (admin/agencia/agente), `activo`, `agencia_id` → `agencias.id`, `config` JSONB (API keys propias del agente), `cotizacion_seq` INTEGER (secuencia atómica para ref_id), `plan`, `plan_estado`, `plan_vence`, `trial_inicio`
+- **`agencias`**: `id`, `nombre`, `email`, `telefono`, `direccion`, `logo_url`, `plan`, `max_agentes`, `activa`, `config` JSONB (API keys globales: `_resend_key`, `_ia_key`, `_unsplash_key`, `resend_from` — heredadas por todos los agentes de la agencia)
 - **`invitaciones`**: `id`, `email`, `nombre`, `rol`, `tipo` (invite/reset), `agencia_id`, `token`, `usado`, `creado_en`
   - Invitaciones pendientes viven acá — NO en `agentes.invite_token`
   - Al aceptar → `agentes.insert({id: auth.uid(), ...})` + `invitaciones.update({usado:true})`
@@ -420,6 +457,20 @@ Admin (1)
 - **`documentos_cliente`** — documentos subidos (pasaporte, visa, voucher, seguro, etc.)
   - `quot_id` (puede no existir): vincula documento a cotización específica en seguimiento
   - SQL pendiente: `ALTER TABLE documentos_cliente ADD COLUMN IF NOT EXISTS quot_id UUID`
+
+### SQL ya corrido en producción (no volver a ejecutar)
+```sql
+-- Secuencia atómica para ref_id de cotizaciones
+ALTER TABLE agentes ADD COLUMN IF NOT EXISTS cotizacion_seq INTEGER DEFAULT 0;
+CREATE OR REPLACE FUNCTION increment_cotizacion_seq(agente_uuid UUID)
+RETURNS INTEGER AS $$
+  UPDATE agentes SET cotizacion_seq = COALESCE(cotizacion_seq,0)+1
+  WHERE id=agente_uuid RETURNING cotizacion_seq;
+$$ LANGUAGE sql;
+
+-- API keys globales heredadas por agentes de la agencia
+ALTER TABLE agencias ADD COLUMN IF NOT EXISTS config JSONB DEFAULT '{}';
+```
 
 ### Reglas de consulta
 - RLS habilitado en todas las tablas — NO hacer upsert en `agentes` desde cliente (403)
