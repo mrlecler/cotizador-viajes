@@ -330,6 +330,11 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
             <label class="reg-label">Nombre de tu marca <span class="reg-optional">opcional</span></label>
             <input class="reg-input" id="a-marca" type="text" placeholder="Ej: Maria Travels">
           </div>
+          <div class="reg-field">
+            <label class="reg-label">Codigo de cotizaciones <span style="font-size:.6rem;color:rgba(45,31,20,.3);text-transform:none;letter-spacing:0">(3-4 letras)</span></label>
+            <input class="reg-input" id="a-codigo" type="text" placeholder="Ej: MLT" maxlength="4" style="text-transform:uppercase;max-width:140px;font-weight:700;letter-spacing:2px">
+            <div style="font-size:.62rem;color:rgba(45,31,20,.35);margin-top:4px">Tus cotizaciones se numeran como MLT-0005-00001</div>
+          </div>
 
           <button class="reg-cta" id="a-btn" onclick="registerIndie()">Crear mi cuenta gratis</button>
           <div class="reg-status" id="a-status"></div>
@@ -369,6 +374,11 @@ html,body{height:100%;overflow:hidden;margin:0;padding:0;}
           <div class="reg-field">
             <label class="reg-label">Nombre de la agencia</label>
             <input class="reg-input" id="b-agencia" type="text" placeholder="Ej: Viajes del Sur">
+          </div>
+          <div class="reg-field">
+            <label class="reg-label">Codigo de agencia <span style="font-size:.6rem;color:rgba(45,31,20,.3);text-transform:none;letter-spacing:0">(3-4 letras, unico)</span></label>
+            <input class="reg-input" id="b-codigo" type="text" placeholder="Ej: VDS" maxlength="4" style="text-transform:uppercase;max-width:140px;font-weight:700;letter-spacing:2px">
+            <div style="font-size:.62rem;color:rgba(45,31,20,.35);margin-top:4px">Identifica todas las cotizaciones de tu agencia</div>
           </div>
           <div class="reg-field">
             <label class="reg-label">Tu nombre</label>
@@ -522,11 +532,13 @@ async function registerIndie(){
   const email  = document.getElementById('a-email').value.trim();
   const pass   = document.getElementById('a-pass').value;
   const marca  = document.getElementById('a-marca').value.trim();
+  const rawCodigo = (document.getElementById('a-codigo')?.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
 
   _setStatus('a-status','','');
   if(!nombre){ _setStatus('a-status','Ingresa tu nombre.',true); return; }
   if(!email)  { _setStatus('a-status','Ingresa tu email.',true); return; }
   if(pass.length < 6){ _setStatus('a-status','La contrasena debe tener al menos 6 caracteres.',true); return; }
+  if(rawCodigo && rawCodigo.length < 3){ _setStatus('a-status','El codigo debe tener al menos 3 letras.',true); return; }
 
   _setLoading('a-btn', true, 'Crear mi cuenta gratis');
 
@@ -542,22 +554,40 @@ async function registerIndie(){
     const uid = authData?.user?.id;
     if(!uid) throw new Error('No se pudo obtener el ID de usuario.');
 
-    // 2. Insert en tabla agentes
     const trialInicio = new Date().toISOString();
     const planVence   = new Date(Date.now() + 7*24*60*60*1000).toISOString();
 
-    const { error: agErr } = await sb.from('agentes').insert({
+    // 2. Crear agencia unipersonal (para código de cotizaciones)
+    const agenciaRow = {nombre: marca || nombre, email: email, activa: true, plan: 'explorador', max_agentes: 1};
+    if(rawCodigo) agenciaRow.codigo = rawCodigo;
+    const { data: agData, error: agcErr } = await sb.from('agencias').insert(agenciaRow).select('id').maybeSingle();
+    if(agcErr){
+      if(agcErr.code==='23505' && agcErr.message?.includes('codigo')){
+        throw new Error('El codigo "'+rawCodigo+'" ya esta en uso. Elegi otro.');
+      }
+      console.warn('[register] agencias insert warning:', agcErr.message);
+    }
+    const agenciaId = agData?.id || null;
+
+    // 3. Obtener agente_num atómico
+    const {data:nextNum} = await sb.rpc('next_agente_num');
+
+    // 4. Insert en tabla agentes
+    const agenteRow = {
       id:           uid,
       email:        email,
       nombre:       nombre,
-      agencia:      marca || nombre,  // nombre de marca o nombre propio
+      agencia:      marca || nombre,
       rol:          'agente',
       activo:       true,
+      agencia_id:   agenciaId,
       plan:         'explorador',
       plan_estado:  'trial',
       trial_inicio: trialInicio,
       plan_vence:   planVence
-    });
+    };
+    if(nextNum) agenteRow.agente_num = nextNum;
+    const { error: agErr } = await sb.from('agentes').insert(agenteRow);
     if(agErr) console.warn('[register] agentes insert warning:', agErr.message);
 
     _showSuccess(
@@ -574,12 +604,14 @@ async function registerIndie(){
 // Path B — Agencia
 async function registerAgencia(){
   const agencia = document.getElementById('b-agencia').value.trim();
+  const rawCodigo = (document.getElementById('b-codigo')?.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);
   const nombre  = document.getElementById('b-nombre').value.trim();
   const email   = document.getElementById('b-email').value.trim();
   const pass    = document.getElementById('b-pass').value;
 
   _setStatus('b-status','','');
   if(!agencia){ _setStatus('b-status','Ingresa el nombre de tu agencia.',true); return; }
+  if(!rawCodigo||rawCodigo.length<3){ _setStatus('b-status','Ingresa un codigo de agencia (3-4 letras).',true); return; }
   if(!nombre) { _setStatus('b-status','Ingresa tu nombre.',true); return; }
   if(!email)  { _setStatus('b-status','Ingresa tu email.',true); return; }
   if(pass.length < 6){ _setStatus('b-status','La contrasena debe tener al menos 6 caracteres.',true); return; }
@@ -598,24 +630,33 @@ async function registerAgencia(){
     const uid = authData?.user?.id;
     if(!uid) throw new Error('No se pudo obtener el ID de usuario.');
 
-    // 2. Insert agencia
+    // 2. Insert agencia con código único
     const trialInicio = new Date().toISOString();
     const planVence   = new Date(Date.now() + 7*24*60*60*1000).toISOString();
 
     const { data: agData, error: agcErr } = await sb.from('agencias').insert({
       nombre:    agencia,
+      codigo:    rawCodigo,
       email:     email,
       activa:    true,
       plan:      'explorador',
       max_agentes: 3
     }).select('id').maybeSingle();
 
-    if(agcErr) console.warn('[register] agencias insert warning:', agcErr.message);
+    if(agcErr){
+      if(agcErr.code==='23505' && agcErr.message?.includes('codigo')){
+        throw new Error('El codigo "'+rawCodigo+'" ya esta en uso por otra agencia. Elegi otro.');
+      }
+      console.warn('[register] agencias insert warning:', agcErr.message);
+    }
 
     const agenciaId = agData?.id || null;
 
-    // 3. Insert agente con rol agencia
-    const { error: agErr } = await sb.from('agentes').insert({
+    // 3. Obtener agente_num atómico
+    const {data:nextNum} = await sb.rpc('next_agente_num');
+
+    // 4. Insert agente con rol agencia
+    const agenteRow = {
       id:           uid,
       email:        email,
       nombre:       nombre,
@@ -627,7 +668,9 @@ async function registerAgencia(){
       plan_estado:  'trial',
       trial_inicio: trialInicio,
       plan_vence:   planVence
-    });
+    };
+    if(nextNum) agenteRow.agente_num = nextNum;
+    const { error: agErr } = await sb.from('agentes').insert(agenteRow);
     if(agErr) console.warn('[register] agentes insert warning:', agErr.message);
 
     _showSuccess(

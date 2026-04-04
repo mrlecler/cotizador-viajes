@@ -105,14 +105,25 @@ function _renderAdminUsersTable(){
 
   const fmtDate=d=>{if(!d)return'\u2014';try{return new Date(d).toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return'\u2014';}};
 
+  const planBadge=a=>{
+    if(!a.plan_estado)return'';
+    const vence=a.plan_vence?new Date(a.plan_vence):null;
+    const vencido=vence&&vence<new Date();
+    if(a.plan_estado==='trial'&&vencido)return'<span style="font-size:.62rem;padding:2px 6px;border-radius:8px;background:rgba(220,38,38,.1);color:var(--red);font-weight:600">Trial vencido</span>';
+    if(a.plan_estado==='trial')return`<span style="font-size:.62rem;padding:2px 6px;border-radius:8px;background:rgba(27,158,143,.1);color:var(--primary);font-weight:600">Trial ${vence?Math.max(0,Math.ceil((vence-new Date())/86400000))+'d':''}</span>`;
+    if(a.plan_estado==='activo')return'<span style="font-size:.62rem;padding:2px 6px;border-radius:8px;background:rgba(34,197,94,.1);color:#22c55e;font-weight:600">Activo</span>';
+    return`<span style="font-size:.62rem;color:var(--g3)">${a.plan_estado}</span>`;
+  };
+
   el.innerHTML=`<table class="tbl" style="width:100%">
-    <thead><tr><th>Nombre</th><th>Email</th><th>Agencia</th><th>Rol</th><th>Estado</th><th>Alta</th><th style="text-align:right">Acciones</th></tr></thead>
+    <thead><tr><th>Nombre</th><th>Email</th><th>Agencia</th><th>Rol</th><th>Estado</th><th>Plan</th><th>Alta</th><th style="text-align:right">Acciones</th></tr></thead>
     <tbody>${filtered.map(a=>`<tr>
       <td style="font-weight:600">${a.nombre||'\u2014'}</td>
       <td style="font-size:.82rem;color:var(--g4)">${a.email||'\u2014'}</td>
       <td style="font-size:.78rem">${a.agencia_id&&_adminAgenciasMap[a.agencia_id]?_adminAgenciasMap[a.agencia_id]:'<span style="color:var(--g3)">\u2014</span>'}</td>
       <td>${rolBadge(a.rol)}</td>
       <td>${statusBadge(a)}</td>
+      <td>${planBadge(a)}</td>
       <td style="font-size:.72rem;color:var(--g4);white-space:nowrap">${fmtDate(a.creado_en||a.created_at)}</td>
       <td style="text-align:right">
         <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
@@ -120,6 +131,7 @@ function _renderAdminUsersTable(){
           ${a.activo&&a.id!==myId?`<button class="btn btn-out btn-xs" style="color:#D4A017;border-color:#D4A017" onclick="deactivateUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Desactivar</button>`:''}
           ${a._pending?`<button class="btn btn-out btn-xs" onclick="regenerateInviteLink('${a.email}')">Nuevo enlace</button>`:''}
           ${a.activo?`<button class="btn btn-out btn-xs" onclick="generateResetLink('${a.id}')">Reset pass</button>`:''}
+          ${a.activo&&!a._pending?`<button class="btn btn-out btn-xs" onclick="extendTrialModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.plan_estado||''}','${a.plan_vence||''}')">Extender</button>`:''}
           <button class="btn btn-out btn-xs" onclick="editAgentModal('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}','${a.email}','${a.rol}')">Editar</button>
           ${a.id!==myId?`<button class="btn btn-out btn-xs" style="color:var(--red);border-color:var(--red)" onclick="deleteUser('${a.id}','${(a.nombre||'').replace(/'/g,"\\'")}')">Eliminar</button>`:''}
         </div>
@@ -139,6 +151,55 @@ async function changeRol(id,rol){
   const {error}=await sb.from('agentes').update({rol:nw.trim().toLowerCase()}).eq('id',id);
   if(error){toast('Error: '+error.message,false);return;}
   toast('Rol actualizado');renderAdminUsers();
+}
+
+function extendTrialModal(id,nombre,planEstado,planVence){
+  const venceDate=planVence?new Date(planVence):new Date();
+  const fromDate=venceDate>new Date()?venceDate:new Date();
+  const content=document.getElementById('modal-content');
+  document.getElementById('modal-overlay').style.display='block';
+  document.getElementById('modal-box').style.display='block';
+  content.innerHTML=`
+    <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:4px">Gestionar plan — ${nombre}</div>
+    <div style="font-size:.78rem;color:var(--g4);margin-bottom:16px">Estado actual: ${planEstado||'sin plan'} ${planVence?'(vence '+new Date(planVence).toLocaleDateString('es-AR')+')':''}</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label class="lbl">Accion</label>
+        <select class="finput" id="_ext-action" onchange="document.getElementById('_ext-days-wrap').style.display=this.value==='extend'?'':'none'">
+          <option value="extend">Extender trial</option>
+          <option value="activate">Activar plan (sin limite)</option>
+        </select>
+      </div>
+      <div id="_ext-days-wrap">
+        <label class="lbl">Dias a agregar</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="finput" type="number" id="_ext-days" value="30" min="1" max="365" style="max-width:100px">
+          <span style="font-size:.75rem;color:var(--g4)">desde ${fromDate.toLocaleDateString('es-AR')}</span>
+        </div>
+      </div>
+      <button class="btn btn-cta" onclick="extendTrial('${id}')">Aplicar</button>
+    </div>`;
+}
+
+async function extendTrial(id){
+  const action=document.getElementById('_ext-action')?.value||'extend';
+  const days=parseInt(document.getElementById('_ext-days')?.value)||30;
+  let upd={};
+  if(action==='activate'){
+    upd={plan_estado:'activo',plan_vence:null};
+  } else {
+    // Extender desde la fecha actual o la fecha de vencimiento, lo que sea mayor
+    const {data:ag}=await sb.from('agentes').select('plan_vence').eq('id',id).maybeSingle();
+    const current=ag?.plan_vence?new Date(ag.plan_vence):new Date();
+    const from=current>new Date()?current:new Date();
+    const newVence=new Date(from.getTime()+days*24*60*60*1000).toISOString();
+    upd={plan_estado:'trial',plan_vence:newVence};
+  }
+  const {error}=await sb.from('agentes').update(upd).eq('id',id);
+  if(error){toast('Error: '+error.message,false);return;}
+  closeModal();
+  toast(action==='activate'?'Plan activado sin limite':'Trial extendido '+days+' dias');
+  await renderAdminUsers();
 }
 
 async function activateUser(id){
