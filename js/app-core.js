@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════
 // VERSION
 // ═══════════════════════════════════════════
-const APP_VERSION = '0.25.32';
+const APP_VERSION = '0.25.33';
 
 // ═══════════════════════════════════════════
 // PLANES
@@ -1043,26 +1043,28 @@ async function dbSaveQuote(d, supabaseId){
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
-    // INSERT — incluir agente_id en el registro nuevo
-    const row = {...baseRow, agente_id: agId||null};
-    ({error} = await sb.from('cotizaciones').insert(row));
-    // Si falla con columna inexistente, intentar con payload mínimo garantizado
-    if(error && (error.code==='42703'||error.message?.includes('column'))){
-      _captureError('dbSaveQuote:insert:fallback', error);
-      const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
-      ({error} = await sb.from('cotizaciones').insert(safeRow));
+    // PRE-CHECK: si d.refId ya existe en DB, editingQuoteId se perdió de memoria → UPDATE directo
+    if(d.refId){
+      const {data:preCheck}=await sb.from('cotizaciones').select('id').eq('ref_id',String(d.refId)).maybeSingle();
+      if(preCheck?.id){
+        console.log('[dbSaveQuote] ref_id ya existe, convirtiendo INSERT→UPDATE id:',preCheck.id);
+        supabaseId=preCheck.id;
+        const {ref_id:_rid, ...updateRow} = baseRow;
+        ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', supabaseId));
+        if(error && (error.code==='42703'||error.message?.includes('column'))){
+          const safeUpd={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
+          ({error} = await sb.from('cotizaciones').update(safeUpd).eq('id', supabaseId));
+        }
+      }
     }
-    // Si falla con clave duplicada (ref_id ya existe) — editingQuoteId se perdió de memoria
-    // Buscar la fila existente y hacer UPDATE en vez de fallar
-    if(error && (error.code==='23505'||error.message?.includes('duplicate key'))){
-      _captureError('dbSaveQuote:insert:dup-recovery', error);
-      const {data:existing}=await sb.from('cotizaciones').select('id').eq('ref_id',String(d.refId)).maybeSingle();
-      if(existing?.id){
-        // Usar safe row mínima para evitar fallo por columnas inexistentes
-        const safeUpd={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
-        ({error} = await sb.from('cotizaciones').update(safeUpd).eq('id', existing.id));
-        // Restaurar editingQuoteId para que próximas operaciones funcionen
-        if(!error) supabaseId = existing.id;
+    // INSERT solo si no se resolvió por pre-check
+    if(!supabaseId){
+      const row = {...baseRow, agente_id: agId||null};
+      ({error} = await sb.from('cotizaciones').insert(row));
+      if(error && (error.code==='42703'||error.message?.includes('column'))){
+        _captureError('dbSaveQuote:insert:fallback', error);
+        const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
+        ({error} = await sb.from('cotizaciones').insert(safeRow));
       }
     }
   }
