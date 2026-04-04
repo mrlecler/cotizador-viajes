@@ -294,8 +294,12 @@ function loadCfg(){
     hide('cfg-logo-wrap');
     if(ttl) ttl.textContent='Mi perfil de administrador';
   } else if(currentRol==='agencia'){
-    // Agencia: hide entire profile card (managed in Mi Agencia), only password
-    if(cfgCard) cfgCard.style.display='none';
+    // Agencia: mostrar perfil básico (nombre, email, tel), sin campos exclusivos de agente
+    if(ttl) ttl.textContent='Mi perfil de agencia';
+    const hideAg=id=>{const el=document.getElementById(id);if(el)el.style.display='none';};
+    hideAg('cfg-ag-wrap');
+    hideAg('cfg-pais-wrap');
+    hideAg('cfg-soc-wrap');
   } else {
     if(ttl) ttl.textContent='Mi perfil de agente';
     // Load agencia name readonly from Supabase relation
