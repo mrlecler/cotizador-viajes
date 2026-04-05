@@ -1,0 +1,183 @@
+<!--
+  ermix — Email Templates para Supabase Auth
+  Copiar cada bloque en Supabase Dashboard > Authentication > Email Templates
+
+  4 templates:
+  1. Confirm signup
+  2. Reset password
+  3. Magic link
+  4. Email change
+-->
+
+
+<!-- ============================================================
+     TEMPLATE 1: CONFIRM SIGNUP
+     Subject: Confirma tu cuenta en ermix
+     ============================================================ -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F5F0E8;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F0E8;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+
+<!-- Header gradient bar -->
+<tr><td style="background:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
+<span style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">ermix</span>
+</td></tr>
+
+<!-- Body card -->
+<tr><td style="background-color:#ffffff;padding:36px 32px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);">
+<h1 style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:22px;font-weight:700;color:#2D1F14;margin:0 0 16px;">Bienvenido a ermix</h1>
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:15px;color:#2D1F14;line-height:1.6;margin:0 0 12px;">Te registraste en ermix, el cotizador de viajes para agentes.</p>
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:15px;color:#2D1F14;line-height:1.6;margin:0 0 28px;">Confirma tu cuenta para comenzar a cotizar:</p>
+
+<!-- CTA button -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;background-color:#FF6B35;color:#ffffff;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;min-height:44px;line-height:44px;box-shadow:0 4px 15px rgba(255,107,53,0.3);">Confirmar mi cuenta</a>
+</td></tr></table>
+
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:13px;color:rgba(45,31,20,0.52);line-height:1.5;margin:28px 0 0;">Si no creaste esta cuenta, puedes ignorar este mensaje.</p>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background-color:#ffffff;padding:20px 32px;border-top:1px solid rgba(45,31,20,0.07);border-radius:0 0 16px 16px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);border-bottom:1px solid rgba(45,31,20,0.07);text-align:center;">
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:12px;color:rgba(45,31,20,0.52);margin:0;">ermix &mdash; cotizador de viajes para agentes</p>
+</td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
+
+
+<!-- ============================================================
+     TEMPLATE 2: RESET PASSWORD
+     Subject: Restablecer contrasena — ermix
+     ============================================================ -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F5F0E8;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F0E8;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+
+<!-- Header gradient bar -->
+<tr><td style="background:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
+<span style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">ermix</span>
+</td></tr>
+
+<!-- Body card -->
+<tr><td style="background-color:#ffffff;padding:36px 32px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);">
+<h1 style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:22px;font-weight:700;color:#2D1F14;margin:0 0 16px;">Restablecer contrasena</h1>
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:15px;color:#2D1F14;line-height:1.6;margin:0 0 28px;">Recibimos una solicitud para restablecer la contrasena de tu cuenta en ermix. Hace click en el boton para crear una nueva:</p>
+
+<!-- CTA button -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;background-color:#FF6B35;color:#ffffff;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;min-height:44px;line-height:44px;box-shadow:0 4px 15px rgba(255,107,53,0.3);">Restablecer contrasena</a>
+</td></tr></table>
+
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:13px;color:rgba(45,31,20,0.52);line-height:1.5;margin:28px 0 0;">Si no solicitaste este cambio, ignora este mensaje. Tu contrasena actual seguira siendo la misma.</p>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background-color:#ffffff;padding:20px 32px;border-top:1px solid rgba(45,31,20,0.07);border-radius:0 0 16px 16px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);border-bottom:1px solid rgba(45,31,20,0.07);text-align:center;">
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:12px;color:rgba(45,31,20,0.52);margin:0;">ermix &mdash; cotizador de viajes para agentes</p>
+</td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
+
+
+<!-- ============================================================
+     TEMPLATE 3: MAGIC LINK
+     Subject: Tu enlace de acceso — ermix
+     ============================================================ -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F5F0E8;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F0E8;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+
+<!-- Header gradient bar -->
+<tr><td style="background:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
+<span style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">ermix</span>
+</td></tr>
+
+<!-- Body card -->
+<tr><td style="background-color:#ffffff;padding:36px 32px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);">
+<h1 style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:22px;font-weight:700;color:#2D1F14;margin:0 0 16px;">Tu enlace de acceso</h1>
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:15px;color:#2D1F14;line-height:1.6;margin:0 0 28px;">Usa el siguiente boton para ingresar a tu cuenta de ermix sin contrasena:</p>
+
+<!-- CTA button -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;background-color:#FF6B35;color:#ffffff;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;min-height:44px;line-height:44px;box-shadow:0 4px 15px rgba(255,107,53,0.3);">Ingresar a ermix</a>
+</td></tr></table>
+
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:13px;color:rgba(45,31,20,0.52);line-height:1.5;margin:28px 0 0;">Este enlace expira en 1 hora. Si no solicitaste acceso, puedes ignorar este mensaje.</p>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background-color:#ffffff;padding:20px 32px;border-top:1px solid rgba(45,31,20,0.07);border-radius:0 0 16px 16px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);border-bottom:1px solid rgba(45,31,20,0.07);text-align:center;">
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:12px;color:rgba(45,31,20,0.52);margin:0;">ermix &mdash; cotizador de viajes para agentes</p>
+</td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
+
+
+<!-- ============================================================
+     TEMPLATE 4: EMAIL CHANGE
+     Subject: Confirma tu nuevo email — ermix
+     ============================================================ -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#F5F0E8;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F0E8;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+
+<!-- Header gradient bar -->
+<tr><td style="background:linear-gradient(135deg,#1B9E8F 0%,#0BC5B8 50%,#06B6D4 100%);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
+<span style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">ermix</span>
+</td></tr>
+
+<!-- Body card -->
+<tr><td style="background-color:#ffffff;padding:36px 32px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);">
+<h1 style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:22px;font-weight:700;color:#2D1F14;margin:0 0 16px;">Confirma tu nuevo email</h1>
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:15px;color:#2D1F14;line-height:1.6;margin:0 0 28px;">Solicitaste cambiar el email de tu cuenta en ermix. Confirma el cambio haciendo click en el boton:</p>
+
+<!-- CTA button -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;background-color:#FF6B35;color:#ffffff;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;min-height:44px;line-height:44px;box-shadow:0 4px 15px rgba(255,107,53,0.3);">Confirmar cambio</a>
+</td></tr></table>
+
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:13px;color:rgba(45,31,20,0.52);line-height:1.5;margin:28px 0 0;">Si no solicitaste este cambio, ignora este mensaje. Tu email actual seguira sin modificarse.</p>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background-color:#ffffff;padding:20px 32px;border-top:1px solid rgba(45,31,20,0.07);border-radius:0 0 16px 16px;border-left:1px solid rgba(45,31,20,0.07);border-right:1px solid rgba(45,31,20,0.07);border-bottom:1px solid rgba(45,31,20,0.07);text-align:center;">
+<p style="font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;font-size:12px;color:rgba(45,31,20,0.52);margin:0;">ermix &mdash; cotizador de viajes para agentes</p>
+</td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
