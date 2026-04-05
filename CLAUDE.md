@@ -16,13 +16,17 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 - HTML + CSS + JS vanilla
 - Supabase (auth + DB + Storage)
 - Sin bundlers, sin npm, sin frameworks
-- Versión actual: `0.25.29` — cache-bust `?v=66` en index.html
+- Versión actual: `0.25.41` — cache-bust `?v=80` en index.html
 - Deploy: Vercel — `https://go.ermix.app` (URL principal)
 - GitHub Pages — `https://mrlecler.github.io/cotizador-viajes/` (legacy, no usar)
 - Dominio: ermix.app (Cloudflare Registrar, comprado 04/04/2026)
   - `go.ermix.app` → La aplicación
   - `ermix.app` → Landing page (pendiente)
   - `www.ermix.app` → Redirect a ermix.app
+- Email: Resend (dominio `ermix.app` verificado)
+  - `cotizaciones@ermix.app` → emails de cotizaciones al pasajero
+  - `no-reply@ermix.app` → emails transaccionales Supabase Auth (SMTP custom configurado)
+  - Templates brandeados en Supabase → Authentication → Email Templates
 
 ## Archivos principales
 
@@ -32,7 +36,7 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 | `styles.css` | Todos los estilos — variables CSS, layout, componentes |
 | `js/config.js` | Entorno: `supabaseUrl`, `supabaseKey`, `env`, `version` |
 | `js/app-core.js` | Auth Supabase, `buildWordmark()`, toggle dark/light, roles, `_captureError()`, profile dropdown, `dbSaveQuote()` |
-| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades, `saveQuote()`, autosave |
+| `js/app-form.js` | Formulario, autocomplete aeropuertos/ciudades, `saveQuote()`, autosave, itinerario día a día |
 | `js/app-quote.js` | Generación HTML cotización y PDF (`window.print()`) |
 | `js/app-admin.js` | Panel admin, activity log + error log, gestión de agentes/seguros, `renderAgency()` |
 | `js/app-preview.js` | Vista previa de cotización, perfil de usuario, cambio de contraseña, link público (`_initPublicView()`) |
@@ -43,6 +47,9 @@ Sos el desarrollador principal de **ermix**, una app SaaS de cotización de viaj
 | `js/app-promos.js` | Gestión de promos |
 | `data/airports.json` | 915 aeropuertos con IATA |
 | `data/cities.json` | Ciudades del mundo |
+| `register.html` | Registro de agentes independientes y agencias (signup con trial 7 días) |
+| `api/send-email.js` | Vercel Serverless proxy para Resend (CORS bypass, CJS) |
+| `sql/002-agente-num-autoincrement.sql` | Migración: agente_num atómico + código agencia |
 | `ermix-brand-assets-v2/ermix-brand-guidelines-v4.html` | Referencia visual v4 Aurora Teal — leer si hay dudas de diseño |
 
 ## Reglas absolutas — NUNCA hacer esto
@@ -341,6 +348,40 @@ La API de Claude está en `https://api.anthropic.com/v1/messages`.
 **CRÍTICO:** El admin tiene `agencia_id` propia pero igual hace broadcast a TODAS.
 Si solo se guarda en su agencia, los agentes de otras agencias no reciben las keys.
 
+## Numeración de cotizaciones (ref_id)
+
+Formato: `DFL-0004-00011` → código agencia (3-4 letras) + nro agente global + secuencia
+
+| Componente | Origen | Ejemplo |
+|---|---|---|
+| Código agencia | `agencias.codigo` (UNIQUE, 3-4 letras uppercase) | `DFL` |
+| Nro agente | `agentes.agente_num` (auto-incremento global via RPC) | `0004` |
+| Secuencia | `agentes.cotizacion_seq` (incremento atómico por agente) | `00011` |
+
+**`window._agenciaCodigo`**: se carga en `showApp()` desde `agencias.codigo`. Si la agencia no tiene código, aparece modal obligatorio para elegirlo (`_showCodigoModal`).
+
+**RPC `next_agente_num()`**: incrementa tabla `_sequences` atómicamente. Se llama al crear agente (register, invite, Google OAuth) y como fallback en `showApp()` si `agente_num` es null.
+
+**RPC `increment_cotizacion_seq(agente_uuid)`**: incrementa `agentes.cotizacion_seq` atómicamente. Se llama en `dbSaveQuote()` solo para cotizaciones nuevas (sin `refId` ni `supabaseId`).
+
+**Fallback**: si no hay `_agenciaCodigo`, usa `_agentePaisCod` o `'AR'` (legacy).
+
+**`dbSaveQuote` — manejo de duplicados (23505):**
+Si el INSERT falla con `duplicate key` en `ref_id` (porque `editingQuoteId` se perdió de memoria), el código hace UPDATE por `ref_id` automáticamente. NO usar UPSERT — RLS lo bloquea.
+
+## Planes y Trial
+
+- `agentes.plan`: `'explorador'` (default)
+- `agentes.plan_estado`: `'trial'` | `'activo'`
+- `agentes.plan_vence`: timestamp ISO — fecha de vencimiento del trial/plan
+- `agentes.trial_inicio`: timestamp ISO — cuándo empezó el trial
+- Trial default: 7 días desde registro
+- `_initTrialBanner()`: muestra banner en topbar con días restantes
+- `_tienePlan(feature)`: gate de features por plan
+- **Admin → Gestion**: columna Plan (Trial Xd / Trial vencido / Activo) + botón "Extender"
+  - `extendTrialModal()`: modal con opción extender N días o activar plan sin límite
+  - `extendTrial()`: actualiza `plan_estado` y `plan_vence` en Supabase
+
 ## Envío de email — proxy Vercel
 
 **Problema:** Resend API no acepta llamadas directas desde browser (CORS).
@@ -354,6 +395,9 @@ browser → POST /api/send-email → Vercel server → api.resend.com/emails
 - Payload: `{ resend_key, from, to, subject, html, reply_to }`
 - También existe `supabase/functions/send-email/index.ts` como alternativa Edge Function
 - **IMPORTANTE:** usar `module.exports` (CJS), NO `export default` (ESM) — sin package.json Vercel usa CJS
+- Default `from`: `ermix <cotizaciones@ermix.app>` — dominio verificado en Resend
+- Configurable desde Admin → Integraciones: campo `resend_from` en `agencias.config`
+- Emails transaccionales (reset pass, confirmación): salen via SMTP custom Supabase → Resend (`no-reply@ermix.app`)
 
 ## Roles de usuario
 
@@ -382,8 +426,31 @@ Variable global `currentRol` en `app-core.js`: `'admin'` | `'agencia'` | `'agent
 
 - Panel `tab-agency` — accesible solo para `agencia` y `admin` desde sidebar (y desde dropdown del avatar)
 - `renderAgency()` en `app-admin.js` — renderiza datos de agencia, agentes y proveedores
-- 3 cards: Datos de agencia, Mis agentes, Proveedores
+- 3 cards: Datos de agencia (con campo `codigo` readonly una vez guardado), Mis agentes, Proveedores
+- Campo `ag-codigo`: 3-4 letras uppercase, UNIQUE. Readonly después de guardarse (no se puede cambiar desde UI de agencia, solo admin)
 - Proveedores unificados: tipos expandidos (traslado, excursion, hotel, seguro, asistencia, DMC, receptivo, aerolinea, crucero, otro)
+
+## Admin — Gestion de usuarios
+
+- Tabla de usuarios con columnas: Nombre, Email, Agencia (nombre + badge código), Rol, Estado, Plan, Alta, Acciones
+- Acciones por usuario: Activar/Desactivar, Reset pass, Extender trial, Codigo agencia, Editar, Eliminar
+- `editCodigoModal()`: ver/cambiar código de agencia. Al cambiar, migra automáticamente todos los `ref_id` de las cotizaciones de esa agencia (reemplaza prefijo viejo por nuevo)
+- `extendTrialModal()`: extender trial N días o activar plan sin límite
+- Botón "Codigo" solo aparece si el usuario tiene `agencia_id`
+
+## Registro (register.html)
+
+- Dos paths: agente independiente (Path A) y agencia (Path B)
+- **Path A — Agente independiente**: nombre, email, pass, marca (opcional), código cotizaciones (3-4 letras)
+  - Auto-crea agencia unipersonal con el código elegido (`max_agentes: 1`)
+  - Asigna `agente_num` atómico via RPC `next_agente_num()`
+  - Trial 7 días, plan `explorador`
+- **Path B — Agencia**: nombre agencia, código agencia (obligatorio, UNIQUE), nombre, email, pass
+  - Crea agencia + agente con rol `agencia`
+  - Asigna `agente_num` atómico
+  - Trial 7 días, plan `explorador`, `max_agentes: 3`
+- Validación de unicidad de código: si ya existe, error claro pidiendo elegir otro
+- **Modal primer login** (`_showCodigoModal`): si la agencia no tiene código, aparece modal obligatorio al loguearse (z-index 9999, no se puede cerrar)
 
 ## CRM Clientes
 
@@ -441,8 +508,9 @@ Admin (1)
 ```
 
 ### Tablas principales
-- **`agentes`**: `id` (= auth.uid()), `email`, `nombre`, `rol` (admin/agencia/agente), `activo`, `agencia_id` → `agencias.id`, `config` JSONB (API keys propias del agente), `cotizacion_seq` INTEGER (secuencia atómica para ref_id), `plan`, `plan_estado`, `plan_vence`, `trial_inicio`
-- **`agencias`**: `id`, `nombre`, `email`, `telefono`, `direccion`, `logo_url`, `plan`, `max_agentes`, `activa`, `config` JSONB (API keys globales: `_resend_key`, `_ia_key`, `_unsplash_key`, `resend_from` — heredadas por todos los agentes de la agencia)
+- **`agentes`**: `id` (= auth.uid()), `email`, `nombre`, `rol` (admin/agencia/agente), `activo`, `agencia_id` → `agencias.id`, `agente_num` INTEGER (auto-incremento global via RPC `next_agente_num()`), `config` JSONB, `cotizacion_seq` INTEGER (secuencia atómica para ref_id), `plan`, `plan_estado` (trial/activo), `plan_vence`, `trial_inicio`
+- **`agencias`**: `id`, `nombre`, `codigo` VARCHAR(4) UNIQUE (3-4 letras, identifica cotizaciones), `email`, `telefono`, `direccion`, `logo_url`, `plan`, `max_agentes`, `activa`, `config` JSONB (API keys globales: `_resend_key`, `_ia_key`, `_unsplash_key`, `resend_from`)
+- **`_sequences`**: `name` TEXT PRIMARY KEY, `value` INTEGER — tabla de secuencias globales (usada por `next_agente_num()`)
 - **`invitaciones`**: `id`, `email`, `nombre`, `rol`, `tipo` (invite/reset), `agencia_id`, `token`, `usado`, `creado_en`
   - Invitaciones pendientes viven acá — NO en `agentes.invite_token`
   - Al aceptar → `agentes.insert({id: auth.uid(), ...})` + `invitaciones.update({usado:true})`
@@ -474,6 +542,20 @@ $$ LANGUAGE sql;
 
 -- API keys globales heredadas por agentes de la agencia
 ALTER TABLE agencias ADD COLUMN IF NOT EXISTS config JSONB DEFAULT '{}';
+
+-- Código de agencia (3-4 letras, UNIQUE)
+ALTER TABLE agencias ADD COLUMN IF NOT EXISTS codigo VARCHAR(4) UNIQUE;
+
+-- Secuencia global para agente_num (auto-incremento)
+CREATE TABLE IF NOT EXISTS _sequences (name TEXT PRIMARY KEY, value INTEGER NOT NULL DEFAULT 0);
+CREATE OR REPLACE FUNCTION next_agente_num()
+RETURNS INTEGER AS $$
+  UPDATE _sequences SET value = value + 1
+  WHERE name = 'agente_num' RETURNING value;
+$$ LANGUAGE sql;
+
+-- Agentes existentes sin agente_num → asignados en migración 002
+-- Email admin actualizado: diego.lecler@ermix.app
 ```
 
 ### Reglas de consulta
@@ -529,6 +611,15 @@ Al hacer click en una reserva del listado, se abre `crm-sub-detail` que reemplaz
 - Dashboard: card `met-ingresos-mes` con barra de progreso vs meta,
   card `met-reservas-act` con conteo de cotizaciones aprobadas
 - Popup post-aprobación: `_showIngresoPostApproval()` — toast con acción "+ Registrar comisión"
+
+## Itinerario día a día
+
+- Sección collapsible `#itinerario-card` en el formulario
+- `_buildItinerario()`: lee fechas `m-sal`/`m-reg` + servicios del DOM, genera tabla de días
+- Eventos "locked": vuelos, hoteles (cada noche), traslados, excursiones, tickets — extraídos de los bloques del formulario
+- Eventos manuales: editables por día (actividad + tipo)
+- `_itiRestore(itinerario)`: restaura desde datos guardados
+- **CRÍTICO — fechas**: las fechas de servicios se almacenan como DD/MM/YYYY (via `fd()`) pero los inputs `type="date"` necesitan YYYY-MM-DD. La función `_toDateInput(s)` en `app-form.js` convierte entre formatos. Todos los templates de `addHotel`, `addTraslado`, `addExcursion`, `addTicket`, `addAuto`, `addCrucero` usan `_toDateInput()` para las fechas.
 
 ## IA Parser (texto libre → formulario)
 
