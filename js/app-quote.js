@@ -647,10 +647,9 @@ function buildQuoteHTML(d){
   // ════════════════════════════════════════════════
   // CLOSING PAGE
   // ════════════════════════════════════════════════
-  H+=`<div class="qp-closing" style="break-before:page;${closingUrl?`background:url('${closingUrl}') center/cover no-repeat`:''};position:relative">
-    ${!closingUrl?`<div style="position:absolute;inset:0;background:linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)"></div>`:''}
-    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.72) 100%);pointer-events:none"></div>
-    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:48px 36px">
+  H+=`<div class="qp-closing" style="break-before:page;background:${closingUrl?`url('${closingUrl}') center/cover no-repeat`:'linear-gradient(160deg,#0D2B1E 0%,#0A1A12 50%,#0D120F 100%)'};position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.72) 100%);pointer-events:none;z-index:0"></div>
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:48px 36px;width:100%">
       ${(ag.logo_url||logoUrl)?`<div style="margin-bottom:28px"><img src="${ag.logo_url||logoUrl}" style="max-height:72px;max-width:200px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.4))"></div>`:`<div style="margin-bottom:36px">${buildPdfWordmark(32)}</div>`}
       <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:40px">
         ${ag.nm?`<div style="text-align:center"><div style="font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${th.accent};margin-bottom:4px">AGENTE</div><div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.3px">${ag.nm}</div></div>`:''}

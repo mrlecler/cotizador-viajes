@@ -645,7 +645,7 @@ function _buildEmailHTML(d, tipo, agCfgRef, publicUrl){
   const agSoc=cfg.soc||'';
   const logoUrl=cfg.logo_url||'';
   // Formatear fechas
-  const fmtD=s=>{if(!s)return'';try{const dt=new Date(s.includes('-')?s+'T12:00:00':s);return dt.toLocaleDateString('es-AR',{day:'numeric',month:'short'});}catch(e){return s;}};
+  const fmtD=s=>{if(!s)return'';try{let dt;if(s.includes('/')){const[dd,mm,yy]=s.split('/');dt=new Date(`${yy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}T12:00:00`);}else{dt=new Date(s.length===10?s+'T12:00:00':s);}if(isNaN(dt))return s;return dt.toLocaleDateString('es-AR',{day:'numeric',month:'short'});}catch(e){return s;}};
   const fechasHtml=fechaEnt?`<div style="font-size:14px;color:#6B5E52;margin-top:6px">${fmtD(fechaEnt)}${fechaSal?' → '+fmtD(fechaSal):''}</div>`:'';
   // Pasajeros
   const paxHtml=`<div style="font-size:13px;color:#9B8C80;margin-top:4px">${adultos} adulto${adultos>1?'s':''}${ninos?' + '+ninos+' ni'+(ninos>1?'nos':'no'):''}</div>`;
