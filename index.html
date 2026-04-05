@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="styles.css?v=80">
 </head>
 <body>
+<div id="staging-banner" style="display:none;position:fixed;top:0;left:0;width:100%;height:28px;background:#FAEEDA;color:#854F0B;font-size:12px;font-family:sans-serif;align-items:center;justify-content:center;z-index:9999;border-bottom:1px solid #EF9F27;">Entorno de prueba — test.ermix.app</div>
+<script>(function(){var b=document.getElementById('staging-banner');if(location.hostname==='test.ermix.app'){b.style.display='flex';document.body.style.paddingTop=(parseInt(document.body.style.paddingTop)||0)+28+'px';}})()</script>
 
 <!-- LOGIN — Split + Boarding Pass -->
 <div id="login-wall">

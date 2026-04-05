@@ -633,11 +633,23 @@ Al hacer click en una reserva del listado, se abre `crm-sub-detail` que reemplaz
 - Mapeo de campos: v{id}-or/de/al/fs/hs/hl/fl/esc/pr, h{id}-nm/ciu/ci/co,
   t{id}-tipo/or/de/fe, seg-nm/seg-dias/seg-precio, e{id}-nm/fe, au{id}-prov/cat/fr/fd, cr{id}-nav/barco/pe/fe/fd
 
+## Workflow de ramas
+
+- `develop` → staging → test.ermix.app (Vercel preview)
+- `master`  → produccion → go.ermix.app (Vercel production)
+
+Todo el desarrollo ocurre en `develop`.
+Cuando Diego aprueba los cambios en test.ermix.app, pide explicitamente
+"mergear a master" para que pasen a produccion.
+
+Nunca pushear directamente a `master` salvo indicacion explicita.
+
 ## Workflow para cada cambio
 
 1. Leer el archivo afectado completo
-2. Identificar el selector/función exacta a modificar
-3. Confirmar qué vas a cambiar antes de aplicar
-4. Aplicar el cambio mínimo necesario — no reescribir lo que funciona
+2. Identificar el selector/funcion exacta a modificar
+3. Confirmar que vas a cambiar antes de aplicar
+4. Aplicar el cambio minimo necesario — no reescribir lo que funciona
 5. Verificar que no rompiste nada relacionado
-6. Hacer commit + push (producción en `master`, test en `claude/thirsty-spence`)
+6. Hacer commit + push a `develop` (staging)
+7. Cuando Diego aprueba → mergear a `master` (produccion)
