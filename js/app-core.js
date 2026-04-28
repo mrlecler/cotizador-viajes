@@ -469,7 +469,7 @@ async function doLogin(){
   try{
     const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
     if(error) throw error;
-    showApp(data.user);
+    // onAuthStateChange maneja showApp — no llamar directo para evitar doble ejecución
   }catch(e){
     let msg=e.message||'Error';
     if(msg.includes('Invalid login')) msg='Email o contraseña incorrectos';
@@ -750,7 +750,10 @@ window.addEventListener('DOMContentLoaded',async()=>{
   }
 });
 
+let _showAppRunning=false;
 async function showApp(user){
+  if(_showAppRunning)return;
+  _showAppRunning=true;
   window._agenteId = user.id; // identidad garantizada — auth.uid() === agentes.id
   currentUser = user;
   // Migrar config vieja mp_cfg_<email> → mp_cfg_<uid> (una sola vez)
