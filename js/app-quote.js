@@ -356,8 +356,10 @@ function buildQuoteHTML(d){
   const gradPrice=(amt,sz=15,gr=th.grad)=>amt?`<div style="font-size:${sz}px;font-weight:900;background:${gr};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2">${amt}</div>`:'';
 
   // ── Date helpers ──
-  const _pd=(s)=>{if(!s)return null;try{if(s.includes('/')){const[dd,mm,yy]=s.split('/');return new Date(yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0'));}const dt=new Date(s);return isNaN(dt)?null:dt;}catch{return null;}};
-  const _sameDayKey=(dt)=>dt?dt.toISOString().slice(0,10):'';
+  // Parsea fecha como LOCAL (evita off-by-one UTC). Acepta DD/MM/YYYY o YYYY-MM-DD
+  const _pd=(s)=>{if(!s)return null;try{if(s.includes('/')){const[dd,mm,yy]=s.split('/');return new Date(+yy,+mm-1,+dd);}if(s.includes('-')){const[yy,mm,dd]=s.split('-');return new Date(+yy,+mm-1,+dd);}return null;}catch{return null;}};
+  const _sameDayKey=(dt)=>dt?`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`:'';
+
   const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
   // ── Badge helper ──
@@ -418,7 +420,8 @@ function buildQuoteHTML(d){
   // ════════════════════════════════════════════════
   if(d.itinerario?.length>0){
     const _tipoC={VUELO:'#1B9E8F',LLEGADA:'#1B9E8F',TRASLADO:'#E8826A',PARQUE:'#D4A017','EXCURSIÓN':'#43A047',PLAYA:'#0288D1',COMPRAS:'#2E7D32',RELAX:'#78909C',CASA:'#66BB6A',NAVIDAD:'#C62828','EVENTO ESPECIAL':'#FF8F00',LIBRE:'#9CA3AF'};
-    const _pd3=(s)=>{if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');const dt=new Date(yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0'));return isNaN(dt)?null:dt;}const dt=new Date(s);return isNaN(dt)?null:dt;};
+    // Parsea DD/MM/YYYY como fecha LOCAL (evita off-by-one UTC en Argentina)
+    const _pd3=(s)=>{if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');if(!yy||!mm||!dd)return null;return new Date(+yy,+mm-1,+dd);}return null;};
     // Group by fecha preserving order
     const _iGrp={};const _iOrd=[];
     d.itinerario.forEach(r=>{if(!_iGrp[r.fecha]){_iGrp[r.fecha]=[];_iOrd.push(r.fecha);}_iGrp[r.fecha].push(r);});
