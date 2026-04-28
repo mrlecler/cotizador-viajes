@@ -1433,6 +1433,10 @@ let _itiData=[];
 
 function _itiTipoColor(t){return(_ITI_TIPOS.find(x=>x.k===t)||{c:'#9CA3AF'}).c;}
 function _itiFromStr(s){if(!s)return null;if(s.includes('/')){const[dd,mm,yy]=s.split('/');return yy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0');}return s;}
+// Parsea YYYY-MM-DD como fecha LOCAL (evita off-by-one por timezone UTC)
+function _parseDateLocal(s){if(!s)return null;const[y,m,d]=s.split('-');return new Date(+y,+m-1,+d);}
+// Formatea Date como YYYY-MM-DD usando hora local
+function _fmtDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 
 function _buildItinerario(){
   // Forzar que la sección quede expandida al regenerar
@@ -1462,15 +1466,17 @@ function _buildItinerario(){
     if(fs&&(or||de))addEv(fs,'VUELO',[or,de].filter(Boolean).join(' → '));
     if(mod==='idavuelta'){const fs2=(document.getElementById('v'+i+'-fs2')?.value||'').trim();if(fs2)addEv(fs2,'VUELO',[de||or,or||de].filter(Boolean).join(' → '));}
   });
-  // Hoteles (each night)
+  // Hoteles (each night) — solo el tildado como "Incluir en total"
   document.querySelectorAll('[id^="hb-"]').forEach(blk=>{
+    const inclEl=blk.querySelector('.incluir-en-total');
+    if(inclEl&&!inclEl.checked)return;
     const i=blk.id.replace('hb-','');
     const nm=(document.getElementById('h'+i+'-nm')?.value||'').trim();
     const ci=(document.getElementById('h'+i+'-ci')?.value||'').trim();
     const co=(document.getElementById('h'+i+'-co')?.value||'').trim();
     if(!nm||!ci||!co)return;
-    let cur=new Date(ci);const end=new Date(co);
-    while(cur<end){addEv(cur.toISOString().slice(0,10),'RELAX','Alojamiento: '+nm);cur.setDate(cur.getDate()+1);}
+    let cur=_parseDateLocal(ci);const end=_parseDateLocal(co);
+    while(cur<end){addEv(_fmtDateKey(cur),'RELAX','Alojamiento: '+nm);cur.setDate(cur.getDate()+1);}
   });
   // Traslados
   document.querySelectorAll('[id^="tb-"]').forEach(blk=>{
@@ -1497,9 +1503,9 @@ function _buildItinerario(){
   });
   // Build days array
   _itiData=[];
-  let cur=new Date(salida);const end=new Date(regreso);
+  let cur=_parseDateLocal(salida);const end=_parseDateLocal(regreso);
   while(cur<=end){
-    const k=cur.toISOString().slice(0,10);
+    const k=_fmtDateKey(cur);
     _itiData.push({k,date:new Date(cur),locked:evMap[k]||[],manual:prevManual[k]||{actividad:'',tipo:'LIBRE'}});
     cur.setDate(cur.getDate()+1);
   }
