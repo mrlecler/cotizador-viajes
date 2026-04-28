@@ -663,3 +663,20 @@ Nunca pushear directamente a `master` salvo indicacion explicita.
 6. No sycophantic openers or closing fluff.
 7. Keep solutions simple and direct.
 8. User instructions always override this file.
+
+
+## Wiki — Memoria Persistente
+Path: /Users/diegolecler/Library/CloudStorage/GoogleDrive-dfernandezlecler@gmail.com/Mi unidad/obsidian/diegolecler/Brain
+
+Cuando necesites contexto sobre Diego, sus proyectos o decisiones pasadas:
+1. Lee `wiki/hot.md` primero (contexto reciente, ~500 palabras)
+2. Si no alcanza, lee `wiki/index.md`
+3. Solo entonces entrá a páginas específicas del wiki
+
+NO uses el wiki para preguntas de código o cosas ya en este proyecto.
+
+## Comandos claude-obsidian
+- `/claude-obsidian:save` — guarda esta sesión como nota en el wiki
+- `/claude-obsidian:autoresearch [tema]` — investiga y archiva en el wiki
+- `/claude-obsidian:wiki` — setup / estado del vault
+- `/claude-obsidian:canvas` — canvas visual en Obsidian
