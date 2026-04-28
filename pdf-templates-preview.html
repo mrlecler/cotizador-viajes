@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ermix — Preview Templates PDF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;padding:20px 0 60px}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:#111;border-bottom:1px solid #333;display:flex;align-items:center;gap:0;padding:0 20px}
+nav a{display:block;padding:14px 20px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:#666;border-bottom:3px solid transparent;transition:.2s}
+nav a:hover{color:#fff}
+nav a.t1{color:#0BC5B8;border-bottom-color:#0BC5B8}
+nav a.t2{color:#38BDF8;border-bottom-color:#38BDF8}
+nav a.t3{color:#F59E0B;border-bottom-color:#F59E0B}
+nav a.t4{color:#A78BFA;border-bottom-color:#A78BFA}
+nav a.t5{color:#F97316;border-bottom-color:#F97316}
+nav a.t6{color:#FFD700;border-bottom-color:#FFD700}
+nav a.t7{color:#FF4500;border-bottom-color:#FF4500}
+nav a.t8{color:#F472B6;border-bottom-color:#F472B6}
+nav a.t9{color:#22D3EE;border-bottom-color:#22D3EE}
+nav a.t10{color:#EF4444;border-bottom-color:#EF4444}
+.nav-brand{font-size:13px;font-weight:800;color:#fff;margin-right:24px;padding:14px 0;letter-spacing:-0.5px}
+
+/* ── PAGE WRAPPER ── */
+.template-section{max-width:860px;margin:48px auto 0;padding:0 20px}
+.template-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.template-name{font-size:28px;font-weight:900;color:#fff;margin-bottom:4px}
+.template-desc{font-size:13px;color:#888;margin-bottom:24px}
+
+.page{width:794px;margin:0 auto 4px;background:#fff;box-shadow:0 20px 80px rgba(0,0,0,0.6);position:relative;overflow:hidden;page-break-after:always}
+.page-gap{margin-bottom:2px}
+
+/* ── SHARED INTERNAL STYLES ── */
+.lbl-xs{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.mono{font-family:'DM Mono',monospace}
+
+/* ═══════════════════════════════════════
+   TEMPLATE 2 — INMERSIÓN GLACIAR
+   Ice blue glass / full-bleed photo
+═══════════════════════════════════════ */
+.t2-cover{height:480px;position:relative;overflow:hidden;background:#0C1B33}
+.t2-cover-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1400&q=85') center/cover no-repeat}
+.t2-cover-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(12,27,51,0.75) 0%,rgba(12,27,51,0.35) 50%,rgba(12,27,51,0.15) 100%)}
+.t2-cover-overlay2{position:absolute;inset:0;background:linear-gradient(to top,rgba(12,27,51,0.9) 0%,transparent 45%)}
+.t2-topbar{position:absolute;top:0;left:0;right:0;padding:22px 32px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.t2-glass-card{position:absolute;left:36px;top:50%;transform:translateY(-50%);z-index:4;background:rgba(255,255,255,0.11);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:28px 32px;max-width:320px}
+.t2-bottom{position:absolute;bottom:0;left:0;right:0;padding:20px 32px;z-index:3;background:linear-gradient(to top,rgba(12,27,51,0.8),transparent)}
+.t2-chip{display:inline-block;background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.4);border-radius:20px;padding:4px 12px;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7DD3FC;margin-bottom:14px}
+.t2-client-label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:6px}
+.t2-client-name{font-size:30px;font-weight:900;color:#fff;line-height:1;letter-spacing:-1px;margin-bottom:16px;text-shadow:0 2px 12px rgba(0,0,0,0.3)}
+.t2-meta-row{display:flex;flex-direction:column;gap:6px}
+.t2-meta-item{font-size:10px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:6px}
+.t2-meta-dot{width:5px;height:5px;border-radius:50%;background:#38BDF8;flex-shrink:0}
+.t2-ref{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px}
+.t2-total-panel{position:absolute;right:32px;bottom:20px;z-index:4;text-align:right}
+.t2-total-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px}
+.t2-total-amt{font-size:22px;font-weight:900;color:#38BDF8;letter-spacing:-1px}
+
+.t2-page{background:#F8FAFC;padding:32px}
+.t2-section-hd{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #E2E8F0}
+.t2-section-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0EA5E9,#0284C7);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t2-section-ttl{font-size:14px;font-weight:800;color:#0C1B33;letter-spacing:-0.3px}
+.t2-section-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-top:1px}
+.t2-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;margin-bottom:12px;display:flex}
+.t2-card-photo{flex:0 0 180px;overflow:hidden}
+.t2-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t2-card-body{flex:1;padding:16px 18px}
+.t2-tag{display:inline-block;background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.25);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#0284C7;margin-bottom:8px}
+.t2-card-ttl{font-size:13px;font-weight:800;color:#0C1B33;margin-bottom:6px}
+.t2-card-meta{font-size:10px;color:#64748B;line-height:1.7}
+.t2-card-price{font-size:16px;font-weight:900;background:linear-gradient(135deg,#0EA5E9,#0284C7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+
+/* Boarding pass T2 */
+.t2-bp{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 20px;margin-bottom:12px}
+.t2-bp-route{display:flex;align-items:center;gap:0;margin-bottom:12px}
+.t2-bp-iata{font-size:26px;font-weight:900;color:#0C1B33;letter-spacing:-1px;font-family:'DM Mono',monospace;min-width:60px}
+.t2-bp-iata.right{text-align:right}
+.t2-bp-mid{flex:1;text-align:center;padding:0 12px}
+.t2-bp-line{height:1px;background:linear-gradient(to right,#0EA5E9,#38BDF8);margin:4px 0;position:relative}
+.t2-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#38BDF8}
+.t2-bp-direct{font-size:8px;color:#94A3B8;letter-spacing:1px;text-transform:uppercase}
+.t2-bp-city{font-size:9px;color:#64748B;margin-top:2px}
+.t2-bp-time{font-size:18px;font-weight:800;color:#0C1B33;font-family:'DM Mono',monospace}
+.t2-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed #E2E8F0;font-size:9px;color:#94A3B8}
+.t2-bp-footer span{font-weight:600;color:#475569}
+
+/* Pricing T2 */
+.t2-price-table{width:100%;border-collapse:collapse}
+.t2-price-table td{padding:10px 12px;font-size:11px;border-bottom:1px solid #F1F5F9}
+.t2-price-table tr:last-child td{border-bottom:none}
+.t2-price-table .t2-price-lbl{color:#64748B}
+.t2-price-table .t2-price-val{text-align:right;font-weight:700;color:#0C1B33}
+.t2-price-total-row td{background:#0C1B33;color:#fff;font-weight:800;font-size:13px;border-radius:0}
+.t2-price-total-row .t2-price-val{color:#38BDF8;font-size:16px}
+
+
+/* ═══════════════════════════════════════
+   TEMPLATE 3 — ÁMBAR IMPERIAL
+   Warm luxury / photo top + gold band
+═══════════════════════════════════════ */
+.t3-cover{position:relative;overflow:hidden}
+.t3-cover-upper{height:300px;position:relative;overflow:hidden}
+.t3-cover-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1400&q=85') center/cover no-repeat}
+.t3-cover-fade{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,#1C0A00)}
+.t3-cover-lower{background:#1C0A00;padding:28px 36px 32px;position:relative;overflow:hidden}
+.t3-cover-lower::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.15),transparent 70%);pointer-events:none}
+.t3-topbar{position:absolute;top:0;left:0;right:0;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.t3-gold-line{width:40px;height:3px;background:linear-gradient(90deg,#F59E0B,#B45309);border-radius:2px;margin-bottom:14px}
+.t3-dest-label{font-size:8px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(245,158,11,0.6);margin-bottom:8px}
+.t3-dest-name{font-size:46px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:0.95;margin-bottom:18px}
+.t3-client-block{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.t3-client-for{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(245,158,11,0.5)}
+.t3-client-nm{font-size:18px;font-weight:800;color:#FDE68A}
+.t3-bottom-row{display:flex;justify-content:space-between;align-items:flex-end}
+.t3-meta{display:flex;flex-direction:column;gap:5px}
+.t3-meta-item{font-size:9px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:7px}
+.t3-meta-dash{width:16px;height:1px;background:rgba(245,158,11,0.4)}
+.t3-total{text-align:right}
+.t3-total-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(245,158,11,0.5);margin-bottom:4px}
+.t3-total-amt{font-size:28px;font-weight:900;color:#F59E0B;letter-spacing:-1px}
+.t3-ref-badge{position:absolute;top:20px;right:32px;font-family:'DM Mono',monospace;font-size:8px;color:rgba(245,158,11,0.6);border:1px solid rgba(245,158,11,0.2);border-radius:20px;padding:4px 10px}
+
+.t3-page{background:#FFFBEB;padding:32px}
+.t3-section-hd{margin-bottom:18px;padding-bottom:12px;position:relative}
+.t3-section-hd::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(to right,#F59E0B,rgba(245,158,11,0.1))}
+.t3-section-meta{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#B45309;margin-bottom:4px}
+.t3-section-ttl{font-size:16px;font-weight:900;color:#1C0A00;letter-spacing:-0.5px}
+.t3-card{background:#fff;border:1px solid rgba(245,158,11,0.15);border-radius:12px;overflow:hidden;margin-bottom:12px;display:flex;box-shadow:0 2px 12px rgba(28,10,0,0.06)}
+.t3-card-photo{flex:0 0 175px;overflow:hidden}
+.t3-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t3-card-body{flex:1;padding:15px 18px}
+.t3-tag{display:inline-block;background:rgba(245,158,11,0.1);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#B45309;margin-bottom:8px}
+.t3-card-ttl{font-size:13px;font-weight:800;color:#1C0A00;margin-bottom:5px}
+.t3-card-meta{font-size:10px;color:#6B5E52;line-height:1.7}
+.t3-card-price{font-size:15px;font-weight:900;color:#B45309;margin-top:8px}
+
+.t3-bp{background:#fff;border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 8px rgba(28,10,0,0.05)}
+.t3-bp-iata{font-size:26px;font-weight:900;color:#1C0A00;font-family:'DM Mono',monospace;min-width:60px}
+.t3-bp-iata.right{text-align:right}
+.t3-bp-line{height:1px;background:linear-gradient(to right,#F59E0B,#B45309);margin:4px 0;position:relative}
+.t3-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#F59E0B}
+.t3-bp-direct{font-size:8px;color:#B45309;letter-spacing:1px;text-transform:uppercase;opacity:.7}
+.t3-bp-city{font-size:9px;color:#6B5E52;margin-top:2px}
+.t3-bp-time{font-size:18px;font-weight:800;color:#1C0A00;font-family:'DM Mono',monospace}
+.t3-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(245,158,11,0.3);font-size:9px;color:#9B8C80}
+.t3-bp-footer span{font-weight:600;color:#6B5E52}
+
+.t3-price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(245,158,11,0.1);font-size:11px}
+.t3-price-row:last-child{border-bottom:none}
+.t3-price-lbl{color:#6B5E52}
+.t3-price-val{font-weight:700;color:#1C0A00}
+.t3-price-total{background:#1C0A00;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t3-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(245,158,11,0.6)}
+.t3-price-total-amt{font-size:20px;font-weight:900;color:#F59E0B}
+
+
+/* ═══════════════════════════════════════
+   TEMPLATE 4 — NOIR CINEMA
+   Cinematic black / photo + purple sparks
+═══════════════════════════════════════ */
+.t4-cover{height:480px;position:relative;overflow:hidden;background:#09090B}
+.t4-cover-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1400&q=85') center/cover no-repeat}
+.t4-cover-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(9,9,11,0.2) 0%,rgba(9,9,11,0.7) 60%,rgba(9,9,11,0.95) 100%)}
+.t4-cover-overlay2{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,#09090B 0%,transparent 100%)}
+.t4-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.t4-center{position:absolute;left:0;right:0;top:50%;transform:translateY(-60%);z-index:4;text-align:center;padding:0 48px}
+.t4-spark{display:inline-block;width:30px;height:2px;background:linear-gradient(90deg,#7C3AED,#A78BFA);border-radius:2px;margin-bottom:18px}
+.t4-dest{font-family:'Bebas Neue',sans-serif;font-size:72px;color:#fff;letter-spacing:4px;line-height:0.9;margin-bottom:20px;text-shadow:0 4px 40px rgba(0,0,0,0.5)}
+.t4-client-label{font-size:8px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(167,139,250,0.7);margin-bottom:8px}
+.t4-client-nm{font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px}
+.t4-bottom-strip{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(135deg,#4C1D95,#2E1065);padding:14px 36px;display:flex;align-items:center;justify-content:space-between;z-index:3}
+.t4-meta-items{display:flex;gap:24px}
+.t4-meta-item{font-size:9px;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px}
+.t4-meta-bullet{width:4px;height:4px;border-radius:50%;background:#A78BFA}
+.t4-total-strip{text-align:right}
+.t4-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.6);margin-bottom:2px}
+.t4-total-amt{font-size:18px;font-weight:900;color:#A78BFA;letter-spacing:-0.5px}
+
+.t4-page{background:#09090B;padding:32px}
+.t4-section-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(167,139,250,0.15)}
+.t4-section-stripe{width:4px;height:36px;background:linear-gradient(to bottom,#7C3AED,#A78BFA);border-radius:2px;flex-shrink:0}
+.t4-section-ttl{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.t4-section-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#52525B;margin-top:1px}
+.t4-card{background:#18181B;border:1px solid rgba(167,139,250,0.12);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex}
+.t4-card-photo{flex:0 0 175px;overflow:hidden}
+.t4-card-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.85)}
+.t4-card-body{flex:1;padding:16px 18px}
+.t4-tag{display:inline-block;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#A78BFA;margin-bottom:8px}
+.t4-card-ttl{font-size:13px;font-weight:800;color:#F4F4F5;margin-bottom:5px}
+.t4-card-meta{font-size:10px;color:#71717A;line-height:1.7}
+.t4-card-price{font-size:15px;font-weight:900;background:linear-gradient(135deg,#7C3AED,#A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+
+.t4-bp{background:#18181B;border:1px solid rgba(167,139,250,0.12);border-radius:14px;padding:16px 20px;margin-bottom:10px}
+.t4-bp-iata{font-size:26px;font-weight:900;color:#F4F4F5;font-family:'DM Mono',monospace;min-width:60px}
+.t4-bp-iata.right{text-align:right}
+.t4-bp-line{height:1px;background:linear-gradient(to right,#7C3AED,#A78BFA);margin:4px 0;position:relative}
+.t4-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#A78BFA}
+.t4-bp-direct{font-size:8px;color:#52525B;letter-spacing:1px;text-transform:uppercase}
+.t4-bp-city{font-size:9px;color:#71717A;margin-top:2px}
+.t4-bp-time{font-size:18px;font-weight:800;color:#F4F4F5;font-family:'DM Mono',monospace}
+.t4-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(167,139,250,0.1);font-size:9px;color:#52525B}
+.t4-bp-footer span{font-weight:600;color:#A1A1AA}
+
+.t4-price-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:11px}
+.t4-price-row:last-child{border-bottom:none}
+.t4-price-lbl{color:#71717A}
+.t4-price-val{font-weight:700;color:#F4F4F5}
+.t4-price-total{background:linear-gradient(135deg,#4C1D95,#2E1065);border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t4-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,0.6)}
+.t4-price-total-amt{font-size:20px;font-weight:900;color:#A78BFA}
+
+
+/* ═══════════════════════════════════════
+   TEMPLATE 5 — POSTAL MEDITERRÁNEA
+   Magazine split cover / coral + indigo
+═══════════════════════════════════════ */
+.t5-cover{height:460px;display:grid;grid-template-columns:55% 45%;position:relative;overflow:hidden}
+.t5-cover-photo{position:relative;overflow:hidden}
+.t5-cover-photo-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85') center/cover no-repeat}
+.t5-cover-photo-overlay{position:absolute;inset:0;background:linear-gradient(to right,transparent 50%,#FAFAF8 100%)}
+.t5-cover-right{background:#FAFAF8;padding:36px 32px 32px;display:flex;flex-direction:column;justify-content:space-between;border-left:none}
+/* line removed */
+.t5-topbar-left{position:absolute;top:18px;left:20px;z-index:3}
+.t5-edition{font-size:8px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#C2410C;margin-bottom:6px}
+.t5-divider{width:100%;height:1px;background:linear-gradient(to right,#C2410C,rgba(194,65,12,0.1));margin-bottom:16px}
+.t5-dest-label{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px}
+.t5-dest-name{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#111827;line-height:1;letter-spacing:-1px;margin-bottom:6px}
+.t5-dest-sub{font-size:11px;color:#6B7280;font-style:italic;margin-bottom:20px}
+.t5-client-wrap{background:#F3F4F6;border-radius:10px;padding:12px 14px;margin-bottom:16px}
+.t5-client-for{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:4px}
+.t5-client-nm{font-size:16px;font-weight:800;color:#111827}
+.t5-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.t5-data-item{background:#fff;border:1px solid #E5E7EB;border-radius:8px;padding:8px 10px}
+.t5-data-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:2px}
+.t5-data-val{font-size:11px;font-weight:700;color:#111827}
+.t5-total-block{background:#111827;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.t5-total-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+.t5-total-amt{font-size:20px;font-weight:900;color:#F97316}
+.t5-ref{position:absolute;bottom:16px;left:20px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.6);background:rgba(0,0,0,0.3);border-radius:20px;padding:4px 10px;backdrop-filter:blur(8px)}
+
+.t5-page{background:#fff;padding:32px}
+.t5-section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #F3F4F6}
+.t5-section-left{display:flex;align-items:center;gap:10px}
+.t5-section-dot{width:10px;height:10px;border-radius:50%;background:#C2410C;flex-shrink:0}
+.t5-section-ttl{font-size:15px;font-weight:800;color:#111827;letter-spacing:-.3px}
+.t5-section-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF}
+.t5-section-num{font-size:28px;font-weight:900;color:#F3F4F6;font-family:'DM Mono',monospace}
+.t5-card{background:#fff;border:1px solid #F3F4F6;border-radius:12px;overflow:hidden;margin-bottom:12px;display:flex;box-shadow:0 1px 8px rgba(0,0,0,0.04)}
+.t5-card-photo{flex:0 0 175px;overflow:hidden;position:relative}
+.t5-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t5-card-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:#C2410C}
+.t5-card-body{flex:1;padding:15px 18px}
+.t5-tag{display:inline-block;background:#FEF3C7;border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#92400E;margin-bottom:8px}
+.t5-card-ttl{font-size:13px;font-weight:800;color:#111827;margin-bottom:5px}
+.t5-card-meta{font-size:10px;color:#6B7280;line-height:1.7}
+.t5-card-price{font-size:15px;font-weight:900;color:#C2410C;margin-top:8px}
+
+.t5-bp{background:#FAFAF8;border:1px solid #E5E7EB;border-radius:12px;padding:16px 20px;margin-bottom:12px;border-left:3px solid #C2410C}
+.t5-bp-iata{font-size:26px;font-weight:900;color:#111827;font-family:'DM Mono',monospace;min-width:60px}
+.t5-bp-iata.right{text-align:right}
+.t5-bp-line{height:1px;background:linear-gradient(to right,#C2410C,#F97316);margin:4px 0;position:relative}
+.t5-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#F97316}
+.t5-bp-direct{font-size:8px;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase}
+.t5-bp-city{font-size:9px;color:#6B7280;margin-top:2px}
+.t5-bp-time{font-size:18px;font-weight:800;color:#111827;font-family:'DM Mono',monospace}
+.t5-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed #E5E7EB;font-size:9px;color:#9CA3AF}
+.t5-bp-footer span{font-weight:600;color:#4B5563}
+
+.t5-price-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;font-size:11px}
+.t5-price-row:last-child{border-bottom:none}
+.t5-price-lbl{color:#6B7280}
+.t5-price-val{font-weight:700;color:#111827}
+.t5-price-total{background:#111827;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t5-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+.t5-price-total-amt{font-size:20px;font-weight:900;color:#F97316}
+
+
+/* ── SHARED ITINERARY TABLE ── */
+.iti-table{width:100%;border-collapse:collapse;font-size:10px}
+.iti-table th{padding:7px 10px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.iti-table td{padding:9px 10px;vertical-align:middle}
+.iti-table tr:nth-child(even) td{background:rgba(0,0,0,0.02)}
+.iti-date-num{font-size:14px;font-weight:800;line-height:1}
+.iti-date-day{font-size:7px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:2px;opacity:.5}
+.iti-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;flex-shrink:0}
+.iti-type-pill{font-size:7.5px;font-weight:800;letter-spacing:1.5px;padding:2px 7px;border-radius:20px;text-transform:uppercase;color:#fff;white-space:nowrap}
+
+/* ── CONDITIONS PAGE ── */
+.cond-item{display:flex;gap:10px;margin-bottom:10px;font-size:10px;line-height:1.6}
+.cond-num{flex-shrink:0;font-weight:800;font-size:11px}
+.cond-text{opacity:.7}
+
+/* ── SEPARATOR ── */
+.page-sep{text-align:center;padding:8px 0;color:#555;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+
+/* ═══════════════════════════════════════
+   T6 — MAGIA ENCANTADA  (Disney blue/gold)
+═══════════════════════════════════════ */
+.t6-cover{height:480px;position:relative;overflow:hidden;background:#060D2E}
+.t6-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=1400&q=85') center/cover no-repeat}
+.t6-ov1{position:absolute;inset:0;background:linear-gradient(160deg,rgba(6,13,46,0.55) 0%,rgba(26,26,90,0.45) 40%,rgba(6,13,46,0.25) 100%)}
+.t6-ov2{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 110%,rgba(255,215,0,0.18) 0%,transparent 65%)}
+.t6-ov3{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(6,13,46,0.98) 0%,transparent 100%)}
+.t6-stars{position:absolute;inset:0;pointer-events:none}
+.t6-star{position:absolute;border-radius:50%;background:#FFD700;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.t6-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.t6-center{position:absolute;left:0;right:0;bottom:52px;z-index:5;text-align:center;padding:0 36px}
+.t6-magic-lbl{font-size:9px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:rgba(255,215,0,0.7);margin-bottom:10px}
+.t6-dest{font-family:'Playfair Display',serif;font-size:58px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:0.95;margin-bottom:14px;text-shadow:0 0 40px rgba(255,215,0,0.4),0 4px 20px rgba(0,0,0,0.6)}
+.t6-client-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:0}
+.t6-gold-chip{background:linear-gradient(135deg,#B8860B,#FFD700,#B8860B);border-radius:20px;padding:5px 16px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#060D2E}
+.t6-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0D1B5E,#1A3A8F);padding:12px 36px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.t6-meta{display:flex;gap:20px}
+.t6-meta-item{font-size:9px;color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:5px}
+.t6-meta-star{color:#FFD700;font-size:8px}
+.t6-total{text-align:right}
+.t6-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,0.55);margin-bottom:2px}
+.t6-total-amt{font-size:18px;font-weight:900;color:#FFD700;letter-spacing:-0.5px}
+.t6-page{background:#F5F3FF;padding:32px}
+.t6-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid rgba(255,215,0,0.25)}
+.t6-hd-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#1A3A8F,#0D1B5E);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(255,215,0,0.3)}
+.t6-hd-ttl{font-size:14px;font-weight:800;color:#0D1B5E}
+.t6-hd-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-top:1px}
+.t6-card{background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex;box-shadow:0 2px 14px rgba(6,13,46,0.08)}
+.t6-card-photo{flex:0 0 175px;overflow:hidden}
+.t6-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t6-card-body{flex:1;padding:15px 18px}
+.t6-tag{display:inline-block;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8B6914;margin-bottom:7px}
+.t6-card-ttl{font-size:13px;font-weight:800;color:#0D1B5E;margin-bottom:5px}
+.t6-card-meta{font-size:10px;color:#6B7280;line-height:1.7}
+.t6-price{font-size:15px;font-weight:900;background:linear-gradient(135deg,#1A3A8F,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+.t6-bp{background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:12px;padding:15px 18px;margin-bottom:10px;box-shadow:0 2px 10px rgba(6,13,46,0.06)}
+.t6-bp-iata{font-size:26px;font-weight:900;color:#0D1B5E;font-family:'DM Mono',monospace;min-width:60px}
+.t6-bp-line{height:1px;background:linear-gradient(to right,#1A3A8F,#FFD700);margin:4px 0;position:relative}
+.t6-bp-line::after{content:'★';position:absolute;right:0;top:-8px;font-size:10px;color:#FFD700}
+.t6-bp-direct{font-size:8px;color:#9CA3AF;letter-spacing:1px;text-transform:uppercase}
+.t6-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(26,58,143,0.15);font-size:9px;color:#9CA3AF}
+.t6-bp-footer span{font-weight:600;color:#4B5563}
+.t6-price-total{background:linear-gradient(135deg,#0D1B5E,#1A3A8F);border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t6-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,0.5)}
+.t6-price-total-amt{font-size:20px;font-weight:900;color:#FFD700}
+
+/* ═══════════════════════════════════════
+   T7 — EPIC ADVENTURE  (Universal: black/orange-red)
+═══════════════════════════════════════ */
+.t7-cover{height:480px;position:relative;overflow:hidden;background:#050505}
+.t7-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1525026198548-4baa812f1183?w=1400&q=85') center/cover no-repeat}
+.t7-ov1{position:absolute;inset:0;background:linear-gradient(to right,rgba(5,5,5,0.85) 0%,rgba(5,5,5,0.3) 55%,rgba(5,5,5,0.55) 100%)}
+.t7-ov2{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to top,#050505 0%,transparent 100%)}
+.t7-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.t7-content{position:absolute;left:36px;top:50%;transform:translateY(-55%);z-index:5;max-width:420px}
+.t7-eyebrow{font-size:9px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#E8472B;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.t7-eye-line{width:28px;height:2px;background:#E8472B}
+.t7-dest{font-family:'Bebas Neue',sans-serif;font-size:68px;color:#fff;letter-spacing:3px;line-height:0.9;margin-bottom:16px;text-shadow:0 4px 30px rgba(0,0,0,0.8)}
+.t7-for{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:5px}
+.t7-client{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px}
+.t7-bottom{position:absolute;bottom:0;left:0;right:0;z-index:5;background:#E8472B;padding:13px 36px;display:flex;align-items:center;justify-content:space-between}
+.t7-meta{display:flex;gap:20px}
+.t7-meta-item{font-size:9px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px}
+.t7-meta-bar{width:3px;height:12px;background:rgba(255,255,255,0.4);border-radius:2px}
+.t7-total{text-align:right}
+.t7-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:1px}
+.t7-total-amt{font-size:18px;font-weight:900;color:#fff}
+.t7-page{background:#0F0F0F;padding:32px}
+.t7-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(232,71,43,0.2)}
+.t7-hd-stripe{width:4px;height:36px;background:#E8472B;border-radius:2px;flex-shrink:0}
+.t7-hd-ttl{font-size:14px;font-weight:800;color:#fff}
+.t7-hd-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#525252;margin-top:1px}
+.t7-card{background:#1A1A1A;border:1px solid rgba(232,71,43,0.15);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex}
+.t7-card-photo{flex:0 0 175px;overflow:hidden}
+.t7-card-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.1)}
+.t7-card-body{flex:1;padding:15px 18px}
+.t7-tag{display:inline-block;background:rgba(232,71,43,0.15);border:1px solid rgba(232,71,43,0.3);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#E8472B;margin-bottom:7px}
+.t7-card-ttl{font-size:13px;font-weight:800;color:#F5F5F5;margin-bottom:5px}
+.t7-card-meta{font-size:10px;color:#737373;line-height:1.7}
+.t7-price{font-size:15px;font-weight:900;color:#E8472B;margin-top:8px}
+.t7-bp{background:#1A1A1A;border:1px solid rgba(232,71,43,0.15);border-radius:12px;padding:15px 18px;margin-bottom:10px}
+.t7-bp-iata{font-size:26px;font-weight:900;color:#F5F5F5;font-family:'DM Mono',monospace;min-width:60px}
+.t7-bp-line{height:1px;background:linear-gradient(to right,#E8472B,#FF8C00);margin:4px 0;position:relative}
+.t7-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#E8472B}
+.t7-bp-direct{font-size:8px;color:#525252;letter-spacing:1px;text-transform:uppercase}
+.t7-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(232,71,43,0.15);font-size:9px;color:#525252}
+.t7-bp-footer span{font-weight:600;color:#A3A3A3}
+.t7-price-total{background:#E8472B;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t7-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.65)}
+.t7-price-total-amt{font-size:20px;font-weight:900;color:#fff}
+
+/* ═══════════════════════════════════════
+   T8 — ROSA BOTÁNICA  (pink/rose/champagne)
+═══════════════════════════════════════ */
+.t8-cover{height:480px;position:relative;overflow:hidden;background:#4A0020}
+.t8-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1400&q=85') center/cover no-repeat}
+.t8-ov1{position:absolute;inset:0;background:linear-gradient(135deg,rgba(74,0,32,0.3) 0%,rgba(190,24,93,0.2) 50%,rgba(74,0,32,0.1) 100%)}
+.t8-ov2{position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,rgba(74,0,32,0.97) 0%,transparent 100%)}
+.t8-ov3{position:absolute;top:0;left:0;right:0;height:30%;background:linear-gradient(to bottom,rgba(74,0,32,0.5) 0%,transparent 100%)}
+.t8-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.t8-content{position:absolute;left:36px;bottom:50px;right:36px;z-index:5}
+.t8-petal{display:inline-block;font-size:10px;color:rgba(249,168,212,0.7);letter-spacing:3px;margin-bottom:8px}
+.t8-dest-lbl{font-size:8px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(249,168,212,0.55);margin-bottom:8px}
+.t8-dest{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:0.95;margin-bottom:16px;text-shadow:0 0 30px rgba(244,114,182,0.35),0 4px 20px rgba(0,0,0,0.5)}
+.t8-for-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.t8-for-line{flex:0 0 24px;height:1px;background:rgba(249,168,212,0.4)}
+.t8-for-txt{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(249,168,212,0.5)}
+.t8-client{font-size:20px;font-weight:800;color:#FDF2F8;letter-spacing:-0.3px}
+.t8-bottom{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(135deg,#831843,#9D174D);padding:12px 36px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.t8-meta{display:flex;gap:18px}
+.t8-meta-item{font-size:9px;color:rgba(253,242,248,0.6);display:flex;align-items:center;gap:5px}
+.t8-meta-heart{color:#F472B6;font-size:9px}
+.t8-total{text-align:right}
+.t8-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(249,168,212,0.5);margin-bottom:2px}
+.t8-total-amt{font-size:18px;font-weight:900;color:#F9A8D4;letter-spacing:-0.5px}
+.t8-page{background:#FFF1F7;padding:32px}
+.t8-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid rgba(244,114,182,0.2)}
+.t8-hd-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#BE185D,#9D174D);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t8-hd-ttl{font-size:14px;font-weight:800;color:#831843}
+.t8-hd-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#FBCFE8;margin-top:1px}
+.t8-card{background:#fff;border:1px solid rgba(244,114,182,0.18);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex;box-shadow:0 2px 14px rgba(131,24,67,0.08)}
+.t8-card-photo{flex:0 0 175px;overflow:hidden}
+.t8-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t8-card-body{flex:1;padding:15px 18px}
+.t8-tag{display:inline-block;background:rgba(244,114,182,0.12);border:1px solid rgba(244,114,182,0.3);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#BE185D;margin-bottom:7px}
+.t8-card-ttl{font-size:13px;font-weight:800;color:#831843;margin-bottom:5px}
+.t8-card-meta{font-size:10px;color:#9D174D;opacity:.75;line-height:1.7}
+.t8-price{font-size:15px;font-weight:900;background:linear-gradient(135deg,#BE185D,#F472B6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+.t8-bp{background:#fff;border:1px solid rgba(244,114,182,0.18);border-radius:12px;padding:15px 18px;margin-bottom:10px;box-shadow:0 1px 8px rgba(131,24,67,0.06)}
+.t8-bp-iata{font-size:26px;font-weight:900;color:#831843;font-family:'DM Mono',monospace;min-width:60px}
+.t8-bp-line{height:1px;background:linear-gradient(to right,#BE185D,#F472B6);margin:4px 0;position:relative}
+.t8-bp-line::after{content:'♥';position:absolute;right:-2px;top:-8px;font-size:10px;color:#F472B6}
+.t8-bp-direct{font-size:8px;color:#FBCFE8;letter-spacing:1px;text-transform:uppercase}
+.t8-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(244,114,182,0.25);font-size:9px;color:#FBCFE8}
+.t8-bp-footer span{font-weight:600;color:#9D174D}
+.t8-price-total{background:linear-gradient(135deg,#831843,#BE185D);border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t8-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(253,242,248,0.55)}
+.t8-price-total-amt{font-size:20px;font-weight:900;color:#FDF2F8}
+
+/* ═══════════════════════════════════════
+   T9 — AQUA PROFUNDO  (deep navy + electric cyan)
+═══════════════════════════════════════ */
+.t9-cover{height:480px;position:relative;overflow:hidden;background:#030C18}
+.t9-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=1400&q=85') center/cover no-repeat}
+.t9-ov1{position:absolute;inset:0;background:linear-gradient(160deg,rgba(3,12,24,0.35) 0%,rgba(8,145,178,0.12) 50%,rgba(3,12,24,0.25) 100%)}
+.t9-ov2{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(3,12,24,0.97) 0%,transparent 100%)}
+.t9-glow{position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);width:500px;height:200px;background:radial-gradient(ellipse,rgba(6,182,212,0.22) 0%,transparent 70%);pointer-events:none}
+.t9-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.t9-content{position:absolute;left:0;right:0;bottom:52px;z-index:5;text-align:center;padding:0 40px}
+.t9-depth{font-size:8px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:rgba(34,211,238,0.6);margin-bottom:10px}
+.t9-dest{font-family:'Plus Jakarta Sans',sans-serif;font-size:54px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:0.95;margin-bottom:14px;text-shadow:0 0 40px rgba(6,182,212,0.5),0 4px 20px rgba(0,0,0,0.6)}
+.t9-client-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(6,182,212,0.12);border:1px solid rgba(34,211,238,0.3);border-radius:20px;padding:5px 14px;margin-bottom:0}
+.t9-client-lbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(34,211,238,0.6)}
+.t9-client-nm{font-size:12px;font-weight:800;color:#fff}
+.t9-bottom{position:absolute;bottom:0;left:0;right:0;background:rgba(3,12,24,0.9);border-top:1px solid rgba(6,182,212,0.2);padding:12px 36px;display:flex;align-items:center;justify-content:space-between;z-index:5;backdrop-filter:blur(8px)}
+.t9-meta{display:flex;gap:20px}
+.t9-meta-item{font-size:9px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:5px}
+.t9-meta-dot{width:5px;height:5px;border-radius:50%;background:#22D3EE}
+.t9-total{text-align:right}
+.t9-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(34,211,238,0.5);margin-bottom:2px}
+.t9-total-amt{font-size:18px;font-weight:900;color:#22D3EE;letter-spacing:-0.5px}
+.t9-page{background:#040E1C;padding:32px}
+.t9-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(6,182,212,0.15)}
+.t9-hd-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0891B2,#06B6D4);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t9-hd-ttl{font-size:14px;font-weight:800;color:#E0F7FA}
+.t9-hd-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#164E63;margin-top:1px}
+.t9-card{background:#071525;border:1px solid rgba(6,182,212,0.12);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex}
+.t9-card-photo{flex:0 0 175px;overflow:hidden}
+.t9-card-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.9) saturate(1.15)}
+.t9-card-body{flex:1;padding:15px 18px}
+.t9-tag{display:inline-block;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.25);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#22D3EE;margin-bottom:7px}
+.t9-card-ttl{font-size:13px;font-weight:800;color:#E0F7FA;margin-bottom:5px}
+.t9-card-meta{font-size:10px;color:#64748B;line-height:1.7}
+.t9-price{font-size:15px;font-weight:900;background:linear-gradient(135deg,#06B6D4,#22D3EE);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+.t9-bp{background:#071525;border:1px solid rgba(6,182,212,0.12);border-radius:12px;padding:15px 18px;margin-bottom:10px}
+.t9-bp-iata{font-size:26px;font-weight:900;color:#E0F7FA;font-family:'DM Mono',monospace;min-width:60px}
+.t9-bp-line{height:1px;background:linear-gradient(to right,#0891B2,#22D3EE);margin:4px 0;position:relative}
+.t9-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#22D3EE}
+.t9-bp-direct{font-size:8px;color:#164E63;letter-spacing:1px;text-transform:uppercase}
+.t9-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(6,182,212,0.12);font-size:9px;color:#164E63}
+.t9-bp-footer span{font-weight:600;color:#64748B}
+.t9-price-total{background:linear-gradient(135deg,#0C4A6E,#075985);border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px;border:1px solid rgba(6,182,212,0.2)}
+.t9-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(34,211,238,0.5)}
+.t9-price-total-amt{font-size:20px;font-weight:900;color:#22D3EE}
+
+/* ═══════════════════════════════════════
+   T10 — ROJO FLAMANTE  (crimson + cream)
+═══════════════════════════════════════ */
+.t10-cover{height:480px;position:relative;overflow:hidden;background:#1A0000}
+.t10-photo{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=1400&q=85') center/cover no-repeat}
+.t10-ov1{position:absolute;inset:0;background:linear-gradient(170deg,rgba(26,0,0,0.2) 0%,rgba(127,29,29,0.25) 50%,rgba(26,0,0,0.15) 100%)}
+.t10-ov2{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(26,0,0,0.97) 0%,transparent 100%)}
+.t10-topbar{position:absolute;top:0;left:0;right:0;padding:22px 36px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.t10-content{position:absolute;left:36px;bottom:52px;right:36px;z-index:5}
+.t10-tag-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.t10-red-bar{width:32px;height:3px;background:#DC2626;border-radius:2px}
+.t10-eyebrow{font-size:8px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:rgba(252,165,165,0.65)}
+.t10-dest{font-size:52px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:0.95;margin-bottom:16px;text-shadow:0 4px 24px rgba(0,0,0,0.7)}
+.t10-row{display:flex;align-items:center;gap:16px}
+.t10-client-for{font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(252,165,165,0.5)}
+.t10-client-nm{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.t10-bottom{position:absolute;bottom:0;left:0;right:0;background:#991B1B;padding:12px 36px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.t10-meta{display:flex;gap:20px}
+.t10-meta-item{font-size:9px;color:rgba(255,255,255,0.65);display:flex;align-items:center;gap:6px}
+.t10-meta-tick{width:14px;height:1px;background:rgba(252,165,165,0.5)}
+.t10-total{text-align:right}
+.t10-total-lbl{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(252,165,165,0.55);margin-bottom:2px}
+.t10-total-amt{font-size:18px;font-weight:900;color:#FCA5A5;letter-spacing:-0.5px}
+.t10-page{background:#FFFBF8;padding:32px}
+.t10-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid rgba(220,38,38,0.15)}
+.t10-hd-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#DC2626,#991B1B);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t10-hd-ttl{font-size:14px;font-weight:800;color:#1A0000}
+.t10-hd-sub{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#FCA5A5;margin-top:1px}
+.t10-card{background:#fff;border:1px solid rgba(220,38,38,0.1);border-radius:14px;overflow:hidden;margin-bottom:10px;display:flex;box-shadow:0 2px 14px rgba(153,27,27,0.07)}
+.t10-card-photo{flex:0 0 175px;overflow:hidden}
+.t10-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.t10-card-body{flex:1;padding:15px 18px}
+.t10-tag{display:inline-block;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.2);border-radius:20px;padding:3px 10px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#DC2626;margin-bottom:7px}
+.t10-card-ttl{font-size:13px;font-weight:800;color:#1A0000;margin-bottom:5px}
+.t10-card-meta{font-size:10px;color:#6B5E52;line-height:1.7}
+.t10-price{font-size:15px;font-weight:900;background:linear-gradient(135deg,#DC2626,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:8px}
+.t10-bp{background:#fff;border:1px solid rgba(220,38,38,0.1);border-left:3px solid #DC2626;border-radius:12px;padding:15px 18px;margin-bottom:10px;box-shadow:0 1px 8px rgba(153,27,27,0.06)}
+.t10-bp-iata{font-size:26px;font-weight:900;color:#1A0000;font-family:'DM Mono',monospace;min-width:60px}
+.t10-bp-line{height:1px;background:linear-gradient(to right,#DC2626,#EF4444);margin:4px 0;position:relative}
+.t10-bp-line::after{content:'▶';position:absolute;right:-4px;top:-7px;font-size:9px;color:#EF4444}
+.t10-bp-direct{font-size:8px;color:#FCA5A5;letter-spacing:1px;text-transform:uppercase}
+.t10-bp-footer{display:flex;gap:16px;padding-top:10px;border-top:1px dashed rgba(220,38,38,0.15);font-size:9px;color:#FCA5A5}
+.t10-bp-footer span{font-weight:600;color:#6B5E52}
+.t10-price-total{background:linear-gradient(135deg,#1A0000,#7F1D1D);border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.t10-price-total-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(252,165,165,0.5)}
+.t10-price-total-amt{font-size:20px;font-weight:900;color:#FCA5A5}
+</style>
+</head>
+<body>
+<div id="staging-banner" style="display:none;position:fixed;top:0;left:0;width:100%;height:28px;background:#FAEEDA;color:#854F0B;font-size:12px;font-family:sans-serif;align-items:center;justify-content:center;z-index:9999;border-bottom:1px solid #EF9F27;">Entorno de prueba — test.ermix.app</div>
+<script>(function(){var b=document.getElementById('staging-banner');if(location.hostname==='test.ermix.app'){b.style.display='flex';document.body.style.paddingTop=(parseInt(document.body.style.paddingTop)||0)+28+'px';}})()</script>
+
+<nav>
+  <div class="nav-brand">ermix PDF</div>
+  <a href="#t2" class="t2">T2 · Inmersión Glaciar</a>
+  <a href="#t3" class="t3">T3 · Ámbar Imperial</a>
+  <a href="#t4" class="t4">T4 · Noir Cinema</a>
+  <a href="#t5" class="t5">T5 · Postal Mediterránea</a>
+  <a href="#t6" class="t6">T6 · Magia Encantada</a>
+  <a href="#t7" class="t7">T7 · Epic Adventure</a>
+  <a href="#t8" class="t8">T8 · Rosa Botánica</a>
+  <a href="#t9" class="t9">T9 · Aqua Profundo</a>
+  <a href="#t10" class="t10">T10 · Rojo Flamante</a>
+</nav>
+
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 2 — INMERSIÓN GLACIAR
+════════════════════════════════════════════ -->
+<div class="template-section" id="t2">
+  <div class="template-label" style="color:#38BDF8">TEMPLATE 2</div>
+  <div class="template-name">Inmersión Glaciar</div>
+  <div class="template-desc">Full-bleed photo + glassmorphism card flotante · Paleta hielo/navy profundo · Para viajes de lujo y destinos acuáticos</div>
+
+  <!-- PORTADA -->
+  <div class="page">
+    <div class="t2-cover">
+      <div class="t2-cover-photo"></div>
+      <div class="t2-cover-overlay"></div>
+      <div class="t2-cover-overlay2"></div>
+      <div class="t2-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg2)"/></svg>
+          <div style="width:1px;height:18px;background:rgba(255,255,255,0.2)"></div>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8)">Patoyro Travel</div>
+        </div>
+        <div class="t2-ref">ERM-25-1847</div>
+      </div>
+      <!-- Glass card -->
+      <div class="t2-glass-card">
+        <div class="t2-chip">Maldivas · Atolón Norte</div>
+        <div class="t2-client-label">Cotización personalizada para</div>
+        <div class="t2-client-name">Ana García</div>
+        <div class="t2-meta-row">
+          <div class="t2-meta-item"><div class="t2-meta-dot"></div>2 adultos</div>
+          <div class="t2-meta-item"><div class="t2-meta-dot"></div>15 – 23 agosto 2025</div>
+          <div class="t2-meta-item"><div class="t2-meta-dot"></div>8 noches</div>
+        </div>
+      </div>
+      <div class="t2-total-panel">
+        <div class="t2-total-lbl">precio referencia</div>
+        <div class="t2-total-amt">USD 6.840</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">ITINERARIO</div>
+
+  <!-- ITINERARIO -->
+  <div class="page">
+    <div class="t2-page">
+      <div class="t2-section-hd">
+        <div class="t2-section-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div><div class="t2-section-ttl">Día a Día</div><div class="t2-section-sub">Itinerario · Maldivas · 8 noches</div></div>
+      </div>
+      <table class="iti-table">
+        <thead style="background:#F1F5F9"><tr>
+          <th style="color:#64748B;width:70px">Fecha</th>
+          <th style="color:#64748B">Actividad</th>
+          <th style="color:#64748B;width:100px">Tipo</th>
+        </tr></thead>
+        <tbody>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">15/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Buenos Aires (EZE) → Male (MLE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">16/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Llegada Male · Hidroavión a resort</td><td><span class="iti-type-pill" style="background:#E8826A">TRASLADO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">17/08</div><div class="iti-date-day">Dom</div></td><td style="color:#374151">Libre en resort · Playa &amp; bungalow sobre el agua</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">18/08</div><div class="iti-date-day">Lun</div></td><td style="color:#374151">Snorkel con manta rayas · Excursión guiada</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">19/08</div><div class="iti-date-day">Mar</div></td><td style="color:#374151">Buceo certificado · Arrecife de coral</td><td><span class="iti-type-pill" style="background:#0288D1">PLAYA</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">20/08</div><div class="iti-date-day">Mié</div></td><td style="color:#374151">Libre · Spa y descanso</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">21/08</div><div class="iti-date-day">Jue</div></td><td style="color:#374151">Cena romántica en la playa · Puesta de sol</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">22/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Último día · Libre hasta traslado</td><td><span class="iti-type-pill" style="background:#9CA3AF">LIBRE</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#0C1B33">23/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Male (MLE) → Buenos Aires (EZE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="page-sep">VUELOS · ALOJAMIENTO · TRASLADOS</div>
+
+  <!-- VUELOS + HOTEL + TRASLADOS -->
+  <div class="page">
+    <div class="t2-page">
+      <!-- Vuelos -->
+      <div class="t2-section-hd">
+        <div class="t2-section-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+        <div><div class="t2-section-ttl">Transporte Aéreo</div><div class="t2-section-sub">2 tramos · Ida y vuelta</div></div>
+      </div>
+      <div class="t2-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t2-bp-time">06:45</div><div class="t2-bp-iata">EZE</div><div class="t2-bp-city">Buenos Aires</div></div>
+          <div class="t2-bp-mid"><div class="t2-bp-direct">directo · 20h 30m</div><div class="t2-bp-line"></div></div>
+          <div style="text-align:right"><div class="t2-bp-time">09:15</div><div class="t2-bp-iata right">MLE</div><div class="t2-bp-city" style="text-align:right">Male, Maldivas</div></div>
+        </div>
+        <div class="t2-bp-footer">Aerolínea: <span>Emirates · EK 264</span> &nbsp;|&nbsp; Fecha: <span>15 Ago 2025</span> &nbsp;|&nbsp; Clase: <span>Económica</span></div>
+      </div>
+      <div class="t2-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t2-bp-time">11:00</div><div class="t2-bp-iata">MLE</div><div class="t2-bp-city">Male, Maldivas</div></div>
+          <div class="t2-bp-mid"><div class="t2-bp-direct">con escala DXB · 22h</div><div class="t2-bp-line"></div></div>
+          <div style="text-align:right"><div class="t2-bp-time">08:30</div><div class="t2-bp-iata right">EZE</div><div class="t2-bp-city" style="text-align:right">Buenos Aires</div></div>
+        </div>
+        <div class="t2-bp-footer">Aerolínea: <span>Emirates · EK 265</span> &nbsp;|&nbsp; Fecha: <span>23 Ago 2025</span> &nbsp;|&nbsp; Escala: <span>Dubai (DXB)</span></div>
+      </div>
+
+      <!-- Hotel -->
+      <div class="t2-section-hd" style="margin-top:22px">
+        <div class="t2-section-ico" style="background:linear-gradient(135deg,#D4A017,#B45309)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div><div class="t2-section-ttl">Alojamiento</div><div class="t2-section-sub">8 noches · Atolón Norte Malé</div></div>
+      </div>
+      <div class="t2-card">
+        <div class="t2-card-photo"><img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=400&q=80" alt="hotel"></div>
+        <div class="t2-card-body">
+          <div class="t2-tag">Hotel Confirmado</div>
+          <div class="t2-card-ttl">Anantara Veli Maldives Resort</div>
+          <div class="t2-card-meta">
+            Check-in: 16 de agosto 2025<br>
+            Check-out: 23 de agosto 2025 — 7 noches<br>
+            Habitación: Over-Water Bungalow · 2 adultos<br>
+            Régimen: Desayuno y cena incluidos
+          </div>
+          <div class="t2-card-price">USD 4.200</div>
+        </div>
+      </div>
+
+      <!-- Traslados -->
+      <div class="t2-section-hd" style="margin-top:22px">
+        <div class="t2-section-ico" style="background:linear-gradient(135deg,#E8826A,#C2185B)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 11h20M7 19v2M17 19v2"/></svg></div>
+        <div><div class="t2-section-ttl">Traslados</div><div class="t2-section-sub">2 servicios incluidos</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px">
+          <div class="t2-tag">Llegada</div>
+          <div style="font-size:12px;font-weight:700;color:#0C1B33;margin:4px 0">Male → Anantara Veli</div>
+          <div style="font-size:10px;color:#64748B">Hidroavión privado · 40 min<br>16 agosto · Incluido en paquete</div>
+        </div>
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px">
+          <div class="t2-tag">Salida</div>
+          <div style="font-size:12px;font-weight:700;color:#0C1B33;margin:4px 0">Anantara Veli → Male</div>
+          <div style="font-size:10px;color:#64748B">Hidroavión privado · 40 min<br>23 agosto · Incluido en paquete</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">EXCURSIONES · SEGURO · PRECIOS</div>
+
+  <!-- EXCURSIONES + SEGURO + PRECIOS -->
+  <div class="page">
+    <div class="t2-page">
+      <!-- Excursiones -->
+      <div class="t2-section-hd">
+        <div class="t2-section-ico" style="background:linear-gradient(135deg,#43A047,#1B5E20)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div>
+        <div><div class="t2-section-ttl">Excursiones &amp; Actividades</div><div class="t2-section-sub">3 experiencias seleccionadas</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px">
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=300&q=70" style="width:100%;height:80px;object-fit:cover" alt="">
+          <div style="padding:10px"><div class="t2-tag" style="font-size:7px">Snorkel</div><div style="font-size:11px;font-weight:700;color:#0C1B33">Manta Rays Tour</div><div style="font-size:9px;color:#64748B;margin-top:3px">18 agosto · 4h · 2 pax</div><div style="font-size:12px;font-weight:800;color:#0EA5E9;margin-top:5px">USD 180</div></div>
+        </div>
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&q=70" style="width:100%;height:80px;object-fit:cover" alt="">
+          <div style="padding:10px"><div class="t2-tag" style="font-size:7px">Buceo</div><div style="font-size:11px;font-weight:700;color:#0C1B33">Coral Dive</div><div style="font-size:9px;color:#64748B;margin-top:3px">19 agosto · 3h · 2 pax</div><div style="font-size:12px;font-weight:800;color:#0EA5E9;margin-top:5px">USD 220</div></div>
+        </div>
+        <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&q=70" style="width:100%;height:80px;object-fit:cover" alt="">
+          <div style="padding:10px"><div class="t2-tag" style="font-size:7px">Cena</div><div style="font-size:11px;font-weight:700;color:#0C1B33">Sunset Dinner</div><div style="font-size:9px;color:#64748B;margin-top:3px">21 agosto · 3h · 2 pax</div><div style="font-size:12px;font-weight:800;color:#0EA5E9;margin-top:5px">USD 160</div></div>
+        </div>
+      </div>
+
+      <!-- Seguro -->
+      <div class="t2-section-hd">
+        <div class="t2-section-ico" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><div class="t2-section-ttl">Asistencia al Viajero</div><div class="t2-section-sub">Cobertura total del viaje</div></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px 18px;margin-bottom:22px;display:flex;gap:20px">
+        <div style="flex:1"><div class="t2-tag" style="background:rgba(109,40,217,0.1);border-color:rgba(109,40,217,0.25);color:#6D28D9">Cobertura Premium</div><div style="font-size:12px;font-weight:700;color:#0C1B33;margin:4px 0">Assist Card Internacional · Plan Gold</div><div style="font-size:10px;color:#64748B;line-height:1.7">Cobertura médica: USD 100.000 · Cancelación de viaje incluida<br>Pérdida de equipaje · Repatriación sanitaria · 2 personas</div></div>
+        <div style="text-align:right;flex-shrink:0"><div class="t2-card-price">USD 280</div><div style="font-size:9px;color:#94A3B8;margin-top:3px">por persona · 8 días</div></div>
+      </div>
+
+      <!-- Precios -->
+      <div class="t2-section-hd">
+        <div class="t2-section-ico" style="background:linear-gradient(135deg,#FF6B35,#E85A25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div><div class="t2-section-ttl">Resumen de Precios</div><div class="t2-section-sub">Inversión total del viaje</div></div>
+      </div>
+      <div style="background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden">
+        <table class="t2-price-table" style="width:100%">
+          <tr><td class="t2-price-lbl">Vuelos (2 personas)</td><td class="t2-price-val">USD 2.800</td></tr>
+          <tr><td class="t2-price-lbl">Alojamiento — 7 noches</td><td class="t2-price-val">USD 4.200</td></tr>
+          <tr><td class="t2-price-lbl">Traslados en destino</td><td class="t2-price-val">Incluido</td></tr>
+          <tr><td class="t2-price-lbl">Excursiones y actividades</td><td class="t2-price-val">USD 560</td></tr>
+          <tr><td class="t2-price-lbl">Asistencia al viajero</td><td class="t2-price-val">USD 560</td></tr>
+          <tr style="background:#F8FAFC"><td class="t2-price-lbl" style="color:#0C1B33;font-weight:600">Tasas e impuestos</td><td class="t2-price-val">USD 320</td></tr>
+          <tr class="t2-price-total-row"><td class="t2-price-lbl" style="color:rgba(255,255,255,.7)">TOTAL ESTIMADO · 2 personas</td><td class="t2-price-val">USD 8.440</td></tr>
+        </table>
+      </div>
+      <div style="margin-top:20px;padding:14px 18px;background:#F0F9FF;border:1px solid rgba(14,165,233,0.2);border-radius:10px;font-size:9px;color:#0369A1;line-height:1.7">
+        Los precios son orientativos y sujetos a disponibilidad al momento de la confirmación. Válido hasta el 01/07/2025. Cotización preparada por <strong>Diego Lecler — Patoyro Travel</strong>
+      </div>
+    </div>
+  </div>
+</div><!-- end t2 -->
+
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 3 — ÁMBAR IMPERIAL
+════════════════════════════════════════════ -->
+<div class="template-section" id="t3">
+  <div class="template-label" style="color:#F59E0B">TEMPLATE 3</div>
+  <div class="template-name">Ámbar Imperial</div>
+  <div class="template-desc">Foto hero + panel oscuro con destino en enorme · Paleta ámbar/bronce sobre negro profundo · Para viajes de lujo y destinos de aventura</div>
+
+  <!-- PORTADA -->
+  <div class="page">
+    <div class="t3-cover">
+      <div class="t3-cover-upper">
+        <div class="t3-cover-photo"></div>
+        <div class="t3-cover-fade"></div>
+        <div class="t3-topbar">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg3)"/></svg>
+            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.8)">Patoyro Travel</div>
+          </div>
+          <div class="t3-ref-badge">ERM-25-1847</div>
+        </div>
+      </div>
+      <div class="t3-cover-lower">
+        <div class="t3-gold-line"></div>
+        <div class="t3-dest-label">Propuesta de viaje a</div>
+        <div class="t3-dest-name">Maldivas</div>
+        <div class="t3-client-block">
+          <span class="t3-client-for">para</span>
+          <span class="t3-client-nm">Ana García</span>
+        </div>
+        <div class="t3-bottom-row">
+          <div class="t3-meta">
+            <div class="t3-meta-item"><div class="t3-meta-dash"></div>2 adultos</div>
+            <div class="t3-meta-item"><div class="t3-meta-dash"></div>15 al 23 de agosto 2025</div>
+            <div class="t3-meta-item"><div class="t3-meta-dash"></div>8 noches</div>
+          </div>
+          <div class="t3-total">
+            <div class="t3-total-lbl">precio referencia</div>
+            <div class="t3-total-amt">USD 8.440</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">ITINERARIO</div>
+
+  <!-- ITINERARIO -->
+  <div class="page">
+    <div class="t3-page">
+      <div class="t3-section-hd">
+        <div class="t3-section-meta">Itinerario · Maldivas · 8 noches</div>
+        <div class="t3-section-ttl">Día a Día</div>
+      </div>
+      <table class="iti-table">
+        <thead style="background:rgba(245,158,11,0.06)"><tr>
+          <th style="color:#B45309;width:70px">Fecha</th>
+          <th style="color:#B45309">Actividad</th>
+          <th style="color:#B45309;width:100px">Tipo</th>
+        </tr></thead>
+        <tbody>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">15/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Buenos Aires (EZE) → Male (MLE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">16/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Llegada Male · Hidroavión a resort</td><td><span class="iti-type-pill" style="background:#E8826A">TRASLADO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">17/08</div><div class="iti-date-day">Dom</div></td><td style="color:#374151">Libre en resort · Playa &amp; bungalow</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">18/08</div><div class="iti-date-day">Lun</div></td><td style="color:#374151">Snorkel con manta rayas</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">19/08</div><div class="iti-date-day">Mar</div></td><td style="color:#374151">Buceo certificado · Arrecife de coral</td><td><span class="iti-type-pill" style="background:#0288D1">PLAYA</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">20/08</div><div class="iti-date-day">Mié</div></td><td style="color:#374151">Libre · Spa y descanso</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">21/08</div><div class="iti-date-day">Jue</div></td><td style="color:#374151">Cena romántica en la playa</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">22/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Último día · Libre hasta traslado</td><td><span class="iti-type-pill" style="background:#9CA3AF">LIBRE</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#1C0A00">23/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Male (MLE) → Buenos Aires (EZE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="page-sep">VUELOS · ALOJAMIENTO · TRASLADOS · EXCURSIONES · SEGURO · PRECIOS</div>
+
+  <!-- SERVICES PAGE -->
+  <div class="page">
+    <div class="t3-page">
+      <div class="t3-section-hd"><div class="t3-section-meta">Transporte Aéreo · 2 tramos</div><div class="t3-section-ttl">Vuelos</div></div>
+      <div class="t3-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t3-bp-time">06:45</div><div class="t3-bp-iata">EZE</div><div class="t3-bp-city">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t3-bp-direct">directo · 20h 30m</div><div class="t3-bp-line"></div></div>
+          <div style="text-align:right"><div class="t3-bp-time">09:15+1</div><div class="t3-bp-iata right">MLE</div><div class="t3-bp-city" style="text-align:right">Male, Maldivas</div></div>
+        </div>
+        <div class="t3-bp-footer">Emirates · <span>EK 264</span> &nbsp;·&nbsp; <span>15 Ago 2025</span> &nbsp;·&nbsp; Clase <span>Económica</span></div>
+      </div>
+      <div class="t3-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t3-bp-time">11:00</div><div class="t3-bp-iata">MLE</div><div class="t3-bp-city">Male, Maldivas</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t3-bp-direct">escala DXB · 22h</div><div class="t3-bp-line"></div></div>
+          <div style="text-align:right"><div class="t3-bp-time">08:30+1</div><div class="t3-bp-iata right">EZE</div><div class="t3-bp-city" style="text-align:right">Buenos Aires</div></div>
+        </div>
+        <div class="t3-bp-footer">Emirates · <span>EK 265</span> &nbsp;·&nbsp; <span>23 Ago 2025</span> &nbsp;·&nbsp; Escala <span>Dubai (DXB)</span></div>
+      </div>
+
+      <div class="t3-section-hd" style="margin-top:20px"><div class="t3-section-meta">Alojamiento · 7 noches</div><div class="t3-section-ttl">Hotel</div></div>
+      <div class="t3-card">
+        <div class="t3-card-photo"><img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=400&q=80" alt="hotel"></div>
+        <div class="t3-card-body">
+          <div class="t3-tag">Confirmado</div>
+          <div class="t3-card-ttl">Anantara Veli Maldives Resort</div>
+          <div class="t3-card-meta">Check-in: 16 agosto · Check-out: 23 agosto<br>Over-Water Bungalow · 2 adultos<br>Desayuno y cena incluidos (HB)</div>
+          <div class="t3-card-price">USD 4.200</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div>
+          <div class="t3-section-hd"><div class="t3-section-meta">Excursiones</div><div class="t3-section-ttl" style="font-size:14px">Actividades</div></div>
+          <div style="background:#fff;border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(28,10,0,0.04)">
+            <div class="t3-tag">Snorkel</div>
+            <div style="font-size:12px;font-weight:700;color:#1C0A00">Manta Rays Tour</div>
+            <div style="font-size:10px;color:#6B5E52;margin-top:3px">18 agosto · 4h · 2 pax</div>
+            <div style="font-size:13px;font-weight:800;color:#B45309;margin-top:5px">USD 180</div>
+          </div>
+          <div style="background:#fff;border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px;box-shadow:0 2px 8px rgba(28,10,0,0.04)">
+            <div class="t3-tag">Cena</div>
+            <div style="font-size:12px;font-weight:700;color:#1C0A00">Sunset Dinner</div>
+            <div style="font-size:10px;color:#6B5E52;margin-top:3px">21 agosto · 3h · 2 pax</div>
+            <div style="font-size:13px;font-weight:800;color:#B45309;margin-top:5px">USD 160</div>
+          </div>
+        </div>
+        <div>
+          <div class="t3-section-hd"><div class="t3-section-meta">Protección</div><div class="t3-section-ttl" style="font-size:14px">Seguro</div></div>
+          <div style="background:#fff;border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:12px;margin-bottom:16px;box-shadow:0 2px 8px rgba(28,10,0,0.04)">
+            <div class="t3-tag">Premium</div>
+            <div style="font-size:12px;font-weight:700;color:#1C0A00">Assist Card Gold</div>
+            <div style="font-size:10px;color:#6B5E52;line-height:1.6;margin-top:3px">USD 100.000 cobertura médica<br>Cancelación · Equipaje<br>2 personas · 8 días</div>
+            <div style="font-size:13px;font-weight:800;color:#B45309;margin-top:5px">USD 560</div>
+          </div>
+          <div class="t3-section-hd"><div class="t3-section-meta">Inversión total</div><div class="t3-section-ttl" style="font-size:14px">Precios</div></div>
+          <div style="background:#1C0A00;border-radius:10px;padding:12px">
+            <div class="t3-price-row" style="border-color:rgba(245,158,11,0.1)"><span style="color:rgba(255,255,255,.5);font-size:10px">Vuelos</span><span style="color:#FDE68A;font-weight:700;font-size:10px">USD 2.800</span></div>
+            <div class="t3-price-row" style="border-color:rgba(245,158,11,0.1)"><span style="color:rgba(255,255,255,.5);font-size:10px">Alojamiento</span><span style="color:#FDE68A;font-weight:700;font-size:10px">USD 4.200</span></div>
+            <div class="t3-price-row" style="border-color:rgba(245,158,11,0.1)"><span style="color:rgba(255,255,255,.5);font-size:10px">Actividades</span><span style="color:#FDE68A;font-weight:700;font-size:10px">USD 900</span></div>
+            <div class="t3-price-row" style="border-bottom:none"><span style="color:rgba(255,255,255,.5);font-size:10px">Seguro+Tasas</span><span style="color:#FDE68A;font-weight:700;font-size:10px">USD 540</span></div>
+            <div style="border-top:1px solid rgba(245,158,11,0.3);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(245,158,11,0.5)">TOTAL</span>
+              <span style="font-size:20px;font-weight:900;color:#F59E0B">USD 8.440</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end t3 -->
+
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 4 — NOIR CINEMA
+════════════════════════════════════════════ -->
+<div class="template-section" id="t4">
+  <div class="template-label" style="color:#A78BFA">TEMPLATE 4</div>
+  <div class="template-name">Noir Cinema</div>
+  <div class="template-desc">Cover cinematográfico extremo · Páginas internas en negro profundo · Paleta violeta/lavanda · Para agencias premium y viajes únicos</div>
+
+  <!-- PORTADA -->
+  <div class="page">
+    <div class="t4-cover">
+      <div class="t4-cover-photo"></div>
+      <div class="t4-cover-overlay"></div>
+      <div class="t4-cover-overlay2"></div>
+      <div class="t4-topbar">
+        <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg4)"/></svg>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px">ERM-25-1847</div>
+      </div>
+      <div class="t4-center">
+        <div class="t4-spark"></div>
+        <div class="t4-dest">MALDIVAS</div>
+        <div class="t4-client-label">cotización exclusiva para</div>
+        <div class="t4-client-nm">Ana García</div>
+      </div>
+      <div class="t4-bottom-strip">
+        <div class="t4-meta-items">
+          <div class="t4-meta-item"><div class="t4-meta-bullet"></div>2 adultos</div>
+          <div class="t4-meta-item"><div class="t4-meta-bullet"></div>15 – 23 agosto 2025</div>
+          <div class="t4-meta-item"><div class="t4-meta-bullet"></div>8 noches</div>
+          <div class="t4-meta-item"><div class="t4-meta-bullet"></div>Patoyro Travel</div>
+        </div>
+        <div class="t4-total-strip">
+          <div class="t4-total-lbl">inversión estimada</div>
+          <div class="t4-total-amt">USD 8.440</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">ITINERARIO</div>
+
+  <!-- ITINERARIO -->
+  <div class="page">
+    <div class="t4-page">
+      <div class="t4-section-hd">
+        <div class="t4-section-stripe"></div>
+        <div><div class="t4-section-ttl">Día a Día</div><div class="t4-section-sub">Itinerario · Maldivas · 8 noches</div></div>
+      </div>
+      <table class="iti-table" style="border-radius:10px;overflow:hidden">
+        <thead style="background:rgba(124,58,237,0.15)"><tr>
+          <th style="color:#A78BFA;width:70px">Fecha</th>
+          <th style="color:#A78BFA">Actividad</th>
+          <th style="color:#A78BFA;width:100px">Tipo</th>
+        </tr></thead>
+        <tbody style="background:#18181B">
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">15/08</div><div class="iti-date-day" style="color:#52525B">Vie</div></td><td style="color:#D4D4D8">Buenos Aires (EZE) → Male (MLE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">16/08</div><div class="iti-date-day" style="color:#52525B">Sáb</div></td><td style="color:#D4D4D8">Llegada Male · Hidroavión a resort</td><td><span class="iti-type-pill" style="background:#E8826A">TRASLADO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">17/08</div><div class="iti-date-day" style="color:#52525B">Dom</div></td><td style="color:#D4D4D8">Libre en resort · Playa &amp; bungalow</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">18/08</div><div class="iti-date-day" style="color:#52525B">Lun</div></td><td style="color:#D4D4D8">Snorkel con manta rayas</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">19/08</div><div class="iti-date-day" style="color:#52525B">Mar</div></td><td style="color:#D4D4D8">Buceo certificado · Arrecife de coral</td><td><span class="iti-type-pill" style="background:#0288D1">PLAYA</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">20/08</div><div class="iti-date-day" style="color:#52525B">Mié</div></td><td style="color:#D4D4D8">Libre · Spa y descanso</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">21/08</div><div class="iti-date-day" style="color:#52525B">Jue</div></td><td style="color:#D4D4D8">Cena romántica · Puesta de sol</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">22/08</div><div class="iti-date-day" style="color:#52525B">Vie</div></td><td style="color:#D4D4D8">Último día · Libre hasta traslado</td><td><span class="iti-type-pill" style="background:#9CA3AF">LIBRE</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#F4F4F5">23/08</div><div class="iti-date-day" style="color:#52525B">Sáb</div></td><td style="color:#D4D4D8">Male (MLE) → Buenos Aires (EZE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="page-sep">VUELOS · HOTEL · TRASLADOS · EXCURSIONES · SEGURO · PRECIOS</div>
+
+  <!-- SERVICES -->
+  <div class="page">
+    <div class="t4-page">
+      <div class="t4-section-hd"><div class="t4-section-stripe"></div><div><div class="t4-section-ttl">Transporte Aéreo</div><div class="t4-section-sub">2 tramos · Ida y vuelta</div></div></div>
+      <div class="t4-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t4-bp-time">06:45</div><div class="t4-bp-iata">EZE</div><div class="t4-bp-city">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t4-bp-direct">directo · 20h 30m</div><div class="t4-bp-line"></div></div>
+          <div style="text-align:right"><div class="t4-bp-time">09:15+1</div><div class="t4-bp-iata right">MLE</div><div class="t4-bp-city" style="text-align:right">Male, Maldivas</div></div>
+        </div>
+        <div class="t4-bp-footer">Emirates <span>EK 264</span> &nbsp;·&nbsp; <span>15 Ago 2025</span> &nbsp;·&nbsp; Clase <span>Económica</span></div>
+      </div>
+      <div class="t4-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t4-bp-time">11:00</div><div class="t4-bp-iata">MLE</div><div class="t4-bp-city">Male, Maldivas</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t4-bp-direct">escala DXB · 22h</div><div class="t4-bp-line"></div></div>
+          <div style="text-align:right"><div class="t4-bp-time">08:30+1</div><div class="t4-bp-iata right">EZE</div><div class="t4-bp-city" style="text-align:right">Buenos Aires</div></div>
+        </div>
+        <div class="t4-bp-footer">Emirates <span>EK 265</span> &nbsp;·&nbsp; <span>23 Ago 2025</span> &nbsp;·&nbsp; Escala <span>Dubai</span></div>
+      </div>
+
+      <div class="t4-section-hd" style="margin-top:20px"><div class="t4-section-stripe" style="background:linear-gradient(to bottom,#D4A017,#F59E0B)"></div><div><div class="t4-section-ttl">Alojamiento</div><div class="t4-section-sub">7 noches · Atolón Norte Malé</div></div></div>
+      <div class="t4-card">
+        <div class="t4-card-photo"><img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=400&q=80" alt="hotel"></div>
+        <div class="t4-card-body">
+          <div class="t4-tag">Confirmado</div>
+          <div class="t4-card-ttl">Anantara Veli Maldives Resort</div>
+          <div class="t4-card-meta">Check-in 16 ago · Check-out 23 ago<br>Over-Water Bungalow · 2 adultos<br>Media pensión incluida (HB)</div>
+          <div class="t4-card-price">USD 4.200</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+        <div>
+          <div class="t4-section-hd" style="margin-top:12px"><div class="t4-section-stripe" style="background:linear-gradient(to bottom,#43A047,#52B788)"></div><div><div class="t4-section-ttl" style="font-size:13px">Actividades</div><div class="t4-section-sub">3 experiencias</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="t4-card" style="display:block;padding:12px"><div class="t4-tag" style="font-size:7px">Snorkel</div><div style="font-size:11px;font-weight:700;color:#F4F4F5">Manta Rays Tour</div><div style="font-size:9px;color:#71717A;margin-top:2px">18 ago · 4h · USD 180</div></div>
+            <div class="t4-card" style="display:block;padding:12px"><div class="t4-tag" style="font-size:7px">Buceo</div><div style="font-size:11px;font-weight:700;color:#F4F4F5">Coral Dive</div><div style="font-size:9px;color:#71717A;margin-top:2px">19 ago · 3h · USD 220</div></div>
+            <div class="t4-card" style="display:block;padding:12px"><div class="t4-tag" style="font-size:7px">Cena</div><div style="font-size:11px;font-weight:700;color:#F4F4F5">Sunset Dinner</div><div style="font-size:9px;color:#71717A;margin-top:2px">21 ago · 3h · USD 160</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t4-section-hd" style="margin-top:12px"><div class="t4-section-stripe" style="background:linear-gradient(to bottom,#9B7FD4,#6D28D9)"></div><div><div class="t4-section-ttl" style="font-size:13px">Seguro</div><div class="t4-section-sub">Cobertura total</div></div></div>
+          <div class="t4-card" style="display:block;padding:14px;margin-bottom:12px">
+            <div class="t4-tag">Premium</div>
+            <div style="font-size:12px;font-weight:700;color:#F4F4F5;margin:4px 0">Assist Card Gold</div>
+            <div style="font-size:10px;color:#71717A;line-height:1.6">USD 100K cobertura médica<br>Cancelación · Equipaje<br>2 personas · 8 días</div>
+            <div class="t4-card-price">USD 560</div>
+          </div>
+          <div class="t4-section-hd"><div class="t4-section-stripe"></div><div><div class="t4-section-ttl" style="font-size:13px">Precios</div><div class="t4-section-sub">Resumen</div></div></div>
+          <div style="background:#18181B;border:1px solid rgba(167,139,250,0.12);border-radius:10px;padding:14px">
+            <div class="t4-price-row"><span class="t4-price-lbl">Vuelos</span><span class="t4-price-val">USD 2.800</span></div>
+            <div class="t4-price-row"><span class="t4-price-lbl">Alojamiento</span><span class="t4-price-val">USD 4.200</span></div>
+            <div class="t4-price-row"><span class="t4-price-lbl">Actividades</span><span class="t4-price-val">USD 560</span></div>
+            <div class="t4-price-row"><span class="t4-price-lbl">Seguro+Tasas</span><span class="t4-price-val">USD 880</span></div>
+            <div class="t4-price-total">
+              <span class="t4-price-total-lbl">TOTAL</span>
+              <span class="t4-price-total-amt">USD 8.440</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end t4 -->
+
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 5 — POSTAL MEDITERRÁNEA
+════════════════════════════════════════════ -->
+<div class="template-section" id="t5">
+  <div class="template-label" style="color:#F97316">TEMPLATE 5</div>
+  <div class="template-name">Postal Mediterránea</div>
+  <div class="template-desc">Split editorial magazine · Foto izquierda + tipografía arquitectónica derecha · Coral/indigo · Para viajes Europa y destinos aspiracionales</div>
+
+  <!-- PORTADA -->
+  <div class="page">
+    <div class="t5-cover" style="position:relative">
+      <div class="t5-cover-photo">
+        <div class="t5-cover-photo-bg"></div>
+        <div class="t5-cover-photo-overlay"></div>
+        <div class="t5-topbar-left">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg5)"/></svg>
+        </div>
+        <div class="t5-ref">ERM-25-1847</div>
+      </div>
+      <div class="t5-cover-right" style="position:relative">
+        <div>
+          <div class="t5-edition">Propuesta · agosto 2025</div>
+          <div class="t5-divider"></div>
+          <div class="t5-dest-label">Destino</div>
+          <div class="t5-dest-name">Maldivas</div>
+          <div class="t5-dest-sub">Atolón Norte Malé · Indian Ocean</div>
+        </div>
+        <div>
+          <div class="t5-client-wrap">
+            <div class="t5-client-for">Cotización para</div>
+            <div class="t5-client-nm">Ana García</div>
+          </div>
+          <div class="t5-data-grid">
+            <div class="t5-data-item">
+              <div class="t5-data-lbl">Viajeros</div>
+              <div class="t5-data-val">2 adultos</div>
+            </div>
+            <div class="t5-data-item">
+              <div class="t5-data-lbl">Noches</div>
+              <div class="t5-data-val">8 noches</div>
+            </div>
+            <div class="t5-data-item">
+              <div class="t5-data-lbl">Salida</div>
+              <div class="t5-data-val">15 ago</div>
+            </div>
+            <div class="t5-data-item">
+              <div class="t5-data-lbl">Regreso</div>
+              <div class="t5-data-val">23 ago</div>
+            </div>
+          </div>
+          <div class="t5-total-block">
+            <div class="t5-total-lbl">precio referencia</div>
+            <div class="t5-total-amt">USD 8.440</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">ITINERARIO</div>
+
+  <!-- ITINERARIO -->
+  <div class="page">
+    <div class="t5-page">
+      <div class="t5-section-hd">
+        <div class="t5-section-left"><div class="t5-section-dot"></div><div><div class="t5-section-ttl">Día a Día</div><div class="t5-section-sub">Itinerario · Maldivas · 8 noches</div></div></div>
+        <div class="t5-section-num">01</div>
+      </div>
+      <table class="iti-table">
+        <thead style="background:#F9FAFB"><tr>
+          <th style="color:#9CA3AF;width:70px">Fecha</th>
+          <th style="color:#9CA3AF">Actividad</th>
+          <th style="color:#9CA3AF;width:100px">Tipo</th>
+        </tr></thead>
+        <tbody>
+          <tr><td><div class="iti-date-num" style="color:#111827">15/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Buenos Aires (EZE) → Male (MLE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">16/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Llegada Male · Hidroavión a resort</td><td><span class="iti-type-pill" style="background:#E8826A">TRASLADO</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">17/08</div><div class="iti-date-day">Dom</div></td><td style="color:#374151">Libre en resort · Playa &amp; bungalow</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">18/08</div><div class="iti-date-day">Lun</div></td><td style="color:#374151">Snorkel con manta rayas · Excursión</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">19/08</div><div class="iti-date-day">Mar</div></td><td style="color:#374151">Buceo certificado · Arrecife coral</td><td><span class="iti-type-pill" style="background:#0288D1">PLAYA</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">20/08</div><div class="iti-date-day">Mié</div></td><td style="color:#374151">Libre · Spa y descanso en resort</td><td><span class="iti-type-pill" style="background:#43A047">RELAX</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">21/08</div><div class="iti-date-day">Jue</div></td><td style="color:#374151">Cena romántica en la playa</td><td><span class="iti-type-pill" style="background:#D4A017">EXCURSIÓN</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">22/08</div><div class="iti-date-day">Vie</div></td><td style="color:#374151">Último día · Libre hasta traslado</td><td><span class="iti-type-pill" style="background:#9CA3AF">LIBRE</span></td></tr>
+          <tr><td><div class="iti-date-num" style="color:#111827">23/08</div><div class="iti-date-day">Sáb</div></td><td style="color:#374151">Male (MLE) → Buenos Aires (EZE)</td><td><span class="iti-type-pill" style="background:#0EA5E9">VUELO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="page-sep">VUELOS · HOTEL · TRASLADOS · EXCURSIONES · SEGURO · PRECIOS</div>
+
+  <!-- SERVICES -->
+  <div class="page">
+    <div class="t5-page">
+      <div class="t5-section-hd"><div class="t5-section-left"><div class="t5-section-dot"></div><div><div class="t5-section-ttl">Transporte Aéreo</div><div class="t5-section-sub">2 tramos · Ida y vuelta</div></div></div><div class="t5-section-num">02</div></div>
+      <div class="t5-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t5-bp-time">06:45</div><div class="t5-bp-iata">EZE</div><div class="t5-bp-city">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t5-bp-direct">directo · 20h 30m</div><div class="t5-bp-line"></div></div>
+          <div style="text-align:right"><div class="t5-bp-time">09:15+1</div><div class="t5-bp-iata right">MLE</div><div class="t5-bp-city" style="text-align:right">Male, Maldivas</div></div>
+        </div>
+        <div class="t5-bp-footer">Emirates <span>EK 264</span> &nbsp;·&nbsp; <span>15 Ago 2025</span> &nbsp;·&nbsp; Clase <span>Económica</span></div>
+      </div>
+      <div class="t5-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div class="t5-bp-time">11:00</div><div class="t5-bp-iata">MLE</div><div class="t5-bp-city">Male, Maldivas</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t5-bp-direct">escala DXB · 22h</div><div class="t5-bp-line"></div></div>
+          <div style="text-align:right"><div class="t5-bp-time">08:30+1</div><div class="t5-bp-iata right">EZE</div><div class="t5-bp-city" style="text-align:right">Buenos Aires</div></div>
+        </div>
+        <div class="t5-bp-footer">Emirates <span>EK 265</span> &nbsp;·&nbsp; <span>23 Ago 2025</span> &nbsp;·&nbsp; Escala <span>Dubai (DXB)</span></div>
+      </div>
+
+      <div class="t5-section-hd" style="margin-top:20px"><div class="t5-section-left"><div class="t5-section-dot"></div><div><div class="t5-section-ttl">Alojamiento</div><div class="t5-section-sub">7 noches · Atolón Norte Malé</div></div></div><div class="t5-section-num">03</div></div>
+      <div class="t5-card">
+        <div class="t5-card-photo">
+          <img src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=400&q=80" alt="hotel">
+          <div class="t5-card-accent"></div>
+        </div>
+        <div class="t5-card-body">
+          <div class="t5-tag">Hotel Confirmado</div>
+          <div class="t5-card-ttl">Anantara Veli Maldives Resort ★★★★★</div>
+          <div class="t5-card-meta">Check-in: 16 agosto · Check-out: 23 agosto<br>Over-Water Bungalow · 2 adultos<br>Media pensión incluida (HB)</div>
+          <div class="t5-card-price">USD 4.200</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div>
+          <div class="t5-section-hd"><div class="t5-section-left"><div class="t5-section-dot"></div><div><div class="t5-section-ttl" style="font-size:14px">Actividades</div></div></div><div class="t5-section-num" style="font-size:22px">04</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="t5-card" style="display:block;padding:12px;border-left:3px solid #0EA5E9"><div class="t5-tag" style="background:#E0F2FE;color:#0369A1">Snorkel</div><div style="font-size:12px;font-weight:700;color:#111827">Manta Rays Tour</div><div style="font-size:9px;color:#6B7280;margin-top:2px">18 ago · 4h · USD 180</div></div>
+            <div class="t5-card" style="display:block;padding:12px;border-left:3px solid #C2410C"><div class="t5-tag">Cena</div><div style="font-size:12px;font-weight:700;color:#111827">Sunset Dinner</div><div style="font-size:9px;color:#6B7280;margin-top:2px">21 ago · 3h · USD 160</div></div>
+          </div>
+          <div class="t5-section-hd" style="margin-top:14px"><div class="t5-section-left"><div class="t5-section-dot" style="background:#6D28D9"></div><div><div class="t5-section-ttl" style="font-size:14px">Seguro</div></div></div><div class="t5-section-num" style="font-size:22px">05</div></div>
+          <div class="t5-card" style="display:block;padding:12px;border-left:3px solid #6D28D9">
+            <div class="t5-tag" style="background:#EDE9FE;color:#5B21B6">Premium</div>
+            <div style="font-size:12px;font-weight:700;color:#111827">Assist Card Gold</div>
+            <div style="font-size:9px;color:#6B7280;line-height:1.6;margin-top:2px">USD 100K cobertura · 2 personas · 8 días</div>
+            <div style="font-size:13px;font-weight:800;color:#C2410C;margin-top:5px">USD 560</div>
+          </div>
+        </div>
+        <div>
+          <div class="t5-section-hd"><div class="t5-section-left"><div class="t5-section-dot"></div><div><div class="t5-section-ttl" style="font-size:14px">Precios</div></div></div><div class="t5-section-num" style="font-size:22px">06</div></div>
+          <div style="background:#FAFAF8;border:1px solid #E5E7EB;border-radius:12px;overflow:hidden">
+            <div style="background:#111827;padding:12px 16px">
+              <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px">RESUMEN DE INVERSIÓN</div>
+              <div style="font-size:20px;font-weight:900;color:#F97316">USD 8.440</div>
+            </div>
+            <div style="padding:12px 16px">
+              <div class="t5-price-row"><span class="t5-price-lbl">Vuelos · 2 pax</span><span class="t5-price-val">USD 2.800</span></div>
+              <div class="t5-price-row"><span class="t5-price-lbl">Alojamiento · 7 noches</span><span class="t5-price-val">USD 4.200</span></div>
+              <div class="t5-price-row"><span class="t5-price-lbl">Traslados</span><span class="t5-price-val">Incluido</span></div>
+              <div class="t5-price-row"><span class="t5-price-lbl">Actividades</span><span class="t5-price-val">USD 560</span></div>
+              <div class="t5-price-row"><span class="t5-price-lbl">Seguro</span><span class="t5-price-val">USD 560</span></div>
+              <div class="t5-price-row" style="border-bottom:none"><span class="t5-price-lbl">Tasas e impuestos</span><span class="t5-price-val">USD 320</span></div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:12px;background:#FEF2F2;border:1px solid rgba(194,65,12,0.15);border-radius:10px;font-size:9px;color:#92400E;line-height:1.7">
+            Precios orientativos. Válido hasta 01/07/2025.<br>Preparado por <strong>Diego Lecler · Patoyro Travel</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end t5 -->
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 6 — MAGIA ENCANTADA (Disney: midnight blue + gold stars)
+════════════════════════════════════════════ -->
+<div class="template-section" id="t6">
+  <div class="template-label" style="color:#FFD700">TEMPLATE 6</div>
+  <div class="template-name">Magia Encantada</div>
+  <div class="template-desc">Paleta Disney clásica · Azul medianoche profundo + destellos dorados + tipografía serif elegante · Perfecto para paquetes Disney World, Disneyland Paris y destinos mágicos</div>
+
+  <div class="page">
+    <div class="t6-cover">
+      <div class="t6-photo"></div>
+      <div class="t6-ov1"></div><div class="t6-ov2"></div><div class="t6-ov3"></div>
+      <!-- Stars -->
+      <div class="t6-stars">
+        <div class="t6-star" style="width:3px;height:3px;top:18%;left:12%;animation-delay:0s"></div>
+        <div class="t6-star" style="width:2px;height:2px;top:25%;left:28%;animation-delay:.7s"></div>
+        <div class="t6-star" style="width:4px;height:4px;top:14%;left:45%;animation-delay:1.2s"></div>
+        <div class="t6-star" style="width:2px;height:2px;top:30%;left:62%;animation-delay:.3s"></div>
+        <div class="t6-star" style="width:3px;height:3px;top:20%;left:78%;animation-delay:1.8s"></div>
+        <div class="t6-star" style="width:2px;height:2px;top:38%;left:88%;animation-delay:.9s"></div>
+        <div class="t6-star" style="width:3px;height:3px;top:10%;left:92%;animation-delay:2.1s"></div>
+        <div class="t6-star" style="width:2px;height:2px;top:35%;left:8%;animation-delay:1.5s"></div>
+        <div class="t6-star" style="width:4px;height:4px;top:8%;left:55%;animation-delay:.5s"></div>
+        <div class="t6-star" style="width:2px;height:2px;top:42%;left:35%;animation-delay:2.4s"></div>
+      </div>
+      <div class="t6-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg6)"/></svg>
+          <div style="width:1px;height:18px;background:rgba(255,255,255,.18)"></div>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.7)">Patoyro Travel</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,215,0,.5);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 10px">ERM-25-1847</div>
+      </div>
+      <div class="t6-center">
+        <div class="t6-magic-lbl">✦ Una experiencia mágica espera ✦</div>
+        <div class="t6-dest">Walt Disney World<br><span style="font-size:32px;font-weight:400;font-style:italic;letter-spacing:0">Orlando, Florida</span></div>
+        <div class="t6-client-row">
+          <div class="t6-gold-chip">✦ Cotización para Ana García ✦</div>
+        </div>
+      </div>
+      <div class="t6-bottom">
+        <div class="t6-meta">
+          <div class="t6-meta-item"><span class="t6-meta-star">★</span>2 adultos · 2 niños</div>
+          <div class="t6-meta-item"><span class="t6-meta-star">★</span>10 – 20 diciembre 2025</div>
+          <div class="t6-meta-item"><span class="t6-meta-star">★</span>10 noches</div>
+        </div>
+        <div class="t6-total"><div class="t6-total-lbl">precio referencia</div><div class="t6-total-amt">USD 12.400</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">SERVICIOS INCLUIDOS</div>
+  <div class="page">
+    <div class="t6-page">
+      <div class="t6-hd"><div class="t6-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div><div><div class="t6-hd-ttl">Transporte Aéreo</div><div class="t6-hd-sub">2 tramos · Ida y vuelta</div></div></div>
+      <div class="t6-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div style="font-size:18px;font-weight:800;color:#0D1B5E;font-family:'DM Mono',monospace">07:15</div><div class="t6-bp-iata">EZE</div><div style="font-size:9px;color:#6B7280">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t6-bp-direct">directo · 10h 45m</div><div class="t6-bp-line"></div></div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#0D1B5E;font-family:'DM Mono',monospace">17:00</div><div class="t6-bp-iata" style="text-align:right;min-width:0">MCO</div><div style="font-size:9px;color:#6B7280;text-align:right">Orlando</div></div>
+        </div>
+        <div class="t6-bp-footer">American Airlines <span>AA 907</span> · <span>10 Dic 2025</span> · Clase <span>Económica</span></div>
+      </div>
+      <div class="t6-hd" style="margin-top:20px"><div class="t6-hd-ico" style="background:linear-gradient(135deg,#B8860B,#FFD700)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#060D2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="t6-hd-ttl">Alojamiento</div><div class="t6-hd-sub">10 noches · Resort Disney</div></div></div>
+      <div class="t6-card">
+        <div class="t6-card-photo"><img src="https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=400&q=80" alt="Disney hotel"></div>
+        <div class="t6-card-body">
+          <div class="t6-tag">✦ Resort Oficial Disney</div>
+          <div class="t6-card-ttl">Disney's Art of Animation Resort</div>
+          <div class="t6-card-meta">Check-in: 10 diciembre · Check-out: 20 diciembre<br>Family Suite · 4 personas · Desayuno incluido<br>Acceso gratuito a Disney Transportation</div>
+          <div class="t6-price">USD 6.800</div>
+        </div>
+      </div>
+      <div class="t6-hd" style="margin-top:16px"><div class="t6-hd-ico" style="background:linear-gradient(135deg,#7C3AED,#5B21B6)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div><div class="t6-hd-ttl">Tickets & Parques</div><div class="t6-hd-sub">4 parques · 7 días</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+        <div style="background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(6,13,46,0.07)"><div style="font-size:20px;margin-bottom:6px">🏰</div><div style="font-size:10px;font-weight:800;color:#0D1B5E">Magic Kingdom</div><div style="font-size:9px;color:#6B7280;margin-top:2px">7 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#B8860B;margin-top:5px">USD 1.440</div></div>
+        <div style="background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(6,13,46,0.07)"><div style="font-size:20px;margin-bottom:6px">🚀</div><div style="font-size:10px;font-weight:800;color:#0D1B5E">EPCOT</div><div style="font-size:9px;color:#6B7280;margin-top:2px">7 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#B8860B;margin-top:5px">Incluido</div></div>
+        <div style="background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(6,13,46,0.07)"><div style="font-size:20px;margin-bottom:6px">🎬</div><div style="font-size:10px;font-weight:800;color:#0D1B5E">Hollywood Studios</div><div style="font-size:9px;color:#6B7280;margin-top:2px">7 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#B8860B;margin-top:5px">Incluido</div></div>
+        <div style="background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(6,13,46,0.07)"><div style="font-size:20px;margin-bottom:6px">🦁</div><div style="font-size:10px;font-weight:800;color:#0D1B5E">Animal Kingdom</div><div style="font-size:9px;color:#6B7280;margin-top:2px">7 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#B8860B;margin-top:5px">Incluido</div></div>
+      </div>
+      <div style="background:#fff;border:1px solid rgba(26,58,143,0.12);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(6,13,46,0.06)">
+        <div style="background:linear-gradient(135deg,#0D1B5E,#1A3A8F);padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,.55)">RESUMEN DE INVERSIÓN</div>
+          <div style="font-size:8px;font-family:'DM Mono',monospace;color:rgba(255,215,0,.4)">ERM-25-1847</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(26,58,143,0.08);font-size:11px"><span style="color:#6B7280">Vuelos (4 personas)</span><span style="font-weight:700;color:#0D1B5E">USD 3.200</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(26,58,143,0.08);font-size:11px"><span style="color:#6B7280">Alojamiento Resort — 10 noches</span><span style="font-weight:700;color:#0D1B5E">USD 6.800</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(26,58,143,0.08);font-size:11px"><span style="color:#6B7280">Park Hopper 7 días · 4 pax</span><span style="font-weight:700;color:#0D1B5E">USD 1.440</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(26,58,143,0.08);font-size:11px"><span style="color:#6B7280">Seguro + Traslados</span><span style="font-weight:700;color:#0D1B5E">USD 960</span></div>
+        </div>
+        <div class="t6-price-total"><span class="t6-price-total-lbl">TOTAL · 4 PERSONAS</span><span class="t6-price-total-amt">USD 12.400</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 7 — EPIC ADVENTURE (Universal: black + orange-red)
+════════════════════════════════════════════ -->
+<div class="template-section" id="t7">
+  <div class="template-label" style="color:#FF4500">TEMPLATE 7</div>
+  <div class="template-name">Epic Adventure</div>
+  <div class="template-desc">Universal Studios energy · Negro cinematográfico + rojo-naranja explosivo + tipografía Bebas Neue · Para paquetes Universal Orlando, Hollywood y destinos de aventura extrema</div>
+
+  <div class="page">
+    <div class="t7-cover">
+      <div class="t7-photo"></div>
+      <div class="t7-ov1"></div><div class="t7-ov2"></div>
+      <div class="t7-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg7)"/></svg>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.65)">Patoyro Travel</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(232,71,43,.65);border:1px solid rgba(232,71,43,.25);border-radius:20px;padding:4px 10px">ERM-25-1847</div>
+      </div>
+      <div class="t7-content">
+        <div class="t7-eyebrow"><div class="t7-eye-line"></div>PROPUESTA EXCLUSIVA</div>
+        <div class="t7-dest">UNIVERSAL<br>ORLANDO</div>
+        <div class="t7-for">Cotización para</div>
+        <div class="t7-client">Ana García & familia</div>
+      </div>
+      <div class="t7-bottom">
+        <div class="t7-meta">
+          <div class="t7-meta-item"><div class="t7-meta-bar"></div>4 personas</div>
+          <div class="t7-meta-item"><div class="t7-meta-bar"></div>10 – 20 diciembre 2025</div>
+          <div class="t7-meta-item"><div class="t7-meta-bar"></div>10 noches</div>
+        </div>
+        <div class="t7-total"><div class="t7-total-lbl">precio referencia</div><div class="t7-total-amt">USD 10.800</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">SERVICIOS INCLUIDOS</div>
+  <div class="page">
+    <div class="t7-page">
+      <div class="t7-hd"><div class="t7-hd-stripe"></div><div><div class="t7-hd-ttl">Transporte Aéreo</div><div class="t7-hd-sub">Ida y vuelta · EZE – MCO</div></div></div>
+      <div class="t7-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div style="font-size:18px;font-weight:800;color:#F5F5F5;font-family:'DM Mono',monospace">07:15</div><div class="t7-bp-iata">EZE</div><div style="font-size:9px;color:#737373">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t7-bp-direct">directo · 10h 45m</div><div class="t7-bp-line"></div></div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#F5F5F5;font-family:'DM Mono',monospace">17:00</div><div class="t7-bp-iata" style="text-align:right;min-width:0">MCO</div><div style="font-size:9px;color:#737373;text-align:right">Orlando</div></div>
+        </div>
+        <div class="t7-bp-footer">American Airlines <span>AA 907</span> · <span>10 Dic 2025</span> · <span>Económica</span></div>
+      </div>
+      <div class="t7-hd" style="margin-top:18px"><div class="t7-hd-stripe" style="background:#FF8C00"></div><div><div class="t7-hd-ttl">Alojamiento</div><div class="t7-hd-sub">10 noches · On-Site Universal</div></div></div>
+      <div class="t7-card">
+        <div class="t7-card-photo"><img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80" alt="hotel"></div>
+        <div class="t7-card-body">
+          <div class="t7-tag">On-Site Resort</div>
+          <div class="t7-card-ttl">Universal's Cabana Bay Beach Resort</div>
+          <div class="t7-card-meta">Check-in: 10 diciembre · Check-out: 20 diciembre<br>Family Suite · 4 personas<br>Early Park Admission incluido</div>
+          <div class="t7-price">USD 5.200</div>
+        </div>
+      </div>
+      <div class="t7-hd" style="margin-top:16px"><div class="t7-hd-stripe" style="background:#FF4500"></div><div><div class="t7-hd-ttl">Tickets & Parques</div><div class="t7-hd-sub">4 parques · 5 días</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">
+        <div style="background:#1A1A1A;border:1px solid rgba(232,71,43,.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">🧙</div><div style="font-size:10px;font-weight:800;color:#F5F5F5">Wizarding World</div><div style="font-size:9px;color:#737373;margin-top:2px">5 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#E8472B;margin-top:5px">USD 1.200</div></div>
+        <div style="background:#1A1A1A;border:1px solid rgba(232,71,43,.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">🦕</div><div style="font-size:10px;font-weight:800;color:#F5F5F5">Jurassic World</div><div style="font-size:9px;color:#737373;margin-top:2px">5 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#E8472B;margin-top:5px">Incluido</div></div>
+        <div style="background:#1A1A1A;border:1px solid rgba(232,71,43,.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">🦸</div><div style="font-size:10px;font-weight:800;color:#F5F5F5">Marvel HQ</div><div style="font-size:9px;color:#737373;margin-top:2px">5 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#E8472B;margin-top:5px">Incluido</div></div>
+        <div style="background:#1A1A1A;border:1px solid rgba(232,71,43,.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">🌊</div><div style="font-size:10px;font-weight:800;color:#F5F5F5">Epic Universe</div><div style="font-size:9px;color:#737373;margin-top:2px">5 días · 4 pax</div><div style="font-size:12px;font-weight:800;color:#E8472B;margin-top:5px">Incluido</div></div>
+      </div>
+      <div style="background:#1A1A1A;border:1px solid rgba(232,71,43,.15);border-radius:14px;overflow:hidden">
+        <div style="background:#E8472B;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.75)">RESUMEN DE INVERSIÓN</div>
+        </div>
+        <div style="padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px"><span style="color:#737373">Vuelos (4 personas)</span><span style="font-weight:700;color:#F5F5F5">USD 3.200</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px"><span style="color:#737373">Alojamiento On-Site — 10 noches</span><span style="font-weight:700;color:#F5F5F5">USD 5.200</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px"><span style="color:#737373">Universal 5-Park Pass · 4 pax</span><span style="font-weight:700;color:#F5F5F5">USD 1.400</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:11px"><span style="color:#737373">Seguro + Traslados</span><span style="font-weight:700;color:#F5F5F5">USD 1.000</span></div>
+        </div>
+        <div class="t7-price-total"><span class="t7-price-total-lbl">TOTAL · 4 PERSONAS</span><span class="t7-price-total-amt">USD 10.800</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 8 — ROSA BOTÁNICA (pink / rose / champagne)
+════════════════════════════════════════════ -->
+<div class="template-section" id="t8">
+  <div class="template-label" style="color:#F472B6">TEMPLATE 8</div>
+  <div class="template-name">Rosa Botánica</div>
+  <div class="template-desc">Lujo romántico · Profundo vino/rosa + foto dreamy + tipografía Playfair serif · Ideal para luna de miel, aniversarios y viajes en pareja a destinos aspiracionales</div>
+
+  <div class="page">
+    <div class="t8-cover">
+      <div class="t8-photo"></div>
+      <div class="t8-ov1"></div><div class="t8-ov2"></div><div class="t8-ov3"></div>
+      <div class="t8-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg8" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg8)"/></svg>
+          <div style="font-size:10px;font-weight:700;color:rgba(253,242,248,.8)">Patoyro Travel</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(249,168,212,.5);border:1px solid rgba(249,168,212,.2);border-radius:20px;padding:4px 10px">ERM-25-1847</div>
+      </div>
+      <div class="t8-content">
+        <div class="t8-petal">✿ ✿ ✿</div>
+        <div class="t8-dest-lbl">Luna de miel en</div>
+        <div class="t8-dest">Santorini<br><span style="font-size:28px;font-weight:400;font-style:italic">Islas Griegas</span></div>
+        <div class="t8-for-row"><div class="t8-for-line"></div><div class="t8-for-txt">Propuesta romántica para</div><div class="t8-for-line"></div></div>
+        <div class="t8-client">Ana & Carlos García</div>
+      </div>
+      <div class="t8-bottom">
+        <div class="t8-meta">
+          <div class="t8-meta-item"><span class="t8-meta-heart">♥</span>2 personas · Luna de miel</div>
+          <div class="t8-meta-item"><span class="t8-meta-heart">♥</span>12 – 22 septiembre 2025</div>
+          <div class="t8-meta-item"><span class="t8-meta-heart">♥</span>10 noches</div>
+        </div>
+        <div class="t8-total"><div class="t8-total-lbl">precio referencia</div><div class="t8-total-amt">USD 9.200</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">SERVICIOS INCLUIDOS</div>
+  <div class="page">
+    <div class="t8-page">
+      <div class="t8-hd"><div class="t8-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div><div><div class="t8-hd-ttl">Transporte Aéreo</div><div class="t8-hd-sub">Ida y vuelta · EZE – JTR</div></div></div>
+      <div class="t8-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div style="font-size:18px;font-weight:800;color:#831843;font-family:'DM Mono',monospace">10:30</div><div class="t8-bp-iata">EZE</div><div style="font-size:9px;color:#9D174D;opacity:.7">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t8-bp-direct">con escala · 18h</div><div class="t8-bp-line"></div></div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#831843;font-family:'DM Mono',monospace">06:30+1</div><div class="t8-bp-iata" style="text-align:right;min-width:0">JTR</div><div style="font-size:9px;color:#9D174D;opacity:.7;text-align:right">Santorini</div></div>
+        </div>
+        <div class="t8-bp-footer">Aegean Airlines <span>A3 503</span> · <span>12 Sep 2025</span> · Escala <span>Atenas (ATH)</span></div>
+      </div>
+      <div class="t8-hd" style="margin-top:18px"><div class="t8-hd-ico" style="background:linear-gradient(135deg,#9D174D,#831843)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="t8-hd-ttl">Alojamiento</div><div class="t8-hd-sub">10 noches · Oia, Santorini</div></div></div>
+      <div class="t8-card">
+        <div class="t8-card-photo"><img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80" alt="Santorini"></div>
+        <div class="t8-card-body">
+          <div class="t8-tag">♥ Suite Luna de Miel</div>
+          <div class="t8-card-ttl">Mystique Hotel Santorini — Oia</div>
+          <div class="t8-card-meta">Check-in: 12 septiembre · Check-out: 22 septiembre<br>Cave Suite con piscina privada · Vista al caldera<br>Desayuno romántico incluido · Champagne de bienvenida</div>
+          <div class="t8-price">USD 6.400</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+        <div>
+          <div class="t8-hd" style="margin-top:14px"><div class="t8-hd-ico" style="background:linear-gradient(135deg,#BE185D,#F472B6)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div><div class="t8-hd-ttl" style="font-size:13px">Experiencias</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="t8-card" style="display:block;padding:12px"><div class="t8-tag" style="font-size:7px">Crucero</div><div style="font-size:12px;font-weight:700;color:#831843">Sunset Catamaran</div><div style="font-size:9px;color:#9D174D;opacity:.7;margin-top:2px">14 sep · 4h · 2 pax · USD 280</div></div>
+            <div class="t8-card" style="display:block;padding:12px"><div class="t8-tag" style="font-size:7px">Cena</div><div style="font-size:12px;font-weight:700;color:#831843">Cena en Caldera</div><div style="font-size:9px;color:#9D174D;opacity:.7;margin-top:2px">18 sep · 3h · 2 pax · USD 240</div></div>
+            <div class="t8-card" style="display:block;padding:12px"><div class="t8-tag" style="font-size:7px">Spa</div><div style="font-size:12px;font-weight:700;color:#831843">Couples Spa Day</div><div style="font-size:9px;color:#9D174D;opacity:.7;margin-top:2px">16 sep · 3h · 2 pax · USD 320</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t8-hd" style="margin-top:14px"><div class="t8-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="t8-hd-ttl" style="font-size:13px">Inversión total</div></div></div>
+          <div style="background:#fff;border:1px solid rgba(244,114,182,0.2);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(131,24,67,0.07)">
+            <div style="background:linear-gradient(135deg,#831843,#BE185D);padding:12px 16px"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(253,242,248,.55);margin-bottom:2px">PROPUESTA ROMÁNTICA</div><div style="font-size:20px;font-weight:900;color:#FDF2F8">USD 9.200</div></div>
+            <div style="padding:12px 16px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(244,114,182,0.1);font-size:10px"><span style="color:#9D174D;opacity:.75">Vuelos</span><span style="font-weight:700;color:#831843">USD 1.960</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(244,114,182,0.1);font-size:10px"><span style="color:#9D174D;opacity:.75">Suite + desayuno</span><span style="font-weight:700;color:#831843">USD 6.400</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(244,114,182,0.1);font-size:10px"><span style="color:#9D174D;opacity:.75">Experiencias</span><span style="font-weight:700;color:#831843">USD 840</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:10px"><span style="color:#9D174D;opacity:.75">Seguro viajero</span><span style="font-weight:700;color:#831843">USD 320</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:12px;background:#FFF1F7;border:1px solid rgba(244,114,182,0.2);border-radius:10px;font-size:9px;color:#831843;line-height:1.7">
+            ♥ Cotización especial luna de miel.<br>Válida hasta 01/07/2025.<br><strong>Diego Lecler · Patoyro Travel</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 9 — AQUA PROFUNDO (deep navy + electric cyan)
+════════════════════════════════════════════ -->
+<div class="template-section" id="t9">
+  <div class="template-label" style="color:#22D3EE">TEMPLATE 9</div>
+  <div class="template-name">Aqua Profundo</div>
+  <div class="template-desc">Océano profundo meets tecnología · Navy oscuro + cyan eléctrico + glow sutil · Para cruceros, viajes al Caribe, buceo y destinos costeros de alto impacto</div>
+
+  <div class="page">
+    <div class="t9-cover">
+      <div class="t9-photo"></div>
+      <div class="t9-ov1"></div><div class="t9-ov2"></div><div class="t9-glow"></div>
+      <div class="t9-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg9" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg9)"/></svg>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.65)">Patoyro Travel</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(34,211,238,.5);border:1px solid rgba(34,211,238,.2);border-radius:20px;padding:4px 10px">ERM-25-1847</div>
+      </div>
+      <div class="t9-content">
+        <div class="t9-depth">— Crucero por el Caribe —</div>
+        <div class="t9-dest">MSC Seashore<br><span style="font-size:26px;font-weight:600;letter-spacing:-1px">Mar Caribe · 7 destinos</span></div>
+        <div class="t9-client-pill">
+          <span class="t9-client-lbl">Para</span>
+          <span class="t9-client-nm">Ana García</span>
+        </div>
+      </div>
+      <div class="t9-bottom">
+        <div class="t9-meta">
+          <div class="t9-meta-item"><div class="t9-meta-dot"></div>2 adultos</div>
+          <div class="t9-meta-item"><div class="t9-meta-dot"></div>5 – 15 marzo 2026</div>
+          <div class="t9-meta-item"><div class="t9-meta-dot"></div>10 noches</div>
+          <div class="t9-meta-item"><div class="t9-meta-dot"></div>7 puertos</div>
+        </div>
+        <div class="t9-total"><div class="t9-total-lbl">precio referencia</div><div class="t9-total-amt">USD 7.600</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">SERVICIOS INCLUIDOS</div>
+  <div class="page">
+    <div class="t9-page">
+      <div class="t9-hd"><div class="t9-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div><div><div class="t9-hd-ttl">Transporte Aéreo</div><div class="t9-hd-sub">EZE → MIA ida y vuelta</div></div></div>
+      <div class="t9-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div style="font-size:18px;font-weight:800;color:#E0F7FA;font-family:'DM Mono',monospace">08:00</div><div class="t9-bp-iata">EZE</div><div style="font-size:9px;color:#64748B">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t9-bp-direct">directo · 8h 30m</div><div class="t9-bp-line"></div></div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#E0F7FA;font-family:'DM Mono',monospace">16:30</div><div class="t9-bp-iata" style="text-align:right;min-width:0">MIA</div><div style="font-size:9px;color:#64748B;text-align:right">Miami</div></div>
+        </div>
+        <div class="t9-bp-footer">LATAM Airlines <span>LA 8012</span> · <span>5 Mar 2026</span> · Clase <span>Económica</span></div>
+      </div>
+      <div class="t9-hd" style="margin-top:18px"><div class="t9-hd-ico" style="background:linear-gradient(135deg,#0891B2,#0284C7)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1C7 22 7 21 9.5 21c2.6 0 2.6 1 5.1 1 2.4 0 2.4-1 4.9-1 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.4.8 4.5 2.1 6.2"/><path d="M12 2v7"/></svg></div><div><div class="t9-hd-ttl">Crucero</div><div class="t9-hd-sub">10 noches · 7 puertos Caribe</div></div></div>
+      <div class="t9-card">
+        <div class="t9-card-photo"><img src="https://images.unsplash.com/photo-1548574505-5e239809ee19?w=400&q=80" alt="crucero"></div>
+        <div class="t9-card-body">
+          <div class="t9-tag">Camarote Balcón</div>
+          <div class="t9-card-ttl">MSC Seashore — Caribe Oriental</div>
+          <div class="t9-card-meta">Salida: Miami · 5 de marzo 2026<br>Puertos: Nassau · San Juan · St. Maarten · St. Thomas · Cozumel · Key West<br>Todo incluido · Bebidas premium · 2 personas</div>
+          <div class="t9-price">USD 5.200</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div>
+          <div class="t9-hd"><div class="t9-hd-ico" style="background:linear-gradient(135deg,#D4A017,#B45309)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div><div class="t9-hd-ttl" style="font-size:13px">Excursiones</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div class="t9-card" style="display:block;padding:11px"><div class="t9-tag" style="font-size:7px">Nassau</div><div style="font-size:11px;font-weight:700;color:#E0F7FA">Atlantis Beach Day</div><div style="font-size:9px;color:#64748B;margin-top:2px">6 mar · USD 150/pax</div></div>
+            <div class="t9-card" style="display:block;padding:11px"><div class="t9-tag" style="font-size:7px">St. Maarten</div><div style="font-size:11px;font-weight:700;color:#E0F7FA">Snorkel &amp; Catamaran</div><div style="font-size:9px;color:#64748B;margin-top:2px">9 mar · USD 120/pax</div></div>
+            <div class="t9-card" style="display:block;padding:11px"><div class="t9-tag" style="font-size:7px">Cozumel</div><div style="font-size:11px;font-weight:700;color:#E0F7FA">Cenote Dive</div><div style="font-size:9px;color:#64748B;margin-top:2px">12 mar · USD 180/pax</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t9-hd"><div class="t9-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="t9-hd-ttl" style="font-size:13px">Inversión total</div></div></div>
+          <div style="background:#071525;border:1px solid rgba(6,182,212,0.15);border-radius:12px;overflow:hidden">
+            <div style="background:linear-gradient(135deg,#0C4A6E,#075985);padding:12px 16px;border-bottom:1px solid rgba(6,182,212,0.15)"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(34,211,238,.45);margin-bottom:2px">CRUCERO CARIBE</div><div style="font-size:20px;font-weight:900;color:#22D3EE">USD 7.600</div></div>
+            <div style="padding:12px 16px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(6,182,212,0.08);font-size:10px"><span style="color:#64748B">Vuelos EZE – MIA</span><span style="font-weight:700;color:#E0F7FA">USD 1.400</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(6,182,212,0.08);font-size:10px"><span style="color:#64748B">Crucero todo incluido</span><span style="font-weight:700;color:#E0F7FA">USD 5.200</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(6,182,212,0.08);font-size:10px"><span style="color:#64748B">Excursiones (3)</span><span style="font-weight:700;color:#E0F7FA">USD 600</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:10px"><span style="color:#64748B">Seguro + Tasas</span><span style="font-weight:700;color:#E0F7FA">USD 400</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:12px;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.12);border-radius:10px;font-size:9px;color:#164E63;line-height:1.7">
+            Válido hasta 01/12/2025.<br><strong style="color:#0891B2">Diego Lecler · Patoyro Travel</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     TEMPLATE 10 — ROJO FLAMANTE (crimson + warm cream)
+════════════════════════════════════════════ -->
+<div class="template-section" id="t10">
+  <div class="template-label" style="color:#EF4444">TEMPLATE 10</div>
+  <div class="template-name">Rojo Flamante</div>
+  <div class="template-desc">Energía y pasión · Carmesí profundo + foto de aventura + crema cálido · Para safaris, aventura extrema, destinos Latinoamérica y viajes grupales de alto voltaje</div>
+
+  <div class="page">
+    <div class="t10-cover">
+      <div class="t10-photo"></div>
+      <div class="t10-ov1"></div><div class="t10-ov2"></div>
+      <div class="t10-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <svg viewBox="0 0 90 30" width="72" height="24"><defs><linearGradient id="wg10" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B9E8F"/><stop offset="50%" stop-color="#0BC5B8"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><text x="0" y="22" font-family="'DM Sans',sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="-1">ermi</text><path transform="translate(55,2) scale(0.45)" d="M8 8 L8 18 L24.5 32 L8 46 L8 56 L20 56 L32 43.5 L44 56 L56 56 L56 46 L39.5 32 L56 18 L56 8 L44 8 L32 20.5 L20 8 Z" fill="url(#wg10)"/></svg>
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.7)">Patoyro Travel</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(252,165,165,.5);border:1px solid rgba(252,165,165,.2);border-radius:20px;padding:4px 10px">ERM-25-1847</div>
+      </div>
+      <div class="t10-content">
+        <div class="t10-tag-row"><div class="t10-red-bar"></div><div class="t10-eyebrow">Aventura sin límites</div></div>
+        <div class="t10-dest">Machu Picchu<br><span style="font-size:26px;font-weight:700;letter-spacing:-1px">Perú &amp; Cusco</span></div>
+        <div class="t10-row">
+          <div style="display:flex;flex-direction:column">
+            <span class="t10-client-for">Cotización para</span>
+            <span class="t10-client-nm">Ana García</span>
+          </div>
+        </div>
+      </div>
+      <div class="t10-bottom">
+        <div class="t10-meta">
+          <div class="t10-meta-item"><div class="t10-meta-tick"></div>2 personas</div>
+          <div class="t10-meta-item"><div class="t10-meta-tick"></div>20 – 30 julio 2025</div>
+          <div class="t10-meta-item"><div class="t10-meta-tick"></div>10 noches</div>
+        </div>
+        <div class="t10-total"><div class="t10-total-lbl">precio referencia</div><div class="t10-total-amt">USD 4.800</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-sep">SERVICIOS INCLUIDOS</div>
+  <div class="page">
+    <div class="t10-page">
+      <div class="t10-hd"><div class="t10-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div><div><div class="t10-hd-ttl">Transporte Aéreo</div><div class="t10-hd-sub">EZE → LIM → CUZ ida y vuelta</div></div></div>
+      <div class="t10-bp">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:10px">
+          <div><div style="font-size:18px;font-weight:800;color:#1A0000;font-family:'DM Mono',monospace">06:30</div><div class="t10-bp-iata">EZE</div><div style="font-size:9px;color:#6B5E52">Buenos Aires</div></div>
+          <div style="flex:1;text-align:center;padding:0 12px"><div class="t10-bp-direct">con escala LIM · 6h</div><div class="t10-bp-line"></div></div>
+          <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:#1A0000;font-family:'DM Mono',monospace">12:30</div><div class="t10-bp-iata" style="text-align:right;min-width:0">CUZ</div><div style="font-size:9px;color:#6B5E52;text-align:right">Cusco</div></div>
+        </div>
+        <div class="t10-bp-footer">LATAM <span>LA 2037</span> · <span>20 Jul 2025</span> · Escala <span>Lima (LIM)</span></div>
+      </div>
+      <div class="t10-hd" style="margin-top:18px"><div class="t10-hd-ico" style="background:linear-gradient(135deg,#B45309,#D4A017)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="t10-hd-ttl">Alojamiento</div><div class="t10-hd-sub">10 noches · Cusco + Aguas Calientes</div></div></div>
+      <div class="t10-card">
+        <div class="t10-card-photo"><img src="https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=400&q=80" alt="Machu Picchu"></div>
+        <div class="t10-card-body">
+          <div class="t10-tag">Boutique Heritage</div>
+          <div class="t10-card-ttl">Palacio del Inka — Cusco + Sanctuary Lodge</div>
+          <div class="t10-card-meta">Cusco: 20 – 25 julio · 5 noches · Superior Room<br>Aguas Calientes: 25 – 28 julio · 3 noches · Deluxe<br>Lima: 28 – 30 julio · 2 noches · Business</div>
+          <div class="t10-price">USD 2.400</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div>
+          <div class="t10-hd"><div class="t10-hd-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div><div><div class="t10-hd-ttl" style="font-size:13px">Excursiones</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div class="t10-card" style="display:block;padding:11px"><div class="t10-tag" style="font-size:7px">Icónico</div><div style="font-size:12px;font-weight:700;color:#1A0000">Machu Picchu Full Day</div><div style="font-size:9px;color:#6B5E52;margin-top:2px">26 jul · Tren + entrada · USD 480</div></div>
+            <div class="t10-card" style="display:block;padding:11px"><div class="t10-tag" style="font-size:7px">Trekking</div><div style="font-size:12px;font-weight:700;color:#1A0000">Valle Sagrado</div><div style="font-size:9px;color:#6B5E52;margin-top:2px">22 jul · Guía bilingüe · USD 180</div></div>
+            <div class="t10-card" style="display:block;padding:11px"><div class="t10-tag" style="font-size:7px">Cultural</div><div style="font-size:12px;font-weight:700;color:#1A0000">City Tour Cusco</div><div style="font-size:9px;color:#6B5E52;margin-top:2px">21 jul · 4h · USD 80</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t10-hd"><div class="t10-hd-ico" style="background:linear-gradient(135deg,#9B7FD4,#6D28D9)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="t10-hd-ttl" style="font-size:13px">Inversión total</div></div></div>
+          <div style="background:#fff;border:1px solid rgba(220,38,38,0.1);border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(153,27,27,0.07)">
+            <div style="background:linear-gradient(135deg,#1A0000,#7F1D1D);padding:12px 16px"><div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(252,165,165,.45);margin-bottom:2px">AVENTURA PERÚ</div><div style="font-size:20px;font-weight:900;color:#FCA5A5">USD 4.800</div></div>
+            <div style="padding:12px 16px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(220,38,38,0.08);font-size:10px"><span style="color:#6B5E52">Vuelos int'l + domésticos</span><span style="font-weight:700;color:#1A0000">USD 1.400</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(220,38,38,0.08);font-size:10px"><span style="color:#6B5E52">Alojamiento 10 noches</span><span style="font-weight:700;color:#1A0000">USD 2.400</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(220,38,38,0.08);font-size:10px"><span style="color:#6B5E52">Tren + excursiones</span><span style="font-weight:700;color:#1A0000">USD 740</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;font-size:10px"><span style="color:#6B5E52">Seguro + Tasas</span><span style="font-weight:700;color:#1A0000">USD 260</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px;padding:12px;background:#FFF5F5;border:1px solid rgba(220,38,38,0.12);border-radius:10px;font-size:9px;color:#7F1D1D;line-height:1.7">
+            Válido hasta 01/05/2025.<br><strong>Diego Lecler · Patoyro Travel</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:32px;color:#444;font-size:11px;letter-spacing:1px">
+  ermix pdf-templates-preview · 9 templates (T2–T10) · rev 2025-03-31
+</div>
+
+</body>
+</html>
