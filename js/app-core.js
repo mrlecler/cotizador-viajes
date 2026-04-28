@@ -278,8 +278,9 @@ function _captureError(ctx, err){
   window._appLog.unshift(entry);
   if(window._appLog.length>100) window._appLog.length=100;
   console.error('[appLog]',ctx,err);
-  // Si el panel de admin está abierto, refrescar el log
-  if(document.getElementById('admin-log') && typeof loadAdminLog==='function'){
+  // Si el panel de admin está abierto, refrescar el log (nunca en timeouts — evita cascade)
+  const _isTimeout = err?.code==='57014'||err?.message?.includes('statement timeout');
+  if(!_isTimeout && document.getElementById('admin-log') && typeof loadAdminLog==='function'){
     loadAdminLog();
   }
 }
