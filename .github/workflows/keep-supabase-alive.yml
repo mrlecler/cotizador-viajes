@@ -11,13 +11,20 @@ jobs:
     steps:
       - name: Ping Supabase
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns" \
-            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns" \
-            "https://jsgxoygyvibredxqyinj.supabase.co/rest/v1/agentes?select=id&limit=1")
-          echo "HTTP status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "Error: Supabase respondio $STATUS"
-            exit 1
-          fi
-          echo "Supabase activo."
+          ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzZ3hveWd5dmlicmVkeHF5aW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNDQ5MTAsImV4cCI6MjA4ODcyMDkxMH0.oVIChImLTwew3w0gB2zolHlsdFyiM6W_xuiWlYdDDns"
+          URL="https://jsgxoygyvibredxqyinj.supabase.co/rest/v1/agentes?select=id&limit=1"
+          for i in 1 2 3; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+              -H "apikey: $ANON_KEY" \
+              -H "Authorization: Bearer $ANON_KEY" \
+              "$URL")
+            echo "Intento $i — HTTP status: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "Supabase activo."
+              exit 0
+            fi
+            echo "Reintentando en 15s..."
+            sleep 15
+          done
+          echo "Error: Supabase no respondio 200 luego de 3 intentos (ultimo: $STATUS)"
+          exit 1
