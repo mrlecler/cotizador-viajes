@@ -1122,7 +1122,12 @@ async function _autosaveTick(){
     _showAutosaveIndicator();
     console.log('[AUTOSAVE] guardado OK');
   }catch(e){
-    console.warn('[AUTOSAVE] error:',e);
+    const _isTimeout=e?.code==='57014'||e?.message?.includes('statement timeout');
+    if(_isTimeout){
+      console.warn('[AUTOSAVE] timeout — Supabase lento, se reintentará en el próximo tick');
+    } else {
+      console.warn('[AUTOSAVE] error:',e);
+    }
     // No mostrar toast de error para no molestar — solo log
   }finally{
     _autosaving=false;
