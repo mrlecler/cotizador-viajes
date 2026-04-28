@@ -1097,15 +1097,10 @@ async function dbSaveQuote(d, supabaseId){
   };
   let error;
   if(supabaseId){
-    // UPDATE — no re-enviar ref_id (inmutable) ni agente_id para evitar 23505/RLS
-    const {ref_id:_rid, ...updateRow} = baseRow;
-    ({error} = await sb.from('cotizaciones').update(updateRow).eq('id', supabaseId));
-    // Si falla con columna inexistente, intentar con payload mínimo garantizado
-    if(error && (error.code==='42703'||error.message?.includes('column'))){
-      _captureError('dbSaveQuote:update:fallback', error);
-      const safeRow={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
-      ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
-    }
+    // UPDATE — usar safeRow directo (columnas garantizadas) para evitar doble round-trip
+    // cover_url/precio_total/moneda/notas_int son columnas inciertas — no incluirlas
+    const safeRow={cliente_id:baseRow.cliente_id||null,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
+    ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
   } else {
     // INSERT directo con safeRow (columnas garantizadas) — evita doble request por 42703
     const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
