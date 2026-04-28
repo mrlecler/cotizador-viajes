@@ -1106,15 +1106,10 @@ async function dbSaveQuote(d, supabaseId){
       ({error} = await sb.from('cotizaciones').update(safeRow).eq('id', supabaseId));
     }
   } else {
-    // INSERT primero — si falla con 23505 (dup), UPDATE por ref_id
+    // INSERT directo con safeRow (columnas garantizadas) — evita doble request por 42703
     const safeRow={ref_id:baseRow.ref_id,destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos,agente_id:agId||null};
-    const row = {...baseRow, agente_id: agId||null};
-    ({error} = await sb.from('cotizaciones').insert(row));
-    // Fallback: columna inexistente → safe row
-    if(error && (error.code==='42703'||error.message?.includes('column'))){
-      ({error} = await sb.from('cotizaciones').insert(safeRow));
-    }
-    // Si ref_id ya existe (23505) → UPDATE directo por ref_id (sin SELECT previo)
+    ({error} = await sb.from('cotizaciones').insert(safeRow));
+    // Si ref_id ya existe (23505) → UPDATE directo por ref_id
     if(error && (error.code==='23505'||error.message?.includes('duplicate key'))){
       console.log('[dbSaveQuote] 23505 → UPDATE por ref_id:',d.refId);
       const safeUpd={destino:baseRow.destino,fecha_sal:baseRow.fecha_sal,fecha_reg:baseRow.fecha_reg,noches:baseRow.noches,pasajeros:baseRow.pasajeros,estado:baseRow.estado,datos:baseRow.datos};
@@ -1128,7 +1123,7 @@ async function dbSaveQuote(d, supabaseId){
     _captureError('dbSaveQuote', error);
     throw new Error(error.message||(error.details||JSON.stringify(error)));
   }
-  await loadClients();
+  // loadClients() removido de acá — se llama por separado al abrir el CRM, no en cada guardado
   // Retornar id recuperado en caso de dup-recovery para que saveQuote actualice editingQuoteId
   return supabaseId||null;
 }
