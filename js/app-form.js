@@ -1018,7 +1018,17 @@ async function saveQuote(){
   const btns=[document.getElementById('btn-save-main'),document.getElementById('btn-save-prev')];
   btns.forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;vertical-align:middle"></span> Guardando...';}});
   try{
-    const _recoveredId = await dbSaveQuote(qData, editingQuoteId);
+    // Retry hasta 3 veces en caso de statement timeout (57014) — Supabase free tier
+    let _recoveredId, _lastErr;
+    for(let _attempt=0; _attempt<3; _attempt++){
+      try{ _recoveredId = await dbSaveQuote(qData, editingQuoteId); _lastErr=null; break; }
+      catch(e){
+        _lastErr=e;
+        if(!e.message?.includes('statement timeout')&&!e.message?.includes('57014')) throw e;
+        if(_attempt<2){ console.warn(`[saveQuote] timeout, reintento ${_attempt+2}/3...`); await new Promise(r=>setTimeout(r,2000)); }
+      }
+    }
+    if(_lastErr) throw _lastErr;
     // dbSaveQuote retorna el id recuperado cuando hizo dup-recovery (editingQuoteId se había perdido)
     if(_recoveredId && !editingQuoteId) editingQuoteId=_recoveredId;
     const wasEditing = !!editingQuoteId;
